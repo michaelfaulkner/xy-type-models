@@ -1,0 +1,12 @@
+8                  	Length of lattice
+1000                	Thermalization sweeps
+10000	                Measurements
+0.5                 	Tmin
+1.5                	Tmax
+10			Tsteps
+1.25			Initial magnitude of proposal interval; interval = (-X / 2, X / 2]
+0.25			Change in magnitude of proposal interval (between temperatures)
+1                   	Initial spins (0 = ordered, 1 = random)
+1                       TSF twist move (0 = no, 1 = yes)
+123456789               Seed for random number generator
+end

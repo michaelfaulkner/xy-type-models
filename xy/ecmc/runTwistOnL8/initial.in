@@ -1,0 +1,10 @@
+8                  	Length of lattice
+20                	Thermalization sweeps
+10000	                Measurements
+0.5                 	Tmin
+4.0                	Tmax
+35			Tsteps
+1                   	Initial spins (0=ordered,1=random)
+1                       TSF twist move (0=no,1=yes)
+123456789               Seed for random number generator
+end

@@ -39,6 +39,12 @@
 *.pyc
 *__pycache__
 
+# Image files:
+*.ps
+*.eps
+*.pdf
+*.png
+
 # Mac compilation file:
 *.DS_Store
 
