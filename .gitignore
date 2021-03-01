@@ -1,3 +1,7 @@
+# Sample files
+*.dat
+*.csv
+
 # Prerequisites
 *.d
 
@@ -30,3 +34,16 @@
 *.exe
 *.out
 *.app
+
+# Python temp files:
+*.pyc
+*__pycache__
+
+# Mac compilation file:
+*.DS_Store
+
+# Pycharm IDE files:
+.idea/
+
+# venv directory for pip-environment management
+venv/
