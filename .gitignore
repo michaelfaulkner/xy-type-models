@@ -53,3 +53,6 @@
 
 # venv directory for pip-environment management
 venv/
+
+# Visual Studio Code files
+.vscode/
