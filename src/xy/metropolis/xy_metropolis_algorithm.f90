@@ -6,7 +6,7 @@
 ! Main program
 ! **************************************
 
-program metrop_XY
+program xy_metropolis_algorithm
 
   use variables
   implicit none
@@ -19,6 +19,8 @@ program metrop_XY
   call randinit(seed)
   write(6,*) rand(seed)
 
+  accept = 0
+  accept_twist = 0
   T = Tmin
   if (Tsteps.eq.0) then
      Tincr = 0.0
@@ -53,7 +55,7 @@ program metrop_XY
      proposalInterval = proposalInterval + deltaProposalInterval
   end do
 
-end program metrop_XY  
+end program xy_metropolis_algorithm
 
 ! **************************************
 ! METROPOLIS MARKOV-CHAIN SUBROUTINE

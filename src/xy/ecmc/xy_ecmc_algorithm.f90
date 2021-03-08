@@ -6,7 +6,7 @@
 ! Main program
 ! **************************************
 
-program ECMCXY
+program xy_ecmc_algorithm
 
   use variables
   implicit none
@@ -19,6 +19,9 @@ program ECMCXY
   call randinit(seed)
   write(6,*) rand(seed)
 
+  chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
+  Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
+  accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
   T = Tmin
   if (Tsteps.eq.0) then
      Tincr = 0.0
@@ -52,7 +55,7 @@ program ECMCXY
      T = T + Tincr                                                                  ! SET NEW TEMPERATURE
   end do
 
-end program ECMCXY
+end program xy_ecmc_algorithm
 
 
 ! **************************************

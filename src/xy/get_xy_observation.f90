@@ -5,7 +5,7 @@
 subroutine measure
   use variables
   implicit none
-  integer i,n
+  integer i, n
   real*8 magn, magn_x, magn_y, cos_top_x, cos_top_y
   real*8 sin_top_x, sin_top_y, Ebar_x, Ebar_y, vort
   real*8 potential, storeTop_x, storeTop_y
@@ -24,7 +24,7 @@ subroutine measure
   vort = 0.0
   potential = 0.0
 
-  do i = 0, sites - 1
+  do i=0,sites-1
 
      magn_x = magn_x + cos(theta(i))
      magn_y = magn_y + sin(theta(i))
@@ -59,16 +59,16 @@ subroutine measure
 
 ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
 
-  write(10, 100) magn
-  write(11, 100) magn_x
-  write(12, 100) magn_y
-  write(13, 100) cos_top_x
-  write(14, 100) cos_top_y
-  write(15, 100) sin_top_x
-  write(16, 100) sin_top_y
-  write(17, 100) Ebar_x
-  write(18, 100) Ebar_y
-  write(19, 100) vort
+  write(10,100) magn
+  write(11,100) magn_x
+  write(12,100) magn_y
+  write(13,100) cos_top_x
+  write(14,100) cos_top_y
+  write(15,100) sin_top_x
+  write(16,100) sin_top_y
+  write(17,100) Ebar_x
+  write(18,100) Ebar_y
+  write(19,100) vort
   write(20, 100) potential
 
 100 format(F16.8)
@@ -131,26 +131,3 @@ subroutine vortices
   end do
   return
 end subroutine vortices
-
-
-! **************************************
-! OUTPUT Nevents
-! **************************************
-
-subroutine output_Nevents
-  use variables
-  implicit none
-  character(100) filename
-
-  write (filename, '( "temp_eq_", F4.2,"//Nevents_XY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=20,file=filename)
-  write(20,100) Nevents
-  if (twist.eq.1) then
-     write(20,100) accept_twist
-  end if
-  close(20)
-
-100 format(I20)
-
-  return
-end subroutine output_Nevents
