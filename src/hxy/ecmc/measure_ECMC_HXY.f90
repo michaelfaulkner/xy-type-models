@@ -23,7 +23,9 @@ subroutine measure
   Ebar_y = 0.0
   vort = 0.0
   second_deriv_potential = 0.0
-  potential = 0.0
+
+  sum_of_squared_electric_field_x = 0.0
+  sum_of_squared_electric_field_y = 0.0
 
   do i = 0, sites - 1
      
@@ -40,10 +42,14 @@ subroutine measure
      if (v(i) .ne. 0) then
         vort = vort + 1.0
      end if
-     potential = potential + 0.5 * (storeTop_x * storeTop_x + storeTop_y * storeTop_y)
+
+     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + storeTop_x ** 2
+     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + storeTop_y ** 2
      
   end do
 
+  potential = 0.5 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
+  
   ! CALCULATE THE CUT-OFF FOURIER SERIES THAT APPROXIMATES THE SECOND DERIVATIVE OF THE POTENTIAL
   ! THIS IS THE FIRST TERM OF THE HELICITY MODULUS, AND IS PRECISE FOR nmax = infty
 
@@ -54,7 +60,7 @@ subroutine measure
      end do
      second_deriv_potential = second_deriv_potential + (-1) ** (j + 2) * cos_j
   end do
-  
+
   magn = dsqrt(magn_x ** 2 + magn_y ** 2)
   magn = magn / volume
   magn_x = magn_x / volume
@@ -65,6 +71,12 @@ subroutine measure
   sin_top_y = sin_top_y / volume
   vort = vort / volume
   second_deriv_potential = second_deriv_potential / volume
+  Ebar_x = Ebar_x / volume
+  Ebar_y = Ebar_y / volume
+
+    if (calculate_external_minimising_twist_field == 1) then
+        call external_minimising_twist_field_calculation
+    end if
   
   ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
   
@@ -80,6 +92,9 @@ subroutine measure
   write(19,100) vort
   write(20,100) second_deriv_potential
   write(21,100) potential
+
+  write(200,100) no_of_external_twists_to_minimise_potential_x
+  write(210,100) no_of_external_twists_to_minimise_potential_y
 
 
 100 format(F16.8)
@@ -142,6 +157,124 @@ subroutine vortices
   end do
   return
 end subroutine vortices
+
+
+! **************************************
+! Calculate the number of external twists required to minimise the current value of the potential
+! **************************************
+
+subroutine external_minimising_twist_field_calculation
+    use variables
+    implicit none
+    integer i, n
+    real*8 diff, current_sum_of_squared_electric_field_x, current_sum_of_squared_electric_field_y
+    real*8 twisted_sum_of_squared_electric_field_x, twisted_sum_of_squared_electric_field_y, potential_difference
+
+  ! y direction; positive twist
+  n = 1
+  do
+     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
+     twisted_sum_of_squared_electric_field_x = 0.0
+
+     do i = 0, sites - 1
+        diff = theta(i) - theta(neg_y(i)) + n * twopi / side
+        if (diff .gt. 0.5 * twopi) then
+           diff = diff - twopi
+        else if (diff .le. - 0.5 * twopi) then
+           diff = diff + twopi
+        end if
+        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + diff ** 2
+     end do
+
+     potential_difference = 0.5 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
+
+     if (potential_difference .lt. - epsilon) then
+         no_of_external_twists_to_minimise_potential_y = n
+        n = n + 1
+     else
+        exit
+     end if
+  end do
+
+  ! y direction; negative twist
+  n = 1
+  do
+     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
+     twisted_sum_of_squared_electric_field_x = 0.0
+
+     do i = 0, sites - 1
+        diff = theta(i) - theta(neg_y(i)) - n * twopi / side
+        if (diff .gt. 0.5 * twopi) then
+           diff = diff - twopi
+        else if (diff .le. - 0.5 * twopi) then
+           diff = diff + twopi
+        end if
+        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + diff ** 2
+     end do
+
+     potential_difference = 0.5 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
+
+     if (potential_difference .lt. - epsilon) then
+         no_of_external_twists_to_minimise_potential_y = - n
+        n = n + 1
+     else
+        exit
+     end if
+  end do
+
+  ! x direction; positive twist
+  n = 1
+  do
+     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
+     twisted_sum_of_squared_electric_field_y = 0.0
+
+     do i = 0, sites - 1
+        diff = - (theta(i) - theta(neg_x(i))) + n * twopi / side
+        if (diff .gt. 0.5 * twopi) then
+           diff = diff - twopi
+        else if (diff .le. - 0.5 * twopi) then
+           diff = diff + twopi
+        end if
+        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + diff ** 2
+     end do
+
+     potential_difference = 0.5 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
+
+     if (potential_difference .lt. - epsilon) then
+         no_of_external_twists_to_minimise_potential_x = n
+        n = n + 1
+     else
+        exit
+     end if
+  end do
+
+  ! x direction; negative twist
+  n = 1
+  do
+     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
+     twisted_sum_of_squared_electric_field_y = 0.0
+
+     do i = 0, sites - 1
+        diff = - (theta(i) - theta(neg_x(i))) - n * twopi / side
+        if (diff .gt. 0.5 * twopi) then
+           diff = diff - twopi
+        else if (diff .le. - 0.5 * twopi) then
+           diff = diff + twopi
+        end if
+        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + diff ** 2
+     end do
+
+     potential_difference = 0.5 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
+
+     if (potential_difference .lt. - epsilon) then
+         no_of_external_twists_to_minimise_potential_x = - n
+        n = n + 1
+     else
+        exit
+     end if
+  end do
+
+end subroutine
 
 ! **************************************
 ! OUTPUT Nevents

@@ -1,3 +1,5 @@
+vpath %.f90 ../ ../../ # asks make to look for .f90 files in the two directories above the current one (as well as in the current one)
+
 CFLAGS= gfortran -c -O
 OFLAGS= gfortran -O -o
 
@@ -6,17 +8,21 @@ OFLAGS= gfortran -O -o
 .f90.o :
 	$(CFLAGS) $<
 
-all : HXY
+all: create-executable clean move-executable
 
-# SETUP=setup_metrop_HXY.o
-SETUP=setup_metrop_HXY_with_twist_TSF_measure.o
-# MEASURE=measure_metrop_HXY.o
-MEASURE=measure_metrop_HXY_with_twist_TSF_measure.o
+SETUP=setup_metrop_HXY.o
+MEASURE=measure_metrop_HXY.o
 RAND=random.o
 TWIST=global_twist_HXY.o
-EVENTCHAIN=metrop_HXY.o
+main-program=metrop_HXY.o
 
-HXY= $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(EVENTCHAIN)
+OBJECT_FILES= $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(main-program)
 
-HXY : $(HXY)
-	$(OFLAGS) metrop_HXY.exe $(HXY) -lm
+create-executable : $(OBJECT_FILES)
+	$(OFLAGS) metrop_HXY.exe $(OBJECT_FILES) -lm
+
+clean:
+	rm *.o *.mod
+
+move-executable:
+	mv *.exe ../../..

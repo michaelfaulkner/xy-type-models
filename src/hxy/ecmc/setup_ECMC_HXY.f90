@@ -10,7 +10,7 @@ module variables
   parameter (max_sites = max_side * max_side)
   integer*8 Nevents
   integer pos_x(max_sites),neg_x(max_sites),pos_y(max_sites),neg_y(max_sites),v(max_sites)
-  integer side, sites, Tsteps, therm_sweeps, measurements, max_autocorr_time, twist, accept_twist, nmax,
+  integer side, sites, Tsteps, therm_sweeps, measurements, max_autocorr_time, twist, accept_twist, nmax
   integer calculate_external_minimising_twist_field
   integer  no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
   real*8  theta(max_sites), top_x(max_sites), top_y(max_sites)
