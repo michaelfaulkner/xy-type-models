@@ -137,5 +137,12 @@ subroutine initial_measure
        T,side,side,T
   open(unit = 21, file = filename)
 
+  write (filename, '( "temp_eq_", F4.2,"//external_minimising_twist_field_x_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
+       T,side,side,T
+  open(unit = 22, file = filename)
+  write (filename, '( "temp_eq_", F4.2,"//external_minimising_twist_field_y_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
+       T,side,side,T
+  open(unit = 23, file = filename)
+
   return
 end subroutine initial_measure

@@ -93,11 +93,12 @@ subroutine measure
   write(20,100) second_deriv_potential
   write(21,100) potential
 
-  write(200,100) no_of_external_twists_to_minimise_potential_x
-  write(210,100) no_of_external_twists_to_minimise_potential_y
+  write(22,200) no_of_external_twists_to_minimise_potential_x
+  write(23,200) no_of_external_twists_to_minimise_potential_y
 
 
 100 format(F16.8)
+200 format(I2)
 
   return
 end subroutine measure
