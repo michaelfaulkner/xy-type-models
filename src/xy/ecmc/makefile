@@ -1,4 +1,4 @@
-vpath %.f90 ../ ../../
+vpath %.f90 ../ ../../ # asks make to look for .f90 files in the two directories above the current one (as well as in the current one)
 
 CFLAGS = gfortran -c -O
 OFLAGS = gfortran -O -o
