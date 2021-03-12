@@ -14,11 +14,10 @@ SETUP = setup_xy_ecmc_algorithm.o
 MEASURE = get_xy_observation.o
 RANDOM = random.o
 TWIST = attempt_external_xy_twist.o
-output-number-of-events = output_number_of_events.o
 initialise-system = initialise_xy_system_and_sample_files.o
 main-program = xy_ecmc_algorithm.o
 
-XY_OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(output-number-of-events) $(initialise-system) $(main-program)
+XY_OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(initialise-system) $(main-program)
 
 create-executable: $(XY_OBJECT_FILES)
 	$(OFLAGS) xy_ecmc_algorithm.exe $(XY_OBJECT_FILES) -lm
