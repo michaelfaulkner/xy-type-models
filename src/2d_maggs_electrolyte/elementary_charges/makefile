@@ -14,12 +14,12 @@ SETUP=setup_metrop_GLE.o
 MEASURE=measure_metrop_GLE.o
 RAND=random.o
 TWIST=global_TSF_GLE.o
-main-program = elementary_charge_maggs_electrolyte_metropolis_algorithm.o
+main-program = elementary_charge_maggs_electrolyte_algorithm.o
 
 OBJECT_FILES = $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(main-program)
 
 create-executable : $(OBJECT_FILES)
-	$(OFLAGS) elementary_charge_maggs_electrolyte_metropolis_algorithm.exe $(OBJECT_FILES) -lm
+	$(OFLAGS) elementary_charge_maggs_electrolyte_algorithm.exe $(OBJECT_FILES) -lm
 
 clean:
 	rm *.o *.mod
