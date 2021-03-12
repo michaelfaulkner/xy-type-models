@@ -276,25 +276,3 @@ subroutine external_minimising_twist_field_calculation
   end do
 
 end subroutine
-
-! **************************************
-! OUTPUT Nevents
-! **************************************
-
-subroutine output_Nevents
-  use variables
-  implicit none
-  character(100) filename
-  
-  write (filename, '( "temp_eq_", F4.2,"//Nevents_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit = 300, file = filename)
-  write(300, 100) Nevents
-  if (twist.eq.1) then
-     write(300, 100) accept_twist
-  end if
-  close(300)
-  
-100 format(I20)
-  
-  return
-end subroutine output_Nevents
