@@ -10,17 +10,11 @@ OFLAGS = gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP = setup_xy_metropolis_algorithm.o
-MEASURE = xy_sampler.o
-RANDOM = random.o
-TWIST = attempt_external_xy_twist.o
-initialise-system = initialise_xy_system_and_sample_files.o
-main-program = xy_metropolis_algorithm.o
+OBJECTS = random.o setup_xy_metropolis_algorithm.o initialise_xy_system_and_sample_files.o xy_sampler.o \
+			 attempt_external_xy_twist.o xy_metropolis_algorithm.o
 
-XY_OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(initialise-system) $(main-program)
-
-create-executable: $(XY_OBJECT_FILES)
-	$(OFLAGS) xy_metropolis_algorithm.exe $(XY_OBJECT_FILES) -lm
+create-executable: $(OBJECTS)
+	$(OFLAGS) xy_metropolis_algorithm.exe $(OBJECTS) -lm
 
 clean:
 	rm *.o *.mod

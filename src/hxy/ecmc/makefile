@@ -10,17 +10,11 @@ OFLAGS = gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP = setup_hxy_ecmc_algorithm.o
-MEASURE = hxy_sampler.o
-RANDOM = random.o
-TWIST = attempt_external_hxy_twist.o
-initialise-system = initialise_hxy_system_and_sample_files.o
-main-program = hxy_ecmc_algorithm.o
+OBJECTS = random.o setup_hxy_ecmc_algorithm.o initialise_hxy_system_and_sample_files.o hxy_sampler.o \
+			 attempt_external_hxy_twist.o hxy_ecmc_algorithm.o
 
-XY_OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(initialise-system) $(main-program)
-
-create-executable: $(XY_OBJECT_FILES)
-	$(OFLAGS) hxy_ecmc_algorithm.exe $(XY_OBJECT_FILES) -lm
+create-executable: $(OBJECTS)
+	$(OFLAGS) hxy_ecmc_algorithm.exe $(OBJECTS) -lm
 
 clean:
 	rm *.o *.mod

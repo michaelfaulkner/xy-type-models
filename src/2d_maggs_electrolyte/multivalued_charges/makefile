@@ -10,16 +10,11 @@ OFLAGS= gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP=setup_maggs_electrolyte_algorithm.o
-MEASURE=maggs_electrolyte_sampler.o
-RAND=random.o
-TWIST=attempt_external_topological_sector_fluctuation.o
-main-program = multivalued_charge_maggs_electrolyte_algorithm.o
+OBJECTS = random.o setup_maggs_electrolyte_algorithm.o maggs_electrolyte_sampler.o \
+			attempt_external_topological_sector_fluctuation.o multivalued_charge_maggs_electrolyte_algorithm.o
 
-OBJECT_FILES = $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(main-program)
-
-create-executable : $(OBJECT_FILES)
-	$(OFLAGS) multivalued_charge_maggs_electrolyte_algorithm.exe $(OBJECT_FILES) -lm
+create-executable : $(OBJECTS)
+	$(OFLAGS) multivalued_charge_maggs_electrolyte_algorithm.exe $(OBJECTS) -lm
 
 clean:
 	rm *.o *.mod
