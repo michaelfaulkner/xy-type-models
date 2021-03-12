@@ -10,16 +10,17 @@ OFLAGS= gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP=setup_metrop_HXY.o
-MEASURE=measure_metrop_HXY.o
-RAND=random.o
-TWIST=global_twist_HXY.o
-main-program=metrop_HXY.o
+SETUP = setup_hxy_metropolis_algorithm.o
+MEASURE = hxy_sampler.o
+RANDOM = random.o
+TWIST = attempt_external_hxy_twist.o
+initialise-system = initialise_hxy_system_and_sample_files.o
+main-program = hxy_metropolis_algorithm.o
 
-OBJECT_FILES= $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(main-program)
+OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(initialise-system) $(main-program)
 
 create-executable : $(OBJECT_FILES)
-	$(OFLAGS) metrop_HXY.exe $(OBJECT_FILES) -lm
+	$(OFLAGS) hxy_metropolis_algorithm.exe $(OBJECT_FILES) -lm
 
 clean:
 	rm *.o *.mod
