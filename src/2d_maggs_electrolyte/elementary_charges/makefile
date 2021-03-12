@@ -10,7 +10,7 @@ OFLAGS= gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP=setup_metrop_GLE.o
+SETUP=setup_maggs_electrolyte_algorithm.o
 MEASURE=maggs_electrolyte_sampler.o
 RAND=random.o
 TWIST=global_TSF_GLE.o
