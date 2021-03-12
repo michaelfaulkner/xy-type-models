@@ -19,8 +19,6 @@ program xy_metropolis_algorithm
   call randinit(seed)
   write(6,*) rand(seed)
 
-  accept = 0
-  accept_twist = 0
   T = Tmin
   if (Tsteps.eq.0) then
      Tincr = 0.0
@@ -39,6 +37,8 @@ program xy_metropolis_algorithm
         call markov_chain_XY
      end do
 
+     accept = 0
+     accept_twist = 0
      call initial_measure                                                           ! SET ALL MEASUREMENT DATA TO ZERO
 
      do j = 0, measurements - 1                                                     ! RUN EVENT CHAIN UNTIL MAXIMUM EVENT-CHAIN LENGTH

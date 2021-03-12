@@ -19,9 +19,6 @@ program xy_ecmc_algorithm
   call randinit(seed)
   write(6,*) rand(seed)
 
-  chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
-  Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
-  accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
   T = Tmin
   if (Tsteps.eq.0) then
      Tincr = 0.0
@@ -40,6 +37,9 @@ program xy_ecmc_algorithm
         call event_chain_XY
      end do
 
+     chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
+     Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
+     accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
      call initial_measure                                                           ! SET ALL MEASUREMENT DATA TO ZERO
 
      do j=0,measurements - 1                                                        ! RUN EVENT CHAIN UNTIL MAXIMUM EVENT-CHAIN LENGTH
