@@ -10,7 +10,7 @@ OFLAGS = gfortran -O -o
 
 all: create-executable clean move-executable
 
-SETUP = setup_ECMC_HXY.o
+SETUP = setup_hxy_ecmc_algorithm.o
 MEASURE = measure_ECMC_HXY.o
 RANDOM = random.o
 TWIST = attempt_external_hxy_twist.o
