@@ -14,6 +14,7 @@ SETUP = setup_hxy_ecmc_algorithm.o
 MEASURE = hxy_sampler.o
 RANDOM = random.o
 TWIST = attempt_external_hxy_twist.o
+initialise-system = initialise_hxy_system_and_sample_files.o
 main-program = hxy_ecmc_algorithm.o
 
 XY_OBJECT_FILES = $(SETUP) $(MEASURE) $(RANDOM) $(TWIST) $(initialise-system) $(main-program)
