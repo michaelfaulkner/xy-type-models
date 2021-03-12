@@ -11,7 +11,7 @@ OFLAGS = gfortran -O -o
 all: create-executable clean move-executable
 
 SETUP = setup_xy_ecmc_algorithm.o
-MEASURE = get_xy_observation.o
+MEASURE = xy_sampler.o
 RANDOM = random.o
 TWIST = attempt_external_xy_twist.o
 initialise-system = initialise_xy_system_and_sample_files.o
