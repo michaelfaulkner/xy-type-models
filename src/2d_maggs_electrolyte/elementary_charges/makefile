@@ -13,7 +13,7 @@ all: create-executable clean move-executable
 SETUP=setup_maggs_electrolyte_algorithm.o
 MEASURE=maggs_electrolyte_sampler.o
 RAND=random.o
-TWIST=global_TSF_GLE.o
+TWIST=attempt_external_topological_sector_fluctuation.o
 main-program = elementary_charge_maggs_electrolyte_algorithm.o
 
 OBJECT_FILES = $(SETUP) $(MEASURE) $(RAND) $(TWIST) $(main-program)
