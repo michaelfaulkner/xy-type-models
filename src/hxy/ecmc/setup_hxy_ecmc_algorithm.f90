@@ -103,10 +103,6 @@ subroutine initial_measure
   character(100) filename
   character(100) directory
 
-  chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
-  Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
-  accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
-
   write (directory, '( "temp_eq_", F4.2)' ) T                                     ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
   call system ( 'mkdir -p ' // directory )
   
