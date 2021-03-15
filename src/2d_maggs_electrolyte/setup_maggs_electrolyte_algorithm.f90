@@ -99,7 +99,6 @@ subroutine initial_measure
 use variables
 implicit none
 character(100) filename
-character(100) directory
 character(100) temperature_directory
 character(100), parameter :: temperature_string="/temp_eq_"
 
@@ -108,16 +107,16 @@ accept_aux_field = 0
 accept_TSF = 0
 
 ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
-write (temperature_directory, '(A, F4.2)' ) trim(output_directory)//trim(temperature_string), T
+write (temperature_directory, '(A, F4.2)') trim(output_directory)//trim(temperature_string), T
 call system ( 'mkdir -p ' // temperature_directory )
 
-write (filename, '(A, F4.2, "//Esum_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//Esum_x_sample.dat")') trim(output_directory)//trim(temperature_string), T
 open(unit = 10, file = filename)
-write (filename, '(A, F4.2, "//Esum_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//Esum_y_sample.dat")') trim(output_directory)//trim(temperature_string), T
 open(unit = 11, file = filename)
-write (filename, '(A, F4.2, "//charge_number_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//charge_number_sample.dat")') trim(output_directory)//trim(temperature_string), T
 open(unit = 12, file = filename)
-write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//potential_sample.dat")') trim(output_directory)//trim(temperature_string), T
 open(unit = 13, file = filename)
 
 return
