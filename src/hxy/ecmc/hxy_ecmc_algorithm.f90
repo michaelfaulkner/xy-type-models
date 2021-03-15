@@ -1,66 +1,62 @@
-! **************************************
-! Event-chain sampling from XY distribution
-! **************************************
+program hxy_ecmc_algorithm
+use variables
+implicit none
+character(100) :: config_file
+integer i, j, seed, start
+real*8 Tincr
 
-! **************************************
-! Main program
-! **************************************
+! verify that the something has been parsed to the exectuable
+if (command_argument_count() /= 1) then
+    write(6, *) 'Error: parse configuration file to executable'
+    stop
+end if
+! read in config file
+call get_command_argument(1, config_file)
+open (unit=1, file=config_file)
 
-program ECMCXY
+call input(seed, start)
+call PBC
+call randinit(seed)
+write(6, *) rand(seed)
 
-  use variables
-  implicit none
-  integer i,j,seed,start
-  real*8 Tincr
-
-  open (unit=1, file = 'initial.in')                                                ! CALL INPUT HYPERPARAMTERS AND SET UP LATTICE, SEED, ETC.
-  call input(seed, start)
-  call PBC
-  call randinit(seed)
-  write(6,*) rand(seed)
-
-  T = Tmin
-  if (Tsteps .eq. 0) then
-     Tincr = 0.0
-  else
-     Tincr = (Tmax - Tmin) / Tsteps
-  end if
+T = Tmin
+if (Tsteps == 0) then
+    Tincr = 0.0
+else
+    Tincr = (Tmax - Tmin) / Tsteps
+end if
   
-  do i = 0,Tsteps
-     write(6,*) T
-     beta=1/T
-     if (T.eq.Tmin) then
-        call initial_spins(start)                                                   ! INITIALIZE SYSTEM
-     end if
-     
-     do j = 0, therm_sweeps - 1                                                     ! THERMALIZE SYSTEM AT NEW TEMPERATURE
+do i = 0, Tsteps
+
+    write(6, *) T
+    beta = 1 / T
+    if (T == Tmin) then
+        call initial_spins(start)
+    end if
+
+    do j = 0, therm_sweeps - 1
         call event_chain_HXY
-     end do
+    end do
 
-     chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
-     Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
-     accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
-     call initial_measure                                                           ! SET ALL MEASUREMENT DATA TO ZERO
-     
-     do j = 0, measurements - 1                                                     ! RUN EVENT CHAIN UNTIL MAXIMUM EVENT-CHAIN LENGTH
-        call event_chain_HXY                                                        ! IS REACHED A measurements NUMBER OF TIMES
-        if (twist .eq. 1) then                                                      ! DIRECT TSF PROPOSAL VIA GLOBAL TWIST, WHICH ENSURES ERGODICITY (METROPOLIS MCMC)
-           call global_twist_HXY
+    chainlength = 0.0
+    Nevents = 0
+    accept_twist = 0
+    call initial_measure
+
+    do j = 0, measurements - 1
+        call event_chain_HXY
+        if (twist == 1) then
+            call global_twist_HXY
         end if
-        call measure                                                                ! MEASURE THE STATE OF THE SYSTEM
-     end do
+        call measure
+    end do
 
-     call output_Nevents
+    call output_Nevents
+    T = T + Tincr
 
-     T = T + Tincr                                                                  ! SET NEW TEMPERATURE
-  end do
+end do
+end program hxy_ecmc_algorithm
 
-end program ECMCXY
-
-
-! **************************************
-! EVENT-CHAIN SUBROUTINE
-! **************************************
 
 subroutine event_chain_HXY
   use variables
