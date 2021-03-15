@@ -80,27 +80,27 @@ end subroutine measure_chargeDensity
 ! **************************************
 
 subroutine output_acceptance_rates
-  use variables
-  implicit none
-  character(100) filename
-  real*8 chargeAcceptanceRate, auxFieldAcceptanceRate, TSFAcceptanceRate
+use variables
+implicit none
+character(100), parameter :: temperature_string="/temp_eq_"
+character(100) filename
+real*8 chargeAcceptanceRate, auxFieldAcceptanceRate, TSFAcceptanceRate
 
-  chargeAcceptanceRate = float(accept_charge) / (2 * measurements * volume)
-  auxFieldAcceptanceRate = float(accept_aux_field) / (measurements * volume)
-  TSFAcceptanceRate = float(accept_TSF) / measurements
+chargeAcceptanceRate = float(accept_charge) / (2 * measurements * volume)
+auxFieldAcceptanceRate = float(accept_aux_field) / (measurements * volume)
+TSFAcceptanceRate = float(accept_TSF) / measurements
 
-  write (filename, '( "temp_eq_", F4.2,"//acceptance_rates_GLE_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T, side, side, T
-  open(unit = 300, file = filename)
-  
-  write(300, 100) chargeAcceptanceRate
-  write(300, 100) auxFieldAcceptanceRate
-  if (globalTSFon .eq. 1) then
-     write(300, 100) TSFAcceptanceRate
-  end if
-  close(300)
+write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=300, file=filename)
+
+write(300, 100) chargeAcceptanceRate
+write(300, 100) auxFieldAcceptanceRate
+if (globalTSFon == 1) then
+    write(300, 100) TSFAcceptanceRate
+end if
+close(300)
 
 100 format(F16.8)
-  
-  return
+
+return
 end subroutine output_acceptance_rates

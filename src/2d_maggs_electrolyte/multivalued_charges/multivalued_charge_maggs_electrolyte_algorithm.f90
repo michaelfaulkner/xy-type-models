@@ -1,74 +1,72 @@
-! **************************************
-! Metropolis sampling from GLE Coulomb distribution (multi-valued charges)
-! **************************************
+program multivalued_charge_maggs_electrolyte_algorithm
+use variables
+implicit none
+character(100) :: config_file
+integer i, j, k, seed, start
+real*8 Tincr
 
-! **************************************
-! Main program
-! **************************************
+! verify that the something has been parsed to the exectuable
+if (command_argument_count() /= 1) then
+    write(6, *) 'Error: parse configuration file to executable'
+    stop
+end if
+! read in config file
+call get_command_argument(1, config_file)
+open (unit=1, file=config_file)
 
-program metrop_GLE
+call input(seed, start)
+call PBC
+call randinit(seed)
+write(6, *) rand(seed)
 
-  use variables
-  implicit none
-  integer i, j, k, seed, start
-  real*8 Tincr
-
-  open (unit = 1, file = 'initial.in')
-  call input(seed, start)
-  call PBC
-  call randinit(seed)
-  write(6,*) rand(seed)
+T = Tmin
+if (Tsteps == 0) then
+    Tincr = 0.0
+else
+    Tincr = (Tmax - Tmin) / Tsteps
+end if
   
-  T = Tmin
-  if (Tsteps .eq. 0) then
-     Tincr = 0.0
-  else
-     Tincr = (Tmax - Tmin) / Tsteps
-  end if
-  
-  do i = 0, Tsteps
-     write(6, *) T
-     beta = 1 / T
-     if (T .eq. Tmin) then
+do i = 0, Tsteps
+
+    write(6, *) T
+    beta = 1 / T
+    if (T == Tmin) then
         call initial_Efield
-     end if
-     
-     do j = 0, thermSweeps - 1
+    end if
+
+    do j = 0, thermSweeps - 1
         call markov_chain_aux_field_GLE
         do k = 0, ratio_charge_updates - 1
-           call markov_chain_charges_GLE
+            call markov_chain_charges_GLE
         end do
-        if (globalTSFon .eq. 1) then
-           do k = 0, ratio_TSF_updates - 1
-              call markov_chain_TSF_GLE
-           end do
+        if (globalTSFon == 1) then
+            do k = 0, ratio_TSF_updates - 1
+                call markov_chain_TSF_GLE
+            end do
         end if
-     end do
+    end do
 
-     call initial_measure
-     
-     do j = 0, measurements - 1
-        
+    call initial_measure
+
+    do j = 0, measurements - 1
         call markov_chain_aux_field_GLE
         do k = 0, ratio_charge_updates - 1
-           call markov_chain_charges_GLE
+            call markov_chain_charges_GLE
         end do
-        if (globalTSFon .eq. 1) then
-           do k = 0, ratio_TSF_updates - 1
-              call markov_chain_TSF_GLE
-           end do
+        if (globalTSFon == 1) then
+            do k = 0, ratio_TSF_updates - 1
+                call markov_chain_TSF_GLE
+            end do
         end if
-
         call measure
+    end do
 
-     end do
+    call output_acceptance_rates
+    T = T + Tincr
+    proposalInterval = proposalInterval + deltaProposalInterval
 
-     call output_acceptance_rates
-
-     T = T + Tincr
-     proposalInterval = proposalInterval + deltaProposalInterval
-  end do
-end program metrop_GLE
+end do
+end program multivalued_charge_maggs_electrolyte_algorithm
 
 
 ! **************************************

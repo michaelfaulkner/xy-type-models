@@ -1,0 +1,15 @@
+8                   	                                    Length of lattice
+6.2831854820251465	                                        Elementary charge value
+10000                	                                    Thermalization sweeps
+1000000	                                                    Measurements
+2.5                 	                                    Tmin
+4.5                	                                        Tmax
+4 			                                                Tsteps
+2.8			                                                Initial magnitude of proposal interval; interval = (-X / 2, X / 2]
+0.1			                                                Change in magnitude of proposal interval (between temperatures)
+1			                                                Number of charge proposals per aux.-field proposal
+1			                                                Number of TSF proposals per aux.-field proposal
+1                                                           use global TSF move (0 = no, 1 = yes)
+123456789                                                   Seed for random number generator
+'output/2d_maggs_electrolyte/elementary_charges/test'       output directory
+end
