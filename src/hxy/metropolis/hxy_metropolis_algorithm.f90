@@ -152,10 +152,10 @@ acceptanceRate = float(accept) / (measurements * volume)
 twistAcceptanceRate = float(accept_twist) / (measurements * volume)
 
 write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), T
-open(unit = 300, file = filename)
+open(unit=300, file=filename)
 
 write(300, 100) acceptanceRate
-if (twist .eq. 1) then
+if (twist == 1) then
     write(300, 100) twistAcceptanceRate
 end if
 close(300)
