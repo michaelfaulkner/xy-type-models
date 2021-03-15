@@ -3,6 +3,7 @@
 ! **************************************
 
 module variables
+  character(100) :: output_directory
   real*8, parameter :: twopi = 6.28318530718
   real*8, parameter :: pi = 3.14159265359
   real*8, parameter :: epsilon = 10.0 ** (-6)
@@ -24,31 +25,32 @@ end module variables
 ! **************************************
 
 subroutine input(seed, start)
-  use variables
-  implicit none
-  integer seed,start
-  
-  read(1,*) side
-  read(1,*) thermSweeps
-  read(1,*) measurements
-  read(1,*) Tmin
-  read(1,*) Tmax
-  read(1,*) Tsteps
-  read(1,*) proposalInterval
-  read(1,*) deltaProposalInterval
-  read(1,*) start
-  read(1,*) twist
-  read(1,*) nmax
-  read(1,*) seed
+use variables
+implicit none
+integer seed,start
 
-  sites = side * side
-  volume = float(sites)
-  length = float(side)
+read(1,*) side
+read(1,*) thermSweeps
+read(1,*) measurements
+read(1,*) Tmin
+read(1,*) Tmax
+read(1,*) Tsteps
+read(1,*) proposalInterval
+read(1,*) deltaProposalInterval
+read(1,*) start
+read(1,*) twist
+read(1,*) nmax
+read(1,*) seed
+read(1, *) output_directory
 
-  if (side .gt. max_side) then
-     write(6,*) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
-     stop
-  end if
+sites = side * side
+volume = float(sites)
+length = float(side)
 
-  return
+if (side > max_side) then
+    write(6,*) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
+    stop
+end if
+
+return
 end subroutine input

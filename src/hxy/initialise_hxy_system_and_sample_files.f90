@@ -42,47 +42,44 @@ end subroutine initial_spins
 ! **************************************
 
 subroutine initial_measure
-  use variables
-  implicit none
-  character(100) filename
-  character(100) directory
+use variables
+implicit none
+character(100) filename
+character(100) temperature_directory
+character(100), parameter :: temperature_string="/temp_eq_"
 
-  write (directory, '( "temp_eq_", F4.2)' ) T                                     ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
-  call system ( 'mkdir -p ' // directory )
+! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
+write (temperature_directory, '(A, F4.2)' ) trim(output_directory)//trim(temperature_string), T
+call system ( 'mkdir -p ' // temperature_directory )
 
-  write (filename, '( "temp_eq_", F4.2,"//magn_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=10,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//magn_x_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=11,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//magn_y_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=12,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//cos_top_x_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=13,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//cos_top_y_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=14,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//sin_top_x_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=15,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//sin_top_y_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=16,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//Ebar_x_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=17,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//Ebar_y_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=18,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//vort_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=19,file=filename)
-  write (filename, '( "temp_eq_", F4.2,"//second_deriv_potential_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T,side,side,T
-  open(unit = 20, file = filename)
-  write (filename, '( "temp_eq_", F4.2,"//potential_samples_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T,side,side,T
-  open(unit = 21, file = filename)
+write (filename, '(A, F4.2, "//magn_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=10, file=filename)
+write (filename, '(A, F4.2, "//magn_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=11,file=filename)
+write (filename, '(A, F4.2, "//magn_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=12,file=filename)
+write (filename, '(A, F4.2, "//cos_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=13,file=filename)
+write (filename, '(A, F4.2, "//cos_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=14,file=filename)
+write (filename, '(A, F4.2, "//sin_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=15,file=filename)
+write (filename, '(A, F4.2, "//sin_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=16,file=filename)
+write (filename, '(A, F4.2, "//Ebar_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=17,file=filename)
+write (filename, '(A, F4.2, "//Ebar_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=18,file=filename)
+write (filename, '(A, F4.2, "//vort_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit=19,file=filename)
+write (filename, '(A, F4.2, "//second_deriv_potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 20, file = filename)
+write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 21, file = filename)
+write (filename, '(A, F4.2, "//external_minimising_twist_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 22, file = filename)
+write (filename, '(A, F4.2, "//external_minimising_twist_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 23, file = filename)
 
-  write (filename, '( "temp_eq_", F4.2,"//external_minimising_twist_field_x_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T,side,side,T
-  open(unit = 22, file = filename)
-  write (filename, '( "temp_eq_", F4.2,"//external_minimising_twist_field_y_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T,side,side,T
-  open(unit = 23, file = filename)
-
-  return
+return
 end subroutine initial_measure

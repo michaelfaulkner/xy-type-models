@@ -133,19 +133,20 @@ end subroutine event_chain_HXY
 ! **************************************
 
 subroutine output_Nevents
-  use variables
-  implicit none
-  character(100) filename
+use variables
+implicit none
+character(100), parameter :: temperature_string="/temp_eq_"
+character(100) filename
 
-  write (filename, '( "temp_eq_", F4.2,"//Nevents_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit = 300, file = filename)
-  write(300, 100) Nevents
-  if (twist.eq.1) then
-     write(300, 100) accept_twist
-  end if
-  close(300)
+write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 300, file = filename)
+write(300, 100) Nevents
+if (twist == 1) then
+    write(300, 100) accept_twist
+end if
+close(300)
 
 100 format(I20)
 
-  return
+return
 end subroutine output_Nevents

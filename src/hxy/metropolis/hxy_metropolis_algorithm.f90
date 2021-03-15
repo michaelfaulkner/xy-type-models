@@ -1,61 +1,61 @@
-! **************************************
-! Metropolis sampling from HXY distribution
-! **************************************
+program hxy_metropolis_algorithm
+use variables
+implicit none
+character(100) :: config_file
+integer i, j, seed, start
+real*8 Tincr
 
-! **************************************
-! Main program
-! **************************************
+! verify that the something has been parsed to the exectuable
+if (command_argument_count() /= 1) then
+    write(6, *) 'Error: parse configuration file to executable'
+    stop
+end if
+! read in config file
+call get_command_argument(1, config_file)
+open (unit=1, file=config_file)
 
-program metrop_HXY
+call input(seed, start)
+call PBC
+call randinit(seed)
+write(6, *) rand(seed)
 
-  use variables
-  implicit none
-  integer i, j, seed, start
-  real*8 Tincr
+T = Tmin
+if (Tsteps == 0) then
+    Tincr = 0.0
+else
+    Tincr = (Tmax - Tmin) / Tsteps
+end if
 
-  open (unit = 1, file = 'initial.in')
-  call input(seed, start)
-  call PBC
-  call randinit(seed)
-  write(6,*) rand(seed)
-  
-  T = Tmin
-  if (Tsteps .eq. 0) then
-     Tincr = 0.0
-  else
-     Tincr = (Tmax - Tmin) / Tsteps
-  end if
-  
-  do i = 0, Tsteps
-     write(6,*) T
-     beta=1/T
-     if (T.eq.Tmin) then
+do i = 0, Tsteps
+
+    write(6, *) T
+    beta = 1 / T
+    if (T == Tmin) then
         call initial_spins(start)
-     end if
-     
-     do j = 0, thermSweeps - 1
-        call markov_chain_HXY
-     end do
+    end if
 
-     accept = 0
-     accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
-     call initial_measure
-     
-     do j = 0, measurements - 1
+    do j = 0, thermSweeps - 1
+        call markov_chain_HXY
+    end do
+
+    accept = 0
+    accept_twist = 0
+    call initial_measure
+
+    do j = 0, measurements - 1
         call markov_chain_HXY
         if (twist .eq. 1) then
-           call global_twist_HXY
+            call global_twist_HXY
         end if
         call measure
-     end do
+    end do
 
-     call output_acceptance_rates
+    call output_acceptance_rates
+    T = T + Tincr
+    proposalInterval = proposalInterval + deltaProposalInterval
 
-     T = T + Tincr
-     proposalInterval = proposalInterval + deltaProposalInterval
-  end do
-
-end program metrop_HXY
+end do
+end program hxy_metropolis_algorithm
 
 
 ! **************************************
@@ -142,25 +142,25 @@ end subroutine markov_chain_HXY
 ! **************************************
 
 subroutine output_acceptance_rates
-  use variables
-  implicit none
-  character(100) filename
-  real*8 acceptanceRate, twistAcceptanceRate
+use variables
+implicit none
+character(100), parameter :: temperature_string="/temp_eq_"
+character(100) filename
+real*8 acceptanceRate, twistAcceptanceRate
 
-  acceptanceRate = float(accept) / (measurements * volume)
-  twistAcceptanceRate = float(accept_twist) / (measurements * volume)
+acceptanceRate = float(accept) / (measurements * volume)
+twistAcceptanceRate = float(accept_twist) / (measurements * volume)
 
-  write (filename, '( "temp_eq_", F4.2,"//acceptance_rates_HXY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' ) &
-       T, side, side, T
-  open(unit = 300, file = filename)
+write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 300, file = filename)
 
-  write(300, 100) acceptanceRate
-  if (twist .eq. 1) then
-     write(300, 100) twistAcceptanceRate
-  end if
-  close(300)
+write(300, 100) acceptanceRate
+if (twist .eq. 1) then
+    write(300, 100) twistAcceptanceRate
+end if
+close(300)
 
 100 format(F16.8)
 
-  return
+return
 end subroutine output_acceptance_rates
