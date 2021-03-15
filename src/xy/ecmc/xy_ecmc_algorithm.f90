@@ -1,60 +1,60 @@
-! **************************************
-! Event-chain sampling from XY distribution
-! **************************************
-
-! **************************************
-! Main program
-! **************************************
-
 program xy_ecmc_algorithm
+use variables
+implicit none
+character(100) :: config_file
+integer i, j, seed, start
+real*8 Tincr
 
-  use variables
-  implicit none
-  integer i,j,seed,start
-  real*8 Tincr
+! verify that the something has been parsed to the exectuable
+if (command_argument_count() /= 1) then
+    write(6, *) 'Error: parse configuration file to executable'
+    stop
+end if
+! read in config file
+call get_command_argument(1, config_file)
+open (unit=1, file=config_file)
 
-  open (unit=1,file='initial.in')                                                   ! CALL INPUT HYPERPARAMTERS AND SET UP LATTICE, SEED, ETC.
-  call input(seed,start)
-  call PBC
-  call randinit(seed)
-  write(6,*) rand(seed)
+call input(seed,start)
+call PBC
+call randinit(seed)
+write(6,*) rand(seed)
 
-  T = Tmin
-  if (Tsteps.eq.0) then
-     Tincr = 0.0
-  else
-     Tincr = (Tmax - Tmin) / Tsteps
-  end if
+T = Tmin
+if (Tsteps == 0) then
+    Tincr = 0.0
+else
+    Tincr = (Tmax - Tmin) / Tsteps
+end if
 
-  do i = 0,Tsteps
-     write(6,*) T
-     beta=1/T
-     if (T.eq.Tmin) then
-        call initial_spins(start)                                                   ! INITIALIZE SYSTEM
-     end if
+do i = 0, Tsteps
 
-     do j = 0,therm_sweeps - 1                                                      ! THERMALIZE SYSTEM AT NEW TEMPERATURE
+    write(6, *) T
+    beta = 1 / T
+    if (T == Tmin) then
+        call initial_spins(start)
+    end if
+
+    do j = 0, therm_sweeps - 1
         call event_chain_XY
-     end do
+    end do
 
-     chainlength = 0.0                                                               ! SET TOTAL CHAIN LENGTH TO ZERO
-     Nevents = 0                                                                     ! SET TOTAL NUMBER OF EVENTS TO ZERO
-     accept_twist = 0                                                                ! SET TOTAL NUMBER OF GLOBAL TWISTS TO ZERO
-     call initial_measure                                                           ! SET ALL MEASUREMENT DATA TO ZERO
+    chainlength = 0.0
+    Nevents = 0
+    accept_twist = 0
+    ! SET ALL MEASUREMENT DATA TO ZERO
+    call initial_measure
 
-     do j=0,measurements - 1                                                        ! RUN EVENT CHAIN UNTIL MAXIMUM EVENT-CHAIN LENGTH
-        call event_chain_XY                                                         ! IS REACHED A measurements NUMBER OF TIMES
-        if (twist.eq.1) then                                                        ! DIRECT TSF PROPOSAL VIA GLOBAL TWIST, WHICH ENSURES ERGODICITY (METROPOLIS MCMC)
-           call global_twist_XY
+    do j = 0, measurements - 1
+        call event_chain_XY
+        if (twist == 1) then
+            call global_twist_XY
         end if
-        call measure                                                                ! MEASURE THE STATE OF THE SYSTEM
-     end do
+        call measure
+    end do
 
-     call output_Nevents
-
-     T = T + Tincr                                                                  ! SET NEW TEMPERATURE
-  end do
-
+    call output_Nevents
+    T = T + Tincr
+end do
 end program xy_ecmc_algorithm
 
 
@@ -137,19 +137,20 @@ end subroutine event_chain_XY
 ! **************************************
 
 subroutine output_Nevents
-  use variables
-  implicit none
-  character(100) filename
+use variables
+implicit none
+character(100), parameter :: temperature_string="/temp_eq_"
+character(100) filename
 
-  write (filename, '( "temp_eq_", F4.2,"//Nevents_XY_", I3.3, "x", I3.3, "_temp", F4.2, ".dat" )' )  T,side,side,T
-  open(unit=20,file=filename)
-  write(20,100) Nevents
-  if (twist.eq.1) then
-     write(20,100) accept_twist
-  end if
-  close(20)
+write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), T
+open(unit = 300, file = filename)
+write(300, 100) Nevents
+if (twist == 1) then
+    write(300, 100) accept_twist
+end if
+close(300)
 
 100 format(I20)
 
-  return
+return
 end subroutine output_Nevents
