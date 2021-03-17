@@ -40,6 +40,7 @@ read(1,*) deltaProposalInterval
 read(1,*) start
 read(1,*) twist
 read(1,*) nmax
+read(1,*) calculate_external_minimising_twist_field
 read(1,*) seed
 read(1, *) output_directory
 
