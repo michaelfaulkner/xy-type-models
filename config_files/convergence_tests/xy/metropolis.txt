@@ -1,5 +1,5 @@
 8                                               Lattice length
-10000                                           No. of equilibration sweeps
+100000                                          No. of equilibration sweeps
 1000000                                         No. of observations (sample size)
 1.0                                             Initial temperature
 1.0                                             Final temperature
