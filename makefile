@@ -1,10 +1,10 @@
 all: multivalued-electrolyte elementary-electrolyte hxy-ecmc hxy-metropolis xy-ecmc xy-metropolis
 
 multivalued-electrolyte:
-	cd src/2d_maggs_electrolyte/multivalued_charges && $(MAKE)
+	cd src/maggs_electrolyte/multivalued_charges && $(MAKE)
 
 elementary-electrolyte:
-	cd src/2d_maggs_electrolyte/elementary_charges && $(MAKE)
+	cd src/maggs_electrolyte/elementary_charges && $(MAKE)
 
 hxy-ecmc:
 	cd src/hxy/ecmc && $(MAKE)
