@@ -3,7 +3,7 @@
 1000000                                 No. of observations (sample size)
 1.5                                     Initial temperature
 1.5                                     Final temperature
-1                                       No. of temperature increments
+0                                       No. of temperature increments
 0                                       Randomise initial spin configuration (0 = ordered, 1 = random)
 0                                       use external twist move (0 = no, 1 = yes)
 101                                     Cut-off of 2nd deriv. of potential
