@@ -28,7 +28,6 @@ implicit none
 integer seed, start
 
 read(1,*) side
-read(1,*) elementaryCharge
 read(1,*) thermSweeps
 read(1,*) measurements
 read(1,*) Tmin
@@ -39,6 +38,7 @@ read(1,*) deltaProposalInterval
 read(1,*) ratio_charge_updates
 read(1,*) ratio_TSF_updates
 read(1,*) globalTSFon
+read(1,*) elementaryCharge
 read(1,*) seed
 read(1, *) output_directory
 
