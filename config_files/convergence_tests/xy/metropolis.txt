@@ -1,3 +1,4 @@
+'output/convergence_tests/xy/metropolis'        output directory
 8                                               Lattice length
 100000                                          No. of equilibration sweeps
 1000000                                         No. of observations (sample size)
@@ -9,5 +10,4 @@
 0                                               Randomise initial spin configuration (0 = ordered, 1 = random)
 0                                               use external twist move (0 = no, 1 = yes)
 123456789                                       Seed for random number generator
-'output/convergence_tests/xy/metropolis'        output directory
 end

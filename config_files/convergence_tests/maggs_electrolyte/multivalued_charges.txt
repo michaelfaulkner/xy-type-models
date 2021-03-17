@@ -1,3 +1,4 @@
+'output/convergence_tests/maggs_electrolyte/multivalued_charges'        output directory
 8                  	                                                    Lattice length
 100000                	                                                No. of equilibration sweeps
 1000000	                                                                No. of observations (sample size)
@@ -11,5 +12,4 @@
 1                                                                       use external TSF move (0 = no, 1 = yes)
 6.2831854820251465	                                                    Elementary-charge value
 123456789                                                               Seed for random number generator
-'output/convergence_tests/maggs_electrolyte/multivalued_charges'        output directory
 end

@@ -1,3 +1,4 @@
+'output/convergence_tests/hxy/ecmc'     output directory
 8                                       Lattice length
 100000                                  No. of equilibration sweeps
 1000000                                 No. of observations (sample size)
@@ -9,5 +10,4 @@
 101                                     Cut-off of 2nd deriv. of potential
 0                                       calculate_external_minimising_twist_field  (0 = no, 1 = yes)
 123456789                               Seed for random number generator
-'output/convergence_tests/hxy/ecmc'     output directory
 end

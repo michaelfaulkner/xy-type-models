@@ -25,6 +25,7 @@ use variables
 implicit none
 integer seed, start
 
+read(1, *) output_directory
 read(1,*) side
 read(1,*) therm_sweeps
 read(1,*) measurements
@@ -34,7 +35,6 @@ read(1,*) Tsteps
 read(1,*) start
 read(1,*) twist
 read(1,*) seed
-read(1, *) output_directory
 
 sites = side * side
 volume = float(sites)
