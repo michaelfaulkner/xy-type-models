@@ -3,40 +3,26 @@
 ! **************************************
 
 subroutine measure
-  use variables
-  implicit none
-  integer i, j, n
-  real*8 potential, chargeNumber, storeEfield_x, storeEfield_y
+use variables
+implicit none
+integer i
+real*8 potential
 
-  call measure_chargeDensity
-  call measure_Esum
+potential = 0.0
+do i = 0, sites - 1
+    potential = potential + 0.5 * (Efield_x(i) * Efield_x(i) + Efield_y(i) * Efield_y(i))
+end do
 
-  chargeNumber = 0.0
-  potential = 0.0
+call measure_Esum
 
-  do i = 0, sites - 1
-     
-     if (rho(i) .ne. 0) then
-        chargeNumber = chargeNumber + 1.0
-     end if
-     storeEfield_x = Efield_x(i)
-     storeEfield_y = Efield_y(i)
-     potential = potential + 0.5 * (storeEfield_x * storeEfield_x + storeEfield_y * storeEfield_y)
-     
-  end do
-
-  chargeNumber = chargeNumber / volume
-  
-  ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
-  
-  write(10,100) Esum_x
-  write(11,100) Esum_y
-  write(12,100) chargeNumber
-  write(13,100) potential
+! STORE SAMPLES DRAWN FROM MARKOV CHAIN
+write(10, 100) Esum_x
+write(11, 100) Esum_y
+write(12, 100) potential
 
 100 format(F16.8)
 
-  return
+return
 end subroutine measure
 
 ! **************************************

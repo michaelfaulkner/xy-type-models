@@ -111,13 +111,11 @@ write (temperature_directory, '(A, F4.2)') trim(output_directory)//trim(temperat
 call system ( 'mkdir -p ' // temperature_directory )
 
 write (filename, '(A, F4.2, "//Esum_x_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit = 10, file = filename)
+open(unit=10, file=filename)
 write (filename, '(A, F4.2, "//Esum_y_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit = 11, file = filename)
-write (filename, '(A, F4.2, "//charge_number_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit = 12, file = filename)
+open(unit=11, file=filename)
 write (filename, '(A, F4.2, "//potential_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit = 13, file = filename)
+open(unit=12, file=filename)
 
 return
 end subroutine initial_measure
