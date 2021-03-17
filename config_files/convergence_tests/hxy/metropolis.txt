@@ -13,9 +13,3 @@
 123456789                                       Seed for random number generator
 'output/convergence_tests/hxy/metropolis'       output directory
 end
-
-
-
-
-
-
