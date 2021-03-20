@@ -22,11 +22,14 @@ def main(algorithm_name, config_file_name):
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
         sample = np.loadtxt(sample_directory + temperature_directory + '/potential_sample.dat', dtype=float,
                             delimiter=',')
-    if (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
+    elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
         magnetisation_x = np.loadtxt(sample_directory + temperature_directory + '/magn_x_sample.dat', dtype=float)
         magnetisation_y = np.loadtxt(sample_directory + temperature_directory + '/magn_y_sample.dat', dtype=float)
         sample = (magnetisation_x ** 2 + magnetisation_y ** 2) ** 0.5
+    else:
+        IOError('Give one of elementary-electrolyte, multivalued-electrolyte, hxy-ecmc, hxy-metropolis, xy-ecmc or '
+                'xy-metropolis as the first positional argument of the test_convergence.py script.')
 
     if algorithm_name == 'elementary-electrolyte':
         reference_sample = np.loadtxt('output/convergence_tests/maggs_electrolyte/elementary_charges/elementary_maggs_'
