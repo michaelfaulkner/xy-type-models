@@ -69,7 +69,7 @@ subroutine measure
   write(17,100) Ebar_x
   write(18,100) Ebar_y
   write(19,100) vort
-  write(20, 100) potential
+  write(21, 100) potential
 
 100 format(F16.8)
 
