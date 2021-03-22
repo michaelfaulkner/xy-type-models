@@ -34,7 +34,7 @@ do i = 0, Tsteps
         call initial_spins(start)
     end if
 
-    do j = 0, therm_sweeps - 1
+    do j = 1, therm_sweeps
         call markov_chain_XY
     end do
 
@@ -43,7 +43,7 @@ do i = 0, Tsteps
     ! SET ALL MEASUREMENT DATA TO ZERO
     call initial_measure
 
-    do j = 0, measurements - 1
+    do j = 1, measurements
         call markov_chain_XY
         if (twist == 1) then
             call global_twist_XY
