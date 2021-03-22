@@ -5,7 +5,7 @@
 1.0                                             Initial temperature
 1.0                                             Final temperature
 0                                               No. of temperature increments
-2.5			                                    Initial magnitude of proposal interval, x; interval = (-x / 2, x / 2]
+2.0 		                                    Initial magnitude of proposal interval, x; interval = (-x / 2, x / 2]
 0.1			                                    Change in magnitude of proposal interval (between temperatures)
 0                                               Randomise initial spin configuration (0 = ordered, 1 = random)
 0                                               use external twist move (0 = no, 1 = yes)
