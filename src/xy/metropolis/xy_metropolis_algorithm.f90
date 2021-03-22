@@ -88,13 +88,8 @@ subroutine markov_chain_XY
       Unew = - cos(thetaPos_x - thetaNew) - cos(thetaPos_y - thetaNew) - cos(thetaNew - thetaNeg_x) - cos(thetaNew - thetaNeg_y)
       deltaU = Unew - Uold
 
-      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-         if (thetaNew .le. -pi) then
-            thetaNew = thetaNew + twopi
-         else if (thetaNew .gt. pi) then
-            thetaNew = thetaNew - twopi
-         end if
-         theta(i) = thetaNew
+      if ((deltaU < 0.0) .or. (rand() < exp(- beta * deltaU))) then
+         theta(i) = modulo(thetaNew + pi, twopi) - pi
          accept = accept + 1
       end if
    end do
