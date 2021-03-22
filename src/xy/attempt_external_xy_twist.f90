@@ -10,10 +10,10 @@ subroutine global_twist_XY
 
   deltaE = 0
 
-  if (floor(2 * rand()) .eq. 0) then                                                 ! X TWIST
+  if (floor(2 * rand()) == 0) then                                                 ! X TWIST
      
      rand1 = floor(2 * rand())                                                       ! CHOOSES +VE OR -VE TWIST DIRECTION
-     if (rand1 .eq. 0) then
+     if (rand1 == 0) then
         rand1 = -1
      end if
 
@@ -21,10 +21,10 @@ subroutine global_twist_XY
         deltaE = deltaE - cos(theta(i) - theta(neg_x(i)) + rand1 * twopi / side) + cos(theta(i) - theta(neg_x(i)))
      end do
 
-     if ((deltaE .lt. 0) .or. (exp(-beta * deltaE) .gt. rand())) then
+     if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then
         rand2 = int(side * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, sites
-           theta(i) = mod(theta(i) + rand1 * twopi * mod(i + rand2, side) / side, twopi)
+           theta(i) = modulo(theta(i) + rand1 * twopi * modulo(i + rand2, side) / side + pi, twopi) - pi
         end do
         accept_twist = accept_twist + 1
      end if
@@ -32,7 +32,7 @@ subroutine global_twist_XY
   else                                                                               ! Y TWIST
 
      rand1 = floor(2 * rand())                                                       ! CHOOSES +VE OR -VE TWIST DIRECTION
-     if (rand1 .eq. 0) then
+     if (rand1 == 0) then
         rand1 = -1
      end if     
 
@@ -40,10 +40,10 @@ subroutine global_twist_XY
         deltaE = deltaE - cos(theta(i) - theta(neg_y(i)) + rand1 * twopi / side) + cos(theta(i) - theta(neg_y(i)))
      end do
 
-     if ((deltaE .lt. 0) .or. (exp(-beta * deltaE) .gt. rand())) then
+     if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then
         rand2 = int(side * rand())                                                   ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, sites
-           theta(i) = mod(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side, twopi)
+           theta(i) = modulo(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side + pi, twopi) - pi
         end do
         accept_twist = accept_twist + 1
      end if
