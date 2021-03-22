@@ -34,7 +34,7 @@ do i = 0, Tsteps
         call initial_spins(start)
     end if
 
-    do j = 0, therm_sweeps - 1
+    do j = 1, therm_sweeps
         call event_chain_XY
     end do
 
@@ -44,7 +44,7 @@ do i = 0, Tsteps
     ! SET ALL MEASUREMENT DATA TO ZERO
     call initial_measure
 
-    do j = 0, measurements - 1
+    do j = 1, measurements
         call event_chain_XY
         if (twist == 1) then
             call global_twist_XY
@@ -66,7 +66,7 @@ subroutine event_chain_XY
   use variables
   implicit none
   integer i,lift,veto
-  integer, dimension (0:3) :: neighbours
+  integer, dimension (1:4) :: neighbours
   real*8 Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
   real*8 thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
 
@@ -76,27 +76,22 @@ subroutine event_chain_XY
   do                                                                                ! ITERATE UNTIL THE EVENT-CHAIN LENGTH EXCEEDS THE MAXIMUM PERMITTED: THEN WE EXIT SUBROUTINE, MEASURE AND RESAMPLE THE LIFTING SPIN/PARAMETER
      thetalift = theta(lift)
 
-     neighbours(0) = neg_x(lift)
-     neighbours(1) = pos_x(lift)
-     neighbours(2) = neg_y(lift)
-     neighbours(3) = pos_y(lift)
+     neighbours(1) = neg_x(lift)
+     neighbours(2) = pos_x(lift)
+     neighbours(3) = neg_y(lift)
+     neighbours(4) = pos_y(lift)
 
      distanceToNextEvent = 10d10                                                    ! RESET DISTANCE COUNTER FOR NEW SUB-CHAIN (WHERE SUB-CHAINS CONNECT EVENTS WITHIN AN EVENT CHAIN)
 
-     do i=0,3                                                                       ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
+     do i = 1, 4                                                                       ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
 
         thetafix = theta(neighbours(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
-        deltaThetaInitial = thetalift - thetafix                                    ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
-        if (deltaThetaInitial.gt.0.5 * twopi) then
-           deltaThetaInitial = deltaThetaInitial - twopi
-        else if (deltaThetaInitial.le.-0.5 * twopi) then
-           deltaThetaInitial = deltaThetaInitial + twopi
-        end if
+        deltaThetaInitial = modulo(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
 
         Estar = 1.0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
         Estar = - T * log(Estar)
 
-        if (deltaThetaInitial.gt.0) then                                            ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
+        if (deltaThetaInitial > 0) then                                            ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
            deltaEinitial = 1 - cos(deltaThetaInitial)                               ! INITIAL CONDITIONAL INT. POTENTIAL
            Ntours = int((deltaEinitial + Estar) / 2.0)                              ! NO. COMPLETE ROTATIONS INDUCED THROUGH SPIN SPACE
            deltaEexit = (Ntours + 1) * 2.0 - (deltaEinitial + Estar)                ! CONDITIONAL-INT.-POTENTIAL DIFF. BETWEEN TOP OF NEXT MAX. AND MOD(deltaEinitial + Estar,2.0)
@@ -109,19 +104,19 @@ subroutine event_chain_XY
            distance = (Ntours + 0.5) * twopi - (deltaThetaInitial + deltaThetaExit)
         end if
 
-        if (distanceToNextEvent.gt.distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
+        if (distanceToNextEvent > distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
            distanceToNextEvent = distance
            veto = neighbours(i)                                                     ! UPDATE veto SPIN/PARAMETER
         end if
 
      end do
 
-     if (distanceToNextEvent.gt.distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-        theta(lift) = mod(thetalift + distanceToGo,twopi)                           ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
+     if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
+        theta(lift) = modulo(thetalift + distanceToGo + pi, twopi) - pi            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
         chainlength = chainlength + distanceToGo
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
      else
-        theta(lift) = mod(thetalift + distanceToNextEvent,twopi)                    ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        theta(lift) = modulo(thetalift + distanceToNextEvent + pi, twopi) - pi      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
         chainlength = chainlength + distanceToNextEvent
         distanceToGo = distanceToGo - distanceToNextEvent
         lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
