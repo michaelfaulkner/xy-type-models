@@ -8,7 +8,7 @@ subroutine PBC
   integer i
   ! mod(i + side + 1,side) RATHER THAN mod(i + 1,side), ETC. BELOW AS mod(x,side)
   ! DOESN'T RETURN VALUES IN THE INTERVAL [0,side) FOR NEGATIVE x
-  do i = 0,sites - 1
+  do i = 1, sites
      pos_x(i) = i + mod(i + side + 1,side) - mod(i + side,side)
      neg_x(i) = i + mod(i + side - 1,side) - mod(i + side,side)
      pos_y(i) = i + (mod(int(i / side) + side + 1,side) - mod(int(i / side) + side,side)) * side
@@ -24,13 +24,13 @@ end subroutine PBC
 subroutine initial_spins(start)
   use variables
   implicit none
-  integer start,i,j
-  if (start.eq.0) then
-     do i=0,sites-1
+  integer start, i, j
+  if (start == 0) then
+     do i = 1, sites
         theta(i) = 0.0
      end do
   else
-     do i=0,sites-1
+     do i = 1, sites
         theta(i) = twopi * rand()
      end do
   end if

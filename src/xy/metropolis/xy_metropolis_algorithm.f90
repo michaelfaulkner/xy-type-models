@@ -68,7 +68,7 @@ subroutine markov_chain_XY
   real*8 thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
   real*8 thetaPos_x, thetaNeg_x, thetaPos_y, thetaNeg_y
 
-   do n = 0, sites - 1
+   do n = 1, sites
       i = int(rand() * sites)
 
       thetaOld = theta(i)

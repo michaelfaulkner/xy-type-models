@@ -24,7 +24,7 @@ subroutine measure
   vort = 0.0
   potential = 0.0
 
-  do i=0,sites-1
+  do i = 1, sites
 
      magn_x = magn_x + cos(theta(i))
      magn_y = magn_y + sin(theta(i))
@@ -83,30 +83,29 @@ end subroutine measure
 ! **************************************
 
 subroutine top_field
-  use variables
-  implicit none
-  real*8 diff
-  integer i,j
-  do i = 0, sites - 1
+use variables
+implicit none
+real*8 diff
+integer i, j
 
-     diff = theta(i) - theta(neg_y(i))
-     if (diff .gt. 0.5 * twopi) then
+do i = 1, sites
+    diff = theta(i) - theta(neg_y(i))
+    if (diff .gt. 0.5 * twopi) then
         diff = diff - twopi
-     else if (diff .le. -0.5 * twopi) then
+    else if (diff .le. -0.5 * twopi) then
         diff = diff + twopi
-     end if
-     top_x(i) = diff
-     
-     diff = -(theta(i) - theta(neg_x(i)))
-     if (diff .gt. 0.5 * twopi) then
+    end if
+    top_x(i) = diff
+
+    diff = -(theta(i) - theta(neg_x(i)))
+    if (diff .gt. 0.5 * twopi) then
         diff = diff - twopi
-     else if (diff .le. -0.5 * twopi) then
+    else if (diff .le. -0.5 * twopi) then
         diff = diff + twopi
-     end if
-     top_y(i) = diff
-     
-  end do
-  return
+    end if
+    top_y(i) = diff
+end do
+return
 end subroutine top_field
 
 
@@ -119,7 +118,7 @@ subroutine vortices
   implicit none
   integer i,j
   real*8 v0
-  do i = 0, sites - 1
+  do i = 1, sites
      v0 = (top_x(i) + top_y(i) - top_x(neg_x(i)) - top_y(neg_y(i))) / twopi
      if ((v0 .lt. 1.001) .and. (v0 .gt. 0.999)) then
         v(i) = 1
