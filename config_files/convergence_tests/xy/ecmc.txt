@@ -1,9 +1,9 @@
 'output/convergence_tests/xy/ecmc'      output directory
 8                                       Lattice length
 100000                                  No. of equilibration sweeps
-1000000                                 No. of observations (sample size)
-1.0                                     Initial temperature
-1.0                                     Final temperature
+100000                                  No. of observations (sample size)
+1.25                                    Initial temperature
+1.25                                    Final temperature
 0                                       No. of temperature increments
 0                                       Randomise initial spin configuration (0 = ordered, 1 = random)
 0                                       use external twist move (0 = no, 1 = yes)
