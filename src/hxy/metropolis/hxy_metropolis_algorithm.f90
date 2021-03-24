@@ -15,7 +15,8 @@ call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
 
 call input(seed, start)
-call PBC
+call setup_periodic_boundaries
+call initialise_spin_configuration(start)
 call randinit(seed)
 write(6, *) rand(seed)
 
@@ -30,9 +31,6 @@ do i = 0, Tsteps
 
     write(6, *) T
     beta = 1.0d0 / T
-    if (T == Tmin) then
-        call initial_spins(start)
-    end if
 
     do j = 0, thermSweeps - 1
         call markov_chain_HXY
@@ -44,7 +42,7 @@ do i = 0, Tsteps
 
     do j = 0, measurements - 1
         call markov_chain_HXY
-        if (twist .eq. 1) then
+        if (twist == 1) then
             call global_twist_HXY
         end if
         call measure
@@ -69,7 +67,7 @@ integer :: n, i
 double precision :: thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU, top1new, top2new, top3new, top4new
 
 do n = 1, sites
-    i = int(rand() * sites)  ! todo remove pick and replace
+    i = int(rand() * sites)  ! todo remove pick and replace (everywhere)
     thetaOld = theta(i)
     deltaTheta = 2.0d0 * proposalInterval * (rand() - 0.5d0)
     thetaNew = modulo(thetaOld + deltaTheta + pi, twopi) - pi

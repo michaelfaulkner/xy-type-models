@@ -2,8 +2,8 @@ program hxy_ecmc_algorithm
 use variables
 implicit none
 character(100) :: config_file
-integer i, j, seed, start
-real*8 Tincr
+integer :: i, j, seed, start
+double precision :: Tincr
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -15,7 +15,8 @@ call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
 
 call input(seed, start)
-call PBC
+call setup_periodic_boundaries
+call initialise_spin_configuration(start)
 call randinit(seed)
 write(6, *) rand(seed)
 
@@ -29,16 +30,13 @@ end if
 do i = 0, Tsteps
 
     write(6, *) T
-    beta = 1 / T
-    if (T == Tmin) then
-        call initial_spins(start)
-    end if
+    beta = 1.0d0 / T
 
     do j = 0, therm_sweeps - 1
         call event_chain_HXY
     end do
 
-    chainlength = 0.0
+    chainlength = 0.0d0
     Nevents = 0
     accept_twist = 0
     call initial_measure
@@ -61,10 +59,10 @@ end program hxy_ecmc_algorithm
 subroutine event_chain_HXY
   use variables
   implicit none
-  integer i,lift,veto
+  integer :: i, lift, veto
   integer, dimension (0:3) :: neighbours
-  real*8 Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
-  real*8 thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
+  double precision :: Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
+  double precision :: thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
   
   lift = int(volume * rand())                                                       ! PICK A SITE AT RANDOM FOR INITIAL LIFTING VARIABLE (FROM {0, 1, ..., N-1})
   distanceToGo = maxchainlength                                                     ! SET REMAINING EVENT-CHAIN LENGTH AS THE MAX CHAIN LENGTH
@@ -82,42 +80,36 @@ subroutine event_chain_HXY
      do i = 0, 3                                                                    ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
 
         thetafix = theta(neighbours(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
-        deltaThetaInitial = thetalift - thetafix                                    ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
-        if (deltaThetaInitial.gt.0.5 * twopi) then
-           deltaThetaInitial = deltaThetaInitial - twopi
-        else if (deltaThetaInitial.le.-0.5 * twopi) then
-           deltaThetaInitial = deltaThetaInitial + twopi
-        end if
-        
-        Estar = 1.0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
+        deltaThetaInitial = modulo(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
+        Estar = 1.0d0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
         Estar = - T * log(Estar)
         
-        if (deltaThetaInitial .gt. 0) then                                          ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
-           deltaEinitial = 0.5 * deltaThetaInitial ** 2                             ! INITIAL CONDITIONAL INT. POTENTIAL
-           Ntours = int((deltaEinitial + Estar) / (twopi ** 2 / 8.0))               ! NO. COMPLETE ROTATIONS INDUCED THROUGH SPIN SPACE
-           deltaEexit = (Ntours + 1) * twopi ** 2 / 8.0 - (deltaEinitial + Estar)   ! CONDITIONAL-INT.-POTENTIAL DIFF. BETWEEN TOP OF NEXT MAX. AND MOD(deltaEinitial + Estar,2.0)
-           deltaThetaExit = twopi / 2.0 - sqrt(twopi ** 2 / 4.0 - 2.0 * deltaEexit) ! EQUIV. TO ABOVE LINE IN SPIN/PARAMETER SPACE
-           distance = (Ntours + 0.5) * twopi - (deltaThetaInitial + deltaThetaExit) ! TOTAL LENGTH OF PATH COVERED IN PARAMETER SPACE
-        else                                                                        ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS -VE, GO TO THE BOTTOM OF THE WELL
-           Ntours = int(Estar / (twopi ** 2 / 8.0))
-           deltaEexit = (Ntours + 1) * twopi ** 2 / 8.0 - Estar
-           deltaThetaExit = twopi / 2.0 - sqrt(twopi ** 2 / 4.0 - 2.0 * deltaEexit)
-           distance = (Ntours + 0.5) * twopi - (deltaThetaInitial + deltaThetaExit)
+        if (deltaThetaInitial > 0.0d0) then                                                     ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
+           deltaEinitial = 0.5d0 * deltaThetaInitial * deltaThetaInitial                        ! INITIAL CONDITIONAL INT. POTENTIAL
+           Ntours = dble(int((deltaEinitial + Estar) / (twopi * twopi / 8.0d0)))                ! NO. COMPLETE ROTATIONS INDUCED THROUGH SPIN SPACE
+           deltaEexit = (Ntours + 1.0d0) * twopi * twopi / 8.0d0 - (deltaEinitial + Estar)      ! CONDITIONAL-INT.-POTENTIAL DIFF. BETWEEN TOP OF NEXT MAX. AND MOD(deltaEinitial + Estar,2.0)
+           deltaThetaExit = pi - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * deltaEexit)               ! EQUIV. TO ABOVE LINE IN SPIN/PARAMETER SPACE
+           distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)           ! TOTAL LENGTH OF PATH COVERED IN PARAMETER SPACE
+        else                                                                                    ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS -VE, GO TO THE BOTTOM OF THE WELL
+           Ntours = dble(int(Estar / (twopi * twopi / 8.0d0)))
+           deltaEexit = (Ntours + 1.0d0) * twopi * twopi / 8.0d0 - Estar
+           deltaThetaExit = twopi / 2.0d0 - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * deltaEexit)
+           distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)
         end if
         
-        if (distanceToNextEvent .gt. distance) then                                 ! IF LENGTH COVERED IS SHORTEST SO FAR
+        if (distanceToNextEvent > distance) then                                 ! IF LENGTH COVERED IS SHORTEST SO FAR
            distanceToNextEvent = distance
            veto = neighbours(i)                                                     ! UPDATE veto SPIN/PARAMETER
         end if
         
      end do
      
-     if (distanceToNextEvent.gt.distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-        theta(lift) = mod(thetalift + distanceToGo,twopi)                           ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
+     if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
+        theta(lift) = modulo(thetalift + distanceToGo + pi, twopi) - pi              ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
         chainlength = chainlength + distanceToGo
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
      else
-        theta(lift) = mod(thetalift + distanceToNextEvent,twopi)                    ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        theta(lift) = modulo(thetalift + distanceToNextEvent + pi, twopi) - pi               ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
         chainlength = chainlength + distanceToNextEvent
         distanceToGo = distanceToGo - distanceToNextEvent
         lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE

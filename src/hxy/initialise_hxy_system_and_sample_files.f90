@@ -1,51 +1,46 @@
-! **************************************
-! SETS NEIGHBOURS WITH PERIODIC BOUNDARY CONDITIONS
-! **************************************
+subroutine setup_periodic_boundaries
+use variables
+implicit none
+integer :: i
 
-subroutine PBC
-  use variables
-  implicit none
-  integer i
-  ! mod(i + side + 1,side) RATHER THAN mod(i + 1,side), ETC. BELOW AS mod(x,side)
-  ! DOESN'T RETURN VALUES IN THE INTERVAL [0,side) FOR NEGATIVE x
-  do i = 1, sites
-     pos_x(i) = i + mod(i + side + 1,side) - mod(i + side,side)
-     neg_x(i) = i + mod(i + side - 1,side) - mod(i + side,side)
-     pos_y(i) = i + (mod(int(i / side) + side + 1,side) - mod(int(i / side) + side,side)) * side
-     neg_y(i) = i + (mod(int(i / side) + side - 1,side) - mod(int(i / side) + side,side)) * side
-  end do
-  return
-end subroutine PBC
+! mod(i + side + 1, side) rather than mod(i + 1, side) below as mod(i, side) doesn't return value in [0, side) if i < 0
+do i = 1, sites
+    pos_x(i) = i + modulo(i + side + 1, side) - modulo(i + side, side)
+    neg_x(i) = i + modulo(i + side - 1, side) - modulo(i + side, side)
+    pos_y(i) = i + (modulo(int(i / side) + side + 1, side) - modulo(int(i / side) + side, side)) * side
+    neg_y(i) = i + (modulo(int(i / side) + side - 1, side) - modulo(int(i / side) + side, side)) * side
+end do
 
-! **************************************
-! INITIAL SPIN CONFIGURATION
-! **************************************
+return
+end subroutine setup_periodic_boundaries
 
-subroutine initial_spins(start)
-  use variables
-  implicit none
-  integer start, i, j
-  if (start.eq.0) then
-     do i = 1, sites
-        theta(i) = 0.0
-     end do
-  else
-     do i = 1, sites
+subroutine initialise_spin_configuration(start)
+use variables
+implicit none
+integer :: i, start
+
+if (start == 0) then
+    do i = 1, sites
+        theta(i) = 0.0d0
+    end do
+else
+    do i = 1, sites
         theta(i) = twopi * (rand() - 0.5d0)
-     end do
-  end if
-  return
-end subroutine initial_spins
+    end do
+end if
+
+return
+end subroutine initialise_spin_configuration
 
 ! **************************************
-! SET CHAIN LENGTH AND Nevents TO 0; CREATE NEW DIRECTORY AND FILES FOR NEW TEMP
+! CREATE NEW DIRECTORY AND FILES FOR NEW TEMP
 ! **************************************
 
 subroutine initial_measure
 use variables
 implicit none
-character(100) filename
-character(100) temperature_directory
+character(100) :: filename
+character(100) :: temperature_directory
 character(100), parameter :: temperature_string="/temp_eq_"
 
 ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
