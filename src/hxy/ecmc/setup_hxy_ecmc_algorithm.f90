@@ -4,7 +4,8 @@
 
 module variables
 character(100) :: output_directory
-real*8, parameter :: twopi = 6.28318530718
+double precision, parameter :: twopi = 6.28318530717959d0
+double precision, parameter :: pi = 3.14159265358979d0
 real*8, parameter :: epsilon = 10.0 ** (-6)
 integer max_side,max_sites,max_sweeps
 parameter (max_side = 128)
