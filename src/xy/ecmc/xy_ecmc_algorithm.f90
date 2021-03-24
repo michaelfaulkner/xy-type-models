@@ -35,7 +35,7 @@ do i = 0, Tsteps
         call event_chain_XY
     end do
 
-    chainlength = 0.0
+    chainlength = 0.0d0
     Nevents = 0
     accept_twist = 0
     ! SET ALL MEASUREMENT DATA TO ZERO

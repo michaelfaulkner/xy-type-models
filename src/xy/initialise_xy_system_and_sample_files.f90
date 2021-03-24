@@ -22,7 +22,7 @@ integer :: i, start
 
 if (start == 0) then
     do i = 1, sites
-        theta(i) = 0.0
+        theta(i) = 0.0d0
     end do
 else
     do i = 1, sites

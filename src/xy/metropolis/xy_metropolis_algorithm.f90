@@ -69,7 +69,7 @@ subroutine markov_chain_XY
       i = int(rand() * sites)
 
       thetaOld = theta(i)
-      deltaTheta = 2. * proposalInterval * (rand() - 0.5)
+      deltaTheta = 2.0d0 * proposalInterval * (rand() - 0.5d0)
       thetaNew = thetaOld + deltaTheta
 
       ! CALL OTHER RELEVANT SPINS
@@ -85,7 +85,7 @@ subroutine markov_chain_XY
       Unew = - cos(thetaPos_x - thetaNew) - cos(thetaPos_y - thetaNew) - cos(thetaNew - thetaNeg_x) - cos(thetaNew - thetaNeg_y)
       deltaU = Unew - Uold
 
-      if ((deltaU < 0.0) .or. (rand() < exp(- beta * deltaU))) then
+      if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
          theta(i) = modulo(thetaNew + pi, twopi) - pi
          accept = accept + 1
       end if
