@@ -5,29 +5,28 @@
 subroutine measure
   use variables
   implicit none
-  integer i, j, n
-  real*8 magn, magn_x, magn_y, cos_top_x, cos_top_y, sin_top_x, sin_top_y
-  real*8 potential, vort, cos_j, second_deriv_potential, diff, Ebar_x, Ebar_y
-  real*8 storeTop_x, storeTop_y
+  integer :: i, j, n
+  double precision :: magn, magn_x, magn_y, cos_top_x, cos_top_y, sin_top_x, sin_top_y
+  double precision :: potential, vort, cos_j, second_deriv_potential, diff, Ebar_x, Ebar_y, storeTop_x, storeTop_y
 
   call top_field
   call vortices
 
-  magn_x = 0.0
-  magn_y = 0.0
-  cos_top_x = 0.0
-  cos_top_y = 0.0
-  sin_top_x = 0.0
-  sin_top_y = 0.0
-  Ebar_x = 0.0
-  Ebar_y = 0.0
-  vort = 0.0
-  second_deriv_potential = 0.0
+  magn_x = 0.0d0
+  magn_y = 0.0d0
+  cos_top_x = 0.0d0
+  cos_top_y = 0.0d0
+  sin_top_x = 0.0d0
+  sin_top_y = 0.0d0
+  Ebar_x = 0.0d0
+  Ebar_y = 0.0d0
+  vort = 0.0d0
+  second_deriv_potential = 0.0d0
 
-  sum_of_squared_electric_field_x = 0.0
-  sum_of_squared_electric_field_y = 0.0
+  sum_of_squared_electric_field_x = 0.0d0
+  sum_of_squared_electric_field_y = 0.0d0
 
-  do i = 0, sites - 1
+  do i = 1, sites
      
      magn_x = magn_x + cos(theta(i))
      magn_y = magn_y + sin(theta(i))
@@ -53,15 +52,15 @@ subroutine measure
   ! CALCULATE THE CUT-OFF FOURIER SERIES THAT APPROXIMATES THE SECOND DERIVATIVE OF THE POTENTIAL
   ! THIS IS THE FIRST TERM OF THE HELICITY MODULUS, AND IS PRECISE FOR nmax = infty
 
-  do j = 0, nmax - 1
-     cos_j = 0.0
-     do i = 0, sites - 1
+  do j = 1, nmax
+     cos_j = 0.0d0
+     do i = 1, sites
         cos_j = cos_j + cos((j + 1) * top_x(i)) + cos((j + 1) * top_y(i))
      end do
      second_deriv_potential = second_deriv_potential + (-1) ** (j + 2) * cos_j
   end do
 
-  magn = dsqrt(magn_x ** 2 + magn_y ** 2)
+  magn = sqrt(magn_x ** 2 + magn_y ** 2)
   magn = magn / volume
   magn_x = magn_x / volume
   magn_y = magn_y / volume
@@ -97,7 +96,7 @@ subroutine measure
   write(23,200) no_of_external_twists_to_minimise_potential_y
 
 
-100 format(F16.8)
+100 format(ES24.14)
 200 format(I2)
 
   return
@@ -110,30 +109,14 @@ end subroutine measure
 ! **************************************
 
 subroutine top_field
-  use variables
-  implicit none
-  real*8 diff
-  integer i,j
-  do i = 0, sites - 1
-
-     diff = theta(i) - theta(neg_y(i))
-     if (diff .gt. 0.5 * twopi) then
-        diff = diff - twopi
-     else if (diff .le. -0.5 * twopi) then
-        diff = diff + twopi
-     end if
-     top_x(i) = diff
-     
-     diff = -(theta(i) - theta(neg_x(i)))
-     if (diff .gt. 0.5 * twopi) then
-        diff = diff - twopi
-     else if (diff .le. -0.5 * twopi) then
-        diff = diff + twopi
-     end if
-     top_y(i) = diff
-     
-  end do
-  return
+use variables
+implicit none
+integer :: i
+do i = 1, sites
+    top_x(i) = mod(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
+    top_y(i) = mod(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
+end do
+return
 end subroutine top_field
 
 
@@ -142,21 +125,21 @@ end subroutine top_field
 ! **************************************
 
 subroutine vortices
-  use variables
-  implicit none
-  integer i,j
-  real*8 v0
-  do i = 0, sites - 1
-     v0 = (top_x(i) + top_y(i) - top_x(neg_x(i)) - top_y(neg_y(i))) / twopi
-     if ((v0 .lt. 1.001) .and. (v0 .gt. 0.999)) then
+use variables
+implicit none
+integer :: i
+double precision :: v0
+do i = 1, sites
+    v0 = (top_x(i) + top_y(i) - top_x(neg_x(i)) - top_y(neg_y(i))) / twopi
+    if ((v0 < 1.000000000001) .and. (v0 > 0.999999999999)) then
         v(i) = 1
-     else if ((v0 .gt. -1.001) .and. (v0 .lt. -0.999)) then
+    else if ((v0 > -1.000000000001) .and. (v0 < -0.999999999999)) then
         v(i) = -1
-     else
+    else
         v(i) = 0
-     end if
-  end do
-  return
+    end if
+end do
+return
 end subroutine vortices
 
 
@@ -177,7 +160,7 @@ subroutine external_minimising_twist_field_calculation
      current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
      twisted_sum_of_squared_electric_field_x = 0.0
 
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = theta(i) - theta(neg_y(i)) + n * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
@@ -203,7 +186,7 @@ subroutine external_minimising_twist_field_calculation
      current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
      twisted_sum_of_squared_electric_field_x = 0.0
 
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = theta(i) - theta(neg_y(i)) - n * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
@@ -229,7 +212,7 @@ subroutine external_minimising_twist_field_calculation
      current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
      twisted_sum_of_squared_electric_field_y = 0.0
 
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = - (theta(i) - theta(neg_x(i))) + n * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
@@ -255,7 +238,7 @@ subroutine external_minimising_twist_field_calculation
      current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
      twisted_sum_of_squared_electric_field_y = 0.0
 
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = - (theta(i) - theta(neg_x(i))) - n * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi

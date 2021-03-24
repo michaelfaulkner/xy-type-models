@@ -18,7 +18,7 @@ subroutine global_twist_HXY
         rand1 = -1
      end if
      
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = theta(i) - theta(neg_y(i)) + rand1 * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
@@ -30,7 +30,7 @@ subroutine global_twist_HXY
      
      if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
         rand2 = int(side * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
-        do i = 0, sites - 1
+        do i = 1, sites
            theta(i) = mod(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side, twopi)
         end do
         accept_twist = accept_twist + 1
@@ -43,7 +43,7 @@ subroutine global_twist_HXY
         rand1 = -1
      end if
 
-     do i = 0, sites - 1
+     do i = 1, sites
         diff = -(theta(i) - theta(neg_x(i))) + rand1 * twopi / side
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
@@ -55,7 +55,7 @@ subroutine global_twist_HXY
      
      if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
         rand2 = int(side * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
-        do i = 0, sites - 1
+        do i = 1, sites
            theta(i) = mod(theta(i) - rand1 * twopi * mod(i + rand2, side) / side, twopi)
         end do
         accept_twist = accept_twist + 1
