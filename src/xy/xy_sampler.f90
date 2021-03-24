@@ -24,23 +24,23 @@ vort = 0.0d0
 potential = 0.0d0
 
 do i = 1, sites
-    magn_x = magn_x + dcos(theta(i))
-    magn_y = magn_y + dsin(theta(i))
+    magn_x = magn_x + cos(theta(i))
+    magn_y = magn_y + sin(theta(i))
     storeTop_x = top_x(i)
     storeTop_y = top_y(i)
-    cos_top_x = cos_top_x + dcos(storeTop_x)
-    cos_top_y = cos_top_y + dcos(storeTop_y)
-    sin_top_x = sin_top_x + dsin(storeTop_x)
-    sin_top_y = sin_top_y + dsin(storeTop_y)
+    cos_top_x = cos_top_x + cos(storeTop_x)
+    cos_top_y = cos_top_y + cos(storeTop_y)
+    sin_top_x = sin_top_x + sin(storeTop_x)
+    sin_top_y = sin_top_y + sin(storeTop_y)
     Ebar_x = Ebar_x + storeTop_x
     Ebar_y = Ebar_y + storeTop_y
     if (v(i) /= 0) then
         vort = vort + 1.0
     end if
-    potential = potential - dcos(storeTop_x) - dcos(storeTop_y)
+    potential = potential - cos(storeTop_x) - cos(storeTop_y)
 end do
 
-magn = dsqrt(magn_x ** 2 + magn_y ** 2) / volume
+magn = sqrt(magn_x ** 2 + magn_y ** 2) / volume
 magn_x = magn_x / volume
 magn_y = magn_y / volume
 cos_top_x = cos_top_x / volume

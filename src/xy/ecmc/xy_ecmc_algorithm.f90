@@ -89,15 +89,15 @@ subroutine event_chain_XY
         Estar = - T * log(Estar)
 
         if (deltaThetaInitial > 0) then                                            ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
-           deltaEinitial = 1 - dcos(deltaThetaInitial)                               ! INITIAL CONDITIONAL INT. POTENTIAL
+           deltaEinitial = 1 - cos(deltaThetaInitial)                               ! INITIAL CONDITIONAL INT. POTENTIAL
            Ntours = int((deltaEinitial + Estar) / 2.0)                              ! NO. COMPLETE ROTATIONS INDUCED THROUGH SPIN SPACE
            deltaEexit = (Ntours + 1) * 2.0 - (deltaEinitial + Estar)                ! CONDITIONAL-INT.-POTENTIAL DIFF. BETWEEN TOP OF NEXT MAX. AND MOD(deltaEinitial + Estar,2.0)
-           deltaThetaExit = dacos(1.0 - deltaEexit)                                  ! EQUIV. TO ABOVE LINE IN SPIN/PARAMETER SPACE
+           deltaThetaExit = acos(1.0 - deltaEexit)                                  ! EQUIV. TO ABOVE LINE IN SPIN/PARAMETER SPACE
            distance = (Ntours + 0.5) * twopi - (deltaThetaInitial + deltaThetaExit) ! TOTAL LENGTH OF PATH COVERED IN PARAMETER SPACE
         else                                                                        ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS -VE, GO TO THE BOTTOM OF THE WELL
            Ntours = int(Estar / 2.0)
            deltaEexit = (Ntours + 1) * 2.0 - Estar
-           deltaThetaExit = dacos(1.0 - deltaEexit)
+           deltaThetaExit = acos(1.0 - deltaEexit)
            distance = (Ntours + 0.5) * twopi - (deltaThetaInitial + deltaThetaExit)
         end if
 
