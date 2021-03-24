@@ -81,12 +81,12 @@ subroutine markov_chain_XY
 
       ! METROPOLIS FILTER
 
-      Uold = - cos(thetaPos_x - thetaOld) - cos(thetaPos_y - thetaOld) - cos(thetaOld - thetaNeg_x) - cos(thetaOld - thetaNeg_y)
-      Unew = - cos(thetaPos_x - thetaNew) - cos(thetaPos_y - thetaNew) - cos(thetaNew - thetaNeg_x) - cos(thetaNew - thetaNeg_y)
+      Uold = - dcos(thetaPos_x - thetaOld) - dcos(thetaPos_y - thetaOld) - dcos(thetaOld - thetaNeg_x) - dcos(thetaOld - thetaNeg_y)
+      Unew = - dcos(thetaPos_x - thetaNew) - dcos(thetaPos_y - thetaNew) - dcos(thetaNew - thetaNeg_x) - dcos(thetaNew - thetaNeg_y)
       deltaU = Unew - Uold
 
       if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-         theta(i) = modulo(thetaNew + pi, twopi) - pi
+         theta(i) = mod(thetaNew + pi, twopi) - pi
          accept = accept + 1
       end if
    end do
@@ -94,9 +94,6 @@ subroutine markov_chain_XY
   return
 end subroutine markov_chain_XY
 
-! **************************************
-! OUTPUT acceptance rates
-! **************************************
 
 subroutine output_acceptance_rates
 use variables
