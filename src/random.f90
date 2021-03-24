@@ -22,10 +22,10 @@
       IMPLICIT NONE
       INTEGER seed
       INTEGER ij,kl, i,j,k,l, ii,jj, m
-      REAL*8 s,t
+      double precision :: s,t
       INTEGER Maxseed
       PARAMETER (Maxseed = 900000000)
-      REAL u(97), c, cd, cm
+      double precision :: u(97), c, cd, cm
       INTEGER i97, j97, ivec
       COMMON /raset1/ u, c, cd, cm, i97, j97, ivec
 
@@ -70,7 +70,7 @@
 
       FUNCTION rand()
       IMPLICIT NONE
-      REAL u(97), c, cd, cm, uni, rand
+      double precision :: u(97), c, cd, cm, uni, rand
       INTEGER i97, j97, ivec
       COMMON /raset1/ u, c, cd, cm, i97, j97, ivec
 

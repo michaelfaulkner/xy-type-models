@@ -66,7 +66,7 @@ write(18,100) Ebar_y
 write(19,100) vort
 write(21, 100) potential
 
-100 format(F16.8)
+100 format(ES24.14)
 
 return
 end subroutine measure
@@ -80,7 +80,7 @@ end subroutine measure
 subroutine top_field
 use variables
 implicit none
-integer i
+integer :: i
 do i = 1, sites
     top_x(i) = modulo(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
     top_y(i) = modulo(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
@@ -96,8 +96,8 @@ end subroutine top_field
 subroutine vortices
 use variables
 implicit none
-integer i
-real*8 v0
+integer :: i
+double precision :: v0
 do i = 1, sites
     v0 = (top_x(i) + top_y(i) - top_x(neg_x(i)) - top_y(neg_y(i))) / twopi
     if ((v0 < 1.000000000001) .and. (v0 > 0.999999999999)) then
