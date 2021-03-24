@@ -2,8 +2,8 @@ program xy_ecmc_algorithm
 use variables
 implicit none
 character(100) :: config_file
-integer i, j, seed, start
-real*8 Tincr
+integer :: i, j, seed, start
+double precision :: Tincr
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -65,10 +65,10 @@ end program xy_ecmc_algorithm
 subroutine event_chain_XY
   use variables
   implicit none
-  integer i,lift,veto
+  integer :: i,lift,veto
   integer, dimension (1:4) :: neighbours
-  real*8 Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
-  real*8 thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
+  double precision :: Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
+  double precision :: thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
 
   lift = int(volume * rand())                                                       ! PICK A SITE AT RANDOM FOR INITIAL LIFTING VARIABLE (FROM {0, 1, ..., N-1})
   distanceToGo = maxchainlength                                                     ! SET REMAINING EVENT-CHAIN LENGTH AS THE MAX CHAIN LENGTH
@@ -135,7 +135,7 @@ subroutine output_Nevents
 use variables
 implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
-character(100) filename
+character(100) :: filename
 
 write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), T
 open(unit = 300, file = filename)

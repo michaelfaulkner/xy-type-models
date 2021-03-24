@@ -1,19 +1,13 @@
-! **************************************
-! SET VARIABLES
-! **************************************
-
 module variables
 character(100) :: output_directory
-real*8, parameter :: twopi = 6.283185307179586
-real*8, parameter :: pi = 3.141592653589793
-real*8, parameter :: epsilon = 10.0 ** (-6)
-integer max_side, max_sites
-parameter (max_side = 128)
-parameter (max_sites = max_side * max_side)
-integer pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), v(max_sites)
-integer side, sites, Tsteps, therm_sweeps, measurements, twist, accept, accept_twist
-real*8  theta(max_sites), top_x(max_sites), top_y(max_sites)
-real*8  volume, length, T, beta, Tmin, Tmax, proposalInterval, deltaProposalInterval
+integer, parameter :: max_side = 128
+integer, parameter :: max_sites = max_side * max_side
+double precision, parameter :: twopi = 6.28318530717959d0
+double precision, parameter :: pi = 3.14159265358979d0
+integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), v(max_sites)
+integer :: side, sites, Tsteps, therm_sweeps, measurements, twist, accept, accept_twist
+double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
+double precision :: volume, length, T, beta, Tmin, Tmax, proposalInterval, deltaProposalInterval
 end module variables
 
 ! **************************************
@@ -23,7 +17,7 @@ end module variables
 subroutine input(seed, start)
 use variables
 implicit none
-integer seed, start
+integer :: seed, start
 
 read(1, *) output_directory
 read(1,*) side

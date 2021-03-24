@@ -3,7 +3,7 @@ use variables
 implicit none
 character(100) :: config_file
 integer i, j, seed, start
-real*8 Tincr
+double precision Tincr
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -64,9 +64,9 @@ end program xy_metropolis_algorithm
 subroutine markov_chain_XY
   use variables
   implicit none
-  integer n, i
-  real*8 thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
-  real*8 thetaPos_x, thetaNeg_x, thetaPos_y, thetaNeg_y
+  integer :: n, i
+  double precision :: thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
+  double precision :: thetaPos_x, thetaNeg_x, thetaPos_y, thetaNeg_y
 
    do n = 1, sites
       i = int(rand() * sites)
@@ -105,8 +105,8 @@ subroutine output_acceptance_rates
 use variables
 implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
-character(100) filename
-real*8 acceptanceRate, twistAcceptanceRate
+character(100) :: filename
+double precision :: acceptanceRate, twistAcceptanceRate
 
 acceptanceRate = float(accept) / (measurements * volume)
 twistAcceptanceRate = float(accept_twist) / (measurements * volume)

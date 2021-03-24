@@ -5,8 +5,8 @@
 subroutine global_twist_XY
   use variables
   implicit none
-  integer i, rand1, rand2
-  real*8 deltaE
+  integer :: i, rand1, rand2
+  double precision :: deltaE
 
   deltaE = 0
 

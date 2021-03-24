@@ -24,7 +24,7 @@ end subroutine PBC
 subroutine initial_spins(start)
   use variables
   implicit none
-  integer start, i, j
+  integer :: start, i, j
   if (start == 0) then
      do i = 1, sites
         theta(i) = 0.0
@@ -44,8 +44,8 @@ end subroutine initial_spins
 subroutine initial_measure
 use variables
 implicit none
-character(100) filename
-character(100) temperature_directory
+character(100) :: filename
+character(100) :: temperature_directory
 character(100), parameter :: temperature_string="/temp_eq_"
 
 ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
