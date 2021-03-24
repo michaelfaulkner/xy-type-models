@@ -1,7 +1,7 @@
 subroutine setup_periodic_boundaries
 use variables
 implicit none
-integer i
+integer :: i
 
 ! mod(i + side + 1, side) rather than mod(i + 1, side) below as mod(i, side) doesn't return value in [0, side) if i < 0
 do i = 1, sites
@@ -26,7 +26,7 @@ if (start == 0) then
     end do
 else
     do i = 1, sites
-        theta(i) = twopi * rand()
+        theta(i) = twopi * (rand() - 0.5d0)
     end do
 end if
 
