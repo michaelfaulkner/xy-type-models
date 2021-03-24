@@ -14,10 +14,11 @@ end if
 call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
 
-call input(seed,start)
-call PBC
+call input(seed, start)
+call setup_periodic_boundaries
+call initialise_spin_configuration(start)
 call randinit(seed)
-write(6,*) rand(seed)
+write(6, *) rand(seed)
 
 T = Tmin
 if (Tsteps == 0) then
@@ -25,10 +26,8 @@ if (Tsteps == 0) then
 else
     Tincr = (Tmax - Tmin) / Tsteps
 end if
-call initial_spins(start)
 
 do i = 0, Tsteps
-
     write(6, *) T
     beta = 1.0 / T
 
