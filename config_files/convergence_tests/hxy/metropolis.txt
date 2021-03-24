@@ -1,7 +1,7 @@
 'output/convergence_tests/hxy/metropolis'       output directory
 8                                               Lattice length
 100000                                          No. of equilibration sweeps
-1000000                                         No. of observations (sample size)
+100000                                          No. of observations (sample size)
 1.5                                             Initial temperature
 1.5                                             Final temperature
 0                                               No. of temperature increments
