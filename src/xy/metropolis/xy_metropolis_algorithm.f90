@@ -25,14 +25,12 @@ if (Tsteps == 0) then
 else
     Tincr = (Tmax - Tmin) / Tsteps
 end if
+call initial_spins(start)
 
 do i = 0, Tsteps
 
     write(6, *) T
-    beta = 1 / T
-    if (T == Tmin) then
-        call initial_spins(start)
-    end if
+    beta = 1.0 / T
 
     do j = 1, therm_sweeps
         call markov_chain_XY
