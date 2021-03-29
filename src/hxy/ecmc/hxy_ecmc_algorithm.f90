@@ -105,11 +105,11 @@ subroutine event_chain_HXY
      end do
      
      if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-        theta(lift) = modulo(thetalift + distanceToGo + pi, twopi) - pi              ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
+        theta(lift) = mod(thetalift + distanceToGo, twopi)              ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
         chainlength = chainlength + distanceToGo
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
      else
-        theta(lift) = modulo(thetalift + distanceToNextEvent + pi, twopi) - pi               ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        theta(lift) = mod(thetalift + distanceToNextEvent, twopi)               ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
         chainlength = chainlength + distanceToNextEvent
         distanceToGo = distanceToGo - distanceToNextEvent
         lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE

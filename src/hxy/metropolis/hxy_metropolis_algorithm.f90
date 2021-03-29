@@ -70,7 +70,7 @@ do n = 1, sites
     i = int(rand() * sites)  ! todo remove pick and replace (everywhere)
     thetaOld = theta(i)
     deltaTheta = 2.0d0 * proposalInterval * (rand() - 0.5d0)
-    thetaNew = modulo(thetaOld + deltaTheta + pi, twopi) - pi
+    thetaNew = mod(thetaOld + deltaTheta, twopi)
 
     top1new = modulo(thetanew - theta(neg_y(i)) + pi, twopi) - pi
     top2new = modulo(- thetanew + theta(neg_x(i)) + pi, twopi) - pi
@@ -83,7 +83,7 @@ do n = 1, sites
     deltaU = Unew - Uold
 
     if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-        theta(i) = modulo(thetaNew + pi, twopi) - pi
+        theta(i) = mod(thetaNew, twopi)
         top_x(i) = top1new
         top_y(i) = top2new
         top_x(pos_y(i)) = top3new
