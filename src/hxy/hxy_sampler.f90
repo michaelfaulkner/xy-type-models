@@ -113,8 +113,8 @@ use variables
 implicit none
 integer :: i
 do i = 1, sites
-    top_x(i) = mod(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
-    top_y(i) = mod(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
+    top_x(i) = modulo(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
+    top_y(i) = modulo(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
 end do
 return
 end subroutine top_field
