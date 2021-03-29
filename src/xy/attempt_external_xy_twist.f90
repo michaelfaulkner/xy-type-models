@@ -24,7 +24,7 @@ subroutine global_twist_XY
      if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then
         rand2 = int(side * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, sites
-           theta(i) = mod(theta(i) + rand1 * twopi * mod(i + rand2, side) / side + pi, twopi) - pi
+           theta(i) = mod(theta(i) + rand1 * twopi * mod(i + rand2, side) / side, twopi)
         end do
         accept_twist = accept_twist + 1
      end if
@@ -43,7 +43,7 @@ subroutine global_twist_XY
      if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then
         rand2 = int(side * rand())                                                   ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, sites
-           theta(i) = mod(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side + pi, twopi) - pi
+           theta(i) = mod(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side, twopi)
         end do
         accept_twist = accept_twist + 1
      end if
