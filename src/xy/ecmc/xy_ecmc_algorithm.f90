@@ -83,7 +83,7 @@ subroutine event_chain_XY
      do i = 1, 4                                                                       ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
 
         thetafix = theta(neighbours(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
-        deltaThetaInitial = modulo(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
+        deltaThetaInitial = mod(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
 
         Estar = 1.0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
         Estar = - T * log(Estar)
@@ -109,11 +109,11 @@ subroutine event_chain_XY
      end do
 
      if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-        theta(lift) = modulo(thetalift + distanceToGo + pi, twopi) - pi            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
+        theta(lift) = mod(thetalift + distanceToGo, twopi)            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
         chainlength = chainlength + distanceToGo
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
      else
-        theta(lift) = modulo(thetalift + distanceToNextEvent + pi, twopi) - pi      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        theta(lift) = mod(thetalift + distanceToNextEvent, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
         chainlength = chainlength + distanceToNextEvent
         distanceToGo = distanceToGo - distanceToNextEvent
         lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
