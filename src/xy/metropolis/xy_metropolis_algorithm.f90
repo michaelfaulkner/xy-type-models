@@ -86,7 +86,7 @@ subroutine markov_chain_XY
       deltaU = Unew - Uold
 
       if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-         theta(i) = modulo(thetaNew + pi, twopi) - pi
+         theta(i) = mod(thetaNew, twopi)
          accept = accept + 1
       end if
    end do
