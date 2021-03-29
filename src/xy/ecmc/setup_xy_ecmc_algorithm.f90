@@ -32,7 +32,7 @@ read(1,*) seed
 
 sites = side * side
 volume = float(sites)
-maxchainlength = volume * twopi / 2.0 ! 2PI TO TRANSFORM TO SPIN SPACE; 1/2 TO REFLECT MANON MICHEL
+maxchainlength = volume * pi ! 2PI TO TRANSFORM TO SPIN SPACE; 1/2 TO REFLECT MANON MICHEL
 
 if (side > max_side) then
    write(6, *) 'Linear lattice length exceeds maximum: change the maximum in module variables.'
