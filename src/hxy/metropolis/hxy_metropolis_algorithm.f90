@@ -83,7 +83,7 @@ do n = 1, sites
     deltaU = Unew - Uold
 
     if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-        theta(i) = mod(thetaNew, twopi)
+        theta(i) = thetaNew
         top_x(i) = top1new
         top_y(i) = top2new
         top_x(pos_y(i)) = top3new

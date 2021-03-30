@@ -70,7 +70,7 @@ subroutine markov_chain_XY
 
       thetaOld = theta(i)
       deltaTheta = 2.0d0 * proposalInterval * (rand() - 0.5d0)
-      thetaNew = thetaOld + deltaTheta
+      thetaNew = mod(thetaOld + deltaTheta, twopi)
 
       ! CALL OTHER RELEVANT SPINS
 
@@ -86,7 +86,7 @@ subroutine markov_chain_XY
       deltaU = Unew - Uold
 
       if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-         theta(i) = mod(thetaNew, twopi)
+         theta(i) = thetaNew
          accept = accept + 1
       end if
    end do
