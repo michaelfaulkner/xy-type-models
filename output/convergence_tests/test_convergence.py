@@ -54,17 +54,19 @@ def main(algorithm_name, config_file_name):
     effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 
+    '''magnetisation_2_x = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magn_x_sample.dat',
+                                   dtype=float)
+    magnetisation_2_y = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magn_y_sample.dat',
+                                   dtype=float)
+    sample_2 = (magnetisation_2_x ** 2 + magnetisation_2_y ** 2) ** 0.5
+    sample_2_cdf = get_cumulative_distribution(sample_2)
+    plt.plot(sample_2_cdf[0], sample_2_cdf[1], color='r', linewidth=4, linestyle='-', label='metropolis data')'''
+
     reference_cdf = get_cumulative_distribution(reference_sample)
     sample_cdf = get_cumulative_distribution(sample)
 
     plt.plot(reference_cdf[0], reference_cdf[1], color='r', linewidth=3, linestyle='-', label='reference data')
     plt.plot(sample_cdf[0], sample_cdf[1], color='k', linewidth=2, linestyle='-', label='xy-type-models data')
-
-    '''magnetisation_2_x = np.loadtxt('output/convergence_tests/xy/metropolis/temp_eq_1.25/magn_x_sample.dat', dtype=float)
-    magnetisation_2_y = np.loadtxt('output/convergence_tests/xy/metropolis/temp_eq_1.25/magn_y_sample.dat', dtype=float)
-    sample_2 = (magnetisation_2_x ** 2 + magnetisation_2_y ** 2) ** 0.5
-    sample_2_cdf = get_cumulative_distribution(sample_2)
-    plt.plot(sample_2_cdf[0], sample_2_cdf[1], color='r', linewidth=1, linestyle='-', label='metropolis data')'''
 
     plt.xlabel(r"$x$", fontsize=15, labelpad=10)
     plt.ylabel(r"$ \mathbb{P} \left( X < x \right)$", fontsize=15, labelpad=10)
