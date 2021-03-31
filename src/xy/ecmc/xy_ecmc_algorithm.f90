@@ -3,7 +3,7 @@ use variables
 implicit none
 character(100) :: config_file
 integer :: i, j, seed, start
-double precision :: Tincr
+double precision :: magnitude_of_temperature_increments
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -18,17 +18,17 @@ call input(seed, start)
 call setup_periodic_boundaries
 call initialise_spin_configuration(start)
 call randinit(seed)
-write(6, *) rand(seed)
+write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
 
 T = Tmin
 if (Tsteps == 0) then
-    Tincr = 0.0
+    magnitude_of_temperature_increments = 0.0
 else
-    Tincr = (Tmax - Tmin) / Tsteps
+    magnitude_of_temperature_increments = (Tmax - Tmin) / Tsteps
 end if
 
 do i = 0, Tsteps
-    write(6, *) T
+    write(6, '(A, ES8.2)') 'Temperature = ', T
     beta = 1.0 / T
 
     do j = 1, therm_sweeps
@@ -50,7 +50,7 @@ do i = 0, Tsteps
     end do
 
     call output_Nevents
-    T = T + Tincr
+    T = T + magnitude_of_temperature_increments
 end do
 end program xy_ecmc_algorithm
 
