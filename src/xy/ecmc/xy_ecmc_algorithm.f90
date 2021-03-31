@@ -16,39 +16,42 @@ open (unit=1, file=config_file)
 
 call input(seed, start)
 call setup_periodic_boundaries
+call create_sample_files
 call initialise_spin_configuration(start)
 call randinit(seed)
 write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
 
-T = Tmin
-if (Tsteps == 0) then
+if (no_of_temperature_increments == 0) then
     magnitude_of_temperature_increments = 0.0
 else
-    magnitude_of_temperature_increments = (Tmax - Tmin) / Tsteps
+    magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
 end if
 
-do i = 0, Tsteps
-    write(6, '(A, ES8.2)') 'Temperature = ', T
-    beta = 1.0 / T
+do i = 0, no_of_temperature_increments
+    write(6, '(A, ES8.2)') 'Temperature = ', temperature
+    beta = 1.0 / temperature
 
     do j = 1, therm_sweeps
-        call event_chain_XY
+        call single_event_chain
+        if (twist == 1) then
+            call attempt_external_global_move
+        end if
+        call draw_observations
     end do
 
     Nevents = 0
     accept_twist = 0
-    call create_sample_files
 
     do j = 1, measurements
-        call event_chain_XY
+        call single_event_chain
         if (twist == 1) then
-            call global_twist_XY
+            call attempt_external_global_move
         end if
-        call measure
+        call draw_observations
     end do
 
     call output_Nevents
-    T = T + magnitude_of_temperature_increments
+    temperature = temperature + magnitude_of_temperature_increments
 end do
 end program xy_ecmc_algorithm
 
@@ -57,7 +60,7 @@ end program xy_ecmc_algorithm
 ! EVENT-CHAIN SUBROUTINE
 ! **************************************
 
-subroutine event_chain_XY
+subroutine single_event_chain
   use variables
   implicit none
   integer :: i,lift,veto
@@ -84,7 +87,7 @@ subroutine event_chain_XY
         deltaThetaInitial = modulo(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
 
         Estar = 1.0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
-        Estar = - T * log(Estar)
+        Estar = - temperature * log(Estar)
 
         if (deltaThetaInitial > 0) then                                            ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
            deltaEinitial = 1 - cos(deltaThetaInitial)                               ! INITIAL CONDITIONAL INT. POTENTIAL
@@ -118,7 +121,7 @@ subroutine event_chain_XY
   end do
 
   return
-end subroutine event_chain_XY
+end subroutine single_event_chain
 
 ! **************************************
 ! OUTPUT Nevents
@@ -130,7 +133,7 @@ implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
 character(100) :: filename
 
-write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit = 300, file = filename)
 write(300, 100) Nevents
 if (twist == 1) then

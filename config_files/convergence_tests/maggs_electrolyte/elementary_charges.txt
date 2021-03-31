@@ -1,6 +1,6 @@
 'output/convergence_tests/maggs_electrolyte/elementary_charges'         output directory
 8                  	                                                    Lattice length
-100000                	                                                No. of equilibration sweeps
+100000                	                                                No. of equilibration iterations
 1000000	                                                                No. of observations (sample size)
 1.5                 	                                                Initial temperature
 1.5                	                                                    Final temperature

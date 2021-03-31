@@ -2,7 +2,7 @@
 ! MEASURE STATE OF SYSTEM
 ! **************************************
 
-subroutine measure
+subroutine draw_observations
 use variables
 implicit none
 integer :: i, n
@@ -68,7 +68,7 @@ write(21, 100) potential
 100 format(ES24.14)
 
 return
-end subroutine measure
+end subroutine draw_observations
 
 
 ! **************************************

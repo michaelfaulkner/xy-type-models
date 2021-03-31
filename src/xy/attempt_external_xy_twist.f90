@@ -2,7 +2,7 @@
 ! Global twist (Metropolis) sampling
 ! **************************************
 
-subroutine global_twist_XY
+subroutine attempt_external_global_move
   use variables
   implicit none
   integer :: i, rand1, rand2
@@ -50,4 +50,4 @@ subroutine global_twist_XY
 
   end if
 
-end subroutine global_twist_XY
+end subroutine attempt_external_global_move

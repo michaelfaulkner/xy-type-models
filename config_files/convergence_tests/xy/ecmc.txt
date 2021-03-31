@@ -1,6 +1,6 @@
 'output/convergence_tests/xy/ecmc'      output directory
 8                                       Lattice length
-40000                                   No. of equilibration sweeps
+40000                                   No. of equilibration iterations
 40000                                   No. of observations (sample size)
 0.8                                     Initial temperature
 0.8                                     Final temperature

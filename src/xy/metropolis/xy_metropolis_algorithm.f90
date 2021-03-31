@@ -3,7 +3,7 @@ use variables
 implicit none
 character(100) :: config_file
 integer i, j, seed, start
-double precision Tincr
+double precision magnitude_of_temperature_increments
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -16,39 +16,42 @@ open (unit=1, file=config_file)
 
 call input(seed, start)
 call setup_periodic_boundaries
+call create_sample_files
 call initialise_spin_configuration(start)
 call randinit(seed)
-write(6, *) rand(seed)
+write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
 
-T = Tmin
-if (Tsteps == 0) then
-    Tincr = 0.0
+if (no_of_temperature_increments == 0) then
+    magnitude_of_temperature_increments = 0.0
 else
-    Tincr = (Tmax - Tmin) / Tsteps
+    magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
 end if
 
-do i = 0, Tsteps
-    write(6, *) T
-    beta = 1.0 / T
+do i = 0, no_of_temperature_increments
+    write(6, '(A, ES8.2)') 'Temperature = ', temperature
+    beta = 1.0 / magnitude_of_temperature_increments
 
     do j = 1, therm_sweeps
-        call markov_chain_XY
+        call metropolis_sweep
+        if (twist == 1) then
+            call attempt_external_global_move
+        end if
+        call draw_observations
     end do
 
     accept = 0
     accept_twist = 0
-    call create_sample_files
 
     do j = 1, measurements
-        call markov_chain_XY
+        call metropolis_sweep
         if (twist == 1) then
-            call global_twist_XY
+            call attempt_external_global_move
         end if
-        call measure
+        call draw_observations
     end do
 
     call output_acceptance_rates
-    T = T + Tincr
+    temperature = temperature + magnitude_of_temperature_increments
     proposalInterval = proposalInterval + deltaProposalInterval
 end do
 end program xy_metropolis_algorithm
@@ -57,7 +60,7 @@ end program xy_metropolis_algorithm
 ! METROPOLIS MARKOV-CHAIN SUBROUTINE
 ! **************************************
 
-subroutine markov_chain_XY
+subroutine metropolis_sweep
   use variables
   implicit none
   integer :: n, i
@@ -91,7 +94,7 @@ subroutine markov_chain_XY
    end do
   
   return
-end subroutine markov_chain_XY
+end subroutine metropolis_sweep
 
 
 subroutine output_acceptance_rates
@@ -104,7 +107,7 @@ double precision :: acceptanceRate, twistAcceptanceRate
 acceptanceRate = float(accept) / (measurements * volume)
 twistAcceptanceRate = float(accept_twist) / (measurements * volume)
 
-write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit = 300, file = filename)
 
 write(300, 100) acceptanceRate

@@ -1,6 +1,6 @@
 'output/convergence_tests/xy/metropolis'        output directory
 8                                               Lattice length
-10000                                          No. of equilibration sweeps
+10000                                          No. of equilibration iterations
 100000                                          No. of observations (sample size)
 0.8                                             Initial temperature
 0.8                                             Final temperature

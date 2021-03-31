@@ -14,6 +14,8 @@ def main(algorithm_name, config_file_name):
         for index, row in enumerate(config_data):
             if index == 0:
                 sample_directory = row[0].replace("'", "").replace("output directory", "").replace(" ", "")
+            if index == 2:
+                no_of_equilibrium_iterations = int(row[0].replace("No. of equilibration iterations", "").replace(" ", ""))
             if index == 4:
                 temperature = float(row[0].replace("Initial temperature", "").replace(" ", ""))
                 temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
@@ -24,8 +26,10 @@ def main(algorithm_name, config_file_name):
                             delimiter=',')
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
-        magnetisation_x = np.loadtxt(sample_directory + temperature_directory + '/magn_x_sample.dat', dtype=float)
-        magnetisation_y = np.loadtxt(sample_directory + temperature_directory + '/magn_y_sample.dat', dtype=float)
+        magnetisation_x = np.loadtxt(sample_directory + temperature_directory + '/magn_x_sample.dat', dtype=float)[
+                          no_of_equilibrium_iterations:]
+        magnetisation_y = np.loadtxt(sample_directory + temperature_directory + '/magn_y_sample.dat', dtype=float)[
+                          no_of_equilibrium_iterations:]
         sample = (magnetisation_x ** 2 + magnetisation_y ** 2) ** 0.5
     else:
         IOError('Give one of elementary-electrolyte, multivalued-electrolyte, hxy-ecmc, hxy-metropolis, xy-ecmc or '

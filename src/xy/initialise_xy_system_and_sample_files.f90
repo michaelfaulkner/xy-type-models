@@ -42,32 +42,32 @@ character(100) :: temperature_directory
 character(100), parameter :: temperature_string = "/temp_eq_"
 
 ! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
-write (temperature_directory, '(A, F4.2)' ) trim(output_directory)//trim(temperature_string), T
+write (temperature_directory, '(A, F4.2)' ) trim(output_directory)//trim(temperature_string), temperature
 call system ( 'mkdir -p ' // temperature_directory )
 
-write (filename, '(A, F4.2, "//magn_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//magn_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=10, file=filename)
-write (filename, '(A, F4.2, "//magn_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//magn_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=11,file=filename)
-write (filename, '(A, F4.2, "//magn_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//magn_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=12,file=filename)
-write (filename, '(A, F4.2, "//cos_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//cos_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=13,file=filename)
-write (filename, '(A, F4.2, "//cos_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//cos_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=14,file=filename)
-write (filename, '(A, F4.2, "//sin_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//sin_top_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=15,file=filename)
-write (filename, '(A, F4.2, "//sin_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//sin_top_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=16,file=filename)
-write (filename, '(A, F4.2, "//Ebar_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//Ebar_x_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=17,file=filename)
-write (filename, '(A, F4.2, "//Ebar_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//Ebar_y_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=18,file=filename)
-write (filename, '(A, F4.2, "//vort_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//vort_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=19,file=filename)
-write (filename, '(A, F4.2, "//second_deriv_potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//second_deriv_potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit = 20, file = filename)
-write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), T
+write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit = 21, file = filename)
 
 return
