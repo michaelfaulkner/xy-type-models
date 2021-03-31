@@ -7,7 +7,7 @@ double precision, parameter :: pi = 3.14159265358979d0
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), v(max_sites)
 integer :: side, sites, Tsteps, therm_sweeps, measurements, max_autocorr_time, twist, accept_twist, Nevents
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: volume, length, T, beta, Tmin, Tmax, chainlength, maxchainlength
+double precision :: volume, length, T, beta, Tmin, Tmax, maxchainlength
 end module variables
 
 ! **************************************

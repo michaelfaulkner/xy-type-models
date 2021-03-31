@@ -35,7 +35,6 @@ do i = 0, Tsteps
         call event_chain_XY
     end do
 
-    chainlength = 0.0d0
     Nevents = 0
     accept_twist = 0
     ! SET ALL MEASUREMENT DATA TO ZERO
@@ -110,11 +109,9 @@ subroutine event_chain_XY
 
      if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
         theta(lift) = mod(thetalift + distanceToGo, twopi)            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
-        chainlength = chainlength + distanceToGo
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
      else
         theta(lift) = mod(thetalift + distanceToNextEvent, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
-        chainlength = chainlength + distanceToNextEvent
         distanceToGo = distanceToGo - distanceToNextEvent
         lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
         Nevents = Nevents + 1
