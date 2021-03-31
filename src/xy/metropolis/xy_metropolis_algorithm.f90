@@ -29,7 +29,7 @@ end if
 
 do i = 0, no_of_temperature_increments
     write(6, '(A, ES8.2)') 'Temperature = ', temperature
-    beta = 1.0 / magnitude_of_temperature_increments
+    beta = 1.0 / temperature
 
     do j = 1, therm_sweeps
         call metropolis_sweep
