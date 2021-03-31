@@ -1,11 +1,11 @@
 'output/convergence_tests/hxy/ecmc'     output directory
 8                                       Lattice length
-100000                                  No. of equilibration sweeps
-100000                                  No. of observations (sample size)
-1.5                                     Initial temperature
-1.5                                     Final temperature
+100000                                   No. of equilibration sweeps
+100000                                   No. of observations (sample size)
+1.3                                     Initial temperature
+1.3                                     Final temperature
 0                                       No. of temperature increments
-0                                       Randomise initial spin configuration (0 = ordered, 1 = random)
+1                                       Randomise initial spin configuration (0 = ordered, 1 = random)
 0                                       use external twist move (0 = no, 1 = yes)
 0                                       Cut-off of 2nd deriv. of potential
 0                                       calculate_external_minimising_twist_field  (0 = no, 1 = yes)

@@ -40,10 +40,10 @@ def main(algorithm_name, config_file_name):
                                       'electrolyte_8x8_square_temp_1_point_5_potential_reference_sample.dat',
                                       dtype=float)
     if algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis':
-        reference_sample = np.loadtxt('output/convergence_tests/hxy/hxy_8x8_square_temp_1_point_5_magnetisation_norm_'
+        reference_sample = np.loadtxt('output/convergence_tests/hxy/hxy_8x8_sites_temp_1_point_3_magnetisation_norm_'
                                       'reference_sample.dat', dtype=float)
     if algorithm_name == 'xy-ecmc' or algorithm_name == 'xy-metropolis':
-        reference_sample = np.loadtxt('output/convergence_tests/xy/xy_8x8_square_temp_1_point_25_magnetisation_norm_'
+        reference_sample = np.loadtxt('output/convergence_tests/xy/xy_8x8_sites_temp_0_point_8_magnetisation_norm_'
                                       'reference_sample.dat', dtype=float)
 
     # Add the directory that contains the module plotting_functions to sys.path
@@ -60,12 +60,12 @@ def main(algorithm_name, config_file_name):
                                    dtype=float)
     sample_2 = (magnetisation_2_x ** 2 + magnetisation_2_y ** 2) ** 0.5
     sample_2_cdf = get_cumulative_distribution(sample_2)
-    plt.plot(sample_2_cdf[0], sample_2_cdf[1], color='r', linewidth=4, linestyle='-', label='metropolis data')'''
+    plt.plot(sample_2_cdf[0], sample_2_cdf[1], color='r', linewidth=6, linestyle='-', label='metropolis data')'''
 
     reference_cdf = get_cumulative_distribution(reference_sample)
     sample_cdf = get_cumulative_distribution(sample)
 
-    plt.plot(reference_cdf[0], reference_cdf[1], color='r', linewidth=3, linestyle='-', label='reference data')
+    plt.plot(reference_cdf[0], reference_cdf[1], color='r', linewidth=4, linestyle='-', label='reference data')
     plt.plot(sample_cdf[0], sample_cdf[1], color='k', linewidth=2, linestyle='-', label='xy-type-models data')
 
     plt.xlabel(r"$x$", fontsize=15, labelpad=10)
