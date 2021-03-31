@@ -37,8 +37,7 @@ do i = 0, Tsteps
 
     Nevents = 0
     accept_twist = 0
-    ! SET ALL MEASUREMENT DATA TO ZERO
-    call initial_measure
+    call create_sample_files
 
     do j = 1, measurements
         call event_chain_XY

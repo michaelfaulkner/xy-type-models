@@ -33,11 +33,8 @@ end if
 return
 end subroutine initialise_spin_configuration
 
-! **************************************
-! CREATE NEW DIRECTORY AND FILES FOR NEW TEMP
-! **************************************
 
-subroutine initial_measure
+subroutine create_sample_files
 use variables
 implicit none
 character(100) :: filename
@@ -74,4 +71,4 @@ write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)/
 open(unit = 21, file = filename)
 
 return
-end subroutine initial_measure
+end subroutine create_sample_files

@@ -37,8 +37,7 @@ do i = 0, Tsteps
 
     accept = 0
     accept_twist = 0
-    ! SET ALL MEASUREMENT DATA TO ZERO
-    call initial_measure
+    call create_sample_files
 
     do j = 1, measurements
         call markov_chain_XY
