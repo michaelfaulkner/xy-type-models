@@ -3,8 +3,8 @@ use variables
 implicit none
 integer :: i,lift,veto
 integer, dimension (1:4) :: neighbours
-double precision :: Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
-double precision :: thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
+double precision :: Estar, distanceToNextEvent, deltaEinitial, deltaEexit, distanceToGo, thetalift, thetafix
+double precision :: deltaThetaInitial, deltaThetaExit, distance, Ntours
 
 lift = int(volume * rand())                                                       ! PICK A SITE AT RANDOM FOR INITIAL LIFTING VARIABLE (FROM {0, 1, ..., N-1})
 distanceToGo = maxchainlength                                                     ! SET REMAINING EVENT-CHAIN LENGTH AS THE MAX CHAIN LENGTH
@@ -38,22 +38,22 @@ do                                                                              
             distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)
         end if
 
-    if (distanceToNextEvent > distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
-       distanceToNextEvent = distance
-       veto = neighbours(i)                                                     ! UPDATE veto SPIN/PARAMETER
+        if (distanceToNextEvent > distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
+           distanceToNextEvent = distance
+           veto = neighbours(i)                                                     ! UPDATE veto SPIN/PARAMETER
+        end if
+
+    end do
+
+    if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
+        theta(lift) = mod(thetalift + distanceToGo, twopi)            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
+        exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
+    else
+        theta(lift) = mod(thetalift + distanceToNextEvent, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        distanceToGo = distanceToGo - distanceToNextEvent
+        lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
+        no_of_events = no_of_events + 1
     end if
-
- end do
-
- if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-    theta(lift) = mod(thetalift + distanceToGo, twopi)            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
-    exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
- else
-    theta(lift) = mod(thetalift + distanceToNextEvent, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
-    distanceToGo = distanceToGo - distanceToNextEvent
-    lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
-    no_of_events = no_of_events + 1
- end if
 end do
 
 return
