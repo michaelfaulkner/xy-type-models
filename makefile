@@ -13,7 +13,7 @@ hxy-metropolis:
 	cd src/hxy/metropolis && $(MAKE)
 
 xy-ecmc:
-	cd src/xy/ecmc && $(MAKE)
+	cd src/xy_models/xy/ecmc && $(MAKE)
 
 xy-metropolis:
-	cd src/xy/metropolis && $(MAKE)
+	cd src/xy_models/xy/metropolis && $(MAKE)
