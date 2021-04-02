@@ -3,103 +3,63 @@
 ! **************************************
 
 subroutine measure
-  use variables
-  implicit none
-  integer :: i, j, n
-  double precision :: magn, magn_x, magn_y, cos_top_x, cos_top_y, sin_top_x, sin_top_y
-  double precision :: potential, vort, cos_j, second_deriv_potential, diff, Ebar_x, Ebar_y, storeTop_x, storeTop_y
+use variables
+implicit none
+integer :: i, n
+double precision :: magnetisation_x, magnetisation_y, potential
+double precision :: mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
+double precision :: mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
 
-  call top_field
-  call vortices
+call top_field
 
-  magn_x = 0.0d0
-  magn_y = 0.0d0
-  cos_top_x = 0.0d0
-  cos_top_y = 0.0d0
-  sin_top_x = 0.0d0
-  sin_top_y = 0.0d0
-  Ebar_x = 0.0d0
-  Ebar_y = 0.0d0
-  vort = 0.0d0
-  second_deriv_potential = 0.0d0
+magnetisation_x = 0.0d0
+magnetisation_y = 0.0d0
+mean_1st_derivative_of_potential_x = 0.0d0
+mean_1st_derivative_of_potential_y = 0.0d0
+mean_2nd_derivative_of_potential_x = 0.0d0
+mean_2nd_derivative_of_potential_y = 0.0d0
+sum_of_squared_electric_field_x = 0.0d0
+sum_of_squared_electric_field_y = 0.0d0
 
-  sum_of_squared_electric_field_x = 0.0d0
-  sum_of_squared_electric_field_y = 0.0d0
+do i = 1, sites
+    magnetisation_x = magnetisation_x + cos(theta(i))
+    magnetisation_y = magnetisation_y + sin(theta(i))
+    mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x + top_y(i)
+    mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y + top_x(i)
+    do n = 1, nmax
+        mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x + (-1) ** (n + 1) * cos((n + 1) * top_y(i))
+        mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y + (-1) ** (n + 1) * cos((n + 1) * top_x(i))
+    end do
+    sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + top_x(i) * top_x(i)
+    sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + top_y(i) * top_y(i)
+end do
+potential = 0.5d0 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
 
-  do i = 1, sites
-     
-     magn_x = magn_x + cos(theta(i))
-     magn_y = magn_y + sin(theta(i))
-     storeTop_x = top_x(i)
-     storeTop_y = top_y(i)
-     cos_top_x = cos_top_x + cos(storeTop_x)
-     cos_top_y = cos_top_y + cos(storeTop_y)
-     sin_top_x = sin_top_x + sin(storeTop_x)
-     sin_top_y = sin_top_y + sin(storeTop_y)
-     Ebar_x = Ebar_x + storeTop_x
-     Ebar_y = Ebar_y + storeTop_y
-     if (v(i) .ne. 0) then
-        vort = vort + 1.0
-     end if
+magnetisation_x = magnetisation_x / volume
+magnetisation_y = magnetisation_y / volume
+mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x / volume
+mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y / volume
+mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x / volume
+mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y / volume
 
-     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + storeTop_x ** 2
-     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + storeTop_y ** 2
-     
-  end do
-
-  potential = 0.5 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
+if (calculate_external_minimising_twist_field == 1) then
+    call external_minimising_twist_field_calculation
+end if
   
-  ! CALCULATE THE CUT-OFF FOURIER SERIES THAT APPROXIMATES THE SECOND DERIVATIVE OF THE POTENTIAL
-  ! THIS IS THE FIRST TERM OF THE HELICITY MODULUS, AND IS PRECISE FOR nmax = infty
-
-  do j = 1, nmax
-     cos_j = 0.0d0
-     do i = 1, sites
-        cos_j = cos_j + cos((j + 1) * top_x(i)) + cos((j + 1) * top_y(i))
-     end do
-     second_deriv_potential = second_deriv_potential + (-1) ** (j + 2) * cos_j
-  end do
-
-  magn = sqrt(magn_x ** 2 + magn_y ** 2)
-  magn = magn / volume
-  magn_x = magn_x / volume
-  magn_y = magn_y / volume
-  cos_top_x = cos_top_x / volume
-  cos_top_y = cos_top_y / volume
-  sin_top_x = sin_top_x / volume
-  sin_top_y = sin_top_y / volume
-  vort = vort / volume
-  second_deriv_potential = second_deriv_potential / volume
-  Ebar_x = Ebar_x / volume
-  Ebar_y = Ebar_y / volume
-
-    if (calculate_external_minimising_twist_field == 1) then
-        call external_minimising_twist_field_calculation
-    end if
-  
-  ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
-  
-  write(10,100) magn
-  write(11,100) magn_x
-  write(12,100) magn_y
-  write(13,100) cos_top_x
-  write(14,100) cos_top_y
-  write(15,100) sin_top_x
-  write(16,100) sin_top_y
-  write(17,100) Ebar_x
-  write(18,100) Ebar_y
-  write(19,100) vort
-  write(20,100) second_deriv_potential
-  write(21,100) potential
-
-  write(22,200) no_of_external_twists_to_minimise_potential_x
-  write(23,200) no_of_external_twists_to_minimise_potential_y
-
+write(10, 100) magnetisation_x
+write(11, 100) magnetisation_y
+write(12, 100) mean_1st_derivative_of_potential_x
+write(13, 100) mean_1st_derivative_of_potential_y
+write(14, 100) mean_2nd_derivative_of_potential_x
+write(15, 100) mean_2nd_derivative_of_potential_y
+write(16, 100) potential
+write(17,200) no_of_external_twists_to_minimise_potential_x
+write(18,200) no_of_external_twists_to_minimise_potential_y
 
 100 format(ES24.14)
 200 format(I2)
 
-  return
+return
 end subroutine measure
 
 ! **************************************

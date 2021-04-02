@@ -1,69 +1,43 @@
-! **************************************
-! MEASURE STATE OF SYSTEM
-! **************************************
-
 subroutine draw_observations
 use variables
 implicit none
-integer :: i, n
-double precision :: magn, magn_x, magn_y, cos_top_x, cos_top_y, sin_top_x, sin_top_y
-double precision :: Ebar_x, Ebar_y, vort, potential, storeTop_x, storeTop_y
+integer :: i
+double precision :: magnetisation_x, magnetisation_y, potential
+double precision :: mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
+double precision :: mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
 
-call top_field
-call vortices
-
-magn_x = 0.0d0
-magn_y = 0.0d0
-cos_top_x = 0.0d0
-cos_top_y = 0.0d0
-sin_top_x = 0.0d0
-sin_top_y = 0.0d0
-Ebar_x = 0.0d0
-Ebar_y = 0.0d0
-vort = 0.0d0
+magnetisation_x = 0.0d0
+magnetisation_y = 0.0d0
+mean_1st_derivative_of_potential_x = 0.0d0
+mean_1st_derivative_of_potential_y = 0.0d0
+mean_2nd_derivative_of_potential_x = 0.0d0
+mean_2nd_derivative_of_potential_y = 0.0d0
 potential = 0.0d0
 
 do i = 1, sites
-    magn_x = magn_x + cos(theta(i))
-    magn_y = magn_y + sin(theta(i))
-    storeTop_x = top_x(i)
-    storeTop_y = top_y(i)
-    cos_top_x = cos_top_x + cos(storeTop_x)
-    cos_top_y = cos_top_y + cos(storeTop_y)
-    sin_top_x = sin_top_x + sin(storeTop_x)
-    sin_top_y = sin_top_y + sin(storeTop_y)
-    Ebar_x = Ebar_x + storeTop_x
-    Ebar_y = Ebar_y + storeTop_y
-    if (v(i) /= 0) then
-        vort = vort + 1.0
-    end if
-    potential = potential - cos(storeTop_x) - cos(storeTop_y)
+    magnetisation_x = magnetisation_x + cos(theta(i))
+    magnetisation_y = magnetisation_y + sin(theta(i))
+    mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x + sin(theta(pos_x(i)) - theta(i))
+    mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y + sin(theta(pos_y(i)) - theta(i))
+    mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x + cos(theta(pos_x(i)) - theta(i))
+    mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y + cos(theta(pos_y(i)) - theta(i))
+    potential = potential - cos(theta(pos_x(i)) - theta(i)) - cos(theta(pos_y(i)) - theta(i))
 end do
 
-magn = sqrt(magn_x ** 2 + magn_y ** 2) / volume
-magn_x = magn_x / volume
-magn_y = magn_y / volume
-cos_top_x = cos_top_x / volume
-cos_top_y = cos_top_y / volume
-sin_top_x = sin_top_x / volume
-sin_top_y = sin_top_y / volume
-Ebar_x = Ebar_x / volume
-Ebar_y = Ebar_y / volume
-vort = vort / volume
+magnetisation_x = magnetisation_x / volume
+magnetisation_y = magnetisation_y / volume
+mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x / volume
+mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y / volume
+mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x / volume
+mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y / volume
 
-! STORE SAMPLES DRAWN FROM MARKOV CHAIN
-
-write(10, 100) magn
-write(11, 100) magn_x
-write(12, 100) magn_y
-write(13, 100) cos_top_x
-write(14, 100) cos_top_y
-write(15, 100) sin_top_x
-write(16, 100) sin_top_y
-write(17, 100) Ebar_x
-write(18, 100) Ebar_y
-write(19, 100) vort
-write(21, 100) potential
+write(10, 100) magnetisation_x
+write(11, 100) magnetisation_y
+write(12, 100) mean_1st_derivative_of_potential_x
+write(13, 100) mean_1st_derivative_of_potential_y
+write(14, 100) mean_2nd_derivative_of_potential_x
+write(15, 100) mean_2nd_derivative_of_potential_y
+write(16, 100) potential
 
 100 format(ES24.14)
 
