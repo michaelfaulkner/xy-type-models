@@ -2,7 +2,7 @@
 ! MEASURE STATE OF SYSTEM
 ! **************************************
 
-subroutine measure
+subroutine draw_observations
 use variables
 implicit none
 integer :: i, n
@@ -60,7 +60,7 @@ write(18,200) no_of_external_twists_to_minimise_potential_y
 200 format(I2)
 
 return
-end subroutine measure
+end subroutine draw_observations
 
 ! **************************************
 ! CALCULATE EMERGENT FIELD

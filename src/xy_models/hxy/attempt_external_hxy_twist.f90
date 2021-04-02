@@ -2,7 +2,7 @@
 ! Global twist (Metropolis) sampling
 ! **************************************
 
-subroutine global_twist_HXY
+subroutine attempt_external_global_move
   use variables
   implicit none
   integer i, rand1, rand2
@@ -33,7 +33,7 @@ subroutine global_twist_HXY
         do i = 1, sites
            theta(i) = mod(theta(i) + rand1 * twopi * (int(i / side) + rand2) / side, twopi)
         end do
-        accept_twist = accept_twist + 1
+        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if
      
   else                                                                            ! Ebar_Y MOVE
@@ -58,9 +58,9 @@ subroutine global_twist_HXY
         do i = 1, sites
            theta(i) = mod(theta(i) - rand1 * twopi * mod(i + rand2, side) / side, twopi)
         end do
-        accept_twist = accept_twist + 1
+        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if
      
   end if
   
-end subroutine global_twist_HXY
+end subroutine attempt_external_global_move

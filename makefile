@@ -7,10 +7,10 @@ multivalued-electrolyte:
 	cd src/maggs_electrolyte/multivalued_charges && $(MAKE)
 
 hxy-ecmc:
-	cd src/hxy/ecmc && $(MAKE)
+	cd src/xy_models/hxy/ecmc && $(MAKE)
 
 hxy-metropolis:
-	cd src/hxy/metropolis && $(MAKE)
+	cd src/xy_models/hxy/metropolis && $(MAKE)
 
 xy-ecmc:
 	cd src/xy_models/xy/ecmc && $(MAKE)
