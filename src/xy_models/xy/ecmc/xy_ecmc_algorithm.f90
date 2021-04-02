@@ -17,7 +17,7 @@ open (unit=1, file=config_file)
 call input(seed, start)
 call setup_periodic_boundaries
 call create_sample_files
-call initialise_spin_configuration(start)
+call initialise_field_configuration(start)
 call randinit(seed)
 write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
 

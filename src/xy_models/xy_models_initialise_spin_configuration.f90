@@ -1,4 +1,4 @@
-subroutine initialise_spin_configuration(start)
+subroutine initialise_field_configuration(start)
 use variables
 implicit none
 integer :: i, start
@@ -14,4 +14,4 @@ else
 end if
 
 return
-end subroutine initialise_spin_configuration
+end subroutine initialise_field_configuration
