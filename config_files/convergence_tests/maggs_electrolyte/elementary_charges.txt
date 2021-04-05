@@ -1,7 +1,7 @@
 'output/convergence_tests/maggs_electrolyte/elementary_charges'         output directory
 8                  	                                                    Lattice length
-100000                	                                                No. of equilibration iterations
-1000000	                                                                No. of observations (sample size)
+400000                	                                                No. of equilibration iterations
+100000	                                                                No. of observations (sample size)
 1.5                 	                                                Initial temperature
 1.5                	                                                    Final temperature
 0			                                                            No. of temperature increments
@@ -10,6 +10,6 @@
 1			                                                            No. of charge proposals/aux.-field proposal
 1			                                                            No. of external TSF proposals/aux.-field proposal
 1                                                                       use external TSF move (0 = no, 1 = yes)
-6.28318548      	                                                    Elementary-charge value
-123456789                                                               Seed for random number generator
+6.28318531      	                                                    Elementary-charge value
+193287789                                                               Seed for random number generator
 end
