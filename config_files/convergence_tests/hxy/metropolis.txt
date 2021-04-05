@@ -1,6 +1,6 @@
 'output/convergence_tests/hxy/metropolis'       output directory
 8                                               Lattice length
-10000                                           No. of equilibration iterations
+100000                                          No. of equilibration iterations
 100000                                          No. of observations (sample size)
 1.3                                             Initial temperature
 1.3                                             Final temperature
@@ -11,5 +11,5 @@
 0                                               use external twist move (0 = no, 1 = yes)
 0                                               Cut-off of 2nd deriv. of potential
 0                                               calculate_external_minimising_twist_field  (0 = no, 1 = yes)
-123456789                                       Seed for random number generator
+937264789                                       Seed for random number generator
 end
