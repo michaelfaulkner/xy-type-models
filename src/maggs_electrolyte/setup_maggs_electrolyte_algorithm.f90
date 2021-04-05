@@ -4,8 +4,8 @@
 
 module variables
 character(100) :: output_directory
-real*8, parameter :: twopi = 6.28318530718
-real*8, parameter :: pi = 3.14159265359
+real*8, parameter :: twopi = 6.28318531
+real*8, parameter :: pi = 3.14159265
 real*8, parameter :: epsilon = 10.0 ** (-6)
 integer max_side, max_sites
 parameter (max_side = 128)
