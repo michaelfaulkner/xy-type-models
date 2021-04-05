@@ -65,7 +65,7 @@ subroutine PBC
   integer i
   ! mod(i + side + 1,side) RATHER THAN mod(i + 1,side), ETC. BELOW AS mod(x,side)
   ! DOESN'T RETURN VALUES IN THE INTERVAL [0,side) FOR NEGATIVE x
-  do i = 0,sites - 1
+  do i = 1, sites
      pos_x(i) = i + mod(i + side + 1,side) - mod(i + side,side)
      neg_x(i) = i + mod(i + side - 1,side) - mod(i + side,side)
      pos_y(i) = i + (mod(int(i / side) + side + 1,side) - mod(int(i / side) + side,side)) * side
@@ -83,7 +83,7 @@ subroutine initial_Efield
   implicit none
   integer i
 
-  do i = 0, sites - 1
+  do i = 1, sites
      Efield_x(i) = 0.0
      Efield_y(i) = 0.0
   end do

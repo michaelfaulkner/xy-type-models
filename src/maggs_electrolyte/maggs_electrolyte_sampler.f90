@@ -9,7 +9,7 @@ integer i
 real*8 potential
 
 potential = 0.0
-do i = 0, sites - 1
+do i = 1, sites
     potential = potential + 0.5 * (Efield_x(i) * Efield_x(i) + Efield_y(i) * Efield_y(i))
 end do
 
@@ -36,7 +36,7 @@ subroutine measure_Esum
 
   Esum_x = 0.0
   Esum_y = 0.0
-  do i = 0, sites - 1
+  do i = 1, sites
      Esum_x = Esum_x + Efield_x(i)
      Esum_y = Esum_y + Efield_y(i)
   end do
@@ -53,7 +53,7 @@ subroutine measure_chargeDensity
   implicit none
   integer i,j
   real*8 charge
-  do i = 0, sites - 1
+  do i = 1, sites
      charge = ( Efield_x(i) + Efield_y(i) - Efield_x(neg_x(i)) - Efield_y(neg_y(i)) ) / elementaryCharge
      rho(i) = floor(charge + 0.5)
   end do

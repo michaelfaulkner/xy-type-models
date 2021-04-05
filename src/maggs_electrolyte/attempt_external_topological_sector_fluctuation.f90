@@ -20,7 +20,7 @@ subroutine markov_chain_TSF_GLE
      ! METROPOLIS FILTER
 
      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-        do i = 0, sites - 1
+        do i = 1, sites
            Efield_x(i) = Efield_x(i) + plusMinus * elementaryCharge / side
         end do
         accept_TSF = accept_TSF + 1
@@ -35,7 +35,7 @@ subroutine markov_chain_TSF_GLE
      ! METROPOLIS FILTER
 
      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-        do i = 0, sites - 1
+        do i = 1, sites
            Efield_y(i) = Efield_y(i) + plusMinus * elementaryCharge / side
         end do
         accept_TSF = accept_TSF + 1

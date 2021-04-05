@@ -48,13 +48,13 @@ do i = 0, Tsteps
 
     call initial_measure
 
-    do j = 0, measurements - 1
+    do j = 1, measurements
         call markov_chain_aux_field_GLE
-        do k = 0, ratio_charge_updates - 1
+        do k = 1, ratio_charge_updates
             call markov_chain_charges_GLE
         end do
         if (globalTSFon == 1) then
-            do k = 0, ratio_TSF_updates - 1
+            do k = 1, ratio_TSF_updates
                 call markov_chain_TSF_GLE
             end do
         end if
@@ -79,7 +79,7 @@ subroutine markov_chain_charges_GLE
   integer n, i, plusMinus
   real*8 deltaU, EfieldOld, EfieldNew
 
-   do n = 0, 2 * sites - 1
+   do n = 1, 2 * sites
 
       i = int(rand() * sites)
 
@@ -130,7 +130,7 @@ subroutine markov_chain_aux_field_GLE
   real*8 Efield1old, Efield2old, Efield3old, Efield4old
   real*8 Efield1new, Efield2new, Efield3new, Efield4new
 
-   do n = 0, sites - 1
+   do n = 1, sites
 
       i = int(rand() * sites)
       deltaTheta = 2. * proposalInterval * (rand() - 0.5)
