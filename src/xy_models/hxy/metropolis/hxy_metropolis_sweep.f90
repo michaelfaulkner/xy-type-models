@@ -2,30 +2,30 @@ subroutine metropolis_sweep
 use variables
 implicit none
 integer :: n, i
-double precision :: thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU, top1new, top2new, top3new, top4new
+double precision :: candidate_theta, potential_difference, candidate_emergent_field_1, candidate_emergent_field_2
+double precision :: candidate_emergent_field_3, candidate_emergent_field_4
 
 do n = 1, sites
-    i = int(rand() * sites)  ! todo remove pick and replace (everywhere)
-    thetaOld = theta(i)
-    deltaTheta = 2.0d0 * proposalInterval * (rand() - 0.5d0)
-    thetaNew = mod(thetaOld + deltaTheta, twopi)
+    i = int(rand() * sites) + 1  ! todo remove pick and replace (everywhere)
+    candidate_theta = mod(theta(i) + 2.0d0 * proposalInterval * (rand() - 0.5d0), twopi)
+    candidate_emergent_field_1 = modulo(candidate_theta - theta(neg_y(i)) + pi, twopi) - pi
+    candidate_emergent_field_2 = modulo(- candidate_theta + theta(neg_x(i)) + pi, twopi) - pi
+    candidate_emergent_field_3 = modulo(theta(pos_y(i)) - candidate_theta + pi, twopi) - pi
+    candidate_emergent_field_4 = modulo(- theta(pos_x(i)) + candidate_theta + pi, twopi) - pi
 
-    top1new = modulo(thetanew - theta(neg_y(i)) + pi, twopi) - pi
-    top2new = modulo(- thetanew + theta(neg_x(i)) + pi, twopi) - pi
-    top3new = modulo(theta(pos_y(i)) - thetanew + pi, twopi) - pi
-    top4new = modulo(- theta(pos_x(i)) + thetanew + pi, twopi) - pi
+    potential_difference = 0.5d0 * (candidate_emergent_field_1 * candidate_emergent_field_1 + &
+                                    candidate_emergent_field_2 * candidate_emergent_field_2 + &
+                                    candidate_emergent_field_3 * candidate_emergent_field_3 + &
+                                    candidate_emergent_field_4 * candidate_emergent_field_4 - &
+                                    top_x(i) * top_x(i) - top_y(i) * top_y(i) - &
+                                    top_x(pos_y(i)) * top_x(pos_y(i)) - top_y(pos_x(i)) * top_y(pos_x(i)))
 
-    Uold = 0.5d0 * (top_x(i) * top_x(i) + top_y(i) * top_y(i) + &
-                        top_x(pos_y(i)) * top_x(pos_y(i)) + top_y(pos_x(i)) * top_y(pos_x(i)))
-    Unew = 0.5d0 * (top1new * top1new + top2new * top2new + top3new * top3new + top4new * top4new)
-    deltaU = Unew - Uold
-
-    if ((deltaU < 0.0d0) .or. (rand() < exp(- beta * deltaU))) then
-        theta(i) = thetaNew
-        top_x(i) = top1new
-        top_y(i) = top2new
-        top_x(pos_y(i)) = top3new
-        top_y(pos_x(i)) = top4new
+    if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+        theta(i) = candidate_theta
+        top_x(i) = candidate_emergent_field_1
+        top_y(i) = candidate_emergent_field_2
+        top_x(pos_y(i)) = candidate_emergent_field_3
+        top_y(pos_x(i)) = candidate_emergent_field_4
         no_of_accepted_local_moves = no_of_accepted_local_moves + 1
     end if
 end do
