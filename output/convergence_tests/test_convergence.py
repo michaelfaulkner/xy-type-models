@@ -58,9 +58,9 @@ def main(algorithm_name, config_file_name):
     effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 
-    '''magnetisation_2_x = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magn_x_sample.dat',
+    '''magnetisation_2_x = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magnetisation_x_sample.dat',
                                    dtype=float)
-    magnetisation_2_y = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magn_y_sample.dat',
+    magnetisation_2_y = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magnetisation_y_sample.dat',
                                    dtype=float)
     sample_2 = (magnetisation_2_x ** 2 + magnetisation_2_y ** 2) ** 0.5
     sample_2_cdf = get_cumulative_distribution(sample_2)
