@@ -81,7 +81,7 @@ subroutine markov_chain_charges_GLE
 
    do n = 1, 2 * sites
 
-      i = int(rand() * sites)
+      i = int(rand() * sites) + 1
 
       if (floor(2 * rand()) .eq. 0) then
 
@@ -132,7 +132,7 @@ subroutine markov_chain_aux_field_GLE
 
    do n = 1, sites
 
-      i = int(rand() * sites)
+      i = int(rand() * sites) + 1
       deltaTheta = 2. * proposalInterval * (rand() - 0.5)
 
       ! CALL OLD ELECTRIC FIELD
