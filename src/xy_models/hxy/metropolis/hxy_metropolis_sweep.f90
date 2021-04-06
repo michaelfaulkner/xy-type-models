@@ -5,8 +5,9 @@ integer :: n, i
 double precision :: candidate_theta, potential_difference, candidate_emergent_field_1, candidate_emergent_field_2
 double precision :: candidate_emergent_field_3, candidate_emergent_field_4
 
+call randomise_array_of_sites
 do n = 1, sites
-    i = int(rand() * sites) + 1  ! todo remove pick and replace (everywhere)
+    i = array_of_sites(n)
     candidate_theta = mod(theta(i) + 2.0d0 * proposalInterval * (rand() - 0.5d0), twopi)
     candidate_emergent_field_1 = modulo(candidate_theta - theta(neg_y(i)) + pi, twopi) - pi
     candidate_emergent_field_2 = modulo(- candidate_theta + theta(neg_x(i)) + pi, twopi) - pi

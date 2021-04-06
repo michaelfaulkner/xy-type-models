@@ -5,7 +5,7 @@ integer, parameter :: max_sites = max_side * max_side
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 0.00000000001
-integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), v(max_sites)
+integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), array_of_sites(max_sites)
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist, no_of_accepted_local_moves
 integer :: no_of_accepted_external_global_moves, nmax, calculate_external_minimising_twist_field
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
@@ -21,7 +21,7 @@ end module variables
 subroutine input(seed, start)
 use variables
 implicit none
-integer :: seed, start
+integer :: i, seed, start
 
 read(1, *) output_directory
 read(1, *) side
@@ -42,6 +42,10 @@ temperature = initial_temperature
 sites = side * side
 volume = float(sites)
 length = float(side)
+
+do i = 1, sites
+    array_of_sites(i) = i
+end do
 
 if (side > max_side) then
     write(6, *) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
