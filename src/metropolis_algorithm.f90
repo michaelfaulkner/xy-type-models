@@ -2,8 +2,8 @@ program metropolis_algorithm
 use variables
 implicit none
 character(100) :: config_file
-integer i, j, seed, start
-double precision magnitude_of_temperature_increments
+integer :: i, j, seed, start
+double precision :: magnitude_of_temperature_increments
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
