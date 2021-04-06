@@ -14,12 +14,12 @@ do n = 1, sites
     candidate_emergent_field_3 = modulo(theta(pos_y(i)) - candidate_theta + pi, twopi) - pi
     candidate_emergent_field_4 = modulo(- theta(pos_x(i)) + candidate_theta + pi, twopi) - pi
 
-    potential_difference = 0.5d0 * (candidate_emergent_field_1 * candidate_emergent_field_1 + &
-                                    candidate_emergent_field_2 * candidate_emergent_field_2 + &
-                                    candidate_emergent_field_3 * candidate_emergent_field_3 + &
-                                    candidate_emergent_field_4 * candidate_emergent_field_4 - &
-                                    top_x(i) * top_x(i) - top_y(i) * top_y(i) - &
-                                    top_x(pos_y(i)) * top_x(pos_y(i)) - top_y(pos_x(i)) * top_y(pos_x(i)))
+    potential_difference = 0.5d0 * (candidate_emergent_field_1 * candidate_emergent_field_1 &
+                                    + candidate_emergent_field_2 * candidate_emergent_field_2 &
+                                    + candidate_emergent_field_3 * candidate_emergent_field_3 &
+                                    + candidate_emergent_field_4 * candidate_emergent_field_4 &
+                                    - top_x(i) * top_x(i) - top_y(i) * top_y(i) &
+                                    - top_x(pos_y(i)) * top_x(pos_y(i)) - top_y(pos_x(i)) * top_y(pos_x(i)))
 
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         theta(i) = candidate_theta
