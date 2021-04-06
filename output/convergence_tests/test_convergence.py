@@ -26,11 +26,8 @@ def main(algorithm_name, config_file_name):
                             delimiter=',')
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
-        magnetisation_x = np.loadtxt(sample_directory + temperature_directory + '/magnetisation_x_sample.dat',
-                                     dtype=float)[no_of_equilibrium_iterations:]
-        magnetisation_y = np.loadtxt(sample_directory + temperature_directory + '/magnetisation_y_sample.dat',
-                                     dtype=float)[no_of_equilibrium_iterations:]
-        sample = (magnetisation_x ** 2 + magnetisation_y ** 2) ** 0.5
+        sample = np.linalg.norm(np.loadtxt(sample_directory + temperature_directory + '/magnetisation_sample.dat',
+                                           dtype=float, delimiter=',')[no_of_equilibrium_iterations:], axis=1)
     else:
         IOError('Give one of elementary-electrolyte, multivalued-electrolyte, hxy-ecmc, hxy-metropolis, xy-ecmc or '
                 'xy-metropolis as the first positional argument of the test_convergence.py script.')

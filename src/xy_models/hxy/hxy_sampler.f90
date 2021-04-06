@@ -46,17 +46,13 @@ if (calculate_external_minimising_twist_field == 1) then
     call external_minimising_twist_field_calculation
 end if
   
-write(10, 100) magnetisation_x
-write(11, 100) magnetisation_y
-write(12, 100) mean_1st_derivative_of_potential_x
-write(13, 100) mean_1st_derivative_of_potential_y
-write(14, 100) mean_2nd_derivative_of_potential_x
-write(15, 100) mean_2nd_derivative_of_potential_y
-write(16, 100) potential
-write(17,200) no_of_external_twists_to_minimise_potential_x
-write(18,200) no_of_external_twists_to_minimise_potential_y
+write(10, 100) magnetisation_x, magnetisation_y
+write(11, 100) mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
+write(12, 100) mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
+write(13, 100) potential
+write(14, 200) no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 
-100 format(ES24.14)
+100 format(ES24.14, ", ", ES24.14)
 200 format(I2)
 
 return
