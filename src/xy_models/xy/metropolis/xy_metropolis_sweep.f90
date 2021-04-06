@@ -7,7 +7,7 @@ double precision :: candidate_theta, potential_difference
 call randomise_array_of_sites
 do n = 1, sites
     i = array_of_sites(n)
-    candidate_theta = mod(theta(i) + 2.0d0 * proposalInterval * (rand() - 0.5d0), twopi)
+    candidate_theta = mod(theta(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
 
     potential_difference = - cos(theta(pos_x(i)) - candidate_theta) - cos(theta(pos_y(i)) - candidate_theta) - &
                                 cos(candidate_theta - theta(neg_x(i))) - cos(candidate_theta - theta(neg_y(i))) + &

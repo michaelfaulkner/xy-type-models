@@ -8,7 +8,7 @@ double precision :: candidate_emergent_field_3, candidate_emergent_field_4
 call randomise_array_of_sites
 do n = 1, sites
     i = array_of_sites(n)
-    candidate_theta = mod(theta(i) + 2.0d0 * proposalInterval * (rand() - 0.5d0), twopi)
+    candidate_theta = mod(theta(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
     candidate_emergent_field_1 = modulo(candidate_theta - theta(neg_y(i)) + pi, twopi) - pi
     candidate_emergent_field_2 = modulo(- candidate_theta + theta(neg_x(i)) + pi, twopi) - pi
     candidate_emergent_field_3 = modulo(theta(pos_y(i)) - candidate_theta + pi, twopi) - pi

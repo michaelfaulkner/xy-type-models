@@ -64,7 +64,7 @@ do i = 0, Tsteps
 
     call output_acceptance_rates
     T = T + Tincr
-    proposalInterval = proposalInterval + deltaProposalInterval
+    width_of_proposal_interval = width_of_proposal_interval + magnitude_of_proposal_interval_increments
 
 end do
 end program elementary_charge_maggs_electrolyte_algorithm
@@ -146,7 +146,7 @@ subroutine markov_chain_aux_field_GLE
    do n = 1, sites
 
       i = int(rand() * sites) + 1
-      deltaTheta = 2. * proposalInterval * (rand() - 0.5)
+      deltaTheta = width_of_proposal_interval * (rand() - 0.5)
 
       ! CALL OLD ELECTRIC FIELD
 

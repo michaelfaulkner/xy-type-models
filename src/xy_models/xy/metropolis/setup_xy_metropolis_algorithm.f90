@@ -8,8 +8,8 @@ integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist, no_of_accepted_local_moves
 integer :: no_of_accepted_external_global_moves
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: volume, length, beta, temperature, initial_temperature, final_temperature, proposalInterval
-double precision :: deltaProposalInterval
+double precision :: volume, length, beta, temperature, initial_temperature, final_temperature
+double precision :: width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 ! **************************************
@@ -28,8 +28,8 @@ read(1,*) measurements
 read(1,*) initial_temperature
 read(1,*) final_temperature
 read(1,*) no_of_temperature_increments
-read(1,*) proposalInterval
-read(1,*) deltaProposalInterval
+read(1,*) width_of_proposal_interval
+read(1,*) magnitude_of_proposal_interval_increments
 read(1,*) start
 read(1,*) twist
 read(1,*) seed

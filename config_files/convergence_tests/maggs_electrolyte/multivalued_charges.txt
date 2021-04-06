@@ -5,8 +5,8 @@
 1.5                 	                                                Initial temperature
 1.5                	                                                    Final temperature
 0			                                                            No. of temperature increments
-2.0 			                                                        Initial magnitude of proposal interval, x; interval = (-x / 2, x / 2]
-0.0375			                                                        Change in magnitude of proposal interval (between temperatures)
+4.0 			                                                        Initial width of proposal interval, x; interval = (-x / 2, x / 2]
+0.2 			                                                        Change in magnitude of proposal interval (between temperatures)
 1			                                                            No. of charge proposals/aux.-field proposal
 1			                                                            No. of external TSF proposals/aux.-field proposal
 1                                                                       use external TSF move (0 = no, 1 = yes)

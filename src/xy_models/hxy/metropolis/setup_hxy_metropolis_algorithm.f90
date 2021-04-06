@@ -11,7 +11,8 @@ integer :: no_of_accepted_external_global_moves, nmax, calculate_external_minimi
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
 double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length
-double precision :: beta, temperature, initial_temperature, final_temperature, proposalInterval, deltaProposalInterval
+double precision :: beta, temperature, initial_temperature, final_temperature
+double precision :: width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 ! **************************************
@@ -30,8 +31,8 @@ read(1, *) measurements
 read(1, *) initial_temperature
 read(1, *) final_temperature
 read(1, *) no_of_temperature_increments
-read(1, *) proposalInterval
-read(1, *) deltaProposalInterval
+read(1, *) width_of_proposal_interval
+read(1, *) magnitude_of_proposal_interval_increments
 read(1, *) start
 read(1, *) twist
 read(1, *) nmax

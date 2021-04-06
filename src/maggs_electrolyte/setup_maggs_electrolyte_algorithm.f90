@@ -14,7 +14,7 @@ integer pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), 
 integer side, sites, Tsteps, thermSweeps, measurements, globalTSFon
 integer accept_charge, accept_aux_field, accept_TSF, ratio_charge_updates, ratio_TSF_updates
 real*8  Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
-real*8  volume, length, T, beta, Tmin, Tmax, proposalInterval, deltaProposalInterval
+real*8  volume, length, T, beta, Tmin, Tmax, width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 
@@ -34,8 +34,8 @@ read(1,*) measurements
 read(1,*) Tmin
 read(1,*) Tmax
 read(1,*) Tsteps
-read(1,*) proposalInterval
-read(1,*) deltaProposalInterval
+read(1,*) width_of_proposal_interval
+read(1,*) magnitude_of_proposal_interval_increments
 read(1,*) ratio_charge_updates
 read(1,*) ratio_TSF_updates
 read(1,*) globalTSFon

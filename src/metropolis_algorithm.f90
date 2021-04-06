@@ -52,6 +52,6 @@ do i = 0, no_of_temperature_increments
 
     call output_metropolis_acceptance_rates
     temperature = temperature + magnitude_of_temperature_increments
-    proposalInterval = proposalInterval + deltaProposalInterval
+    width_of_proposal_interval = width_of_proposal_interval + magnitude_of_proposal_interval_increments
 end do
 end program metropolis_algorithm
