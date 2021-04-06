@@ -10,9 +10,10 @@ OFLAGS = gfortran -O -o
 
 all: create-executable clean move-executable
 
-OBJECTS = random.o setup_xy_metropolis_algorithm.o periodic_boundaries.o xy_models_initialise_spin_configuration.o \
-			xy_models_create_sample_files.o xy_sampler.o attempt_external_xy_twist.o xy_metropolis_sweep.o \
-			xy_models_output_metropolis_acceptance_rates.o metropolis_algorithm.o
+OBJECTS = random_number_generator.o setup_xy_metropolis_algorithm.o periodic_boundaries.o \
+			xy_models_initialise_spin_configuration.o xy_models_create_sample_files.o xy_sampler.o \
+			attempt_external_xy_twist.o xy_metropolis_sweep.o xy_models_output_metropolis_acceptance_rates.o \
+			metropolis_algorithm.o
 
 create-executable: $(OBJECTS)
 	$(OFLAGS) xy_metropolis_algorithm.exe $(OBJECTS) -lm

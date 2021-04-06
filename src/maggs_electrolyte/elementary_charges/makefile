@@ -10,7 +10,7 @@ OFLAGS= gfortran -O -o
 
 all: create-executable clean move-executable
 
-OBJECTS = random.o setup_maggs_electrolyte_algorithm.o maggs_electrolyte_sampler.o \
+OBJECTS = random_number_generator.o setup_maggs_electrolyte_algorithm.o maggs_electrolyte_sampler.o \
 			attempt_external_topological_sector_fluctuation.o elementary_charge_maggs_electrolyte_algorithm.o
 
 create-executable : $(OBJECTS)
