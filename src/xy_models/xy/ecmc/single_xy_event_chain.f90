@@ -16,8 +16,7 @@ do                                                                              
     neighbouring_spin_indices(3) = neg_y(active_spin_index)
     neighbouring_spin_indices(4) = pos_y(active_spin_index)
 
-    shortest_distance_to_next_factor_event = 10d10                                             ! RESET DISTANCE COUNTER FOR NEW SUB-CHAIN (WHERE SUB-CHAINS CONNECT EVENTS WITHIN AN EVENT CHAIN)
-
+    shortest_distance_to_next_factor_event = 1.0d10
     do i = 1, 4                                                                       ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
         thetafix = theta(neighbouring_spin_indices(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
         deltaThetaInitial = modulo(active_spin - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
