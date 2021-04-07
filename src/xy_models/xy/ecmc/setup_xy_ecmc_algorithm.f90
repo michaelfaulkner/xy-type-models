@@ -8,7 +8,8 @@ integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, max_autocorr_time, twist
 integer :: no_of_events, no_of_accepted_external_global_moves
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: volume, length, beta, temperature, initial_temperature, final_temperature, maxchainlength
+double precision :: volume, length, beta, temperature, initial_temperature, final_temperature
+double precision :: spin_space_distance_between_observations
 end module variables
 
 ! **************************************
@@ -34,7 +35,7 @@ read(1,*) seed
 temperature = initial_temperature
 sites = side * side
 volume = float(sites)
-maxchainlength = volume * pi ! 2PI TO TRANSFORM TO SPIN SPACE; 1/2 TO REFLECT MANON MICHEL
+spin_space_distance_between_observations = volume * pi
 
 if (side > max_side) then
    write(6, *) 'Linear lattice length exceeds maximum: change the maximum in module variables.'
