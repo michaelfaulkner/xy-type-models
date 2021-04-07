@@ -3,7 +3,7 @@
 ! **************************************
 
 module variables
-character(100) :: output_directory
+character(100) :: output_directory, algorithm_name
 real*8, parameter :: twopi = 6.28318531
 real*8, parameter :: pi = 3.14159265
 real*8, parameter :: epsilon = 10.0 ** (-6)
@@ -27,21 +27,27 @@ use variables
 implicit none
 integer seed, start
 
+read(1, *) algorithm_name
 read(1, *) output_directory
-read(1,*) side
-read(1,*) thermSweeps
-read(1,*) measurements
-read(1,*) Tmin
-read(1,*) Tmax
-read(1,*) Tsteps
-read(1,*) width_of_proposal_interval
-read(1,*) magnitude_of_proposal_interval_increments
-read(1,*) ratio_charge_updates
-read(1,*) ratio_TSF_updates
-read(1,*) globalTSFon
-read(1,*) elementaryCharge
-read(1,*) seed
+read(1, *) side
+read(1, *) thermSweeps
+read(1, *) measurements
+read(1, *) Tmin
+read(1, *) Tmax
+read(1, *) Tsteps
+read(1, *) width_of_proposal_interval
+read(1, *) magnitude_of_proposal_interval_increments
+read(1, *) ratio_charge_updates
+read(1, *) ratio_TSF_updates
+read(1, *) globalTSFon
+read(1, *) elementaryCharge
+read(1, *) seed
 
+if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
+   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal either elementary-electrolyte or &
+                    multivalued-electrolyte.'
+   stop
+end if
 sites = side * side
 volume = float(sites)
 length = float(side)

@@ -1,5 +1,5 @@
 module variables
-character(100) :: output_directory
+character(100) :: output_directory, algorithm_name
 integer, parameter :: max_side = 128
 integer, parameter :: max_sites = max_side * max_side
 double precision, parameter :: twopi = 6.28318530717959d0
@@ -24,6 +24,7 @@ use variables
 implicit none
 integer seed, start
 
+read(1, *) algorithm_name
 read(1, *) output_directory
 read(1, *) side
 read(1, *) therm_sweeps
@@ -37,6 +38,10 @@ read(1, *) nmax
 read(1, *) calculate_external_minimising_twist_field
 read(1, *) seed
 
+if (algorithm_name /= 'hxy-ecmc') then
+   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-ecmc.'
+   stop
+end if
 temperature = initial_temperature
 sites = side * side
 volume = float(sites)

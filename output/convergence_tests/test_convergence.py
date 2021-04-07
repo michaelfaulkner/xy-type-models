@@ -7,16 +7,19 @@ import os
 import sys
 
 
-def main(algorithm_name, config_file_name):
+def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     with open(config_file_name, 'r') as config_file:
         config_data = csv.reader(config_file, delimiter='\t')
         for index, row in enumerate(config_data):
             if index == 0:
+                algorithm_name = row[0].replace("'", "").replace("algorithm_name", "").replace(" ", "")
+            if index == 1:
                 sample_directory = row[0].replace("'", "").replace("output directory", "").replace(" ", "")
-            if index == 2:
-                no_of_equilibrium_iterations = int(row[0].replace("No. of equilibration iterations", "").replace(" ", ""))
-            if index == 4:
+            if index == 3:
+                no_of_equilibrium_iterations = int(row[0].replace("No. of equilibration iterations", "").replace(" ",
+                                                                                                                 ""))
+            if index == 5:
                 temperature = float(row[0].replace("Initial temperature", "").replace(" ", ""))
                 temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
                 break
@@ -86,4 +89,4 @@ def get_cumulative_distribution(input_sample):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1])

@@ -1,7 +1,8 @@
+'hxy-ecmc'                              algorithm_name
 'output/convergence_tests/hxy/ecmc'     output directory
 8                                       Lattice length
-100000                                   No. of equilibration iterations
-100000                                   No. of observations (sample size)
+100000                                  No. of equilibration iterations
+100000                                  No. of observations (sample size)
 1.3                                     Initial temperature
 1.3                                     Final temperature
 0                                       No. of temperature increments

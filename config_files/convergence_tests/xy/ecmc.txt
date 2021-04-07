@@ -1,3 +1,4 @@
+'xy-ecmc'                               algorithm_name
 'output/convergence_tests/xy/ecmc'      output directory
 8                                       Lattice length
 40000                                   No. of equilibration iterations

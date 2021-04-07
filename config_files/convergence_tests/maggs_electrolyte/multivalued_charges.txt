@@ -1,3 +1,4 @@
+'multivalued-electrolyte'                                               algorithm_name
 'output/convergence_tests/maggs_electrolyte/multivalued_charges'        output directory
 8                  	                                                    Lattice length
 400000                	                                                No. of equilibration iterations

@@ -1,3 +1,4 @@
+'xy-metropolis'                                 algorithm_name
 'output/convergence_tests/xy/metropolis'        output directory
 8                                               Lattice length
 100000                                          No. of equilibration iterations
