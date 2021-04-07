@@ -3,7 +3,7 @@ use variables
 implicit none
 integer :: i, active_spin_index, vetoeing_spin_index
 integer, dimension (1:4) :: neighbouring_spin_indices
-double precision :: Estar, distanceToNextEvent, deltaEinitial, deltaEexit, distanceToGo, active_spin, thetafix
+double precision :: Estar, shortest_distance_to_next_factor_event, deltaEinitial, deltaEexit, distanceToGo, active_spin, thetafix
 double precision :: deltaThetaInitial, deltaThetaExit, distance, Ntours
 
 active_spin_index = int(volume * rand())                                                       ! PICK A SITE AT RANDOM FOR INITIAL LIFTING VARIABLE (FROM {0, 1, ..., N-1})
@@ -16,7 +16,7 @@ do                                                                              
     neighbouring_spin_indices(3) = neg_y(active_spin_index)
     neighbouring_spin_indices(4) = pos_y(active_spin_index)
 
-    distanceToNextEvent = 10d10                                             ! RESET DISTANCE COUNTER FOR NEW SUB-CHAIN (WHERE SUB-CHAINS CONNECT EVENTS WITHIN AN EVENT CHAIN)
+    shortest_distance_to_next_factor_event = 10d10                                             ! RESET DISTANCE COUNTER FOR NEW SUB-CHAIN (WHERE SUB-CHAINS CONNECT EVENTS WITHIN AN EVENT CHAIN)
 
     do i = 1, 4                                                                       ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
         thetafix = theta(neighbouring_spin_indices(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
@@ -38,19 +38,19 @@ do                                                                              
             distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)
         end if
 
-        if (distanceToNextEvent > distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
-           distanceToNextEvent = distance
+        if (shortest_distance_to_next_factor_event > distance) then                                   ! IF LENGTH COVERED IS SHORTEST SO FAR
+           shortest_distance_to_next_factor_event = distance
            vetoeing_spin_index = neighbouring_spin_indices(i)                                                     ! UPDATE veto SPIN/PARAMETER
         end if
 
     end do
 
-    if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
+    if (shortest_distance_to_next_factor_event > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
         theta(active_spin_index) = mod(active_spin + distanceToGo, twopi)            ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
         exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
     else
-        theta(active_spin_index) = mod(active_spin + distanceToNextEvent, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
-        distanceToGo = distanceToGo - distanceToNextEvent
+        theta(active_spin_index) = mod(active_spin + shortest_distance_to_next_factor_event, twopi)      ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
+        distanceToGo = distanceToGo - shortest_distance_to_next_factor_event
         active_spin_index = vetoeing_spin_index                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
         no_of_events = no_of_events + 1
     end if
