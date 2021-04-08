@@ -34,9 +34,10 @@ mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y / volume
 write(10, 100) magnetisation_x, magnetisation_y
 write(11, 100) mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
 write(12, 100) mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
-write(13, 100) potential
+write(13, 200) potential
 
 100 format(ES24.14, ", ", ES24.14)
+200 format(ES24.14)
 
 return
 end subroutine draw_observations

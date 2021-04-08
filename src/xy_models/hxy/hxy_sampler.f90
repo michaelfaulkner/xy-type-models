@@ -49,11 +49,12 @@ end if
 write(10, 100) magnetisation_x, magnetisation_y
 write(11, 100) mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
 write(12, 100) mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
-write(13, 100) potential
-write(14, 200) no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
+write(13, 200) potential
+write(14, 300) no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 
 100 format(ES24.14, ", ", ES24.14)
-200 format(I2, ", ", I2)
+200 format(ES24.14)
+300 format(I2, ", ", I2)
 
 return
 end subroutine draw_observations
