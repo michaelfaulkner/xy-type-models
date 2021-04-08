@@ -11,6 +11,7 @@ this_directory = os.path.dirname(os.path.abspath(__file__))
 output_directory = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, output_directory)
 config_file = importlib.import_module("config_file")
+get_sample = importlib.import_module("get_sample")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
 
@@ -27,8 +28,7 @@ def main(config_file_name):
                             delimiter=',')
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
-        sample = np.linalg.norm(np.loadtxt(sample_directory + temperature_directory + '/magnetisation_sample.dat',
-                                           dtype=float, delimiter=',')[no_of_equilibrium_iterations:], axis=1)
+        sample = get_sample.magnetisation(sample_directory, temperature_directory)[no_of_equilibrium_iterations:]
     else:
         IOError('Give one of elementary-electrolyte, multivalued-electrolyte, hxy-ecmc, hxy-metropolis, xy-ecmc or '
                 'xy-metropolis as the first positional argument of the test_convergence.py script.')
