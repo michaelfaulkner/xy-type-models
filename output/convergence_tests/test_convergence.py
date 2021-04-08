@@ -5,6 +5,11 @@ import numpy as np
 import os
 import sys
 
+
+# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
+this_directory = os.path.dirname(os.path.abspath(__file__))
+output_directory = os.path.abspath(this_directory + "/../")
+sys.path.insert(0, output_directory)
 config_file = importlib.import_module("config_file")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
@@ -12,10 +17,9 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
-    algorithm_name = basic_configuration_data[0]
-    sample_directory = basic_configuration_data[1]
-    no_of_equilibrium_iterations = basic_configuration_data[3]
-    temperature = basic_configuration_data[5]
+    (algorithm_name, sample_directory, no_of_equilibrium_iterations, temperature) = (
+        basic_configuration_data[0], basic_configuration_data[1], basic_configuration_data[3],
+        basic_configuration_data[5])
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
@@ -44,10 +48,6 @@ def main(config_file_name):
         reference_sample = np.loadtxt('output/convergence_tests/xy/xy_8x8_sites_temp_0_point_8_magnetisation_norm_'
                                       'reference_sample.dat', dtype=float)
 
-    # Add the directory that contains the module plotting_functions to sys.path
-    this_directory = os.path.dirname(os.path.abspath(__file__))
-    output_directory = os.path.abspath(this_directory + "/../")
-    sys.path.insert(0, output_directory)
     effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 

@@ -21,7 +21,8 @@ def get_basic_configuration_data(config_file_name):
             if index == 6:
                 final_temperature = float(row[0].replace("final temperature", "").replace(" ", ""))
             if index == 7:
-                no_of_temperature_increments = int(row[0].replace("no of temperature increments", "").replace(" ", ""))
+                no_of_temperature_increments = int(row[0].replace("number of temperature increments", "").replace(" ",
+                                                                                                                  ""))
                 break
     return (algorithm_name, sample_directory, lattice_length, no_of_equilibrium_iterations, no_of_observations,
             initial_temperature, final_temperature, no_of_temperature_increments)
