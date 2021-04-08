@@ -29,9 +29,6 @@ def main(config_file_name):
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
         sample = get_sample.magnetisation(sample_directory, temperature_directory)[no_of_equilibrium_iterations:]
-    else:
-        IOError('Give one of elementary-electrolyte, multivalued-electrolyte, hxy-ecmc, hxy-metropolis, xy-ecmc or '
-                'xy-metropolis as the first positional argument of the test_convergence.py script.')
 
     if algorithm_name == 'elementary-electrolyte':
         reference_sample = np.loadtxt('output/convergence_tests/maggs_electrolyte/elementary_charges/elementary_maggs_'
