@@ -4,6 +4,8 @@ integer, parameter :: max_side = 128
 integer, parameter :: max_sites = max_side * max_side
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
+double precision, parameter :: pi_squared = 9.86960440108936d0
+double precision, parameter :: pi_squared_over_two = 4.93480220054468d0
 double precision, parameter :: epsilon = 0.00000000001
 integer :: pos_x(max_sites),neg_x(max_sites),pos_y(max_sites),neg_y(max_sites),v(max_sites)
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, max_autocorr_time, twist, nmax

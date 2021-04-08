@@ -29,22 +29,22 @@ do
             initial_two_spin_potential = 0.5d0 * initial_spin_value_difference * initial_spin_value_difference
             no_of_complete_spin_rotations = int((initial_two_spin_potential + &
                                                     uphill_distance_through_potential_space_before_next_event) / &
-                                                (twopi * twopi / 8.0d0))
-            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * twopi * twopi / 8.0d0 - &
-                                            (initial_two_spin_potential + &
-                                                    uphill_distance_through_potential_space_before_next_event)
-            final_spin_value_difference = pi - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * final_two_spin_potential)
+                                                pi_squared_over_two)
+            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * pi_squared_over_two - &
+                                            initial_two_spin_potential - &
+                                            uphill_distance_through_potential_space_before_next_event
+            final_spin_value_difference = pi - sqrt(pi_squared - 2.0d0 * final_two_spin_potential)
             distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
-                                                (initial_spin_value_difference + final_spin_value_difference)
+                                                initial_spin_value_difference - final_spin_value_difference
         ! else: factor derivative < 0 ==> go to bottom of potential well
         else
             no_of_complete_spin_rotations = int(uphill_distance_through_potential_space_before_next_event / &
-                                                    (twopi * twopi / 8.0d0))
-            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * twopi * twopi / 8.0d0 - &
+                                                    pi_squared_over_two)
+            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * pi_squared_over_two - &
                                             uphill_distance_through_potential_space_before_next_event
-            final_spin_value_difference = twopi / 2.0d0 - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * final_two_spin_potential)
+            final_spin_value_difference = pi - sqrt(pi_squared - 2.0d0 * final_two_spin_potential)
             distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
-                                                (initial_spin_value_difference + final_spin_value_difference)
+                                                initial_spin_value_difference - final_spin_value_difference
         end if
 
         if (distance_to_next_factor_event < shortest_distance_to_next_factor_event) then
@@ -53,7 +53,7 @@ do
         end if
     end do
 
-    if (shortest_distance_to_next_factor_event > distance_left_before_next_observation) then
+    if (distance_left_before_next_observation < shortest_distance_to_next_factor_event) then
         ! update active spin value and exit event chain in order to observe the system
         theta(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
         exit
