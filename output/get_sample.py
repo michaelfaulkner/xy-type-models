@@ -11,7 +11,7 @@ def helicity_modulus(sample_directory, temperature_directory, beta, no_of_sites)
     return sample_mean_2nd_derivative_of_potential - beta * no_of_sites * sample_mean_1st_derivative_of_potential ** 2
 
 
-def magnetisation(sample_directory, temperature_directory):
+def magnetisation(sample_directory, temperature_directory, beta, no_of_sites):
     return np.linalg.norm(np.loadtxt(sample_directory + temperature_directory + '/magnetisation_sample.dat',
                                      dtype=float, delimiter=','), axis=1)
 
