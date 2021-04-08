@@ -1,4 +1,3 @@
-import csv
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
@@ -6,23 +5,18 @@ import numpy as np
 import os
 import sys
 
+config_file = importlib.import_module("config_file")
+markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
+
 
 def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
-    with open(config_file_name, 'r') as config_file:
-        config_data = csv.reader(config_file, delimiter='\t')
-        for index, row in enumerate(config_data):
-            if index == 0:
-                algorithm_name = row[0].replace("'", "").replace("algorithm_name", "").replace(" ", "")
-            if index == 1:
-                sample_directory = row[0].replace("'", "").replace("output directory", "").replace(" ", "")
-            if index == 3:
-                no_of_equilibrium_iterations = int(row[0].replace("No. of equilibration iterations", "").replace(" ",
-                                                                                                                 ""))
-            if index == 5:
-                temperature = float(row[0].replace("Initial temperature", "").replace(" ", ""))
-                temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
-                break
+    basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
+    algorithm_name = basic_configuration_data[0]
+    sample_directory = basic_configuration_data[1]
+    no_of_equilibrium_iterations = basic_configuration_data[3]
+    temperature = basic_configuration_data[5]
+    temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
         sample = np.loadtxt(sample_directory + temperature_directory + '/potential_sample.dat', dtype=float,
@@ -54,7 +48,6 @@ def main(config_file_name):
     this_directory = os.path.dirname(os.path.abspath(__file__))
     output_directory = os.path.abspath(this_directory + "/../")
     sys.path.insert(0, output_directory)
-    markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
     effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 
