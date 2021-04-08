@@ -10,8 +10,8 @@ integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
 integer :: no_of_events, no_of_accepted_external_global_moves, calculate_external_minimising_twist_field
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length
-double precision :: beta, temperature, initial_temperature, final_temperature, chainlength, maxchainlength
+double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length, beta, temperature
+double precision :: initial_temperature, final_temperature, chainlength, spin_space_distance_between_observations
 end module variables
 
 
@@ -46,7 +46,7 @@ temperature = initial_temperature
 sites = side * side
 volume = float(sites)
 length = float(side)
-maxchainlength = volume * pi ! 2PI TO TRANSFORM TO SPIN SPACE; 1/2 TO REFLECT MANON MICHEL
+spin_space_distance_between_observations = volume * pi
 
 if (side > max_side) then
     write(6, *) 'Linear lattice length exceeds maximum: change the maximum in the common file.'

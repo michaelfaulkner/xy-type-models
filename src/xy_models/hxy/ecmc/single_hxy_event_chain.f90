@@ -1,62 +1,71 @@
 subroutine single_event_chain
-  use variables
-  implicit none
-  integer :: i, lift, veto
-  integer, dimension (1:4) :: neighbours
-  double precision :: Estar,distanceToNextEvent,deltaEinitial,deltaEexit,distanceToGo
-  double precision :: thetalift,thetafix,deltaThetaInitial,Ntours,deltaThetaExit,distance
+use variables
+implicit none
+integer :: i, active_spin_index, vetoeing_spin_index
+integer, dimension (1:4) :: neighbouring_spin_indices
+double precision :: uphill_distance_through_potential_space_before_next_event, shortest_distance_to_next_factor_event
+double precision :: initial_two_spin_potential, final_two_spin_potential, distance_left_before_next_observation
+double precision :: active_spin_value, non_active_spin_value, initial_spin_value_difference, final_spin_value_difference
+double precision :: distance_to_next_factor_event, no_of_complete_spin_rotations
 
-  lift = int(volume * rand())                                                       ! PICK A SITE AT RANDOM FOR INITIAL LIFTING VARIABLE (FROM {0, 1, ..., N-1})
-  distanceToGo = maxchainlength                                                     ! SET REMAINING EVENT-CHAIN LENGTH AS THE MAX CHAIN LENGTH
+active_spin_index = int(volume * rand())
+distance_left_before_next_observation = spin_space_distance_between_observations
+! iterate until total distance covered in spin space reaches spin_space_distance_between_observations
+do
+    active_spin_value = theta(active_spin_index)
+    neighbouring_spin_indices(1) = neg_x(active_spin_index)
+    neighbouring_spin_indices(2) = pos_x(active_spin_index)
+    neighbouring_spin_indices(3) = neg_y(active_spin_index)
+    neighbouring_spin_indices(4) = pos_y(active_spin_index)
 
-  do                                                                                ! ITERATE UNTIL THE EVENT-CHAIN LENGTH EXCEEDS THE MAXIMUM PERMITTED: THEN WE EXIT SUBROUTINE, MEASURE AND RESAMPLE THE LIFTING SPIN/PARAMETER
-     thetalift = theta(lift)
-
-     neighbours(1) = neg_x(lift)
-     neighbours(2) = pos_x(lift)
-     neighbours(3) = neg_y(lift)
-     neighbours(4) = pos_y(lift)
-
-     distanceToNextEvent = 10d10                                                    ! RESET DISTANCE COUNTER FOR NEW SUB-CHAIN (WHERE SUB-CHAINS CONNECT EVENTS WITHIN AN EVENT CHAIN)
-
-     do i = 1, 4                                                                    ! ITERATE OVER lift'S NEIGHBOURING SPINS/PARAMETERS
-        thetafix = theta(neighbours(i))                                             ! THE VALUE OF EACH NEIGHBOURING SPIN/PARAMETER
-        deltaThetaInitial = modulo(thetalift - thetafix + pi, twopi) - pi           ! CALCULATE SPIN/PARAMETER DIFFERENCE MODULO WRT (-PI,PI] (FORTRAN MOD FUNCTION FAILS FOR NEGATIVE VALUES HENCE THE IF LOOP)
-        Estar = 1.0d0 - rand()                                                        ! DRAW UNIFORM CONT. RANDOM VARIABLE FROM (0,1] (TRANSFORM TO AVOIDS DIVERGENCES AT -ln(0))
-        Estar = - temperature * log(Estar)
-
-        if (deltaThetaInitial > 0.0d0) then                                                     ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS +VE
-           deltaEinitial = 0.5d0 * deltaThetaInitial * deltaThetaInitial                        ! INITIAL CONDITIONAL INT. POTENTIAL
-           Ntours = dble(int((deltaEinitial + Estar) / (twopi * twopi / 8.0d0)))                ! NO. COMPLETE ROTATIONS INDUCED THROUGH SPIN SPACE
-           deltaEexit = (Ntours + 1.0d0) * twopi * twopi / 8.0d0 - (deltaEinitial + Estar)      ! CONDITIONAL-INT.-POTENTIAL DIFF. BETWEEN TOP OF NEXT MAX. AND MOD(deltaEinitial + Estar,2.0)
-           deltaThetaExit = pi - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * deltaEexit)               ! EQUIV. TO ABOVE LINE IN SPIN/PARAMETER SPACE
-           distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)           ! TOTAL LENGTH OF PATH COVERED IN PARAMETER SPACE
-        else                                                                                    ! IF DERIVATIVE OF CONDITIONAL INT. POTENTIAL IS -VE, GO TO THE BOTTOM OF THE WELL
-           Ntours = dble(int(Estar / (twopi * twopi / 8.0d0)))
-           deltaEexit = (Ntours + 1.0d0) * twopi * twopi / 8.0d0 - Estar
-           deltaThetaExit = twopi / 2.0d0 - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * deltaEexit)
-           distance = (Ntours + 0.5d0) * twopi - (deltaThetaInitial + deltaThetaExit)
+    shortest_distance_to_next_factor_event = 1.0d10
+    ! iterate over neighbouring_spin_indices
+    do i = 1, 4
+        non_active_spin_value = theta(neighbouring_spin_indices(i))
+        initial_spin_value_difference = modulo(active_spin_value - non_active_spin_value + pi, twopi) - pi
+        uphill_distance_through_potential_space_before_next_event = - temperature * log(1.0d0 - rand())
+        ! if factor derivative > 0
+        if (initial_spin_value_difference > 0.0d0) then
+            initial_two_spin_potential = 0.5d0 * initial_spin_value_difference * initial_spin_value_difference
+            no_of_complete_spin_rotations = int((initial_two_spin_potential + &
+                                                    uphill_distance_through_potential_space_before_next_event) / &
+                                                (twopi * twopi / 8.0d0))
+            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * twopi * twopi / 8.0d0 - &
+                                            (initial_two_spin_potential + &
+                                                    uphill_distance_through_potential_space_before_next_event)
+            final_spin_value_difference = pi - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * final_two_spin_potential)
+            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
+                                                (initial_spin_value_difference + final_spin_value_difference)
+        ! else: factor derivative < 0 ==> go to bottom of potential well
+        else
+            no_of_complete_spin_rotations = int(uphill_distance_through_potential_space_before_next_event / &
+                                                    (twopi * twopi / 8.0d0))
+            final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * twopi * twopi / 8.0d0 - &
+                                            uphill_distance_through_potential_space_before_next_event
+            final_spin_value_difference = twopi / 2.0d0 - sqrt(twopi * twopi / 4.0d0 - 2.0d0 * final_two_spin_potential)
+            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
+                                                (initial_spin_value_difference + final_spin_value_difference)
         end if
 
-        if (distanceToNextEvent > distance) then                                 ! IF LENGTH COVERED IS SHORTEST SO FAR
-           distanceToNextEvent = distance
-           veto = neighbours(i)                                                     ! UPDATE veto SPIN/PARAMETER
+        if (distance_to_next_factor_event < shortest_distance_to_next_factor_event) then
+            shortest_distance_to_next_factor_event = distance_to_next_factor_event
+            vetoeing_spin_index = neighbouring_spin_indices(i)
         end if
+    end do
 
-     end do
-
-     if (distanceToNextEvent > distanceToGo) then                                  ! IF MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED
-        theta(lift) = mod(thetalift + distanceToGo, twopi)              ! JUST ADD THE REMAINING LENGTH FROM TOTAL ALLOWED CHAIN LENGTH
-        chainlength = chainlength + distanceToGo
-        exit                                                                        ! EXIT SUBROUTINE AS MAX. EVENT-CHAIN LENGTH HAS BEEN EXCEEDED: NOW MEASURE THE SYSTEM AND RESAMPLE LIFTING SPIN/PARAMETER
-     else
-        theta(lift) = mod(thetalift + distanceToNextEvent, twopi)               ! FINAL VALUE OF LIFTING VARIABLE IF MAX. LENGTH HASN'T BEEN EXCEEDED
-        chainlength = chainlength + distanceToNextEvent
-        distanceToGo = distanceToGo - distanceToNextEvent
-        lift = veto                                                                 ! UPDATE THE LIFTING SPIN/PARAMETER TO THAT WHICH VETOED THE CURRENT MOVE
+    if (shortest_distance_to_next_factor_event > distance_left_before_next_observation) then
+        ! update active spin value and exit event chain in order to observe the system
+        theta(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
+        exit
+    else
+        ! update active spin value and continute event chain
+        theta(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, twopi)
+        distance_left_before_next_observation = distance_left_before_next_observation - &
+                                                    shortest_distance_to_next_factor_event
+        active_spin_index = vetoeing_spin_index
         no_of_events = no_of_events + 1
-     end if
-  end do
-  
-  return
+    end if
+end do
+
+return
 end subroutine single_event_chain
