@@ -1,16 +1,16 @@
 'multivalued-electrolyte'                                               algorithm_name
 'output/convergence_tests/maggs_electrolyte/multivalued_charges'        output directory
-8                  	                                                    Lattice length
-400000                	                                                No. of equilibration iterations
-100000	                                                                No. of observations (sample size)
-1.5                 	                                                Initial temperature
-1.5                	                                                    Final temperature
-0			                                                            No. of temperature increments
-4.0 			                                                        Initial width of proposal interval, x; interval = (-x / 2, x / 2]
-0.2 			                                                        Change in magnitude of proposal interval (between temperatures)
-1			                                                            No. of charge proposals/aux.-field proposal
-1			                                                            No. of external TSF proposals/aux.-field proposal
+8                  	                                                    lattice length
+400000                	                                                number of equilibration iterations
+100000	                                                                number of observations (sample size)
+1.5                 	                                                initial temperature
+1.5                	                                                    final temperature
+0			                                                            number of temperature increments
+4.0 			                                                        initial width of proposal interval, x; interval = (-x / 2, x / 2]
+0.2 			                                                        change in magnitude of proposal interval (between temperatures)
+1			                                                            number of charge proposals/aux.-field proposal
+1			                                                            number of external TSF proposals/aux.-field proposal
 1                                                                       use external TSF move (0 = no, 1 = yes)
-6.28318531      	                                                    Elementary-charge value
-123847209                                                               Seed for random number generator
+6.28318531      	                                                    elementary-charge value
+123847209                                                               seed for random number generator
 end
