@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 
@@ -12,21 +13,34 @@ def number_of_events(sample_directory, temperature_directory):
 
 
 def inverse_permittivity(sample_directory, temperature_directory, beta, number_of_sites):
-    harmonic_mode_sample = np.mean(np.loadtxt(sample_directory + temperature_directory +
-                                              '/sum_of_electric_field_x_sample.dat', dtype=float, delimiter=','),
-                                   axis=1)
-    return 1.0 - beta * (harmonic_mode_sample - np.mean(harmonic_mode_sample)) ** 2 / number_of_sites
+    sum_of_electric_field_sample = np.loadtxt(sample_directory + temperature_directory +
+                                              '/sum_of_electric_field_sample.dat', dtype=float, delimiter=',')
+    return 1.0 - beta * np.mean((sum_of_electric_field_sample - np.mean(sum_of_electric_field_sample, axis=0)) ** 2,
+                                axis=1) / number_of_sites
+
+
+def topological_sector_fluctuations(sample_directory, temperature_directory, beta, number_of_sites):
+    topological_sector_sample = topological_sector(sample_directory, temperature_directory, beta, number_of_sites)
+    return 4.0 * beta * math.pi ** 2 * np.mean(
+        (topological_sector_sample - np.mean(topological_sector_sample, axis=0)) ** 2, axis=1) / number_of_sites
+
+
+def topological_sector(sample_directory, temperature_directory, beta, number_of_sites):
+    sum_of_electric_field_sample = np.loadtxt(sample_directory + temperature_directory +
+                                              '/sum_of_electric_field_sample.dat', dtype=float, delimiter=',')
+    return (sum_of_electric_field_sample + math.pi * number_of_sites ** 0.5) // (2.0 * math.pi * number_of_sites ** 0.5)
 
 
 def helicity_modulus(sample_directory, temperature_directory, beta, number_of_sites):
-    mean_1st_derivative_of_potential_sample = np.mean(np.loadtxt(sample_directory + temperature_directory +
-                                                                 '/mean_1st_derivative_of_potential_sample.dat',
-                                                                 dtype=float, delimiter=','), axis=1)
-    mean_2nd_derivative_of_potential_sample = np.mean(np.loadtxt(sample_directory + temperature_directory +
-                                                                 '/mean_2nd_derivative_of_potential_sample.dat',
-                                                                 dtype=float, delimiter=','), axis=1)
-    return mean_2nd_derivative_of_potential_sample - beta * (mean_1st_derivative_of_potential_sample - np.mean(
-        mean_1st_derivative_of_potential_sample)) ** 2 / number_of_sites
+    sum_of_1st_derivative_of_potential_sample = np.loadtxt(sample_directory + temperature_directory +
+                                                           '/sum_of_1st_derivative_of_potential_sample.dat',
+                                                           dtype=float, delimiter=',')
+    sum_of_2nd_derivative_of_potential_sample = np.loadtxt(sample_directory + temperature_directory +
+                                                           '/sum_of_2nd_derivative_of_potential_sample.dat',
+                                                           dtype=float, delimiter=',')
+    return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) - beta * np.mean(
+        (sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample, axis=0)) ** 2,
+        axis=1) / number_of_sites
 
 
 def magnetisation(sample_directory, temperature_directory, beta, number_of_sites):

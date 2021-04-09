@@ -16,11 +16,11 @@ end do
 call measure_Esum
 
 ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
-write(10, 100) Esum_x
-write(11, 100) Esum_y
-write(12, 100) potential
+write(10, 100) Esum_x, Esum_y
+write(11, 200) potential
 
-100 format(F16.8)
+100 format(ES24.14, ", ", ES24.14)
+200 format(ES24.14)
 
 return
 end subroutine measure
