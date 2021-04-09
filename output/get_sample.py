@@ -1,6 +1,16 @@
 import numpy as np
 
 
+def acceptance_rates(sample_directory, temperature_directory):
+    return np.atleast_1d(np.loadtxt(sample_directory + temperature_directory + '/acceptance_rates.dat', dtype=float,
+                                    delimiter=','))
+
+
+def number_of_events(sample_directory, temperature_directory):
+    return np.atleast_1d(np.loadtxt(sample_directory + temperature_directory + '/number_of_events.dat', dtype=float,
+                                    delimiter=','))
+
+
 def helicity_modulus(sample_directory, temperature_directory, beta, no_of_sites):
     sample_mean_1st_derivative_of_potential = np.mean(np.loadtxt(sample_directory + temperature_directory +
                                                                  '/mean_1st_derivative_of_potential_sample.dat',
