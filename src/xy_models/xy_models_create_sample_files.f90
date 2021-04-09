@@ -12,10 +12,10 @@ call system ( 'mkdir -p ' // temperature_directory )
 write (filename, '(A, F4.2, "//magnetisation_sample.dat")' ) trim(output_directory)//trim(temperature_string), &
         temperature
 open(unit=10, file=filename)
-write (filename, '(A, F4.2, "//mean_1st_derivative_of_potential_sample.dat")' ) &
+write (filename, '(A, F4.2, "//sum_of_1st_derivative_of_potential_sample.dat")' ) &
         trim(output_directory)//trim(temperature_string), temperature
 open(unit=11, file=filename)
-write (filename, '(A, F4.2, "//mean_2nd_derivative_of_potential_sample.dat")' ) &
+write (filename, '(A, F4.2, "//sum_of_2nd_derivative_of_potential_sample.dat")' ) &
         trim(output_directory)//trim(temperature_string), temperature
 open(unit=12,file=filename)
 write (filename, '(A, F4.2, "//potential_sample.dat")' ) trim(output_directory)//trim(temperature_string), temperature

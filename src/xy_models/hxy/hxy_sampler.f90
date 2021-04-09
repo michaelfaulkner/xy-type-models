@@ -7,48 +7,42 @@ use variables
 implicit none
 integer :: i, n
 double precision :: magnetisation_x, magnetisation_y, potential
-double precision :: mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
-double precision :: mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
+double precision :: sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
+double precision :: sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 
 call top_field
 
 magnetisation_x = 0.0d0
 magnetisation_y = 0.0d0
-mean_1st_derivative_of_potential_x = 0.0d0
-mean_1st_derivative_of_potential_y = 0.0d0
-mean_2nd_derivative_of_potential_x = 0.0d0
-mean_2nd_derivative_of_potential_y = 0.0d0
+sum_of_1st_derivative_of_potential_x = 0.0d0
+sum_of_1st_derivative_of_potential_y = 0.0d0
+sum_of_2nd_derivative_of_potential_x = 0.0d0
+sum_of_2nd_derivative_of_potential_y = 0.0d0
 sum_of_squared_electric_field_x = 0.0d0
 sum_of_squared_electric_field_y = 0.0d0
 
 do i = 1, sites
     magnetisation_x = magnetisation_x + cos(theta(i))
     magnetisation_y = magnetisation_y + sin(theta(i))
-    mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x + top_y(i)
-    mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y + top_x(i)
+    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + top_y(i)
+    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + top_x(i)
     do n = 1, nmax
-        mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x + (-1) ** (n + 1) * cos((n + 1) * top_y(i))
-        mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y + (-1) ** (n + 1) * cos((n + 1) * top_x(i))
+        sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + (-1) ** (n + 1) * cos((n + 1) * top_y(i))
+        sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + (-1) ** (n + 1) * cos((n + 1) * top_x(i))
     end do
     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + top_x(i) * top_x(i)
     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + top_y(i) * top_y(i)
 end do
 potential = 0.5d0 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
 
-magnetisation_x = magnetisation_x / volume
-magnetisation_y = magnetisation_y / volume
-mean_1st_derivative_of_potential_x = mean_1st_derivative_of_potential_x / volume
-mean_1st_derivative_of_potential_y = mean_1st_derivative_of_potential_y / volume
-mean_2nd_derivative_of_potential_x = mean_2nd_derivative_of_potential_x / volume
-mean_2nd_derivative_of_potential_y = mean_2nd_derivative_of_potential_y / volume
 
 if (calculate_external_minimising_twist_field == 1) then
     call external_minimising_twist_field_calculation
 end if
   
 write(10, 100) magnetisation_x, magnetisation_y
-write(11, 100) mean_1st_derivative_of_potential_x, mean_1st_derivative_of_potential_y
-write(12, 100) mean_2nd_derivative_of_potential_x, mean_2nd_derivative_of_potential_y
+write(11, 100) sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
+write(12, 100) sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 write(13, 200) potential
 write(14, 300) no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 
