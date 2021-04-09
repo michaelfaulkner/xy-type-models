@@ -5,11 +5,11 @@ import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-output_directory = os.path.abspath(this_directory + "/../")
+output_directory = os.path.abspath(this_directory + '/../')
 sys.path.insert(0, output_directory)
-config_file = importlib.import_module("config_file")
-get_sample = importlib.import_module("get_sample")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
+config_file = importlib.import_module('config_file')
+get_sample = importlib.import_module('get_sample')
+markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 
 
 def main(config_file_name, summary_statistic_string):
@@ -30,16 +30,20 @@ def main(config_file_name, summary_statistic_string):
 
     temperature = initial_temperature
     output_file = open(sample_directory + '/' + summary_statistic_string + '_vs_temperature.dat', 'w')
-    output_file.write("temperature".ljust(20) + '\t' + summary_statistic_string.ljust(20) + '\t' +
-                      summary_statistic_string + " error".ljust(20) + '\n')
+    output_file.write('temperature'.ljust(20) + '\t' + summary_statistic_string.ljust(20) + '\t' +
+                      summary_statistic_string + ' error'.ljust(20) + '\n')
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
-        temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
-        sample = getattr(get_sample, summary_statistic_string)(sample_directory, temperature_directory, beta,
-                                                               no_of_sites)[no_of_equilibrium_iterations:]
-        sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
-        output_file.write("{0:.2e}".format(temperature).ljust(20) + '\t' + "{0:.14e}".format(sample_mean).ljust(20) +
-                          '\t' + "{0:.14e}".format(sample_error).ljust(20) + '\n')
+        temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
+        if summary_statistic_string == 'acceptance_rates':
+            continue
+        else:
+            get_sample_method = getattr(get_sample, summary_statistic_string)
+            sample = get_sample_method(sample_directory, temperature_directory, beta, no_of_sites)[
+                     no_of_equilibrium_iterations:]
+            sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
+            output_file.write('{0:.2e}'.format(temperature).ljust(20) + '\t' + '{0:.14e}'.format(sample_mean).ljust(20)
+                              + '\t' + '{0:.14e}'.format(sample_error).ljust(20) + '\n')
         temperature += magnitude_of_temperature_increments
     output_file.close()
 
