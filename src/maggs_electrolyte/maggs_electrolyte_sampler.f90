@@ -79,11 +79,11 @@ TSFAcceptanceRate = float(accept_TSF) / measurements
 write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), T
 open(unit=300, file=filename)
 
-write(300, 100) chargeAcceptanceRate
 write(300, 100) auxFieldAcceptanceRate
 if (globalTSFon == 1) then
     write(300, 100) TSFAcceptanceRate
 end if
+write(300, 100) chargeAcceptanceRate
 close(300)
 
 100 format(F16.8)
