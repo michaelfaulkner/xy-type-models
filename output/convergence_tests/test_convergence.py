@@ -18,9 +18,11 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
-    (algorithm_name, sample_directory, no_of_equilibrium_iterations, temperature) = (
-        basic_configuration_data[0], basic_configuration_data[1], basic_configuration_data[3],
-        basic_configuration_data[5])
+    (algorithm_name, sample_directory, lattice_length, no_of_equilibrium_iterations, temperature) = (
+        basic_configuration_data[0], basic_configuration_data[1], basic_configuration_data[2],
+        basic_configuration_data[3], basic_configuration_data[5])
+    beta = 1.0 / temperature
+    number_of_sites = lattice_length ** 2
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
@@ -28,7 +30,8 @@ def main(config_file_name):
                             delimiter=',')
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
-        sample = get_sample.magnetisation(sample_directory, temperature_directory)[no_of_equilibrium_iterations:]
+        sample = get_sample.magnetisation(sample_directory, temperature_directory, beta, number_of_sites)[
+                 no_of_equilibrium_iterations:]
 
     if algorithm_name == 'elementary-electrolyte':
         reference_sample = np.loadtxt('output/convergence_tests/maggs_electrolyte/elementary_charges/elementary_maggs_'
