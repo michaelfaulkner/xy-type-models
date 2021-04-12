@@ -79,8 +79,8 @@ subroutine external_minimising_twist_field_calculation
     use variables
     implicit none
     integer i, n
-    real*8 diff, current_sum_of_squared_electric_field_x, current_sum_of_squared_electric_field_y
-    real*8 twisted_sum_of_squared_electric_field_x, twisted_sum_of_squared_electric_field_y, potential_difference
+    double precision diff, current_sum_of_squared_electric_field_x, current_sum_of_squared_electric_field_y
+    double precision twisted_sum_of_squared_electric_field_x, twisted_sum_of_squared_electric_field_y, potential_difference
 
   ! y direction; positive twist
   n = 1

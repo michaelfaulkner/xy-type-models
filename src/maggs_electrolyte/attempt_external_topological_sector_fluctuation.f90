@@ -6,7 +6,7 @@ subroutine markov_chain_TSF_GLE
   use variables
   implicit none
   integer i, plusMinus
-  real*8 EsumNew, deltaU
+  double precision EsumNew, deltaU
 
   call measure_Esum
   deltaU = 0

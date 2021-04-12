@@ -4,17 +4,17 @@
 
 module variables
 character(100) :: output_directory, algorithm_name
-real*8, parameter :: twopi = 6.28318531
-real*8, parameter :: pi = 3.14159265
-real*8, parameter :: epsilon = 10.0 ** (-6)
+double precision, parameter :: twopi = 6.28318531
+double precision, parameter :: pi = 3.14159265
+double precision, parameter :: epsilon = 10.0 ** (-6)
 integer max_side, max_sites
 parameter (max_side = 128)
 parameter (max_sites = max_side * max_side)
 integer pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), rho(max_sites)
 integer side, sites, Tsteps, thermSweeps, measurements, globalTSFon
 integer accept_charge, accept_aux_field, accept_TSF, ratio_charge_updates, ratio_TSF_updates
-real*8  Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
-real*8  volume, length, T, beta, Tmin, Tmax, width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision  Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
+double precision  volume, length, T, beta, Tmin, Tmax, width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 

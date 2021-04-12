@@ -6,7 +6,7 @@ subroutine measure
 use variables
 implicit none
 integer i
-real*8 potential
+double precision potential
 
 potential = 0.0
 do i = 1, sites
@@ -52,7 +52,7 @@ subroutine measure_chargeDensity
   use variables
   implicit none
   integer i,j
-  real*8 charge
+  double precision charge
   do i = 1, sites
      charge = ( Efield_x(i) + Efield_y(i) - Efield_x(neg_x(i)) - Efield_y(neg_y(i)) ) / elementaryCharge
      rho(i) = floor(charge + 0.5)
@@ -70,7 +70,7 @@ use variables
 implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
 character(100) filename
-real*8 chargeAcceptanceRate, auxFieldAcceptanceRate, TSFAcceptanceRate
+double precision chargeAcceptanceRate, auxFieldAcceptanceRate, TSFAcceptanceRate
 
 chargeAcceptanceRate = float(accept_charge) / (2 * measurements * volume)
 auxFieldAcceptanceRate = float(accept_aux_field) / (measurements * volume)

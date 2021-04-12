@@ -6,7 +6,7 @@ subroutine attempt_external_global_move
   use variables
   implicit none
   integer i, rand1, rand2
-  real*8 deltaE, diff
+  double precision deltaE, diff
 
   call top_field
   deltaE = 0

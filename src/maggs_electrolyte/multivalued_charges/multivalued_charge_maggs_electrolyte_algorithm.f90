@@ -3,7 +3,7 @@ use variables
 implicit none
 character(100) :: config_file
 integer i, j, k, seed, start
-real*8 Tincr
+double precision Tincr
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
@@ -77,7 +77,7 @@ subroutine markov_chain_charges_GLE
   use variables
   implicit none
   integer n, i, plusMinus
-  real*8 deltaU, EfieldOld, EfieldNew
+  double precision deltaU, EfieldOld, EfieldNew
 
    do n = 1, 2 * sites
 
@@ -126,9 +126,9 @@ subroutine markov_chain_aux_field_GLE
   use variables
   implicit none
   integer n, i
-  real*8 thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
-  real*8 Efield1old, Efield2old, Efield3old, Efield4old
-  real*8 Efield1new, Efield2new, Efield3new, Efield4new
+  double precision thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
+  double precision Efield1old, Efield2old, Efield3old, Efield4old
+  double precision Efield1new, Efield2new, Efield3new, Efield4new
 
    do n = 1, sites
 
