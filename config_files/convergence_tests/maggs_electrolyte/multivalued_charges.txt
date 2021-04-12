@@ -11,6 +11,6 @@
 1			                                                            number of charge proposals/aux.-field proposal
 1			                                                            number of external TSF proposals/aux.-field proposal
 1                                                                       use external TSF move (0 = no, 1 = yes)
-6.28318531      	                                                    elementary-charge value
+6.28318530717959d0 	                                                    elementary-charge value
 123847209                                                               seed for random number generator
 end

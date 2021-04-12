@@ -4,8 +4,8 @@
 
 module variables
 character(100) :: output_directory, algorithm_name
-double precision, parameter :: twopi = 6.28318531
-double precision, parameter :: pi = 3.14159265
+double precision, parameter :: twopi = 6.28318530717959d0
+double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 10.0 ** (-6)
 integer max_side, max_sites
 parameter (max_side = 128)
