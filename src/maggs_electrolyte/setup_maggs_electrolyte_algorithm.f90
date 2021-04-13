@@ -71,10 +71,10 @@ subroutine PBC
   ! mod(i + side + 1,side) RATHER THAN mod(i + 1,side), ETC. BELOW AS mod(x,side)
   ! DOESN'T RETURN VALUES IN THE INTERVAL [0,side) FOR NEGATIVE x
   do i = 1, sites
-     pos_x(i) = i + mod(i + side + 1,side) - mod(i + side,side)
-     neg_x(i) = i + mod(i + side - 1,side) - mod(i + side,side)
-     pos_y(i) = i + (mod(int(i / side) + side + 1,side) - mod(int(i / side) + side,side)) * side
-     neg_y(i) = i + (mod(int(i / side) + side - 1,side) - mod(int(i / side) + side,side)) * side
+    pos_x(i) = i + mod(i, side) - mod(i - 1, side)
+    neg_x(i) = i + mod(i - 2 + side, side) - mod(i - 1 + side, side)
+    pos_y(i) = i + (mod(int((i - 1) / side) + 1, side) - mod(int((i - 1) / side), side)) * side
+    neg_y(i) = i + (mod(int((i - 1) / side) + side - 1, side) - mod(int((i - 1) / side) + side, side)) * side
   end do
   return
 end subroutine PBC
