@@ -1,7 +1,7 @@
-subroutine initialise_field_configuration(start)
+subroutine initialise_field_configuration
 use variables
 implicit none
-integer :: i, start
+integer :: i
 
 if (start == 0) then
     do i = 1, sites

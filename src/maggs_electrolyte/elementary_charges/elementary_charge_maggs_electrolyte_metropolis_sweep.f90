@@ -1,82 +1,21 @@
-program multivalued_charge_maggs_electrolyte_algorithm
+subroutine metropolis_sweep
 use variables
 implicit none
-character(100) :: config_file
-integer i, j, k, seed, start
-double precision Tincr
+integer i
 
-! verify that the something has been parsed to the exectuable
-if (command_argument_count() /= 1) then
-    write(6, *) 'Error: parse configuration file to executable'
-    stop
-end if
-! read in config file
-call get_command_argument(1, config_file)
-open (unit=1, file=config_file)
-
-call input(seed, start)
-call PBC
-call randinit(seed)
-write(6, *) rand(seed)
-
-T = Tmin
-if (Tsteps == 0) then
-    Tincr = 0.0
-else
-    Tincr = (Tmax - Tmin) / Tsteps
-end if
-  
-do i = 0, Tsteps
-
-    write(6, *) T
-    beta = 1 / T
-    if (T == Tmin) then
-        call initial_Efield
-    end if
-
-    do j = 0, thermSweeps - 1
-        call markov_chain_aux_field_GLE
-        do k = 0, ratio_charge_updates - 1
-            call markov_chain_charges_GLE
-        end do
-        if (globalTSFon == 1) then
-            do k = 0, ratio_TSF_updates - 1
-                call markov_chain_TSF_GLE
-            end do
-        end if
-    end do
-
-    call initial_measure
-
-    do j = 1, measurements
-        call markov_chain_aux_field_GLE
-        do k = 1, ratio_charge_updates
-            call markov_chain_charges_GLE
-        end do
-        if (globalTSFon == 1) then
-            do k = 1, ratio_TSF_updates
-                call markov_chain_TSF_GLE
-            end do
-        end if
-        call measure
-    end do
-
-    call output_acceptance_rates
-    T = T + Tincr
-    width_of_proposal_interval = width_of_proposal_interval + magnitude_of_proposal_interval_increments
-
+call markov_chain_aux_field_GLE
+do i = 1, ratio_charge_updates
+    call markov_chain_charges_GLE
 end do
-end program multivalued_charge_maggs_electrolyte_algorithm
 
+return
+end subroutine metropolis_sweep
 
-! **************************************
-! METROPOLIS MARKOV-CHAIN SUBROUTINE FOR CHARGES
-! **************************************
 
 subroutine markov_chain_charges_GLE
   use variables
   implicit none
-  integer n, i, plusMinus
+  integer n, i, plusMinus, rhoInew, rhoIposNew
   double precision deltaU, EfieldOld, EfieldNew
 
    do n = 1, 2 * sites
@@ -89,12 +28,18 @@ subroutine markov_chain_charges_GLE
          plusMinus = 2 * floor(2 * rand()) - 1
          EfieldNew = EfieldOld + plusMinus * elementaryCharge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
+         rhoInew = rho(i) + plusMinus
+         rhoIposNew = rho(pos_x(i)) - plusMinus
          
          ! METROPOLIS FILTER
 
-         if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
+         if (((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) .and. &
+              ((rhoInew .eq. 0) .or. (abs(rhoInew) .eq. 1)) .and. &
+                 ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
             Efield_x(i) = EfieldNew
-            accept_charge = accept_charge + 1
+            rho(i) = rhoINew
+            rho(pos_x(i)) = rhoIposNew
+            no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
          end if
             
       else
@@ -103,12 +48,18 @@ subroutine markov_chain_charges_GLE
          plusMinus = 2 * floor(2 * rand()) - 1
          EfieldNew = EfieldOld + plusMinus * elementaryCharge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
-
+         rhoInew = rho(i) + plusMinus
+         rhoIposNew = rho(pos_y(i)) - plusMinus
+         
          ! METROPOLIS FILTER
 
-         if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
+         if (((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) .and. &
+              ((rhoInew .eq. 0) .or. (abs(rhoInew) .eq. 1)) .and. &
+                 ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
             Efield_y(i) = EfieldNew
-            accept_charge = accept_charge + 1
+            rho(i) = rhoINew
+            rho(pos_y(i)) = rhoIposNew
+            no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
          end if
 
       end if
@@ -160,7 +111,7 @@ subroutine markov_chain_aux_field_GLE
          Efield_y(i) = Efield2new
          Efield_x(pos_y(i)) = Efield3new
          Efield_y(pos_x(i)) = Efield4new
-         accept_aux_field = accept_aux_field + 1
+         no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
       end if
    end do
   

@@ -2,7 +2,7 @@ program metropolis_algorithm
 use variables
 implicit none
 character(100) :: config_file
-integer :: i, j, seed, start
+integer :: i, j, seed
 double precision :: magnitude_of_temperature_increments
 
 ! verify that the something has been parsed to the exectuable
@@ -14,12 +14,12 @@ end if
 call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
 
-call input(seed, start)
+call input(seed)
 call setup_periodic_boundaries
 call create_sample_files
 call randinit(seed)
 write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
-call initialise_field_configuration(start)
+call initialise_field_configuration
 
 if (no_of_temperature_increments == 0) then
     magnitude_of_temperature_increments = 0.0
@@ -39,8 +39,7 @@ do i = 0, no_of_temperature_increments
         call draw_observations
     end do
 
-    no_of_accepted_local_moves = 0
-    no_of_accepted_external_global_moves = 0
+    call reset_metropolis_acceptance_counters
 
     do j = 1, measurements
         call metropolis_sweep

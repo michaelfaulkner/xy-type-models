@@ -6,7 +6,7 @@ double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 0.00000000001
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), array_of_sites(max_sites)
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist, no_of_accepted_local_moves
+integer :: start, side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist, no_of_accepted_local_moves
 integer :: no_of_accepted_external_global_moves, nmax, calculate_external_minimising_twist_field
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
@@ -19,10 +19,10 @@ end module variables
 ! READ IN INPUT HYPERPARAMETERS/CONSTANTS
 ! **************************************
 
-subroutine input(seed, start)
+subroutine input(seed)
 use variables
 implicit none
-integer :: i, seed, start
+integer :: i, seed
 
 read(1, *) algorithm_name
 read(1, *) output_directory

@@ -1,14 +1,10 @@
-! **************************************
-! Global TSF sampling
-! **************************************
-
-subroutine markov_chain_TSF_GLE
+subroutine attempt_external_global_move
   use variables
   implicit none
   integer i, plusMinus
   double precision EsumNew, deltaU
 
-  call measure_Esum
+  call calculate_electric_field_sum
   deltaU = 0
   
   if (floor(2 * rand()) .eq. 0) then
@@ -23,7 +19,7 @@ subroutine markov_chain_TSF_GLE
         do i = 1, sites
            Efield_x(i) = Efield_x(i) + plusMinus * elementaryCharge / side
         end do
-        accept_TSF = accept_TSF + 1
+        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if
      
   else
@@ -38,9 +34,9 @@ subroutine markov_chain_TSF_GLE
         do i = 1, sites
            Efield_y(i) = Efield_y(i) + plusMinus * elementaryCharge / side
         end do
-        accept_TSF = accept_TSF + 1
+        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if
      
   end if
   
-end subroutine markov_chain_TSF_GLE
+end subroutine attempt_external_global_move

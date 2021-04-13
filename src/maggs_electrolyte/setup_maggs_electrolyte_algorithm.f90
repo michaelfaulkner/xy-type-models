@@ -1,7 +1,3 @@
-! **************************************
-! SET VARIABLES
-! **************************************
-
 module variables
 character(100) :: output_directory, algorithm_name
 double precision, parameter :: twopi = 6.28318530717959d0
@@ -9,17 +5,15 @@ double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 10.0 ** (-6)
 integer, parameter :: max_side = 128
 integer, parameter :: max_sites = max_side * max_side
-integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), rho(max_sites)
-integer :: side, sites, Tsteps, thermSweeps, measurements, globalTSFon
-integer :: accept_charge, accept_aux_field, accept_TSF, ratio_charge_updates, ratio_TSF_updates
+integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), rho(max_sites), array_of_sites(max_sites)
+integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist
+integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
+integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
-double precision :: volume, length, T, beta, Tmin, Tmax, width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision :: volume, length, temperature, beta, initial_temperature, final_temperature, width_of_proposal_interval
+double precision :: magnitude_of_proposal_interval_increments
 end module variables
 
-
-! **************************************
-! READ IN INPUT HYPERPARAMETERS/CONSTANTS
-! **************************************
 
 subroutine input(seed, start)
 use variables
@@ -29,16 +23,16 @@ integer seed, start
 read(1, *) algorithm_name
 read(1, *) output_directory
 read(1, *) side
-read(1, *) thermSweeps
+read(1, *) therm_sweeps
 read(1, *) measurements
-read(1, *) Tmin
-read(1, *) Tmax
-read(1, *) Tsteps
+read(1, *) initial_temperature
+read(1, *) final_temperature
+read(1, *) no_of_temperature_increments
 read(1, *) width_of_proposal_interval
 read(1, *) magnitude_of_proposal_interval_increments
 read(1, *) ratio_charge_updates
 read(1, *) ratio_TSF_updates
-read(1, *) globalTSFon
+read(1, *) twist
 read(1, *) elementaryCharge
 read(1, *) seed
 
@@ -47,6 +41,7 @@ if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multiva
                     multivalued-electrolyte.'
    stop
 end if
+temperature = initial_temperature
 sites = side * side
 volume = float(sites)
 length = float(side)
@@ -58,67 +53,3 @@ end if
 
 return
 end subroutine input
-
-
-! **************************************
-! SETS NEIGHBOURS WITH PERIODIC BOUNDARY CONDITIONS
-! **************************************
-
-subroutine PBC
-  use variables
-  implicit none
-  integer i
-  ! mod(i + side + 1,side) RATHER THAN mod(i + 1,side), ETC. BELOW AS mod(x,side)
-  ! DOESN'T RETURN VALUES IN THE INTERVAL [0,side) FOR NEGATIVE x
-  do i = 1, sites
-    pos_x(i) = i + mod(i, side) - mod(i - 1, side)
-    neg_x(i) = i + mod(i - 2 + side, side) - mod(i - 1 + side, side)
-    pos_y(i) = i + (mod(int((i - 1) / side) + 1, side) - mod(int((i - 1) / side), side)) * side
-    neg_y(i) = i + (mod(int((i - 1) / side) + side - 1, side) - mod(int((i - 1) / side) + side, side)) * side
-  end do
-  return
-end subroutine PBC
-
-! **************************************
-! INITIAL FIELD CONFIGURATION
-! **************************************
-
-subroutine initial_Efield
-  use variables
-  implicit none
-  integer i
-
-  do i = 1, sites
-     Efield_x(i) = 0.0
-     Efield_y(i) = 0.0
-  end do
-
-  return
-end subroutine initial_Efield
-
-! **************************************
-! CREATE NEW DIRECTORY AND FILES FOR NEW TEMP
-! **************************************
-
-subroutine initial_measure
-use variables
-implicit none
-character(100) filename
-character(100) temperature_directory
-character(100), parameter :: temperature_string="/temp_eq_"
-
-accept_charge = 0
-accept_aux_field = 0
-accept_TSF = 0
-
-! OPENS NEW DIRECTORY IN WHICH TO SAVE THE MARKOV CHAIN FOR THE CURRENT TEMPERATURE
-write(temperature_directory, '(A, F4.2)') trim(output_directory)//trim(temperature_string), T
-call system ( 'mkdir -p ' // temperature_directory )
-
-write(filename, '(A, F4.2, "//field_sum_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit=10, file=filename)
-write(filename, '(A, F4.2, "//potential_sample.dat")') trim(output_directory)//trim(temperature_string), T
-open(unit=11, file=filename)
-
-return
-end subroutine initial_measure

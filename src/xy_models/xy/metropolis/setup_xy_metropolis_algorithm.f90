@@ -1,6 +1,6 @@
 module variables
 integer, allocatable, dimension(:) :: pos_x, neg_x, pos_y, neg_y, array_of_sites
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist
+integer :: start, side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist
 integer :: no_of_accepted_local_moves, no_of_accepted_external_global_moves, no_of_events
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, allocatable, dimension(:) :: theta
@@ -13,10 +13,10 @@ end module variables
 ! READ IN INPUT HYPERPARAMETERS/CONSTANTS
 ! **************************************
 
-subroutine input(seed, start)
+subroutine input(seed)
 use variables
 implicit none
-integer :: i, seed, start
+integer :: i, seed
 
 read(1, *) algorithm_name
 read(1, *) output_directory
