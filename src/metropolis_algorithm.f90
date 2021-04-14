@@ -16,7 +16,6 @@ open (unit=1, file=config_file)
 
 call input(seed)
 call setup_periodic_boundaries
-call create_sample_files
 call randinit(seed)
 write(6, '(A, F16.14)') 'Initial random number = ', rand(seed)
 call initialise_field_configuration
@@ -30,6 +29,7 @@ end if
 do i = 0, no_of_temperature_increments
     write(6, '(A, ES8.2)') 'Temperature = ', temperature
     beta = 1.0 / temperature
+    call create_sample_files
 
     do j = 1, therm_sweeps
         call metropolis_sweep
