@@ -22,11 +22,11 @@ def specific_heat(sample_directory, temperature_directory, beta, number_of_sites
 # xy models
 def helicity_modulus(sample_directory, temperature_directory, beta, number_of_sites):
     sum_of_1st_derivative_of_potential_sample = np.loadtxt(sample_directory + temperature_directory +
-                                                           '/sum_of_1st_derivative_of_potential_sample.dat',
-                                                           dtype=float, delimiter=',')
+                                                           '/sum_of_1st_deriv_of_potential_sample.dat', dtype=float,
+                                                           delimiter=',')
     sum_of_2nd_derivative_of_potential_sample = np.loadtxt(sample_directory + temperature_directory +
-                                                           '/sum_of_2nd_derivative_of_potential_sample.dat',
-                                                           dtype=float, delimiter=',')
+                                                           '/sum_of_2nd_deriv_of_potential_sample.dat', dtype=float,
+                                                           delimiter=',')
     return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) - beta * np.mean(
         (sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample, axis=0)) ** 2,
         axis=1) / number_of_sites
