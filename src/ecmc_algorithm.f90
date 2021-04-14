@@ -63,14 +63,16 @@ character(100), parameter :: temperature_string="/temp_eq_"
 character(100) :: filename
 
 write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), temperature
-open(unit = 300, file = filename)
-write(300, 100) no_of_events
-if (twist == 1) then
-    write(300, 100) no_of_accepted_external_global_moves
+open(unit=300, file = filename)
+if (twist /= 1) then
+    write(300, 100) no_of_events
+else
+    write(300, 200) no_of_events, float(no_of_accepted_external_global_moves) / (measurements * volume)
 end if
 close(300)
 
 100 format(I20)
+200 format(I20, ", ", ES24.14)
 
 return
 end subroutine output_no_of_events

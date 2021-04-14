@@ -38,7 +38,7 @@ def main(config_file_name, summary_statistic_string):
               'number_of_events, give acceptance_rates as the second positional argument.')
         exit()
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
-            (summary_statistic_string != 'magnetisation' or summary_statistic_string != 'helicity_modulus')):
+            (summary_statistic_string == 'magnetisation' or summary_statistic_string == 'helicity_modulus')):
         print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation or '
               'helicity_modulus as the second positional argument.')
         exit()
@@ -46,7 +46,8 @@ def main(config_file_name, summary_statistic_string):
     if number_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
     else:
-        magnitude_of_temperature_increments = (final_temperature - initial_temperature) / number_of_temperature_increments
+        magnitude_of_temperature_increments = (final_temperature -
+                                               initial_temperature) / number_of_temperature_increments
     number_of_sites = lattice_length ** 2
 
     temperature = initial_temperature
@@ -57,18 +58,22 @@ def main(config_file_name, summary_statistic_string):
         if len(acceptance_rates) == 1:
             output_file.write('temperature'.ljust(15) + 'rotational acceptance rate' + '\n')
         elif len(acceptance_rates) == 2:
-            output_file.write('temperature'.ljust(15) + 'acceptance rate (rotational moves)'.ljust(40) +
-                              'acceptance rate (external global moves)' + '\n')
+            if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
+                output_file.write('temperature'.ljust(15) + 'acceptance rate (rotational moves)'.ljust(40) +
+                                  'acceptance rate (charge hops)' + '\n')
+            else:
+                output_file.write('temperature'.ljust(15) + 'acceptance rate (rotational moves)'.ljust(40) +
+                                  'acceptance rate (external global moves)' + '\n')
         else:
             output_file.write('temperature'.ljust(15) + 'acceptance rate (field rotations)'.ljust(40) +
-                              'acceptance rate (global moves)'.ljust(40) + 'acceptance rate (charge hops)' + '\n')
+                              'acceptance rate (charge hops)'.ljust(40) + 'acceptance rate (global moves)' + '\n')
     elif summary_statistic_string == 'number_of_events':
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
         number_of_events = get_sample.number_of_events(sample_directory, temperature_directory)
         if len(number_of_events) == 1:
-            output_file.write('temperature'.ljust(15) + 'number of events' + '\n')
+            output_file.write('temperature'.ljust(15) + 'number of events (field rotations)' + '\n')
         else:
-            output_file.write('temperature'.ljust(15) + 'number of events'.ljust(40) +
+            output_file.write('temperature'.ljust(15) + 'number of events (field rotations)'.ljust(40) +
                               'acceptance rate (external global moves)' + '\n')
     else:
         output_file.write('temperature'.ljust(15) + summary_statistic_string.ljust(25) + summary_statistic_string +

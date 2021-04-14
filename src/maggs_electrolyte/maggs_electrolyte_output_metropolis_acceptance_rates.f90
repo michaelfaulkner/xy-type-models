@@ -13,14 +13,16 @@ acceptance_rate_of_external_global_moves = float(no_of_accepted_external_global_
 write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit = 300, file = filename)
 
-write(300, 100) acceptance_rate_of_field_rotations
-write(300, 100) acceptance_rate_of_charge_hops
-if (twist == 1) then
-    write(300, 100) acceptance_rate_of_external_global_moves
+if (twist /= 1) then
+    write(300, 100) acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
+else
+    write(300, 200) acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops, &
+                        acceptance_rate_of_external_global_moves
 end if
 close(300)
 
-100 format(F16.8)
+100 format(ES24.14, ", ", ES24.14)
+200 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
 
 return
 end subroutine output_metropolis_acceptance_rates

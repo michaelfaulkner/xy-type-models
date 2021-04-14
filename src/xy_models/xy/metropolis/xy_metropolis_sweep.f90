@@ -16,7 +16,7 @@ do n = 1, sites
 
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         theta(i) = candidate_theta
-        no_of_accepted_local_moves = no_of_accepted_local_moves + 1
+        no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
     end if
 end do
 

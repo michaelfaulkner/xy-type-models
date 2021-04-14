@@ -27,7 +27,7 @@ do n = 1, sites
         top_y(i) = candidate_emergent_field_2
         top_x(pos_y(i)) = candidate_emergent_field_3
         top_y(pos_x(i)) = candidate_emergent_field_4
-        no_of_accepted_local_moves = no_of_accepted_local_moves + 1
+        no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
     end if
 end do
 
