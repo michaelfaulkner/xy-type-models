@@ -8,7 +8,7 @@ double precision :: acceptance_rate_of_field_rotations, acceptance_rate_of_exter
 acceptance_rate_of_field_rotations = float(no_of_accepted_field_rotations) / (measurements * volume)
 acceptance_rate_of_external_global_moves = float(no_of_accepted_external_global_moves) / (measurements * volume)
 
-write (filename, '(A, F4.2, "//acceptance_rates.dat")' ) trim(output_directory)//trim(temperature_string), temperature
+write(filename, '(A, F4.2, "//acceptance_rates.csv")') trim(output_directory)//trim(temperature_string), temperature
 open(unit=300, file = filename)
 
 if (twist /= 1) then

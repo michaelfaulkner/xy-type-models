@@ -27,7 +27,7 @@ else
 end if
 
 do i = 0, no_of_temperature_increments
-    write(6, '(A, ES8.2)') 'Temperature = ', temperature
+    write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0 / temperature
     call create_sample_files
 

@@ -11,7 +11,7 @@ this_directory = os.path.dirname(os.path.abspath(__file__))
 output_directory = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, output_directory)
 config_file = importlib.import_module("config_file")
-get_sample = importlib.import_module("get_sample")
+sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
 
@@ -26,11 +26,11 @@ def main(config_file_name):
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
-        sample = np.loadtxt(sample_directory + temperature_directory + '/potential_sample.dat', dtype=float,
-                            delimiter=',')
+        sample = sample_getter.get_potential(sample_directory, temperature_directory, beta, number_of_sites)[
+                 no_of_equilibrium_iterations:]
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
-        sample = get_sample.magnetisation(sample_directory, temperature_directory, beta, number_of_sites)[
+        sample = sample_getter.get_magnetisation_norm(sample_directory, temperature_directory, beta, number_of_sites)[
                  no_of_equilibrium_iterations:]
 
     if algorithm_name == 'elementary-electrolyte':

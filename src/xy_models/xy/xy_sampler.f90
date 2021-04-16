@@ -24,13 +24,11 @@ do i = 1, sites
     potential = potential - cos(theta(pos_x(i)) - theta(i)) - cos(theta(pos_y(i)) - theta(i))
 end do
 
-write(10, 100) magnetisation_x, magnetisation_y
-write(11, 100) sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
-write(12, 100) sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
-write(13, 200) potential
+write(10, 100) potential, magnetisation_x, magnetisation_y, &
+                sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y, &
+                sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 
-100 format(ES24.14, ", ", ES24.14)
-200 format(ES24.14)
+100 format(ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14)
 
 return
 end subroutine draw_observations

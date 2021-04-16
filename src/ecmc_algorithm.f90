@@ -27,7 +27,7 @@ else
 end if
 
 do i = 0, no_of_temperature_increments
-    write(6, '(A, ES8.2)') 'Temperature = ', temperature
+    write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0 / temperature
     call create_sample_files
 
@@ -62,7 +62,7 @@ implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
 character(100) :: filename
 
-write (filename, '(A, F4.2, "//number_of_events.dat")' ) trim(output_directory)//trim(temperature_string), temperature
+write (filename, '(A, F4.2, "//number_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=300, file = filename)
 if (twist /= 1) then
     write(300, 100) no_of_events

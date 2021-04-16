@@ -12,11 +12,9 @@ end do
 call calculate_electric_field_sum
 
 ! STORE SAMPLES DRAWN FROM MARKOV CHAIN
-write(10, 100) Esum_x, Esum_y
-write(11, 200) potential
+write(10, 100) potential, Esum_x, Esum_y
 
-100 format(ES24.14, ", ", ES24.14)
-200 format(ES24.14)
+100 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
 
 return
 end subroutine draw_observations

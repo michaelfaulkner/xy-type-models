@@ -8,16 +8,17 @@ this_directory = os.path.dirname(os.path.abspath(__file__))
 output_directory = os.path.abspath(this_directory + '/../')
 sys.path.insert(0, output_directory)
 config_file = importlib.import_module('config_file')
-get_sample = importlib.import_module('get_sample')
+sample_getter = importlib.import_module('sample_getter')
 markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 
 
 def main(config_file_name, summary_statistic_string):
+    # todo ajouter d'autres statistiques sommaires ci dessous
     if (summary_statistic_string != 'acceptance_rates' and summary_statistic_string != 'number_of_events' and
-            summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation' and
+            summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation_norm' and
             summary_statistic_string != 'specific_heat'):
-        print('Give one of acceptance_rates, number_of_events, helicity_modulus, magnetisation or specific_heat as the '
-              'second positional argument.')
+        print('Give one of acceptance_rates, number_of_events, helicity_modulus, magnetisation_norm or specific_heat as'
+              ' the second positional argument.')
         exit()
 
     basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
@@ -38,7 +39,7 @@ def main(config_file_name, summary_statistic_string):
               'number_of_events, give acceptance_rates as the second positional argument.')
         exit()
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
-            (summary_statistic_string == 'magnetisation' or summary_statistic_string == 'helicity_modulus')):
+            (summary_statistic_string == 'magnetisation_norm' or summary_statistic_string == 'helicity_modulus')):
         print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation or '
               'helicity_modulus as the second positional argument.')
         exit()
@@ -54,7 +55,7 @@ def main(config_file_name, summary_statistic_string):
     output_file = open(sample_directory + '/' + summary_statistic_string + '_vs_temperature.dat', 'w')
     if summary_statistic_string == 'acceptance_rates':
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
-        acceptance_rates = get_sample.acceptance_rates(sample_directory, temperature_directory)
+        acceptance_rates = sample_getter.get_acceptance_rates(sample_directory, temperature_directory)
         if len(acceptance_rates) == 1:
             output_file.write('temperature'.ljust(15) + 'rotational acceptance rate' + '\n')
         elif len(acceptance_rates) == 2:
@@ -69,7 +70,7 @@ def main(config_file_name, summary_statistic_string):
                               'acceptance rate (charge hops)'.ljust(40) + 'acceptance rate (global moves)' + '\n')
     elif summary_statistic_string == 'number_of_events':
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
-        number_of_events = get_sample.number_of_events(sample_directory, temperature_directory)
+        number_of_events = sample_getter.get_number_of_events(sample_directory, temperature_directory)
         if len(number_of_events) == 1:
             output_file.write('temperature'.ljust(15) + 'number of events (field rotations)' + '\n')
         else:
@@ -83,7 +84,7 @@ def main(config_file_name, summary_statistic_string):
         beta = 1.0 / temperature
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
         if summary_statistic_string == 'acceptance_rates' or summary_statistic_string == 'number_of_events':
-            get_sample_method = getattr(get_sample, summary_statistic_string)
+            get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
             acceptance_rates_or_number_of_events = get_sample_method(sample_directory, temperature_directory)
             if len(acceptance_rates_or_number_of_events) == 1:
                 output_file.write('{0:.2e}'.format(temperature).ljust(15) +
@@ -98,7 +99,7 @@ def main(config_file_name, summary_statistic_string):
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[2]) + '\n')
         else:
-            get_sample_method = getattr(get_sample, summary_statistic_string)
+            get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
             sample = get_sample_method(sample_directory, temperature_directory, beta, number_of_sites)[
                      number_of_equilibrium_iterations:]
             sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
