@@ -13,12 +13,12 @@ def get_number_of_events(sample_directory, temperature_directory):
                                     delimiter=','))
 
 
-def get_sample(sample_directory, temperature_directory):
+def get_entire_sample(sample_directory, temperature_directory):
     return np.loadtxt(sample_directory + temperature_directory + '/sample.csv', dtype=float, delimiter=',')
 
 
 def get_potential(sample_directory, temperature_directory, beta, number_of_sites):
-    return get_sample(sample_directory, temperature_directory)[:, 0]
+    return get_entire_sample(sample_directory, temperature_directory)[:, 0]
 
 
 def get_specific_heat(sample_directory, temperature_directory, beta, number_of_sites):
@@ -28,15 +28,15 @@ def get_specific_heat(sample_directory, temperature_directory, beta, number_of_s
 
 # xy models
 def get_helicity_modulus(sample_directory, temperature_directory, beta, number_of_sites):
-    sum_of_1st_derivative_of_potential_sample = get_sample(sample_directory, temperature_directory)[:, 3:5]
-    sum_of_2nd_derivative_of_potential_sample = get_sample(sample_directory, temperature_directory)[:, 5:7]
+    sum_of_1st_derivative_of_potential_sample = get_entire_sample(sample_directory, temperature_directory)[:, 3:5]
+    sum_of_2nd_derivative_of_potential_sample = get_entire_sample(sample_directory, temperature_directory)[:, 5:7]
     return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) - beta * np.mean(
         (sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample, axis=0)) ** 2,
         axis=1) / number_of_sites
 
 
 def get_non_normalised_cartesian_magnetisation(sample_directory, temperature_directory, beta, number_of_sites):
-    return get_sample(sample_directory, temperature_directory)[:, 1:3]
+    return get_entire_sample(sample_directory, temperature_directory)[:, 1:3]
 
 
 def get_magnetisation_norm(sample_directory, temperature_directory, beta, number_of_sites):
@@ -46,7 +46,7 @@ def get_magnetisation_norm(sample_directory, temperature_directory, beta, number
 
 # Maggs-electrolyte models
 def get_sum_of_electric_field(sample_directory, temperature_directory, beta, number_of_sites):
-    return get_sample(sample_directory, temperature_directory)[:, 1:3]
+    return get_entire_sample(sample_directory, temperature_directory)[:, 1:3]
 
 
 def get_inverse_permittivity(sample_directory, temperature_directory, beta, number_of_sites):
