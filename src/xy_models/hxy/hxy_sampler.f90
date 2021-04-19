@@ -27,14 +27,17 @@ do i = 1, sites
     sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + top_y(i)
     sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + top_x(i)
     do n = 1, nmax
-        sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + (-1) ** (n + 1) * cos((n + 1) * top_y(i))
-        sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + (-1) ** (n + 1) * cos((n + 1) * top_x(i))
+        sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + &
+                                                                                (-1.0d0) ** (n + 1) * cos(n * top_y(i))
+        sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + &
+                                                                                (-1.0d0) ** (n + 1) * cos(n * top_x(i))
     end do
     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + top_x(i) * top_x(i)
     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + top_y(i) * top_y(i)
 end do
+sum_of_2nd_derivative_of_potential_x = 2.0d0 * sum_of_2nd_derivative_of_potential_x
+sum_of_2nd_derivative_of_potential_y = 2.0d0 * sum_of_2nd_derivative_of_potential_y
 potential = 0.5d0 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
-
 
 if (calculate_external_minimising_twist_field == 1) then
     call external_minimising_twist_field_calculation
