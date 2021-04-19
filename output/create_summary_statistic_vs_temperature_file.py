@@ -87,14 +87,14 @@ def main(config_file_name, summary_statistic_string):
             get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
             acceptance_rates_or_number_of_events = get_sample_method(sample_directory, temperature_directory)
             if len(acceptance_rates_or_number_of_events) == 1:
-                output_file.write('{0:.2e}'.format(temperature).ljust(15) +
+                output_file.write('{0:.2f}'.format(temperature).ljust(15) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]) + '\n')
             elif len(acceptance_rates_or_number_of_events) == 2:
-                output_file.write('{0:.2e}'.format(temperature).ljust(15) +
+                output_file.write('{0:.2f}'.format(temperature).ljust(15) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]) + '\n')
             else:
-                output_file.write('{0:.2e}'.format(temperature).ljust(15) +
+                output_file.write('{0:.2f}'.format(temperature).ljust(15) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[2]) + '\n')
@@ -103,7 +103,7 @@ def main(config_file_name, summary_statistic_string):
             sample = get_sample_method(sample_directory, temperature_directory, beta, number_of_sites)[
                      number_of_equilibrium_iterations:]
             sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
-            output_file.write('{0:.2e}'.format(temperature).ljust(15) + '{0:.14e}'.format(sample_mean).ljust(25) +
+            output_file.write('{0:.2f}'.format(temperature).ljust(15) + '{0:.14e}'.format(sample_mean).ljust(25) +
                               '{0:.14e}'.format(sample_error) + '\n')
         temperature += magnitude_of_temperature_increments
     output_file.close()
