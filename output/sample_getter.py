@@ -30,7 +30,7 @@ def get_specific_heat(sample_directory, temperature_directory, beta, number_of_s
 def get_helicity_modulus(sample_directory, temperature_directory, beta, number_of_sites):
     sum_of_1st_derivative_of_potential_sample = get_entire_sample(sample_directory, temperature_directory)[:, 3:5]
     sum_of_2nd_derivative_of_potential_sample = get_entire_sample(sample_directory, temperature_directory)[:, 5:7]
-    return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) - beta * np.mean(
+    return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) / number_of_sites - beta * np.mean(
         (sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample, axis=0)) ** 2,
         axis=1) / number_of_sites
 
