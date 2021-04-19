@@ -1,0 +1,14 @@
+'hxy-ecmc'                                          algorithm_name
+'output/comparisons_against_prb_49_8811/hxy/ecmc'   output directory
+100                                                 lattice length
+10000                                               number of equilibration iterations
+10000                                               number of observations (sample size)
+1.1                                                 initial temperature
+1.7                                                 final temperature
+3                                                   number of temperature increments
+0                                                   randomise initial spin configuration (0 = ordered, 1 = random)
+0                                                   use external twist move (0 = no, 1 = yes)
+0                                                   cut-off of 2nd deriv. of potential
+0                                                   calculate_external_minimising_twist_field  (0 = no, 1 = yes)
+123456789                                           seed for random number generator
+end
