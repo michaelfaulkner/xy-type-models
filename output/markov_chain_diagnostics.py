@@ -18,3 +18,9 @@ def get_thinned_sample(sample, thinning_level):
 def get_sample_mean_and_error(sample):
     sample_mean_and_error = np.array(mcmcse_r_package.mcse(sample))
     return sample_mean_and_error[0, 0], sample_mean_and_error[1, 0]
+
+
+def get_cumulative_distribution(input_sample):
+    bin_values = np.arange(1, len(input_sample) + 1) / float(len(input_sample))
+    ordered_input_sample = np.sort(input_sample)
+    return ordered_input_sample, bin_values

@@ -6,7 +6,7 @@ import os
 import sys
 
 
-# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
+# Add the directory that contains config_file, sample_getter and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 output_directory = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, output_directory)
@@ -51,16 +51,8 @@ def main(config_file_name):
     effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 
-    '''magnetisation_2_x = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magnetisation_x_sample.dat',
-                                   dtype=float)
-    magnetisation_2_y = np.loadtxt('output/convergence_tests/hxy/metropolis/temp_eq_1.50/magnetisation_y_sample.dat',
-                                   dtype=float)
-    sample_2 = (magnetisation_2_x ** 2 + magnetisation_2_y ** 2) ** 0.5
-    sample_2_cdf = get_cumulative_distribution(sample_2)
-    plt.plot(sample_2_cdf[0], sample_2_cdf[1], color='r', linewidth=6, linestyle='-', label='metropolis data')'''
-
-    reference_cdf = get_cumulative_distribution(reference_sample)
-    sample_cdf = get_cumulative_distribution(sample)
+    reference_cdf = markov_chain_diagnostics.get_cumulative_distribution(reference_sample)
+    sample_cdf = markov_chain_diagnostics.get_cumulative_distribution(sample)
 
     plt.plot(reference_cdf[0], reference_cdf[1], color='r', linewidth=4, linestyle='-', label='reference data')
     plt.plot(sample_cdf[0], sample_cdf[1], color='k', linewidth=2, linestyle='-', label='xy-type-models data')
@@ -73,12 +65,6 @@ def main(config_file_name):
     legend.get_frame().set_lw(1.5)
     plt.tight_layout()
     plt.show()
-
-
-def get_cumulative_distribution(input_sample):
-    bin_values = np.arange(1, len(input_sample) + 1) / float(len(input_sample))
-    ordered_input_sample = np.sort(input_sample)
-    return ordered_input_sample, bin_values
 
 
 if __name__ == '__main__':
