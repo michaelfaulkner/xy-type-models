@@ -34,12 +34,12 @@ def main(config_file_name):
                  no_of_equilibrium_iterations:]
 
     if algorithm_name == 'elementary-electrolyte':
-        reference_sample = np.loadtxt('output/convergence_tests/maggs_electrolyte/elementary_charges/elementary_maggs_'
-                                      'electrolyte_8x8_square_temp_1_point_5_potential_reference_sample.dat',
+        reference_sample = np.loadtxt('output/convergence_tests/electrolyte/elementary_charges/elementary_electrolyte'
+                                      '_8x8_square_temp_1_point_5_potential_reference_sample.dat',
                                       dtype=float)
     if algorithm_name == 'multivalued-electrolyte':
-        reference_sample = np.loadtxt('output/convergence_tests/maggs_electrolyte/multivalued_charges/multivalued_'
-                                      'maggs_electrolyte_8x8_square_temp_1_point_5_potential_reference_sample.dat',
+        reference_sample = np.loadtxt('output/convergence_tests/electrolyte/multivalued_charges/multivalued_electrolyte'
+                                      '_8x8_square_temp_1_point_5_potential_reference_sample.dat',
                                       dtype=float)
     if algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis':
         reference_sample = np.loadtxt('output/convergence_tests/hxy/hxy_8x8_sites_temp_1_point_3_magnetisation_norm_'

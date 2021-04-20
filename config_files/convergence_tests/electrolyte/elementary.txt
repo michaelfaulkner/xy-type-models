@@ -1,5 +1,5 @@
 'elementary-electrolyte'                                                algorithm_name
-'output/convergence_tests/maggs_electrolyte/elementary_charges'         output directory
+'output/convergence_tests/electrolyte/elementary'         output directory
 8                  	                                                    lattice length
 400000                	                                                number of equilibration iterations
 100000	                                                                number of observations (sample size)
