@@ -16,9 +16,10 @@ def main(config_file_name, summary_statistic_string):
     # todo ajouter d'autres statistiques sommaires ci dessous
     if (summary_statistic_string != 'acceptance_rates' and summary_statistic_string != 'number_of_events' and
             summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation_norm' and
-            summary_statistic_string != 'specific_heat'):
-        print('Give one of acceptance_rates, number_of_events, helicity_modulus, magnetisation_norm or specific_heat as'
-              ' the second positional argument.')
+            summary_statistic_string != 'specific_heat' and summary_statistic_string != 'inverse_permittivity' and
+            summary_statistic_string != 'topological_sector_fluctuations'):
+        print('Give one of acceptance_rates, number_of_events, helicity_modulus, magnetisation_norm, specific_heat, '
+              'inverse_permittivity or topological_sector_fluctuations as the second positional argument.')
         exit()
 
     basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
@@ -43,6 +44,12 @@ def main(config_file_name, summary_statistic_string):
         print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation or '
               'helicity_modulus as the second positional argument.')
         exit()
+        if ((algorithm_name == 'xy-ecmc' or algorithm_name == 'hxy-ecmc' or algorithm_name == 'xy-metropolis' or
+             algorithm_name == 'hxy-metropolis') and (summary_statistic_string != 'inverse_permittivity' or
+                                                      summary_statistic_string != 'topological_sector_fluctuations')):
+            print('ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or '
+                  'topological_sector_fluctuations as the second positional argument.')
+            exit()
 
     if number_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
@@ -77,7 +84,7 @@ def main(config_file_name, summary_statistic_string):
             output_file.write('temperature'.ljust(15) + 'number of events (field rotations)'.ljust(40) +
                               'acceptance rate (external global moves)' + '\n')
     else:
-        output_file.write('temperature'.ljust(15) + summary_statistic_string.ljust(25) + summary_statistic_string +
+        output_file.write('temperature'.ljust(15) + summary_statistic_string.ljust(35) + summary_statistic_string +
                           ' error' + '\n')
 
     for i in range(number_of_temperature_increments + 1):
@@ -103,7 +110,7 @@ def main(config_file_name, summary_statistic_string):
             sample = get_sample_method(sample_directory, temperature_directory, beta, number_of_sites)[
                      number_of_equilibrium_iterations:]
             sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
-            output_file.write('{0:.2f}'.format(temperature).ljust(15) + '{0:.14e}'.format(sample_mean).ljust(25) +
+            output_file.write('{0:.2f}'.format(temperature).ljust(15) + '{0:.14e}'.format(sample_mean).ljust(35) +
                               '{0:.14e}'.format(sample_error) + '\n')
         temperature += magnitude_of_temperature_increments
     output_file.close()
