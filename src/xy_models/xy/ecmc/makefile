@@ -11,7 +11,7 @@ OFLAGS = gfortran -O -o
 all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o setup_xy_ecmc_algorithm.o periodic_boundaries.o \
-			xy_models_initialise_spin_configuration.o xy_models_create_sample_files.o xy_sampler.o \
+			xy_models_initialise_spin_configuration.o xy_models_create_sample_file.o xy_sampler.o \
 			attempt_external_xy_twist.o single_xy_event_chain.o ecmc_algorithm.o
 
 create-executable: $(OBJECTS)
