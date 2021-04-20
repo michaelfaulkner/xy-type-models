@@ -13,10 +13,10 @@ end module variables
 ! READ IN INPUT HYPERPARAMETERS/CONSTANTS
 ! **************************************
 
-subroutine input(seed)
+subroutine input
 use variables
 implicit none
-integer :: i, seed
+integer :: i
 
 read(1, *) algorithm_name
 read(1, *) output_directory
@@ -30,7 +30,6 @@ read(1, *) width_of_proposal_interval
 read(1, *) magnitude_of_proposal_interval_increments
 read(1, *) start
 read(1, *) twist
-read(1, *) seed
 
 if (algorithm_name /= 'xy-metropolis') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal xy-metropolis.'

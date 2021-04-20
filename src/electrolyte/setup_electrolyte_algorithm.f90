@@ -15,10 +15,9 @@ double precision :: magnitude_of_proposal_interval_increments
 end module variables
 
 
-subroutine input(seed, start)
+subroutine input
 use variables
 implicit none
-integer seed, start
 
 read(1, *) algorithm_name
 read(1, *) output_directory
@@ -34,7 +33,6 @@ read(1, *) ratio_charge_updates
 read(1, *) ratio_TSF_updates
 read(1, *) twist
 read(1, *) elementaryCharge
-read(1, *) seed
 
 if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal either elementary-electrolyte or &

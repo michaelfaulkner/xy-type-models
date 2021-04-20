@@ -19,10 +19,10 @@ end module variables
 ! READ IN INPUT HYPERPARAMETERS/CONSTANTS
 ! **************************************
 
-subroutine input(seed)
+subroutine input
 use variables
 implicit none
-integer :: i, seed
+integer :: i
 
 read(1, *) algorithm_name
 read(1, *) output_directory
@@ -38,7 +38,6 @@ read(1, *) start
 read(1, *) twist
 read(1, *) nmax
 read(1, *) calculate_external_minimising_twist_field
-read(1, *) seed
 
 if (algorithm_name /= 'hxy-metropolis') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-metropolis.'

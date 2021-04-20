@@ -10,5 +10,4 @@
 0                                                   use external twist move (0 = no, 1 = yes)
 0                                                   cut-off of 2nd deriv. of potential
 0                                                   calculate_external_minimising_twist_field  (0 = no, 1 = yes)
-123456789                                           seed for random number generator
 end

@@ -8,5 +8,4 @@
 4                                                   number of temperature increments
 0                                                   randomise initial spin configuration (0 = ordered, 1 = random)
 0                                                   use external twist move (0 = no, 1 = yes)
-123456789                                           seed for random number generator
 end
