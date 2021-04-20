@@ -57,9 +57,11 @@ def get_inverse_permittivity(sample_directory, temperature_directory, beta, numb
 
 
 def get_topological_sector_fluctuations(sample_directory, temperature_directory, beta, number_of_sites):
+    # n.b. in PRB 91, 155412, topological_sector_fluctuations were defined w/out the factor of 1/2 to account for each
+    # Cartesian dimension of the system; in the return line below, this corresponds to the first np.mean() -> np.sum()
     topological_sector_sample = get_topological_sector(sample_directory, temperature_directory, beta, number_of_sites)
-    return 4.0 * beta * math.pi ** 2 * np.mean(
-        (topological_sector_sample - np.mean(topological_sector_sample, axis=0)) ** 2, axis=1) / number_of_sites
+    return 4.0 * beta * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0))
+                                               ** 2, axis=1)
 
 
 def get_topological_sector(sample_directory, temperature_directory, beta, number_of_sites):
