@@ -16,7 +16,7 @@ end module variables
 ! READ IN INPUT HYPERPARAMETERS/CONSTANTS
 ! **************************************
 
-subroutine input
+subroutine read_in_config_file
 use variables
 implicit none
 
@@ -47,4 +47,4 @@ if (side > max_side) then
 end if
 
 return
-end subroutine input
+end subroutine read_in_config_file

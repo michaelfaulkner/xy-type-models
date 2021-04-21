@@ -22,7 +22,7 @@ write(6, '(A, F16.14)') 'Initial random number = ', rand(abs(seed(1)))
 ! read in config file and setup system
 call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
-call input
+call read_in_config_file
 
 temperature = initial_temperature
 if (no_of_temperature_increments == 0) then
