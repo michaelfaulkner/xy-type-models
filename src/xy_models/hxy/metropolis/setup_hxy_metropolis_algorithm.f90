@@ -12,12 +12,9 @@ integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
 double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: volume, length, width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision :: volume, length, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 end module variables
 
-! **************************************
-! READ IN INPUT HYPERPARAMETERS/CONSTANTS
-! **************************************
 
 subroutine read_in_config_file
 use variables
@@ -33,7 +30,7 @@ read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
-read(10, *) magnitude_of_proposal_interval_increments
+read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) start
 read(10, *) twist
 read(10, *) nmax

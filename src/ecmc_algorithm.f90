@@ -7,7 +7,7 @@ call pre_simulation_processes
 
 do i = 0, no_of_temperature_increments
     write(6, '(A, F4.2)') 'Temperature = ', temperature
-    beta = 1.0 / temperature
+    beta = 1.0d0 / temperature
     call create_sample_file
 
     do j = 1, therm_sweeps

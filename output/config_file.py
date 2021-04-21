@@ -17,9 +17,10 @@ def get_basic_configuration_data(config_file_name):
             if index == 4:
                 no_of_observations = int(row[0].replace("number of observations (sample size)", "").replace(" ", ""))
             if index == 5:
-                initial_temperature = float(row[0].replace("initial temperature", "").replace(" ", ""))
+                initial_temperature = float(row[0].replace("d0", "").replace("initial temperature", "").replace(" ",
+                                                                                                                ""))
             if index == 6:
-                final_temperature = float(row[0].replace("final temperature", "").replace(" ", ""))
+                final_temperature = float(row[0].replace("d0", "").replace("final temperature", "").replace(" ", ""))
             if index == 7:
                 no_of_temperature_increments = int(row[0].replace("number of temperature increments", "").replace(" ",
                                                                                                                   ""))

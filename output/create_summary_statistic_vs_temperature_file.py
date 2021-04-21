@@ -13,7 +13,6 @@ markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 
 
 def main(config_file_name, summary_statistic_string):
-    # todo ajouter d'autres statistiques sommaires ci dessous
     if (summary_statistic_string != 'acceptance_rates' and summary_statistic_string != 'number_of_events' and
             summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation_norm' and
             summary_statistic_string != 'specific_heat' and summary_statistic_string != 'inverse_permittivity' and
@@ -63,17 +62,21 @@ def main(config_file_name, summary_statistic_string):
     if summary_statistic_string == 'acceptance_rates':
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
         acceptance_rates = sample_getter.get_acceptance_rates(simulation_directory, temperature_directory)
-        if len(acceptance_rates) == 1:
-            output_file.write('temperature'.ljust(15) + 'rotational acceptance rate' + '\n')
-        elif len(acceptance_rates) == 2:
+        if len(acceptance_rates) == 2:
+            output_file.write('temperature'.ljust(15) + 'final width of proposal interval'.ljust(40) +
+                              'rotational acceptance rate' + '\n')
+        elif len(acceptance_rates) == 3:
             if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
-                output_file.write('temperature'.ljust(15) + 'acceptance rate (rotational moves)'.ljust(40) +
+                output_file.write('temperature'.ljust(15) + 'final width of proposal interval'.ljust(40) +
+                                  'acceptance rate (rotational moves)'.ljust(40) +
                                   'acceptance rate (charge hops)' + '\n')
             else:
-                output_file.write('temperature'.ljust(15) + 'acceptance rate (rotational moves)'.ljust(40) +
+                output_file.write('temperature'.ljust(15) + 'final width of proposal interval'.ljust(40) +
+                                  'acceptance rate (rotational moves)'.ljust(40) +
                                   'acceptance rate (external global moves)' + '\n')
         else:
-            output_file.write('temperature'.ljust(15) + 'acceptance rate (field rotations)'.ljust(40) +
+            output_file.write('temperature'.ljust(15) + 'final width of proposal interval'.ljust(40) +
+                              'acceptance rate (field rotations)'.ljust(40) +
                               'acceptance rate (charge hops)'.ljust(40) + 'acceptance rate (global moves)' + '\n')
     elif summary_statistic_string == 'number_of_events':
         temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
@@ -93,18 +96,21 @@ def main(config_file_name, summary_statistic_string):
         if summary_statistic_string == 'acceptance_rates' or summary_statistic_string == 'number_of_events':
             get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
             acceptance_rates_or_number_of_events = get_sample_method(simulation_directory, temperature_directory)
-            if len(acceptance_rates_or_number_of_events) == 1:
-                output_file.write('{0:.2f}'.format(temperature).ljust(15) +
-                                  '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]) + '\n')
-            elif len(acceptance_rates_or_number_of_events) == 2:
+            if len(acceptance_rates_or_number_of_events) == 2:
                 output_file.write('{0:.2f}'.format(temperature).ljust(15) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]) + '\n')
-            else:
+            elif len(acceptance_rates_or_number_of_events) == 3:
                 output_file.write('{0:.2f}'.format(temperature).ljust(15) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]).ljust(40) +
                                   '{0:.14e}'.format(acceptance_rates_or_number_of_events[2]) + '\n')
+            else:
+                output_file.write('{0:.2f}'.format(temperature).ljust(15) +
+                                  '{0:.14e}'.format(acceptance_rates_or_number_of_events[0]).ljust(40) +
+                                  '{0:.14e}'.format(acceptance_rates_or_number_of_events[1]).ljust(40) +
+                                  '{0:.14e}'.format(acceptance_rates_or_number_of_events[2]).ljust(40) +
+                                  '{0:.14e}'.format(acceptance_rates_or_number_of_events[3]) + '\n')
         else:
             get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
             sample = get_sample_method(simulation_directory, temperature_directory, beta, number_of_sites)[

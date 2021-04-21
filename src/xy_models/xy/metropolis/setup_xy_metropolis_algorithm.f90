@@ -5,13 +5,10 @@ integer :: no_of_accepted_field_rotations, no_of_accepted_external_global_moves,
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, allocatable, dimension(:) :: theta
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: volume, length, width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision :: volume, length, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 character(100) :: output_directory, algorithm_name
 end module variables
 
-! **************************************
-! READ IN INPUT HYPERPARAMETERS/CONSTANTS
-! **************************************
 
 subroutine read_in_config_file
 use variables
@@ -27,7 +24,7 @@ read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
-read(10, *) magnitude_of_proposal_interval_increments
+read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) start
 read(10, *) twist
 

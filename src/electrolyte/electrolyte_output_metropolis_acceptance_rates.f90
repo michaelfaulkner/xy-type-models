@@ -14,15 +14,15 @@ write(filename, '(A, F4.2, "//acceptance_rates.csv")') trim(output_directory)//t
 open(unit=30, file = filename)
 
 if (twist /= 1) then
-    write(30, 100) acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
+    write(30, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
 else
-    write(30, 200) acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops, &
+    write(30, 200) width_of_proposal_interval, acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops, &
                         acceptance_rate_of_external_global_moves
 end if
 close(30)
 
-100 format(ES24.14, ", ", ES24.14)
-200 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
+100 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
+200 format(ES24.14, ", ", ES24.14, ", ", ES24.14, ", ", ES24.14)
 
 return
 end subroutine output_metropolis_acceptance_rates

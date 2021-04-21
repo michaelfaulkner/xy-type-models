@@ -11,7 +11,7 @@ integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_acc
 integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: volume, length, width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision :: volume, length, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 end module variables
 
 
@@ -28,7 +28,7 @@ read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
-read(10, *) magnitude_of_proposal_interval_increments
+read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) ratio_charge_updates
 read(10, *) ratio_TSF_updates
 read(10, *) twist
