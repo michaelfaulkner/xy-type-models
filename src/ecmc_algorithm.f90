@@ -12,7 +12,7 @@ do i = 0, no_of_temperature_increments
 
     do j = 1, therm_sweeps
         call single_event_chain
-        if (twist == 1) then
+        if (use_external_global_moves) then
             call attempt_external_global_move
         end if
         call draw_observations
@@ -23,7 +23,7 @@ do i = 0, no_of_temperature_increments
 
     do j = 1, measurements
         call single_event_chain
-        if (twist == 1) then
+        if (use_external_global_moves) then
             call attempt_external_global_move
         end if
         call draw_observations
@@ -43,7 +43,7 @@ character(100) :: filename
 
 write (filename, '(A, F4.2, "//number_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=300, file = filename)
-if (twist /= 1) then
+if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events
 else
     write(300, 200) no_of_events, float(no_of_accepted_external_global_moves) / (measurements * volume)

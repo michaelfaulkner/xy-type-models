@@ -1,11 +1,11 @@
 'xy-ecmc'                               algorithm_name
 'output/convergence_tests/xy/ecmc'      output directory
 8                                       lattice length
-40000                                   number of equilibration iterations
+100                                     number of equilibration iterations
 40000                                   number of observations (sample size)
-0.8                                     initial temperature
-0.8                                     final temperature
+0.8d0                                   initial temperature
+0.8d0                                   final temperature
 0                                       number of temperature increments
-0                                       randomise initial spin configuration (0 = ordered, 1 = random)
-0                                       use external twist move (0 = no, 1 = yes)
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
 end

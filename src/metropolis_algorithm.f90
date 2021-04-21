@@ -14,7 +14,7 @@ do i = 0, no_of_temperature_increments
     call reset_metropolis_acceptance_counters
     do j = 1, therm_sweeps
         call metropolis_sweep
-        if (twist == 1) then
+        if (use_external_global_moves) then
             call attempt_external_global_move
         end if
         ! step-size adaptor
@@ -33,7 +33,7 @@ do i = 0, no_of_temperature_increments
     call reset_metropolis_acceptance_counters
     do j = 1, measurements
         call metropolis_sweep
-        if (twist == 1) then
+        if (use_external_global_moves) then
             call attempt_external_global_move
         end if
         call draw_observations

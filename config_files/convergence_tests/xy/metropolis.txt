@@ -8,6 +8,6 @@
 0                                               number of temperature increments
 1.0d0    	                                    initial width_of_proposal_interval, x; interval = (-x / 2, x / 2]
 0.44d0		                                    target_acceptance_rate_of_field_rotations
-0                                               randomise initial spin configuration (0 = ordered, 1 = random)
-0                                               use external twist move (0 = no, 1 = yes)
+.false.                                         randomise_initial_field_configuration
+.false.                                         use_external_global_moves
 end

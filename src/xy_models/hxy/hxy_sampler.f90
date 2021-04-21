@@ -1,7 +1,3 @@
-! **************************************
-! MEASURE STATE OF SYSTEM
-! **************************************
-
 subroutine draw_observations
 use variables
 implicit none
@@ -39,7 +35,7 @@ sum_of_2nd_derivative_of_potential_x = 2.0d0 * sum_of_2nd_derivative_of_potentia
 sum_of_2nd_derivative_of_potential_y = 2.0d0 * sum_of_2nd_derivative_of_potential_y
 potential = 0.5d0 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
 
-if (calculate_external_minimising_twist_field == 1) then
+if (calculate_external_minimising_twist_field) then
     call external_minimising_twist_field_calculation
 end if
   

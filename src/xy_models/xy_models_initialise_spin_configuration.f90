@@ -3,13 +3,13 @@ use variables
 implicit none
 integer :: i
 
-if (start == 0) then
+if (randomise_initial_field_configuration) then
     do i = 1, sites
-        theta(i) = 0.0d0
+        theta(i) = twopi * rand()
     end do
 else
     do i = 1, sites
-        theta(i) = twopi * rand()
+        theta(i) = 0.0d0
     end do
 end if
 

@@ -13,7 +13,7 @@ acceptance_rate_of_external_global_moves = float(no_of_accepted_external_global_
 write(filename, '(A, F4.2, "//acceptance_rates.csv")') trim(output_directory)//trim(temperature_string), temperature
 open(unit=30, file = filename)
 
-if (twist /= 1) then
+if (.not.(use_external_global_moves)) then
     write(30, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
 else
     write(30, 200) width_of_proposal_interval, acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops, &

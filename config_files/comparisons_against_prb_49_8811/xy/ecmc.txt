@@ -1,11 +1,11 @@
 'xy-ecmc'                                           algorithm_name
 'output/comparisons_against_prb_49_8811/xy/ecmc'    output directory
 100                                                 lattice length
-10000                                               number of equilibration iterations
+100                                                 number of equilibration iterations
 10000                                               number of observations (sample size)
-0.7                                                 initial temperature
-1.5                                                 final temperature
+0.7d0                                               initial temperature
+1.5d0                                               final temperature
 4                                                   number of temperature increments
-0                                                   randomise initial spin configuration (0 = ordered, 1 = random)
-0                                                   use external twist move (0 = no, 1 = yes)
+.false.                                             randomise_initial_field_configuration
+.false.                                             use_external_global_moves
 end

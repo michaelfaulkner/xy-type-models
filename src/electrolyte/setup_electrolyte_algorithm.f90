@@ -1,12 +1,13 @@
 module variables
 character(100) :: output_directory, algorithm_name
+logical :: use_external_global_moves
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 10.0 ** (-6)
 integer, parameter :: max_side = 128
 integer, parameter :: max_sites = max_side * max_side
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), rho(max_sites), array_of_sites(max_sites)
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, twist
+integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
 integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
 integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
@@ -31,7 +32,7 @@ read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) ratio_charge_updates
 read(10, *) ratio_TSF_updates
-read(10, *) twist
+read(10, *) use_external_global_moves
 read(10, *) elementaryCharge
 
 if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
