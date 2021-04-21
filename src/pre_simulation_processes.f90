@@ -19,18 +19,18 @@ call random_seed(get=seed)
 call randinit(abs(seed(1)))
 write(6, '(A, F16.14)') 'Initial random number = ', rand(abs(seed(1)))
 
-! read in config file and setup system
+! read in config file
 call get_command_argument(1, config_file)
 open (unit=1, file=config_file)
 call read_in_config_file
 
+! setup model and lattice
 temperature = initial_temperature
 if (no_of_temperature_increments == 0) then
     magnitude_of_temperature_increments = 0.0
 else
     magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
 end if
-
 call setup_periodic_boundaries
 call initialise_field_configuration
 
