@@ -17,7 +17,7 @@ def main(config_file_name_1, config_file_name_2):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
 
     basic_configuration_data_1 = config_file.get_basic_configuration_data(config_file_name_1)
-    (algorithm_name_1, sample_directory_1, lattice_length_1, no_of_equilibrium_iterations_1, temperature_1,
+    (algorithm_name_1, simulation_directory_1, lattice_length_1, no_of_equilibrium_iterations_1, temperature_1,
      no_of_temperature_increments_1) = (
         basic_configuration_data_1[0], basic_configuration_data_1[1], basic_configuration_data_1[2],
         basic_configuration_data_1[3], basic_configuration_data_1[5], basic_configuration_data_1[7])
@@ -27,7 +27,7 @@ def main(config_file_name_1, config_file_name_2):
         exit()
 
     basic_configuration_data_2 = config_file.get_basic_configuration_data(config_file_name_2)
-    (algorithm_name_2, sample_directory_2, lattice_length_2, no_of_equilibrium_iterations_2, temperature_2,
+    (algorithm_name_2, simulation_directory_2, lattice_length_2, no_of_equilibrium_iterations_2, temperature_2,
      no_of_temperature_increments_2) = (
         basic_configuration_data_2[0], basic_configuration_data_2[1], basic_configuration_data_2[2],
         basic_configuration_data_2[3], basic_configuration_data_2[5], basic_configuration_data_2[7])
@@ -56,15 +56,15 @@ def main(config_file_name_1, config_file_name_2):
     temperature_directory = '/temp_eq_' + str(format(temperature_1, '.2f'))
 
     if algorithm_name_1 == 'elementary-electrolyte' or algorithm_name_1 == 'multivalued-electrolyte':
-        sample_1 = sample_getter.get_potential(sample_directory_1, temperature_directory, beta, number_of_sites)[
+        sample_1 = sample_getter.get_potential(simulation_directory_1, temperature_directory, beta, number_of_sites)[
                  no_of_equilibrium_iterations_1:]
-        sample_2 = sample_getter.get_potential(sample_directory_2, temperature_directory, beta, number_of_sites)[
+        sample_2 = sample_getter.get_potential(simulation_directory_2, temperature_directory, beta, number_of_sites)[
                    no_of_equilibrium_iterations_2:]
     elif (algorithm_name_1 == 'hxy-ecmc' or algorithm_name_1 == 'hxy-metropolis' or algorithm_name_1 == 'xy-ecmc' or
             algorithm_name_1 == 'xy-metropolis'):
-        sample_1 = sample_getter.get_magnetisation_norm(sample_directory_1, temperature_directory, beta, number_of_sites)[
+        sample_1 = sample_getter.get_magnetisation_norm(simulation_directory_1, temperature_directory, beta, number_of_sites)[
                  no_of_equilibrium_iterations_1:]
-        sample_2 = sample_getter.get_magnetisation_norm(sample_directory_2, temperature_directory, beta,
+        sample_2 = sample_getter.get_magnetisation_norm(simulation_directory_2, temperature_directory, beta,
                                                         number_of_sites)[
                    no_of_equilibrium_iterations_2:]
 
