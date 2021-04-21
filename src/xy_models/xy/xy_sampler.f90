@@ -24,7 +24,7 @@ do i = 1, sites
     potential = potential - cos(theta(pos_x(i)) - theta(i)) - cos(theta(pos_y(i)) - theta(i))
 end do
 
-write(10, 100) potential, magnetisation_x, magnetisation_y, &
+write(20, 100) potential, magnetisation_x, magnetisation_y, &
                 sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y, &
                 sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 

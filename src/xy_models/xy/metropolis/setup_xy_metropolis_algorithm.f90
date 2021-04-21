@@ -18,18 +18,18 @@ use variables
 implicit none
 integer :: i
 
-read(1, *) algorithm_name
-read(1, *) output_directory
-read(1, *) side
-read(1, *) therm_sweeps
-read(1, *) measurements
-read(1, *) initial_temperature
-read(1, *) final_temperature
-read(1, *) no_of_temperature_increments
-read(1, *) width_of_proposal_interval
-read(1, *) magnitude_of_proposal_interval_increments
-read(1, *) start
-read(1, *) twist
+read(10, *) algorithm_name
+read(10, *) output_directory
+read(10, *) side
+read(10, *) therm_sweeps
+read(10, *) measurements
+read(10, *) initial_temperature
+read(10, *) final_temperature
+read(10, *) no_of_temperature_increments
+read(10, *) width_of_proposal_interval
+read(10, *) magnitude_of_proposal_interval_increments
+read(10, *) start
+read(10, *) twist
 
 if (algorithm_name /= 'xy-metropolis') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal xy-metropolis.'

@@ -43,7 +43,7 @@ if (calculate_external_minimising_twist_field == 1) then
     call external_minimising_twist_field_calculation
 end if
   
-write(10, 100) potential, magnetisation_x, magnetisation_y, &
+write(20, 100) potential, magnetisation_x, magnetisation_y, &
                 sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y, &
                 sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y, &
                 no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
