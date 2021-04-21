@@ -9,7 +9,7 @@ integer :: start, side, sites, no_of_temperature_increments, therm_sweeps, measu
 integer :: no_of_events, no_of_accepted_external_global_moves
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
 double precision :: volume, length, beta, temperature, initial_temperature, final_temperature
-double precision :: spin_space_distance_between_observations
+double precision :: magnitude_of_temperature_increments, spin_space_distance_between_observations
 end module variables
 
 ! **************************************
@@ -35,8 +35,9 @@ if (algorithm_name /= 'xy-ecmc') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal xy-ecmc.'
    stop
 end if
-temperature = initial_temperature
+
 sites = side * side
+length = float(side)
 volume = float(sites)
 spin_space_distance_between_observations = volume * pi
 

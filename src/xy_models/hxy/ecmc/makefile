@@ -12,7 +12,7 @@ all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o setup_hxy_ecmc_algorithm.o periodic_boundaries.o \
 			xy_models_initialise_spin_configuration.o xy_models_create_sample_file.o hxy_sampler.o \
-			attempt_external_hxy_twist.o single_hxy_event_chain.o ecmc_algorithm.o
+			attempt_external_hxy_twist.o single_hxy_event_chain.o pre_simulation_processes.o ecmc_algorithm.o
 
 create-executable: $(OBJECTS)
 	$(OFLAGS) hxy_ecmc_algorithm.exe $(OBJECTS) -lm

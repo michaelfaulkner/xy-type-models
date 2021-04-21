@@ -14,7 +14,7 @@ OBJECTS = random_number_generator.o setup_electrolyte_algorithm.o randomise_arra
 			electrolyte_initialise_field_configuration.o electrolyte_create_sample_file.o electrolyte_sampler.o \
 			attempt_external_topological_sector_fluctuation.o multivalued_electrolyte_metropolis_sweep.o \
 			electrolyte_output_metropolis_acceptance_rates.o electrolyte_reset_metropolis_acceptance_counters.o \
-			metropolis_algorithm.o
+			pre_simulation_processes.o metropolis_algorithm.o
 
 create-executable : $(OBJECTS)
 	$(OFLAGS) multivalued_electrolyte_algorithm.exe $(OBJECTS) -lm

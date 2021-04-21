@@ -13,7 +13,8 @@ integer :: no_of_events, no_of_accepted_external_global_moves, calculate_externa
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
 double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length, beta, temperature
-double precision :: initial_temperature, final_temperature, chainlength, spin_space_distance_between_observations
+double precision :: initial_temperature, final_temperature, magnitude_of_temperature_increments, chainlength
+double precision :: spin_space_distance_between_observations
 end module variables
 
 
@@ -42,10 +43,10 @@ if (algorithm_name /= 'hxy-ecmc') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-ecmc.'
    stop
 end if
-temperature = initial_temperature
+
 sites = side * side
-volume = float(sites)
 length = float(side)
+volume = float(sites)
 spin_space_distance_between_observations = volume * pi
 
 if (side > max_side) then

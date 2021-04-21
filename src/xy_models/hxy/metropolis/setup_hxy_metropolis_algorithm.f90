@@ -10,9 +10,9 @@ integer :: start, side, sites, no_of_temperature_increments, therm_sweeps, measu
 integer :: no_of_accepted_external_global_moves, nmax, calculate_external_minimising_twist_field
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length
-double precision :: beta, temperature, initial_temperature, final_temperature
-double precision :: width_of_proposal_interval, magnitude_of_proposal_interval_increments
+double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y
+double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
+double precision :: volume, length, width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 ! **************************************
@@ -43,11 +43,10 @@ if (algorithm_name /= 'hxy-metropolis') then
    write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-metropolis.'
    stop
 end if
-temperature = initial_temperature
-sites = side * side
-volume = float(sites)
-length = float(side)
 
+sites = side * side
+length = float(side)
+volume = float(sites)
 do i = 1, sites
     array_of_sites(i) = i
 end do

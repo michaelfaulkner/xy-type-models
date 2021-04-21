@@ -10,8 +10,8 @@ integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
 integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
 integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: Efield_x(max_sites), Efield_y(max_sites), Esum_x, Esum_y, elementaryCharge
-double precision :: volume, length, temperature, beta, initial_temperature, final_temperature, width_of_proposal_interval
-double precision :: magnitude_of_proposal_interval_increments
+double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
+double precision :: volume, length, width_of_proposal_interval, magnitude_of_proposal_interval_increments
 end module variables
 
 
@@ -39,10 +39,10 @@ if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multiva
                     multivalued-electrolyte.'
    stop
 end if
-temperature = initial_temperature
+
 sites = side * side
-volume = float(sites)
 length = float(side)
+volume = float(sites)
 
 if (side > max_side) then
    write(6,*) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
