@@ -11,10 +11,10 @@ OFLAGS= gfortran -O -o
 all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o setup_electrolyte_algorithm.o randomise_array_of_sites.o periodic_boundaries.o \
-			electrolyte_initialise_field_configuration.o electrolyte_create_sample_file.o electrolyte_sampler.o \
-			electrolyte_attempt_external_global_move.o multivalued_electrolyte_metropolis_sweep.o \
-			electrolyte_output_metropolis_acceptance_rates.o electrolyte_reset_metropolis_acceptance_counters.o \
-			pre_simulation_processes.o metropolis_algorithm.o
+			electrolyte_initialise_field_configuration.o electrolyte_create_sample_file.o \
+			electrolyte_draw_and_print_observation.o electrolyte_attempt_external_global_move.o \
+			multivalued_electrolyte_metropolis_sweep.o electrolyte_output_metropolis_acceptance_rates.o \
+			electrolyte_reset_metropolis_acceptance_counters.o pre_simulation_processes.o metropolis_algorithm.o
 
 create-executable : $(OBJECTS)
 	$(OFLAGS) multivalued_electrolyte_algorithm.exe $(OBJECTS) -lm
