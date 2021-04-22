@@ -26,7 +26,7 @@ subroutine markov_chain_charges_GLE
 
          EfieldOld = electric_field_x(i)
          plusMinus = 2 * floor(2 * rand()) - 1
-         EfieldNew = EfieldOld + plusMinus * elementaryCharge
+         EfieldNew = EfieldOld + plusMinus * elementary_charge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
          rhoInew = rho(i) + plusMinus
          rhoIposNew = rho(pos_x(i)) - plusMinus
@@ -46,7 +46,7 @@ subroutine markov_chain_charges_GLE
 
          EfieldOld = electric_field_y(i)
          plusMinus = 2 * floor(2 * rand()) - 1
-         EfieldNew = EfieldOld + plusMinus * elementaryCharge
+         EfieldNew = EfieldOld + plusMinus * elementary_charge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
          rhoInew = rho(i) + plusMinus
          rhoIposNew = rho(pos_y(i)) - plusMinus

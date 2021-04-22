@@ -1,42 +1,35 @@
 subroutine attempt_external_global_move
-  use variables
-  implicit none
-  integer i, plusMinus
-  double precision EsumNew, deltaU
+use variables
+implicit none
+integer i, plus_or_minus_sign
+double precision candidate_electric_field_sum, potential_difference
 
-  call calculate_electric_field_sum
-  deltaU = 0
-  
-  if (floor(2 * rand()) .eq. 0) then
-     
-     plusMinus = 2 * floor(2 * rand()) - 1
-     EsumNew = electric_field_sum_x + plusMinus * elementaryCharge * side
-     deltaU = 0.5 * (EsumNew * EsumNew - electric_field_sum_x * electric_field_sum_x) / volume
+call calculate_electric_field_sum
+potential_difference = 0.0d0
 
-     ! METROPOLIS FILTER
-
-     if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
+if (floor(2.0d0 * rand()) == 0) then
+    plus_or_minus_sign = 2 * floor(2 * rand()) - 1
+    candidate_electric_field_sum = electric_field_sum_x + plus_or_minus_sign * elementary_charge * side
+    potential_difference = 0.5d0 * (candidate_electric_field_sum * candidate_electric_field_sum - &
+                                    electric_field_sum_x * electric_field_sum_x) / volume
+    if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, sites
-           electric_field_x(i) = electric_field_x(i) + plusMinus * elementaryCharge / side
+            electric_field_x(i) = electric_field_x(i) + candidate_electric_field_sum / volume
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-     end if
-     
-  else
-     
-     plusMinus = 2 * floor(2 * rand()) - 1
-     EsumNew = electric_field_sum_y + plusMinus * elementaryCharge * side
-     deltaU = 0.5 * (EsumNew * EsumNew - electric_field_sum_y * electric_field_sum_y) / volume
-          
-     ! METROPOLIS FILTER
-
-     if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
+    end if
+else
+    plus_or_minus_sign = 2 * floor(2.0d0 * rand()) - 1
+    candidate_electric_field_sum = electric_field_sum_y + plus_or_minus_sign * elementary_charge * side
+    potential_difference = 0.5d0 * (candidate_electric_field_sum * candidate_electric_field_sum - &
+                                    electric_field_sum_y * electric_field_sum_y) / volume
+    if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, sites
-           electric_field_y(i) = electric_field_y(i) + plusMinus * elementaryCharge / side
+           electric_field_y(i) = electric_field_y(i) + candidate_electric_field_sum / volume
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-     end if
-     
-  end if
-  
+    end if
+end if
+
+return
 end subroutine attempt_external_global_move
