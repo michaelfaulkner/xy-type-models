@@ -1,19 +1,16 @@
 module variables
 character(100) :: output_directory, algorithm_name
 logical :: use_external_global_moves
+integer, allocatable, dimension(:) :: pos_x, neg_x, pos_y, neg_y, array_of_sites, rho
+integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
+integer :: no_of_observations, no_of_accepted_field_rotations, no_of_accepted_external_global_moves
+integer :: no_of_accepted_charge_hops, ratio_charge_updates, ratio_TSF_updates
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
-integer, parameter :: max_integer_lattice_length = 128
-integer, parameter :: max_no_of_sites = max_integer_lattice_length * max_integer_lattice_length
-integer :: pos_x(max_no_of_sites), neg_x(max_no_of_sites), pos_y(max_no_of_sites), neg_y(max_no_of_sites)
-integer :: rho(max_no_of_sites), array_of_sites(max_no_of_sites)
-integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps, no_of_observations
-integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
-integer :: ratio_charge_updates, ratio_TSF_updates
-double precision :: electric_field_x(max_no_of_sites), electric_field_y(max_no_of_sites)
-double precision :: electric_field_sum_x, electric_field_sum_y, elementary_charge
+double precision, allocatable, dimension(:) :: electric_field_x, electric_field_y
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations
+double precision :: electric_field_sum_x, electric_field_sum_y, elementary_charge
 end module variables
 
 
@@ -43,11 +40,9 @@ if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multiva
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-
-if (integer_lattice_length > max_integer_lattice_length) then
-   write(6,*) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
-   stop
-end if
+allocate(electric_field_x(no_of_sites), electric_field_y(no_of_sites))
+allocate(pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites), array_of_sites(no_of_sites))
+allocate(rho(no_of_sites))
 
 return
 end subroutine read_in_config_file
