@@ -2,17 +2,17 @@ subroutine metropolis_sweep
 use variables
 implicit none
 integer :: n, i
-double precision :: candidate_theta, potential_difference, candidate_emergent_field_1, candidate_emergent_field_2
+double precision :: candidate_spin_value, potential_difference, candidate_emergent_field_1, candidate_emergent_field_2
 double precision :: candidate_emergent_field_3, candidate_emergent_field_4
 
 call randomise_array_of_sites
 do n = 1, no_of_sites
     i = array_of_sites(n)
-    candidate_theta = mod(theta(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
-    candidate_emergent_field_1 = modulo(candidate_theta - theta(neg_y(i)) + pi, twopi) - pi
-    candidate_emergent_field_2 = modulo(- candidate_theta + theta(neg_x(i)) + pi, twopi) - pi
-    candidate_emergent_field_3 = modulo(theta(pos_y(i)) - candidate_theta + pi, twopi) - pi
-    candidate_emergent_field_4 = modulo(- theta(pos_x(i)) + candidate_theta + pi, twopi) - pi
+    candidate_spin_value = mod(spin_field(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
+    candidate_emergent_field_1 = modulo(candidate_spin_value - spin_field(neg_y(i)) + pi, twopi) - pi
+    candidate_emergent_field_2 = modulo(- candidate_spin_value + spin_field(neg_x(i)) + pi, twopi) - pi
+    candidate_emergent_field_3 = modulo(spin_field(pos_y(i)) - candidate_spin_value + pi, twopi) - pi
+    candidate_emergent_field_4 = modulo(- spin_field(pos_x(i)) + candidate_spin_value + pi, twopi) - pi
 
     potential_difference = 0.5d0 * (candidate_emergent_field_1 * candidate_emergent_field_1 &
                                     + candidate_emergent_field_2 * candidate_emergent_field_2 &
@@ -24,7 +24,7 @@ do n = 1, no_of_sites
                                     - emergent_field_y(pos_x(i)) * emergent_field_y(pos_x(i)))
 
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
-        theta(i) = candidate_theta
+        spin_field(i) = candidate_spin_value
         emergent_field_x(i) = candidate_emergent_field_1
         emergent_field_y(i) = candidate_emergent_field_2
         emergent_field_x(pos_y(i)) = candidate_emergent_field_3

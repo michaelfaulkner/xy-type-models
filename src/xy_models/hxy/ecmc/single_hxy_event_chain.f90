@@ -12,7 +12,7 @@ active_spin_index = int(dfloat(no_of_sites) * rand()) + 1
 distance_left_before_next_observation = spin_space_distance_between_observations
 ! iterate until total distance covered in spin space reaches spin_space_distance_between_observations
 do
-    active_spin_value = theta(active_spin_index)
+    active_spin_value = spin_field(active_spin_index)
     neighbouring_spin_indices(1) = neg_x(active_spin_index)
     neighbouring_spin_indices(2) = pos_x(active_spin_index)
     neighbouring_spin_indices(3) = neg_y(active_spin_index)
@@ -21,7 +21,7 @@ do
     shortest_distance_to_next_factor_event = 1.0d10
     ! iterate over neighbouring_spin_indices
     do i = 1, 4
-        non_active_spin_value = theta(neighbouring_spin_indices(i))
+        non_active_spin_value = spin_field(neighbouring_spin_indices(i))
         initial_spin_value_difference = modulo(active_spin_value - non_active_spin_value + pi, twopi) - pi
         uphill_distance_through_potential_space_before_next_event = - temperature * log(1.0d0 - rand())
         ! if factor derivative > 0
@@ -55,11 +55,11 @@ do
 
     if (distance_left_before_next_observation < shortest_distance_to_next_factor_event) then
         ! update active spin value and exit event chain in order to observe the system
-        theta(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
+        spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
         exit
     else
         ! update active spin value and continute event chain
-        theta(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, twopi)
+        spin_field(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, twopi)
         distance_left_before_next_observation = distance_left_before_next_observation - &
                                                     shortest_distance_to_next_factor_event
         active_spin_index = vetoeing_spin_index

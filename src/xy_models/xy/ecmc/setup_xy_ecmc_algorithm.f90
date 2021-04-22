@@ -6,7 +6,7 @@ integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no
 integer :: no_of_observations, no_of_events, no_of_accepted_external_global_moves
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
-double precision, allocatable, dimension(:) :: theta
+double precision, allocatable, dimension(:) :: spin_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: spin_space_distance_between_observations
 end module variables
@@ -33,7 +33,7 @@ if (algorithm_name /= 'xy-ecmc') then
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-allocate(theta(no_of_sites))
+allocate(spin_field(no_of_sites))
 allocate(pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites))
 spin_space_distance_between_observations = dfloat(no_of_sites) * pi
 

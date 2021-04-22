@@ -5,11 +5,11 @@ integer :: i
 
 if (randomise_initial_field_configuration) then
     do i = 1, no_of_sites
-        theta(i) = twopi * rand()
+        spin_field(i) = twopi * rand()
     end do
 else
     do i = 1, no_of_sites
-        theta(i) = 0.0d0
+        spin_field(i) = 0.0d0
     end do
 end if
 

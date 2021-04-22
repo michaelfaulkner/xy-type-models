@@ -15,13 +15,13 @@ sum_of_2nd_derivative_of_potential_y = 0.0d0
 potential = 0.0d0
 
 do i = 1, no_of_sites
-    magnetisation_x = magnetisation_x + cos(theta(i))
-    magnetisation_y = magnetisation_y + sin(theta(i))
-    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + sin(theta(pos_x(i)) - theta(i))
-    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + sin(theta(pos_y(i)) - theta(i))
-    sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + cos(theta(pos_x(i)) - theta(i))
-    sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + cos(theta(pos_y(i)) - theta(i))
-    potential = potential - cos(theta(pos_x(i)) - theta(i)) - cos(theta(pos_y(i)) - theta(i))
+    magnetisation_x = magnetisation_x + cos(spin_field(i))
+    magnetisation_y = magnetisation_y + sin(spin_field(i))
+    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + sin(spin_field(pos_x(i)) - spin_field(i))
+    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + sin(spin_field(pos_y(i)) - spin_field(i))
+    sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + cos(spin_field(pos_x(i)) - spin_field(i))
+    sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + cos(spin_field(pos_y(i)) - spin_field(i))
+    potential = potential - cos(spin_field(pos_x(i)) - spin_field(i)) - cos(spin_field(pos_y(i)) - spin_field(i))
 end do
 
 write(20, 100) potential, magnetisation_x, magnetisation_y, &
