@@ -17,7 +17,7 @@ subroutine attempt_external_global_move
 
      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
         do i = 1, sites
-           Efield_x(i) = Efield_x(i) + plusMinus * elementaryCharge / side
+           electric_field_x(i) = electric_field_x(i) + plusMinus * elementaryCharge / side
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if
@@ -32,7 +32,7 @@ subroutine attempt_external_global_move
 
      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
         do i = 1, sites
-           Efield_y(i) = Efield_y(i) + plusMinus * elementaryCharge / side
+           electric_field_y(i) = electric_field_y(i) + plusMinus * elementaryCharge / side
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
      end if

@@ -4,8 +4,8 @@ implicit none
 integer :: i
 
 do i = 1, sites
-    Efield_x(i) = 0.0
-    Efield_y(i) = 0.0
+    electric_field_x(i) = 0.0
+    electric_field_y(i) = 0.0
 end do
 
 return

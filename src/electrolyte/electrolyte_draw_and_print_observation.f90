@@ -6,7 +6,8 @@ double precision potential
 
 potential = 0.0d0
 do i = 1, sites
-    potential = potential + 0.5 * (Efield_x(i) * Efield_x(i) + Efield_y(i) * Efield_y(i))
+    potential = potential + 0.5d0 * (electric_field_x(i) * electric_field_x(i) + &
+                                            electric_field_y(i) * electric_field_y(i))
 end do
 
 call calculate_electric_field_sum
@@ -26,8 +27,8 @@ integer i
 Esum_x = 0.0d0
 Esum_y = 0.0d0
 do i = 1, sites
-    Esum_x = Esum_x + Efield_x(i)
-    Esum_y = Esum_y + Efield_y(i)
+    Esum_x = Esum_x + electric_field_x(i)
+    Esum_y = Esum_y + electric_field_y(i)
 end do
 
 return

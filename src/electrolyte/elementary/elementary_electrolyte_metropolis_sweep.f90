@@ -24,7 +24,7 @@ subroutine markov_chain_charges_GLE
 
       if (floor(2 * rand()) .eq. 0) then
 
-         EfieldOld = Efield_x(i)
+         EfieldOld = electric_field_x(i)
          plusMinus = 2 * floor(2 * rand()) - 1
          EfieldNew = EfieldOld + plusMinus * elementaryCharge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
@@ -36,7 +36,7 @@ subroutine markov_chain_charges_GLE
          if (((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) .and. &
               ((rhoInew .eq. 0) .or. (abs(rhoInew) .eq. 1)) .and. &
                  ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
-            Efield_x(i) = EfieldNew
+            electric_field_x(i) = EfieldNew
             rho(i) = rhoINew
             rho(pos_x(i)) = rhoIposNew
             no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
@@ -44,7 +44,7 @@ subroutine markov_chain_charges_GLE
             
       else
 
-         EfieldOld = Efield_y(i)
+         EfieldOld = electric_field_y(i)
          plusMinus = 2 * floor(2 * rand()) - 1
          EfieldNew = EfieldOld + plusMinus * elementaryCharge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
@@ -56,7 +56,7 @@ subroutine markov_chain_charges_GLE
          if (((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) .and. &
               ((rhoInew .eq. 0) .or. (abs(rhoInew) .eq. 1)) .and. &
                  ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
-            Efield_y(i) = EfieldNew
+            electric_field_y(i) = EfieldNew
             rho(i) = rhoINew
             rho(pos_y(i)) = rhoIposNew
             no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
@@ -88,10 +88,10 @@ subroutine markov_chain_aux_field_GLE
 
       ! CALL OLD ELECTRIC FIELD
 
-      Efield1old = Efield_x(i)
-      Efield2old = Efield_y(i)
-      Efield3old = Efield_x(pos_y(i))
-      Efield4old = Efield_y(pos_x(i))
+      Efield1old = electric_field_x(i)
+      Efield2old = electric_field_y(i)
+      Efield3old = electric_field_x(pos_y(i))
+      Efield4old = electric_field_y(pos_x(i))
 
       ! PROPOSED ELECTRIC FIELD
       
@@ -107,10 +107,10 @@ subroutine markov_chain_aux_field_GLE
       deltaU = Unew - Uold
 
       if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-         Efield_x(i) = Efield1new
-         Efield_y(i) = Efield2new
-         Efield_x(pos_y(i)) = Efield3new
-         Efield_y(pos_x(i)) = Efield4new
+         electric_field_x(i) = Efield1new
+         electric_field_y(i) = Efield2new
+         electric_field_x(pos_y(i)) = Efield3new
+         electric_field_y(pos_x(i)) = Efield4new
          no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
       end if
    end do
