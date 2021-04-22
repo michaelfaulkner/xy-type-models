@@ -35,8 +35,8 @@ if (algorithm_name /= 'xy-metropolis') then
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-allocate(theta(no_of_sites), pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites), &
-            array_of_sites(no_of_sites))
+allocate(theta(no_of_sites))
+allocate(pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites), array_of_sites(no_of_sites))
 do i = 1, no_of_sites
     array_of_sites(i) = i
 end do
