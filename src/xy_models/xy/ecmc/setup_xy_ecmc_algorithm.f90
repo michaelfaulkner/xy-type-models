@@ -8,8 +8,7 @@ double precision, parameter :: pi = 3.14159265358979d0
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), v(max_sites)
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, max_autocorr_time
 integer :: no_of_events, no_of_accepted_external_global_moves
-double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
-double precision :: volume, length, beta, temperature, initial_temperature, final_temperature
+double precision :: theta(max_sites), volume, length, beta, temperature, initial_temperature, final_temperature
 double precision :: magnitude_of_temperature_increments, spin_space_distance_between_observations
 end module variables
 

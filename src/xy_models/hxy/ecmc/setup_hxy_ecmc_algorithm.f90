@@ -12,7 +12,7 @@ integer :: pos_x(max_sites),neg_x(max_sites),pos_y(max_sites),neg_y(max_sites),v
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, max_autocorr_time, nmax
 integer :: no_of_events, no_of_accepted_external_global_moves
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
-double precision :: theta(max_sites), top_x(max_sites), top_y(max_sites)
+double precision :: theta(max_sites), emergent_field_x(max_sites), emergent_field_y(max_sites)
 double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length, beta, temperature
 double precision :: initial_temperature, final_temperature, magnitude_of_temperature_increments, chainlength
 double precision :: spin_space_distance_between_observations

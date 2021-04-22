@@ -6,7 +6,7 @@ double precision :: magnetisation_x, magnetisation_y, potential
 double precision :: sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
 double precision :: sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 
-call top_field
+call calculate_emergent_field
 
 magnetisation_x = 0.0d0
 magnetisation_y = 0.0d0
@@ -20,16 +20,16 @@ sum_of_squared_electric_field_y = 0.0d0
 do i = 1, sites
     magnetisation_x = magnetisation_x + cos(theta(i))
     magnetisation_y = magnetisation_y + sin(theta(i))
-    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + top_y(i)
-    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + top_x(i)
+    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + emergent_field_y(i)
+    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + emergent_field_x(i)
     do n = 1, nmax
         sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + &
-                                                                                (-1.0d0) ** (n + 1) * cos(n * top_y(i))
+                                                                                (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
         sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + &
-                                                                                (-1.0d0) ** (n + 1) * cos(n * top_x(i))
+                                                                                (-1.0d0) ** (n + 1) * cos(n * emergent_field_x(i))
     end do
-    sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + top_x(i) * top_x(i)
-    sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + top_y(i) * top_y(i)
+    sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + emergent_field_x(i) * emergent_field_x(i)
+    sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + emergent_field_y(i) * emergent_field_y(i)
 end do
 sum_of_2nd_derivative_of_potential_x = 2.0d0 * sum_of_2nd_derivative_of_potential_x
 sum_of_2nd_derivative_of_potential_y = 2.0d0 * sum_of_2nd_derivative_of_potential_y
@@ -50,22 +50,17 @@ write(20, 100) potential, magnetisation_x, magnetisation_y, &
 return
 end subroutine draw_and_print_observation
 
-! **************************************
-! CALCULATE EMERGENT FIELD
-! VIA EMERGENT-FIELD DEF: E_x(i) = + (theta(i) - theta(neg_y(i)));
-! E_y(i) = - (theta(i) - theta(neg_x(i))) (WITH MODULAR OPERATION)
-! **************************************
 
-subroutine top_field
+subroutine calculate_emergent_field
 use variables
 implicit none
 integer :: i
 do i = 1, sites
-    top_x(i) = modulo(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
-    top_y(i) = modulo(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
+    emergent_field_x(i) = modulo(theta(i) - theta(neg_y(i)) + pi, twopi) - pi
+    emergent_field_y(i) = modulo(- theta(i) + theta(neg_x(i)) + pi, twopi) - pi
 end do
 return
-end subroutine top_field
+end subroutine calculate_emergent_field
 
 
 ! **************************************

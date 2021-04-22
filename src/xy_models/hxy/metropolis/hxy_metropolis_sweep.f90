@@ -18,15 +18,17 @@ do n = 1, sites
                                     + candidate_emergent_field_2 * candidate_emergent_field_2 &
                                     + candidate_emergent_field_3 * candidate_emergent_field_3 &
                                     + candidate_emergent_field_4 * candidate_emergent_field_4 &
-                                    - top_x(i) * top_x(i) - top_y(i) * top_y(i) &
-                                    - top_x(pos_y(i)) * top_x(pos_y(i)) - top_y(pos_x(i)) * top_y(pos_x(i)))
+                                    - emergent_field_x(i) * emergent_field_x(i) &
+                                    - emergent_field_y(i) * emergent_field_y(i) &
+                                    - emergent_field_x(pos_y(i)) * emergent_field_x(pos_y(i)) &
+                                    - emergent_field_y(pos_x(i)) * emergent_field_y(pos_x(i)))
 
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         theta(i) = candidate_theta
-        top_x(i) = candidate_emergent_field_1
-        top_y(i) = candidate_emergent_field_2
-        top_x(pos_y(i)) = candidate_emergent_field_3
-        top_y(pos_x(i)) = candidate_emergent_field_4
+        emergent_field_x(i) = candidate_emergent_field_1
+        emergent_field_y(i) = candidate_emergent_field_2
+        emergent_field_x(pos_y(i)) = candidate_emergent_field_3
+        emergent_field_y(pos_x(i)) = candidate_emergent_field_4
         no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
     end if
 end do

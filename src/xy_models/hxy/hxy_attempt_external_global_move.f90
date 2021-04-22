@@ -8,7 +8,7 @@ subroutine attempt_external_global_move
   integer i, rand1, rand2
   double precision deltaE, diff
 
-  call top_field
+  call calculate_emergent_field
   deltaE = 0
   
   if (floor(2 * rand()) .eq. 0) then                                                 ! Ebar_x MOVE
@@ -25,7 +25,7 @@ subroutine attempt_external_global_move
         else if (diff .le. - 0.5 * twopi) then
            diff = diff + twopi
         end if
-        deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * top_x(i) ** 2
+        deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * emergent_field_x(i) ** 2
      end do
      
      if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
@@ -50,7 +50,7 @@ subroutine attempt_external_global_move
         else if (diff .le. - 0.5 * twopi) then
            diff = diff + twopi
         end if
-        deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * top_y(i) ** 2
+        deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * emergent_field_y(i) ** 2
      end do
      
      if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
