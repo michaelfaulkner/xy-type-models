@@ -8,7 +8,7 @@ double precision :: initial_two_spin_potential, final_two_spin_potential, distan
 double precision :: active_spin_value, non_active_spin_value, initial_spin_value_difference, final_spin_value_difference
 double precision :: distance_to_next_factor_event, no_of_complete_spin_rotations
 
-active_spin_index = int(dfloat(no_of_sites) * rand())
+active_spin_index = int(dfloat(no_of_sites) * rand()) + 1
 distance_left_before_next_observation = spin_space_distance_between_observations
 ! iterate until total distance covered in spin space reaches spin_space_distance_between_observations
 do
