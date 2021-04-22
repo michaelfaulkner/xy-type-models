@@ -1,4 +1,4 @@
-subroutine draw_observations
+subroutine draw_and_print_observation
 use variables
 implicit none
 integer :: i, n
@@ -48,7 +48,7 @@ write(20, 100) potential, magnetisation_x, magnetisation_y, &
             I2, ", ", I2)
 
 return
-end subroutine draw_observations
+end subroutine draw_and_print_observation
 
 ! **************************************
 ! CALCULATE EMERGENT FIELD

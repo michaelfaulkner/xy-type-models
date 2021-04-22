@@ -27,7 +27,7 @@ do i = 0, no_of_temperature_increments
             end if
             no_of_accepted_field_rotations = 0
         end if
-        call draw_observations
+        call draw_and_print_observation
     end do
 
     call reset_metropolis_acceptance_counters
@@ -36,7 +36,7 @@ do i = 0, no_of_temperature_increments
         if (use_external_global_moves) then
             call attempt_external_global_move
         end if
-        call draw_observations
+        call draw_and_print_observation
     end do
 
     call output_metropolis_acceptance_rates

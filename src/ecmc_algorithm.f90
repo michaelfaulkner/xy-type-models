@@ -15,7 +15,7 @@ do i = 0, no_of_temperature_increments
         if (use_external_global_moves) then
             call attempt_external_global_move
         end if
-        call draw_observations
+        call draw_and_print_observation
     end do
 
     no_of_events = 0
@@ -26,7 +26,7 @@ do i = 0, no_of_temperature_increments
         if (use_external_global_moves) then
             call attempt_external_global_move
         end if
-        call draw_observations
+        call draw_and_print_observation
     end do
 
     call output_no_of_events

@@ -1,4 +1,4 @@
-subroutine draw_observations
+subroutine draw_and_print_observation
 use variables
 implicit none
 integer i
@@ -17,7 +17,7 @@ write(20, 100) potential, Esum_x, Esum_y
 100 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
 
 return
-end subroutine draw_observations
+end subroutine draw_and_print_observation
 
 subroutine calculate_electric_field_sum
 use variables
