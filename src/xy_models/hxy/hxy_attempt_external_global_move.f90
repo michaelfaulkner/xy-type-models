@@ -28,7 +28,7 @@ subroutine attempt_external_global_move
         deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * emergent_field_x(i) ** 2
      end do
      
-     if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
+     if ((deltaE < 0.0d0) .or. (exp(-beta * deltaE) .gt. rand())) then
         rand2 = int(integer_lattice_length * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, no_of_sites
            theta(i) = mod(theta(i) + rand1 * twopi * (int(i / integer_lattice_length) + rand2) / integer_lattice_length, twopi)
@@ -53,7 +53,7 @@ subroutine attempt_external_global_move
         deltaE = deltaE + 0.5 * diff ** 2 - 0.5 * emergent_field_y(i) ** 2
      end do
      
-     if ((deltaE .lt. -epsilon) .or. (exp(-beta * deltaE) .gt. rand())) then
+     if ((deltaE < 0.0d0) .or. (exp(-beta * deltaE) .gt. rand())) then
         rand2 = int(integer_lattice_length * rand())                                               ! TO PICK A RANDOM STARTING LINE FROM WHICH TO TWIST
         do i = 1, no_of_sites
            theta(i) = mod(theta(i) - rand1 * twopi * mod(i + rand2, integer_lattice_length) / integer_lattice_length, twopi)

@@ -3,7 +3,6 @@ character(100) :: output_directory, algorithm_name
 logical :: use_external_global_moves
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
-double precision, parameter :: epsilon = 10.0 ** (-6)
 integer, parameter :: max_integer_lattice_length = 128
 integer, parameter :: max_no_of_sites = max_integer_lattice_length * max_integer_lattice_length
 integer :: pos_x(max_no_of_sites), neg_x(max_no_of_sites), pos_y(max_no_of_sites), neg_y(max_no_of_sites)

@@ -5,11 +5,12 @@ integer, parameter :: max_integer_lattice_length = 128
 integer, parameter :: max_no_of_sites = max_integer_lattice_length * max_integer_lattice_length
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
-integer :: pos_x(max_no_of_sites), neg_x(max_no_of_sites), pos_y(max_no_of_sites), neg_y(max_no_of_sites), v(max_no_of_sites)
+integer :: pos_x(max_no_of_sites), neg_x(max_no_of_sites), pos_y(max_no_of_sites), neg_y(max_no_of_sites)
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
-integer :: no_of_observations, max_autocorr_time, no_of_events, no_of_accepted_external_global_moves
-double precision :: theta(max_no_of_sites), beta, temperature, initial_temperature, final_temperature
-double precision :: magnitude_of_temperature_increments, spin_space_distance_between_observations
+integer :: no_of_observations, no_of_events, no_of_accepted_external_global_moves
+double precision :: theta(max_no_of_sites)
+double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
+double precision :: spin_space_distance_between_observations
 end module variables
 
 

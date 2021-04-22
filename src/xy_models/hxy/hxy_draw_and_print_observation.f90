@@ -22,7 +22,7 @@ do i = 1, no_of_sites
     magnetisation_y = magnetisation_y + sin(theta(i))
     sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + emergent_field_y(i)
     sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + emergent_field_x(i)
-    do n = 1, nmax
+    do n = 1, vacuum_permittivity_sum_cutoff
         sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + &
                                                                     (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
         sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + &
