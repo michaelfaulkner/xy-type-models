@@ -14,7 +14,7 @@ if (floor(2.0d0 * rand()) == 0) then
                                     electric_field_sum_x * electric_field_sum_x) / volume
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, sites
-            electric_field_x(i) = electric_field_x(i) + candidate_electric_field_sum / volume
+            electric_field_x(i) = electric_field_x(i) + plus_or_minus_sign * elementary_charge / side
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
     end if
@@ -25,7 +25,7 @@ else
                                     electric_field_sum_y * electric_field_sum_y) / volume
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, sites
-           electric_field_y(i) = electric_field_y(i) + candidate_electric_field_sum / volume
+           electric_field_y(i) = electric_field_y(i) + plus_or_minus_sign * elementary_charge / side
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
     end if
