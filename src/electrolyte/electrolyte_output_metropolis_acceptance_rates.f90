@@ -6,9 +6,9 @@ double precision :: acceptance_rate_of_external_global_moves
 character(100), parameter :: temperature_string="/temp_eq_"
 character(100) :: filename
 
-acceptance_rate_of_field_rotations = float(no_of_accepted_field_rotations) / (no_of_observations * volume)
-acceptance_rate_of_charge_hops = float(no_of_accepted_charge_hops) / (no_of_observations * volume)
-acceptance_rate_of_external_global_moves = float(no_of_accepted_external_global_moves) / (no_of_observations * volume)
+acceptance_rate_of_field_rotations = dfloat(no_of_accepted_field_rotations) / (no_of_observations * volume)
+acceptance_rate_of_charge_hops = dfloat(no_of_accepted_charge_hops) / (no_of_observations * volume)
+acceptance_rate_of_external_global_moves = dfloat(no_of_accepted_external_global_moves) / (no_of_observations * volume)
 
 write(filename, '(A, F4.2, "//acceptance_rates.csv")') trim(output_directory)//trim(temperature_string), temperature
 open(unit=30, file = filename)

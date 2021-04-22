@@ -13,7 +13,7 @@ integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no
 integer :: no_of_observations, max_autocorr_time, nmax, no_of_events, no_of_accepted_external_global_moves
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_no_of_sites), emergent_field_x(max_no_of_sites), emergent_field_y(max_no_of_sites)
-double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, length, beta, temperature
+double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y, volume, beta, temperature
 double precision :: initial_temperature, final_temperature, magnitude_of_temperature_increments, chainlength
 double precision :: spin_space_distance_between_observations
 end module variables
@@ -42,8 +42,7 @@ if (algorithm_name /= 'hxy-ecmc') then
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-length = float(integer_lattice_length)
-volume = float(no_of_sites)
+volume = dfloat(no_of_sites)
 spin_space_distance_between_observations = volume * pi
 
 if (integer_lattice_length > max_integer_lattice_length) then

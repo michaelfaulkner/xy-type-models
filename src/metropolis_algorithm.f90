@@ -19,7 +19,7 @@ do i = 0, no_of_temperature_increments
         end if
         ! step-size adaptor
         if (mod(j, 100) == 0) then
-            acceptance_rate_of_field_rotations = 1.0d-2 * float(no_of_accepted_field_rotations) / volume
+            acceptance_rate_of_field_rotations = 1.0d-2 * dfloat(no_of_accepted_field_rotations) / volume
             if (acceptance_rate_of_field_rotations > target_acceptance_rate_of_field_rotations + 5.0d-2) then
                 width_of_proposal_interval = 1.1d0 * width_of_proposal_interval
             else if (acceptance_rate_of_field_rotations < target_acceptance_rate_of_field_rotations - 5.0d-2) then

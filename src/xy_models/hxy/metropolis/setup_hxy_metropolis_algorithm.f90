@@ -14,7 +14,7 @@ integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_
 double precision :: theta(max_no_of_sites), emergent_field_x(max_no_of_sites), emergent_field_y(max_no_of_sites)
 double precision :: sum_of_squared_electric_field_x, sum_of_squared_electric_field_y
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: volume, length, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
+double precision :: volume, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 end module variables
 
 
@@ -44,8 +44,7 @@ if (algorithm_name /= 'hxy-metropolis') then
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-length = float(integer_lattice_length)
-volume = float(no_of_sites)
+volume = dfloat(no_of_sites)
 do i = 1, no_of_sites
     array_of_sites(i) = i
 end do
