@@ -5,7 +5,7 @@ integer :: n, i
 double precision :: candidate_theta, potential_difference
 
 call randomise_array_of_sites
-do n = 1, sites
+do n = 1, no_of_sites
     i = array_of_sites(n)
     candidate_theta = mod(theta(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
 

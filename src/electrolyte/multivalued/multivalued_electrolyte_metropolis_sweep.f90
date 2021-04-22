@@ -18,9 +18,9 @@ subroutine markov_chain_charges_GLE
   integer n, i, plusMinus
   double precision deltaU, EfieldOld, EfieldNew
 
-   do n = 1, 2 * sites
+   do n = 1, 2 * no_of_sites
 
-      i = int(rand() * sites) + 1
+      i = int(rand() * no_of_sites) + 1
 
       if (floor(2 * rand()) .eq. 0) then
 
@@ -69,9 +69,9 @@ subroutine markov_chain_aux_field_GLE
   double precision Efield1old, Efield2old, Efield3old, Efield4old
   double precision Efield1new, Efield2new, Efield3new, Efield4new
 
-   do n = 1, sites
+   do n = 1, no_of_sites
 
-      i = int(rand() * sites) + 1
+      i = int(rand() * no_of_sites) + 1
       deltaTheta = width_of_proposal_interval * (rand() - 0.5)
 
       ! CALL OLD ELECTRIC FIELD

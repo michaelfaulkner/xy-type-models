@@ -17,7 +17,7 @@ sum_of_2nd_derivative_of_potential_y = 0.0d0
 sum_of_squared_electric_field_x = 0.0d0
 sum_of_squared_electric_field_y = 0.0d0
 
-do i = 1, sites
+do i = 1, no_of_sites
     magnetisation_x = magnetisation_x + cos(theta(i))
     magnetisation_y = magnetisation_y + sin(theta(i))
     sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + emergent_field_y(i)
@@ -63,9 +63,9 @@ n = 1
 do
     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
     twisted_sum_of_squared_electric_field_y = 0.0d0
-    do i = 1, sites
+    do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + &
-                                        (modulo(theta(i) - theta(neg_x(i)) + n * twopi / side + pi, twopi) - pi) ** 2
+                (modulo(theta(i) - theta(neg_x(i)) + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
     if (potential_difference < 0.0d0) then
@@ -81,9 +81,9 @@ n = 1
 do
     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
     twisted_sum_of_squared_electric_field_y = 0.0d0
-    do i = 1, sites
+    do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + &
-                                        (modulo(theta(i) - theta(neg_x(i)) - n * twopi / side + pi, twopi) - pi) ** 2
+                (modulo(theta(i) - theta(neg_x(i)) - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
     if (potential_difference < 0.0d0) then
@@ -99,9 +99,9 @@ n = 1
 do
     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
     twisted_sum_of_squared_electric_field_x = 0.0d0
-    do i = 1, sites
+    do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + &
-                                        (modulo(theta(i) - theta(neg_y(i)) + n * twopi / side + pi, twopi) - pi) ** 2
+                (modulo(theta(i) - theta(neg_y(i)) + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
     if (potential_difference < 0.0d0) then
@@ -117,9 +117,9 @@ n = 1
 do
     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
     twisted_sum_of_squared_electric_field_x = 0.0d0
-    do i = 1, sites
+    do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + &
-                                        (modulo(theta(i) - theta(neg_y(i)) - n * twopi / side + pi, twopi) - pi) ** 2
+                (modulo(theta(i) - theta(neg_y(i)) - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
     if (potential_difference < 0.0d0) then

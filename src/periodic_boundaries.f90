@@ -3,12 +3,17 @@ use variables
 implicit none
 integer :: i
 
-! mod(i + side + 1, side) rather than mod(i + 1, side) below as mod(i, side) doesn't return value in [0, side) if i < 0
-do i = 1, sites
-    pos_x(i) = i + mod(i, side) - mod(i - 1, side)
-    neg_x(i) = i + mod(i - 2 + side, side) - mod(i - 1 + side, side)
-    pos_y(i) = i + (mod(int((i - 1) / side) + 1, side) - mod(int((i - 1) / side), side)) * side
-    neg_y(i) = i + (mod(int((i - 1) / side) + side - 1, side) - mod(int((i - 1) / side) + side, side)) * side
+! mod(i + integer_lattice_length + 1, integer_lattice_length) rather than mod(i + 1, integer_lattice_length) below as
+! mod(i, integer_lattice_length) does not return value in [0, integer_lattice_length) if i < 0
+do i = 1, no_of_sites
+    pos_x(i) = i + mod(i, integer_lattice_length) - mod(i - 1, integer_lattice_length)
+    neg_x(i) = i + mod(i - 2 + integer_lattice_length, integer_lattice_length) - &
+                    mod(i - 1 + integer_lattice_length, integer_lattice_length)
+    pos_y(i) = i + (mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length) - &
+                    mod(int((i - 1) / integer_lattice_length), integer_lattice_length)) * integer_lattice_length
+    neg_y(i) = i + (mod(int((i - 1) / integer_lattice_length) + integer_lattice_length - 1, integer_lattice_length) - &
+                    mod(int((i - 1) / integer_lattice_length) + integer_lattice_length, integer_lattice_length)) * &
+                    integer_lattice_length
 end do
 
 return

@@ -3,7 +3,7 @@ use variables
 implicit none
 integer :: i
 
-do i = 1, sites
+do i = 1, no_of_sites
     electric_field_x(i) = 0.0
     electric_field_y(i) = 0.0
 end do

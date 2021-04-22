@@ -12,8 +12,8 @@ call system('mkdir -p ' // temperature_directory)
 write(filename, '(A, F4.2, "//sample.csv")') trim(output_directory)//trim(temperature_string), temperature
 open(unit=20, file=filename)
 
-write(20, '(A1, A23, "; ", I0.4, " x ", I0.4, " lattice sites; temperature = ", ES8.2)') "#", algorithm_name, side, &
-                                                                                                side, temperature
+write(20, '(A1, A23, "; ", I0.4, " x ", I0.4, " lattice no_of_sites; temperature = ", ES8.2)') "#", &
+                                        algorithm_name, integer_lattice_length, integer_lattice_length, temperature
 write(20, '(A1, A29, 2A30)') "#", "potential", "sum_electric_field_x", "sum_electric_field_y"
 
 return

@@ -13,8 +13,8 @@ write(filename, '(A, F4.2, "//sample.csv")') trim(output_directory)//trim(temper
         temperature
 open(unit=20, file=filename)
 
-write(20, '(A1, A23, "; ", I0.4, " x ", I0.4, " lattice sites; temperature = ", ES8.2)') "#", algorithm_name, side, &
-                                                                                                side, temperature
+write(20, '(A1, A23, "; ", I0.4, " x ", I0.4, " lattice no_of_sites; temperature = ", ES8.2)') "#", &
+                                        algorithm_name, integer_lattice_length, integer_lattice_length, temperature
 write(20, '(A1, A29, 8A30)') "#", "potential", "magnetisation_x", "magnetisation_y", &
                                 "1st_deriv_of_potential_x", "1st_deriv_of_potential_y", &
                                 "2nd_deriv_of_potential_x", "2nd_deriv_of_potential_y", &

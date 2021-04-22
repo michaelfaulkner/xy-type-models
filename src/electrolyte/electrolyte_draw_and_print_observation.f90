@@ -5,7 +5,7 @@ integer i
 double precision potential
 
 potential = 0.0d0
-do i = 1, sites
+do i = 1, no_of_sites
     potential = potential + 0.5d0 * (electric_field_x(i) * electric_field_x(i) + &
                                             electric_field_y(i) * electric_field_y(i))
 end do
@@ -26,7 +26,7 @@ integer i
 
 electric_field_sum_x = 0.0d0
 electric_field_sum_y = 0.0d0
-do i = 1, sites
+do i = 1, no_of_sites
     electric_field_sum_x = electric_field_sum_x + electric_field_x(i)
     electric_field_sum_y = electric_field_sum_y + electric_field_y(i)
 end do

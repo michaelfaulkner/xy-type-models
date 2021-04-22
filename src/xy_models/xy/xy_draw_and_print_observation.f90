@@ -14,7 +14,7 @@ sum_of_2nd_derivative_of_potential_x = 0.0d0
 sum_of_2nd_derivative_of_potential_y = 0.0d0
 potential = 0.0d0
 
-do i = 1, sites
+do i = 1, no_of_sites
     magnetisation_x = magnetisation_x + cos(theta(i))
     magnetisation_y = magnetisation_y + sin(theta(i))
     sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + sin(theta(pos_x(i)) - theta(i))
