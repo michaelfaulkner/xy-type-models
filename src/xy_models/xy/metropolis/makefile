@@ -11,7 +11,7 @@ OFLAGS = gfortran -O -o
 all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o setup_xy_metropolis_algorithm.o randomise_array_of_sites.o periodic_boundaries.o \
-			xy_models_initialise_field_configuration.o xy_models_create_sample_file.o xy_sampler.o \
+			xy_models_initialise_field_configuration.o xy_models_create_sample_file.o xy_draw_and_print_observation.o \
 			xy_attempt_external_global_move.o xy_metropolis_sweep.o xy_models_output_metropolis_acceptance_rates.o \
 			xy_models_reset_metropolis_acceptance_counters.o pre_simulation_processes.o metropolis_algorithm.o
 
