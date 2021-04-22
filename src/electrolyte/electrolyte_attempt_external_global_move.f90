@@ -10,8 +10,8 @@ subroutine attempt_external_global_move
   if (floor(2 * rand()) .eq. 0) then
      
      plusMinus = 2 * floor(2 * rand()) - 1
-     EsumNew = Esum_x + plusMinus * elementaryCharge * side
-     deltaU = 0.5 * (EsumNew * EsumNew - Esum_x * Esum_x) / volume
+     EsumNew = electric_field_sum_x + plusMinus * elementaryCharge * side
+     deltaU = 0.5 * (EsumNew * EsumNew - electric_field_sum_x * electric_field_sum_x) / volume
 
      ! METROPOLIS FILTER
 
@@ -25,8 +25,8 @@ subroutine attempt_external_global_move
   else
      
      plusMinus = 2 * floor(2 * rand()) - 1
-     EsumNew = Esum_y + plusMinus * elementaryCharge * side
-     deltaU = 0.5 * (EsumNew * EsumNew - Esum_y * Esum_y) / volume
+     EsumNew = electric_field_sum_y + plusMinus * elementaryCharge * side
+     deltaU = 0.5 * (EsumNew * EsumNew - electric_field_sum_y * electric_field_sum_y) / volume
           
      ! METROPOLIS FILTER
 

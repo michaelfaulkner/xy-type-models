@@ -10,7 +10,8 @@ integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites
 integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
 integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
 integer :: ratio_charge_updates, ratio_TSF_updates
-double precision :: electric_field_x(max_sites), electric_field_y(max_sites), Esum_x, Esum_y, elementaryCharge
+double precision :: electric_field_x(max_sites), electric_field_y(max_sites)
+double precision :: electric_field_sum_x, electric_field_sum_y, elementaryCharge
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: volume, length, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 end module variables
