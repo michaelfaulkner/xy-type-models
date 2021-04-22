@@ -8,5 +8,8 @@ do i = 1, sites
     electric_field_y(i) = 0.0
 end do
 
+electric_field_sum_x = 0.0d0
+electric_field_sum_y = 0.0d0
+
 return
 end subroutine initialise_field_configuration
