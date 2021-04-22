@@ -14,7 +14,7 @@ integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: electric_field_x(max_no_of_sites), electric_field_y(max_no_of_sites)
 double precision :: electric_field_sum_x, electric_field_sum_y, elementary_charge
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: volume, width_of_proposal_interval, target_acceptance_rate_of_field_rotations
+double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 end module variables
 
 
@@ -44,7 +44,6 @@ if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multiva
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-volume = dfloat(no_of_sites)
 
 if (integer_lattice_length > max_integer_lattice_length) then
    write(6,*) 'Linear lattice length exceeds maximum: change the maximum in the common file.'
