@@ -11,9 +11,10 @@ OFLAGS= gfortran -O -o
 all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o setup_hxy_metropolis_algorithm.o randomise_array_of_sites.o periodic_boundaries.o \
-			xy_models_initialise_field_configuration.o xy_models_create_sample_file.o hxy_draw_and_print_observation.o \
-			hxy_attempt_external_global_move.o hxy_metropolis_sweep.o xy_models_output_metropolis_acceptance_rates.o \
-			xy_models_reset_metropolis_acceptance_counters.o pre_simulation_processes.o metropolis_algorithm.o
+			xy_models_initialise_field_configuration.o xy_models_create_sample_file.o calculate_emergent_field.o \
+			hxy_draw_and_print_observation.o hxy_attempt_external_global_move.o hxy_metropolis_sweep.o \
+			xy_models_output_metropolis_acceptance_rates.o xy_models_reset_metropolis_acceptance_counters.o \
+			pre_simulation_processes.o metropolis_algorithm.o
 
 create-executable: $(OBJECTS)
 	$(OFLAGS) hxy_metropolis_algorithm.exe $(OBJECTS) -lm
