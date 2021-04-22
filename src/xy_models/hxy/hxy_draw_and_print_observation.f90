@@ -24,9 +24,9 @@ do i = 1, sites
     sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + emergent_field_x(i)
     do n = 1, nmax
         sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + &
-                                                                                (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
+                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
         sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + &
-                                                                                (-1.0d0) ** (n + 1) * cos(n * emergent_field_x(i))
+                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field_x(i))
     end do
     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + emergent_field_x(i) * emergent_field_x(i)
     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + emergent_field_y(i) * emergent_field_y(i)
