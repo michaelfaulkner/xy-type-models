@@ -7,7 +7,7 @@ double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: epsilon = 0.00000000001
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), array_of_sites(max_sites)
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements, no_of_accepted_field_rotations
+integer :: side, sites, no_of_temperature_increments, no_of_equilibration_sweeps, no_of_observations, no_of_accepted_field_rotations
 integer :: no_of_accepted_external_global_moves, nmax
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 double precision :: theta(max_sites), emergent_field_x(max_sites), emergent_field_y(max_sites)
@@ -25,8 +25,8 @@ integer :: i
 read(10, *) algorithm_name
 read(10, *) output_directory
 read(10, *) side
-read(10, *) therm_sweeps
-read(10, *) measurements
+read(10, *) no_of_equilibration_sweeps
+read(10, *) no_of_observations
 read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments

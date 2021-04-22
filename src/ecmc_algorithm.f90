@@ -10,7 +10,7 @@ do i = 0, no_of_temperature_increments
     beta = 1.0d0 / temperature
     call create_sample_file
 
-    do j = 1, therm_sweeps
+    do j = 1, no_of_equilibration_sweeps
         call single_event_chain
         if (use_external_global_moves) then
             call attempt_external_global_move
@@ -21,7 +21,7 @@ do i = 0, no_of_temperature_increments
     no_of_events = 0
     no_of_accepted_external_global_moves = 0
 
-    do j = 1, measurements
+    do j = 1, no_of_observations
         call single_event_chain
         if (use_external_global_moves) then
             call attempt_external_global_move
@@ -46,7 +46,7 @@ open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events
 else
-    write(300, 200) no_of_events, float(no_of_accepted_external_global_moves) / (measurements * volume)
+    write(300, 200) no_of_events, float(no_of_accepted_external_global_moves) / (no_of_observations * volume)
 end if
 close(300)
 

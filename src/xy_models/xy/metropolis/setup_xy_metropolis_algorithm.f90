@@ -1,6 +1,6 @@
 module variables
 integer, allocatable, dimension(:) :: pos_x, neg_x, pos_y, neg_y, array_of_sites
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
+integer :: side, sites, no_of_temperature_increments, no_of_equilibration_sweeps, no_of_observations
 integer :: no_of_accepted_field_rotations, no_of_accepted_external_global_moves, no_of_events
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, allocatable, dimension(:) :: theta
@@ -19,8 +19,8 @@ integer :: i
 read(10, *) algorithm_name
 read(10, *) output_directory
 read(10, *) side
-read(10, *) therm_sweeps
-read(10, *) measurements
+read(10, *) no_of_equilibration_sweeps
+read(10, *) no_of_observations
 read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments

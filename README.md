@@ -17,7 +17,7 @@ MF - 09 Aug 2017
 1. Execute the make command (BASH COMMAND: make) to produce the executable ECMC_XY.exe in the source directory;
 2. Copy ECMC_XY.exe to the directory in which you wish to run the Markov chain (the run directory)
    (BASH COMMAND (e.g.): cp ECMC_XY.exe ../L8run1);
-3. Set the lattice length, no. of samples (measurements), etc. in initial.in in the run directory;
+3. Set the lattice length, no. of samples (no_of_observations), etc. in initial.in in the run directory;
 4. Execute ECMC_XY.exe (BASH COMMAND: ./ECMC_XY.exe) in the run directory: this will produce subdirectories for each temperature, then run the ECMC and draw samples from PDF at each temperatures: the samples are saved to files in the subdirectories;
 5. Run the python script analyse_samples_ECMC_XY.py (BASH COMMAND: python analyse_samples_ECMC_XY.py) in the run directory to produce the estimates of the quantities of interest, which are printed to a file.
 
@@ -26,8 +26,8 @@ MF - 09 Aug 2017
 The initial input should be of the form:
 
 side         	(length of one side of the lattice)
-therm_sweeps	(number of thermalization sweeps)
-measurements	(number of chains/measurements)
+no_of_equilibration_sweeps	(number of thermalization sweeps)
+no_of_observations	(number of chains/no_of_observations)
 Tmin             (Lowest temperature)
 Tmax             (Highest temperature)
 Tstep            (Number of temperature steps between Tmin and Tmax)
@@ -73,7 +73,7 @@ MF - 09 Aug 2017
 1. Execute the make command (BASH COMMAND: make) to produce the executable Metrop_HXY.exe in the source directory;
 2. Copy Metrop_HXY.exe to the directory in which you wish to run the Markov chain (the run directory)
    (BASH COMMAND (e.g.): cp Metrop_HXY.exe ../L8run1);
-3. Set the lattice length, no. of samples (measurements), etc. in initial.in in the run directory;
+3. Set the lattice length, no. of samples (no_of_observations), etc. in initial.in in the run directory;
 4. Execute Metrop_HXY.exe (BASH COMMAND: ./Metrop_HXY.exe) in the run directory: this will produce subdirectories for each temperature, then run the Markov chain and draw samples from PDF at each temperatures: the samples are saved to files in the subdirectories;
 5. Run the python script analyse_samples_Metrop_HXY.py (BASH COMMAND: python analyse_samples_Metrop_HXY.py)
    to produce the estimates of the quantities of interest, which are printed to a file.
@@ -83,8 +83,8 @@ MF - 09 Aug 2017
 The initial input should be of the form:
 
 side         	(length of one side of the lattice)
-therm_sweeps	(number of thermalization sweeps)
-measurements	(number of chains/measurements)
+no_of_equilibration_sweeps	(number of thermalization sweeps)
+no_of_observations	(number of chains/no_of_observations)
 Tmin             (Lowest temperature)
 Tmax             (Highest temperature)
 Tstep            (Number of temperature steps between Tmin and Tmax)
@@ -137,7 +137,7 @@ MF - 09 Aug 2017
 1. Execute the make command (BASH COMMAND: make) to produce the executable ECMC_HXY.exe in the source directory;
 2. Copy ECMC_HXY.exe to the directory in which you wish to run the Markov chain (the run directory)
    (BASH COMMAND (e.g.): cp ECMC_HXY.exe ../L8run1);
-3. Set the lattice length, no. of samples (measurements), etc. in initial.in in the run directory;
+3. Set the lattice length, no. of samples (no_of_observations), etc. in initial.in in the run directory;
 4. Execute ECMC_HXY.exe (BASH COMMAND: ./ECMC_HXY.exe) in the run directory: this will produce subdirectories for each temperature, then run the Markov chain and draw samples from PDF at each temperatures: the samples are saved to files in the subdirectories;
 5. Run the python script analyse_samples_ECMC_HXY.py (BASH COMMAND: python analyse_samples_ECMC_HXY.py)
    to produce the estimates of the quantities of interest, which are printed to a file.
@@ -147,8 +147,8 @@ MF - 09 Aug 2017
 The initial input should be of the form:
 
 side         	(length of one side of the lattice)
-therm_sweeps	(number of thermalization sweeps)
-measurements	(number of chains/measurements)
+no_of_equilibration_sweeps	(number of thermalization sweeps)
+no_of_observations	(number of chains/no_of_observations)
 Tmin             (Lowest temperature)
 Tmax             (Highest temperature)
 Tstep            (Number of temperature steps between Tmin and Tmax)
@@ -204,7 +204,7 @@ MF - 09 Aug 2017
 1. Execute the make command (BASH COMMAND: make) to produce the executable Metrop_HXY.exe in the source directory;
 2. Copy Metrop_HXY.exe to the directory in which you wish to run the Markov chain (the run directory)
    (BASH COMMAND (e.g.): cp Metrop_HXY.exe ../L8run1);
-3. Set the lattice length, no. of samples (measurements), etc. in initial.in in the run directory;
+3. Set the lattice length, no. of samples (no_of_observations), etc. in initial.in in the run directory;
 4. Execute Metrop_HXY.exe (BASH COMMAND: ./Metrop_HXY.exe) in the run directory: this will produce subdirectories for each temperature, then run the Markov chain and draw samples from PDF at each temperatures: the samples are saved to files in the subdirectories;
 5. Run the python script analyse_samples_Metrop_HXY.py (BASH COMMAND: python analyse_samples_Metrop_HXY.py)
    to produce the estimates of the quantities of interest, which are printed to a file.
@@ -214,8 +214,8 @@ MF - 09 Aug 2017
 The initial input should be of the form:
 
 side         	(length of one side of the lattice)
-therm_sweeps	(number of thermalization sweeps)
-measurements	(number of chains/measurements)
+no_of_equilibration_sweeps	(number of thermalization sweeps)
+no_of_observations	(number of chains/no_of_observations)
 Tmin             (Lowest temperature)
 Tmax             (Highest temperature)
 Tstep            (Number of temperature steps between Tmin and Tmax)

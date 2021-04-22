@@ -7,7 +7,7 @@ double precision, parameter :: epsilon = 10.0 ** (-6)
 integer, parameter :: max_side = 128
 integer, parameter :: max_sites = max_side * max_side
 integer :: pos_x(max_sites), neg_x(max_sites), pos_y(max_sites), neg_y(max_sites), rho(max_sites), array_of_sites(max_sites)
-integer :: side, sites, no_of_temperature_increments, therm_sweeps, measurements
+integer :: side, sites, no_of_temperature_increments, no_of_equilibration_sweeps, no_of_observations
 integer :: no_of_accepted_field_rotations, no_of_accepted_charge_hops, no_of_accepted_external_global_moves
 integer :: ratio_charge_updates, ratio_TSF_updates
 double precision :: electric_field_x(max_sites), electric_field_y(max_sites)
@@ -24,8 +24,8 @@ implicit none
 read(10, *) algorithm_name
 read(10, *) output_directory
 read(10, *) side
-read(10, *) therm_sweeps
-read(10, *) measurements
+read(10, *) no_of_equilibration_sweeps
+read(10, *) no_of_observations
 read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments

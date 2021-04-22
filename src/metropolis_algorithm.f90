@@ -12,7 +12,7 @@ do i = 0, no_of_temperature_increments
     call create_sample_file
 
     call reset_metropolis_acceptance_counters
-    do j = 1, therm_sweeps
+    do j = 1, no_of_equilibration_sweeps
         call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_move
@@ -31,7 +31,7 @@ do i = 0, no_of_temperature_increments
     end do
 
     call reset_metropolis_acceptance_counters
-    do j = 1, measurements
+    do j = 1, no_of_observations
         call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_move
