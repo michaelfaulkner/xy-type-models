@@ -24,7 +24,7 @@ if (floor(2 * rand()) == 0) then
     ! compute potential difference
     do i = 1, no_of_sites
         potential_difference = potential_difference + 0.5d0 * (&
-                get_spin_difference(- candidate_spin_field(i), - candidate_spin_field(get_west_neighbour(i))) ** 2 &
+                get_spin_difference(candidate_spin_field(get_west_neighbour(i)), candidate_spin_field(i)) ** 2 &
                         - emergent_field_y(i) ** 2)
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
