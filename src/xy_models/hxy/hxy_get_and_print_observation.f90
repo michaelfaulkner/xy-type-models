@@ -1,4 +1,4 @@
-subroutine draw_and_print_observation
+subroutine get_and_print_observation
 use variables
 implicit none
 integer :: i, n
@@ -48,7 +48,7 @@ write(20, 100) potential, magnetisation_x, magnetisation_y, &
             I2, ", ", I2)
 
 return
-end subroutine draw_and_print_observation
+end subroutine get_and_print_observation
 
 
 subroutine external_minimising_twist_field_calculation
