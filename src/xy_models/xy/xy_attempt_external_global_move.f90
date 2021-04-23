@@ -3,7 +3,7 @@ use variables
 implicit none
 integer :: i, lattice_site, initial_lattice_site
 double precision :: potential_difference, sign_of_twist
-double precision, dimension(no_of_lattice_sites) :: candidate_spin_field
+double precision, dimension(no_of_sites) :: candidate_spin_field
 
 potential_difference = 0.0d0
 initial_lattice_site = int(dfloat(no_of_sites) * rand()) + 1
