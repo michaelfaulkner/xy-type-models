@@ -21,13 +21,10 @@ if (floor(2 * rand()) == 0) then
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute potential difference
-    lattice_site = initial_lattice_site
     do i = 1, no_of_sites
-        potential_difference = potential_difference - cos(candidate_spin_field(get_east_neighbour(lattice_site)) &
-                                                            - candidate_spin_field(lattice_site)) &
-                                                    + cos(spin_field(get_east_neighbour(lattice_site)) &
-                                                            - spin_field(lattice_site))
-        lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
+        potential_difference = potential_difference &
+                                        - cos(candidate_spin_field(get_east_neighbour(i)) - candidate_spin_field(i)) &
+                                        + cos(spin_field(get_east_neighbour(i)) - spin_field(i))
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
@@ -46,13 +43,10 @@ else
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute potential difference
-    lattice_site = initial_lattice_site
     do i = 1, no_of_sites
-        potential_difference = potential_difference - cos(candidate_spin_field(get_north_neighbour(lattice_site)) &
-                                                            - candidate_spin_field(lattice_site)) &
-                                                    + cos(spin_field(get_north_neighbour(lattice_site)) &
-                                                            - spin_field(lattice_site))
-        lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
+        potential_difference = potential_difference &
+                                        - cos(candidate_spin_field(get_north_neighbour(i)) - candidate_spin_field(i)) &
+                                        + cos(spin_field(get_north_neighbour(i)) - spin_field(i))
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
