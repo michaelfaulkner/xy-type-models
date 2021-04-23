@@ -1,7 +1,7 @@
 module variables
 character(100) :: output_directory, algorithm_name
 logical :: use_external_global_moves, randomise_initial_field_configuration, calculate_external_minimising_twist_field
-integer, allocatable, dimension(:) :: pos_x, neg_x, pos_y, neg_y
+integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
 integer :: no_of_observations, no_of_events, no_of_accepted_external_global_moves, vacuum_permittivity_sum_cutoff
 integer :: no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
@@ -40,7 +40,8 @@ end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites), emergent_field_x(no_of_sites), emergent_field_y(no_of_sites))
-allocate(pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites))
+allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
+allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites))
 spin_space_distance_between_observations = dfloat(no_of_sites) * pi
 
 return

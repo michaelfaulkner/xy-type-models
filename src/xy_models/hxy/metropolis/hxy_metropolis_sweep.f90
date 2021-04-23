@@ -9,26 +9,27 @@ call randomise_array_of_sites
 do n = 1, no_of_sites
     i = array_of_sites(n)
     candidate_spin_value = mod(spin_field(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
-    candidate_emergent_field_1 = modulo(candidate_spin_value - spin_field(neg_y(i)) + pi, twopi) - pi
-    candidate_emergent_field_2 = modulo(- candidate_spin_value + spin_field(neg_x(i)) + pi, twopi) - pi
-    candidate_emergent_field_3 = modulo(spin_field(pos_y(i)) - candidate_spin_value + pi, twopi) - pi
-    candidate_emergent_field_4 = modulo(- spin_field(pos_x(i)) + candidate_spin_value + pi, twopi) - pi
+    candidate_emergent_field_1 = modulo(candidate_spin_value - spin_field(get_south_neighbour(i)) + pi, twopi) - pi
+    candidate_emergent_field_2 = modulo(- candidate_spin_value + spin_field(get_west_neighbour(i)) + pi, twopi) - pi
+    candidate_emergent_field_3 = modulo(spin_field(get_north_neighbour(i)) - candidate_spin_value + pi, twopi) - pi
+    candidate_emergent_field_4 = modulo(- spin_field(get_east_neighbour(i)) + candidate_spin_value + pi, twopi) - pi
 
-    potential_difference = 0.5d0 * (candidate_emergent_field_1 * candidate_emergent_field_1 &
-                                    + candidate_emergent_field_2 * candidate_emergent_field_2 &
-                                    + candidate_emergent_field_3 * candidate_emergent_field_3 &
-                                    + candidate_emergent_field_4 * candidate_emergent_field_4 &
-                                    - emergent_field_x(i) * emergent_field_x(i) &
-                                    - emergent_field_y(i) * emergent_field_y(i) &
-                                    - emergent_field_x(pos_y(i)) * emergent_field_x(pos_y(i)) &
-                                    - emergent_field_y(pos_x(i)) * emergent_field_y(pos_x(i)))
+    potential_difference = 0.5d0 * &
+            (candidate_emergent_field_1 * candidate_emergent_field_1 &
+                    + candidate_emergent_field_2 * candidate_emergent_field_2 &
+                    + candidate_emergent_field_3 * candidate_emergent_field_3 &
+                    + candidate_emergent_field_4 * candidate_emergent_field_4 &
+                    - emergent_field_x(i) * emergent_field_x(i) &
+                    - emergent_field_y(i) * emergent_field_y(i) &
+                    - emergent_field_x(get_north_neighbour(i)) * emergent_field_x(get_north_neighbour(i)) &
+                    - emergent_field_y(get_east_neighbour(i)) * emergent_field_y(get_east_neighbour(i)))
 
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         spin_field(i) = candidate_spin_value
         emergent_field_x(i) = candidate_emergent_field_1
         emergent_field_y(i) = candidate_emergent_field_2
-        emergent_field_x(pos_y(i)) = candidate_emergent_field_3
-        emergent_field_y(pos_x(i)) = candidate_emergent_field_4
+        emergent_field_x(get_north_neighbour(i)) = candidate_emergent_field_3
+        emergent_field_y(get_east_neighbour(i)) = candidate_emergent_field_4
         no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
     end if
 end do

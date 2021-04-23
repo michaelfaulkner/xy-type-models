@@ -19,7 +19,7 @@ subroutine attempt_external_global_move
      end if
      
      do i = 1, no_of_sites
-        diff = spin_field(i) - spin_field(neg_y(i)) + rand1 * twopi / integer_lattice_length
+        diff = spin_field(i) - spin_field(get_south_neighbour(i)) + rand1 * twopi / integer_lattice_length
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
         else if (diff .le. - 0.5 * twopi) then
@@ -45,7 +45,7 @@ subroutine attempt_external_global_move
      end if
 
      do i = 1, no_of_sites
-        diff = -(spin_field(i) - spin_field(neg_x(i))) + rand1 * twopi / integer_lattice_length
+        diff = -(spin_field(i) - spin_field(get_west_neighbour(i))) + rand1 * twopi / integer_lattice_length
         if (diff .gt. 0.5 * twopi) then
            diff = diff - twopi
         else if (diff .le. - 0.5 * twopi) then

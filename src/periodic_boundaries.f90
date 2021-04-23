@@ -5,14 +5,20 @@ integer :: i
 
 ! mod(i + integer_lattice_length + 1, integer_lattice_length) rather than mod(i + 1, integer_lattice_length) below as
 ! mod(i, integer_lattice_length) does not return value in [0, integer_lattice_length) if i < 0
+! the north-south-east-west (N-S-E-W) notation is defined relative to the following lattice geometry:
+! 7 8 9    N
+! 4 5 6  W   E
+! 1 2 3    S
 do i = 1, no_of_sites
-    pos_x(i) = i + mod(i, integer_lattice_length) - mod(i - 1, integer_lattice_length)
-    neg_x(i) = i + mod(i - 2 + integer_lattice_length, integer_lattice_length) - &
-                    mod(i - 1 + integer_lattice_length, integer_lattice_length)
-    pos_y(i) = i + (mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length) - &
-                    mod(int((i - 1) / integer_lattice_length), integer_lattice_length)) * integer_lattice_length
-    neg_y(i) = i + (mod(int((i - 1) / integer_lattice_length) + integer_lattice_length - 1, integer_lattice_length) - &
-                    mod(int((i - 1) / integer_lattice_length) + integer_lattice_length, integer_lattice_length)) * &
+    get_east_neighbour(i) = i + mod(i, integer_lattice_length) - mod(i - 1, integer_lattice_length)
+    get_west_neighbour(i) = i + mod(i - 2 + integer_lattice_length, integer_lattice_length) - &
+                                mod(i - 1 + integer_lattice_length, integer_lattice_length)
+    get_north_neighbour(i) = i + &
+            (mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length) - &
+                mod(int((i - 1) / integer_lattice_length), integer_lattice_length)) * integer_lattice_length
+    get_south_neighbour(i) = i + &
+            (mod(int((i - 1) / integer_lattice_length) + integer_lattice_length - 1, integer_lattice_length) - &
+                mod(int((i - 1) / integer_lattice_length) + integer_lattice_length, integer_lattice_length)) * &
                     integer_lattice_length
 end do
 

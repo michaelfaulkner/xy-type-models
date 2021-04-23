@@ -1,7 +1,8 @@
 module variables
 character(100) :: output_directory, algorithm_name
 logical :: use_external_global_moves
-integer, allocatable, dimension(:) :: pos_x, neg_x, pos_y, neg_y, array_of_sites, rho
+integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
+integer, allocatable, dimension(:) :: array_of_sites, rho
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
 integer :: no_of_observations, no_of_accepted_field_rotations, no_of_accepted_external_global_moves
 integer :: no_of_accepted_charge_hops, ratio_charge_updates, ratio_TSF_updates
@@ -41,7 +42,8 @@ end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(electric_field_x(no_of_sites), electric_field_y(no_of_sites))
-allocate(pos_x(no_of_sites), pos_y(no_of_sites), neg_x(no_of_sites), neg_y(no_of_sites), array_of_sites(no_of_sites))
+allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
+allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites), array_of_sites(no_of_sites))
 allocate(rho(no_of_sites))
 
 return

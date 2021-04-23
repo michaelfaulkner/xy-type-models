@@ -14,8 +14,8 @@ if (floor(2 * rand()) == 0) then                                                
  end if
 
  do i = 1, no_of_sites
-    deltaE = deltaE - cos(spin_field(i) - spin_field(neg_x(i)) + rand1 * twopi / integer_lattice_length) &
-                    + cos(spin_field(i) - spin_field(neg_x(i)))
+    deltaE = deltaE - cos(spin_field(i) - spin_field(get_west_neighbour(i)) + rand1 * twopi / integer_lattice_length) &
+                    + cos(spin_field(i) - spin_field(get_west_neighbour(i)))
  end do
 
  if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then
@@ -35,8 +35,8 @@ else                                                                            
  end if
 
  do i = 1, no_of_sites
-    deltaE = deltaE - cos(spin_field(i) - spin_field(neg_y(i)) + rand1 * twopi / integer_lattice_length) &
-                    + cos(spin_field(i) - spin_field(neg_y(i)))
+    deltaE = deltaE - cos(spin_field(i) - spin_field(get_south_neighbour(i)) + rand1 * twopi / integer_lattice_length) &
+                    + cos(spin_field(i) - spin_field(get_south_neighbour(i)))
  end do
 
  if ((deltaE < 0) .or. (rand() < exp(-beta * deltaE))) then

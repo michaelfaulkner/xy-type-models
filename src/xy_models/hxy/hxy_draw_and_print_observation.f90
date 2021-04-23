@@ -64,8 +64,9 @@ do
     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
     twisted_sum_of_squared_electric_field_y = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + &
-                (modulo(spin_field(i) - spin_field(neg_x(i)) + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y &
+                + (modulo(spin_field(i) - spin_field(get_west_neighbour(i)) &
+                        + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
     if (potential_difference < 0.0d0) then
@@ -82,8 +83,9 @@ do
     current_sum_of_squared_electric_field_y = sum_of_squared_electric_field_y
     twisted_sum_of_squared_electric_field_y = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y + &
-                (modulo(spin_field(i) - spin_field(neg_x(i)) - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+        twisted_sum_of_squared_electric_field_y = twisted_sum_of_squared_electric_field_y &
+                + (modulo(spin_field(i) - spin_field(get_west_neighbour(i)) &
+                        - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_y - current_sum_of_squared_electric_field_y)
     if (potential_difference < 0.0d0) then
@@ -100,8 +102,9 @@ do
     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
     twisted_sum_of_squared_electric_field_x = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + &
-                (modulo(spin_field(i) - spin_field(neg_y(i)) + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x &
+                + (modulo(spin_field(i) - spin_field(get_south_neighbour(i)) &
+                        + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
     if (potential_difference < 0.0d0) then
@@ -118,8 +121,9 @@ do
     current_sum_of_squared_electric_field_x = sum_of_squared_electric_field_x
     twisted_sum_of_squared_electric_field_x = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x + &
-                (modulo(spin_field(i) - spin_field(neg_y(i)) - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+        twisted_sum_of_squared_electric_field_x = twisted_sum_of_squared_electric_field_x &
+                + (modulo(spin_field(i) - spin_field(get_south_neighbour(i)) &
+                        - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field_x - current_sum_of_squared_electric_field_x)
     if (potential_difference < 0.0d0) then

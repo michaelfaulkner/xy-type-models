@@ -13,10 +13,10 @@ distance_left_before_next_observation = spin_space_distance_between_observations
 ! iterate until total distance covered in spin space reaches spin_space_distance_between_observations
 do
     active_spin_value = spin_field(active_spin_index)
-    neighbouring_spin_indices(1) = neg_x(active_spin_index)
-    neighbouring_spin_indices(2) = pos_x(active_spin_index)
-    neighbouring_spin_indices(3) = neg_y(active_spin_index)
-    neighbouring_spin_indices(4) = pos_y(active_spin_index)
+    neighbouring_spin_indices(1) = get_north_neighbour(active_spin_index)
+    neighbouring_spin_indices(2) = get_south_neighbour(active_spin_index)
+    neighbouring_spin_indices(3) = get_east_neighbour(active_spin_index)
+    neighbouring_spin_indices(4) = get_west_neighbour(active_spin_index)
 
     shortest_distance_to_next_factor_event = 1.0d10
     ! iterate over neighbouring_spin_indices

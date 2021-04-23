@@ -29,7 +29,7 @@ subroutine markov_chain_charges_GLE
          EfieldNew = EfieldOld + plusMinus * elementary_charge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
          rhoInew = rho(i) + plusMinus
-         rhoIposNew = rho(pos_x(i)) - plusMinus
+         rhoIposNew = rho(get_east_neighbour(i)) - plusMinus
          
          ! METROPOLIS FILTER
 
@@ -38,7 +38,7 @@ subroutine markov_chain_charges_GLE
                  ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
             electric_field_x(i) = EfieldNew
             rho(i) = rhoINew
-            rho(pos_x(i)) = rhoIposNew
+            rho(get_east_neighbour(i)) = rhoIposNew
             no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
          end if
             
@@ -49,7 +49,7 @@ subroutine markov_chain_charges_GLE
          EfieldNew = EfieldOld + plusMinus * elementary_charge
          deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
          rhoInew = rho(i) + plusMinus
-         rhoIposNew = rho(pos_y(i)) - plusMinus
+         rhoIposNew = rho(get_north_neighbour(i)) - plusMinus
          
          ! METROPOLIS FILTER
 
@@ -58,7 +58,7 @@ subroutine markov_chain_charges_GLE
                  ((rhoIposNew .eq. 0) .or. (abs(rhoIposNew) .eq. 1))) then
             electric_field_y(i) = EfieldNew
             rho(i) = rhoINew
-            rho(pos_y(i)) = rhoIposNew
+            rho(get_north_neighbour(i)) = rhoIposNew
             no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
          end if
 
@@ -90,8 +90,8 @@ subroutine markov_chain_aux_field_GLE
 
       Efield1old = electric_field_x(i)
       Efield2old = electric_field_y(i)
-      Efield3old = electric_field_x(pos_y(i))
-      Efield4old = electric_field_y(pos_x(i))
+      Efield3old = electric_field_x(get_north_neighbour(i))
+      Efield4old = electric_field_y(get_east_neighbour(i))
 
       ! PROPOSED ELECTRIC FIELD
       
@@ -109,8 +109,8 @@ subroutine markov_chain_aux_field_GLE
       if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
          electric_field_x(i) = Efield1new
          electric_field_y(i) = Efield2new
-         electric_field_x(pos_y(i)) = Efield3new
-         electric_field_y(pos_x(i)) = Efield4new
+         electric_field_x(get_north_neighbour(i)) = Efield3new
+         electric_field_y(get_east_neighbour(i)) = Efield4new
          no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
       end if
    end do

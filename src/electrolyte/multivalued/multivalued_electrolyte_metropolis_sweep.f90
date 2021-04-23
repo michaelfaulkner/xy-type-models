@@ -78,8 +78,8 @@ subroutine markov_chain_aux_field_GLE
 
       Efield1old = electric_field_x(i)
       Efield2old = electric_field_y(i)
-      Efield3old = electric_field_x(pos_y(i))
-      Efield4old = electric_field_y(pos_x(i))
+      Efield3old = electric_field_x(get_north_neighbour(i))
+      Efield4old = electric_field_y(get_east_neighbour(i))
 
       ! PROPOSED ELECTRIC FIELD
       
@@ -97,8 +97,8 @@ subroutine markov_chain_aux_field_GLE
       if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
          electric_field_x(i) = Efield1new
          electric_field_y(i) = Efield2new
-         electric_field_x(pos_y(i)) = Efield3new
-         electric_field_y(pos_x(i)) = Efield4new
+         electric_field_x(get_north_neighbour(i)) = Efield3new
+         electric_field_y(get_east_neighbour(i)) = Efield4new
          no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
       end if
    end do
