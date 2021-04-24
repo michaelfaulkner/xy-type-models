@@ -56,6 +56,7 @@ do
     if (distance_left_before_next_observation < shortest_distance_to_next_factor_event) then
         ! update active spin value and exit event chain in order to observe the system
         spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
+        call calculate_emergent_field
         exit
     else
         ! update active spin value and continute event chain
