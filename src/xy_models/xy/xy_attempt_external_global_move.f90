@@ -13,14 +13,14 @@ if (sign_of_twist < 0.5d0) then
 end if
 ! choose a twist in x direction with 0.5 probability
 if (floor(2 * rand()) == 0) then
-    ! store candidate twist field
+    ! compute and store candidate spin field (with twist applied)
     lattice_site = initial_lattice_site
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
                                                                 * sign_of_twist * twopi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
-    ! compute potential difference
+    ! compute and store candidate emergent-field components and potential difference
     do i = 1, no_of_sites
         potential_difference = potential_difference &
                                         - cos(candidate_spin_field(get_east_neighbour(i)) - candidate_spin_field(i)) &
@@ -34,7 +34,7 @@ if (floor(2 * rand()) == 0) then
     end if
 ! else: attempt a twist in y direction
 else
-    ! store candidate twist field
+    ! compute and store candidate spin field (with twist applied)
     lattice_site = initial_lattice_site
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) &
@@ -42,7 +42,7 @@ else
                         * sign_of_twist * twopi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
-    ! compute potential difference
+    ! compute and store candidate emergent-field components and potential difference
     do i = 1, no_of_sites
         potential_difference = potential_difference &
                                         - cos(candidate_spin_field(get_north_neighbour(i)) - candidate_spin_field(i)) &
