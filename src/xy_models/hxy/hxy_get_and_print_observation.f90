@@ -2,44 +2,40 @@ subroutine get_and_print_observation
 use variables
 implicit none
 integer :: i, n
-double precision :: magnetisation_x, magnetisation_y, potential
-double precision :: sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
-double precision :: sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
+double precision :: potential
+double precision :: magnetisation(2), sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 
-magnetisation_x = 0.0d0
-magnetisation_y = 0.0d0
-sum_of_1st_derivative_of_potential_x = 0.0d0
-sum_of_1st_derivative_of_potential_y = 0.0d0
-sum_of_2nd_derivative_of_potential_x = 0.0d0
-sum_of_2nd_derivative_of_potential_y = 0.0d0
+magnetisation = (/ 0.0d0, 0.0d0 /)
+sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
 sum_of_squared_electric_field_x = 0.0d0
 sum_of_squared_electric_field_y = 0.0d0
 
 do i = 1, no_of_sites
-    magnetisation_x = magnetisation_x + cos(spin_field(i))
-    magnetisation_y = magnetisation_y + sin(spin_field(i))
-    sum_of_1st_derivative_of_potential_x = sum_of_1st_derivative_of_potential_x + emergent_field_y(i)
-    sum_of_1st_derivative_of_potential_y = sum_of_1st_derivative_of_potential_y + emergent_field_x(i)
+    magnetisation(1) = magnetisation(1) + cos(spin_field(i))
+    magnetisation(2) = magnetisation(2) + sin(spin_field(i))
+    sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field_y(i)
+    sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field_x(i)
     do n = 1, vacuum_permittivity_sum_cutoff
-        sum_of_2nd_derivative_of_potential_x = sum_of_2nd_derivative_of_potential_x + &
+        sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
                                                                     (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
-        sum_of_2nd_derivative_of_potential_y = sum_of_2nd_derivative_of_potential_y + &
+        sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
                                                                     (-1.0d0) ** (n + 1) * cos(n * emergent_field_x(i))
     end do
     sum_of_squared_electric_field_x = sum_of_squared_electric_field_x + emergent_field_x(i) * emergent_field_x(i)
     sum_of_squared_electric_field_y = sum_of_squared_electric_field_y + emergent_field_y(i) * emergent_field_y(i)
 end do
-sum_of_2nd_derivative_of_potential_x = 2.0d0 * sum_of_2nd_derivative_of_potential_x
-sum_of_2nd_derivative_of_potential_y = 2.0d0 * sum_of_2nd_derivative_of_potential_y
+sum_of_2nd_derivative_of_potential(1) = 2.0d0 * sum_of_2nd_derivative_of_potential(1)
+sum_of_2nd_derivative_of_potential(2) = 2.0d0 * sum_of_2nd_derivative_of_potential(2)
 potential = 0.5d0 * (sum_of_squared_electric_field_x + sum_of_squared_electric_field_y)
 
 if (calculate_external_minimising_twist_field) then
     call external_minimising_twist_field_calculation
 end if
   
-write(20, 100) potential, magnetisation_x, magnetisation_y, &
-                sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y, &
-                sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y, &
+write(20, 100) potential, magnetisation(1), magnetisation(2), &
+                sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2), &
+                sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2), &
                 no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 
 100 format(ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", &
