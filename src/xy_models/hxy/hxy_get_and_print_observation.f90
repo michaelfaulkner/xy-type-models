@@ -47,8 +47,9 @@ end subroutine get_and_print_observation
 subroutine external_minimising_twist_field_calculation
 use variables
 implicit none
-integer i, n
-double precision potential_difference, current_sum_of_squared_electric_field(2), twisted_sum_of_squared_electric_field(2)
+integer :: i, n
+double precision :: potential_difference, get_spin_difference, current_sum_of_squared_electric_field(2)
+double precision :: twisted_sum_of_squared_electric_field(2)
 
 ! x direction; positive twist
 n = 1
@@ -57,8 +58,8 @@ do
     twisted_sum_of_squared_electric_field(2) = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field(2) = twisted_sum_of_squared_electric_field(2) &
-                + (modulo(spin_field(i) - spin_field(get_west_neighbour(i)) &
-                        + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+                            + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                                                  spin_field(get_west_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field(2) - current_sum_of_squared_electric_field(2))
     if (potential_difference < 0.0d0) then
@@ -76,8 +77,8 @@ do
     twisted_sum_of_squared_electric_field(2) = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field(2) = twisted_sum_of_squared_electric_field(2) &
-                + (modulo(spin_field(i) - spin_field(get_west_neighbour(i)) &
-                        - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+                            + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                                                  spin_field(get_west_neighbour(i)))** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field(2) - current_sum_of_squared_electric_field(2))
     if (potential_difference < 0.0d0) then
@@ -95,8 +96,8 @@ do
     twisted_sum_of_squared_electric_field(1) = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field(1) = twisted_sum_of_squared_electric_field(1) &
-                + (modulo(spin_field(i) - spin_field(get_south_neighbour(i)) &
-                        + n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+                            + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                                                  spin_field(get_south_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field(1) - current_sum_of_squared_electric_field(1))
     if (potential_difference < 0.0d0) then
@@ -114,8 +115,8 @@ do
     twisted_sum_of_squared_electric_field(1) = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_electric_field(1) = twisted_sum_of_squared_electric_field(1) &
-                + (modulo(spin_field(i) - spin_field(get_south_neighbour(i)) &
-                        - n * twopi / integer_lattice_length + pi, twopi) - pi) ** 2
+                            + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                                                  spin_field(get_south_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_electric_field(1) - current_sum_of_squared_electric_field(1))
     if (potential_difference < 0.0d0) then

@@ -5,7 +5,7 @@ integer :: i, active_spin_index, vetoeing_spin_index, neighbouring_spin_indices(
 double precision :: uphill_distance_through_potential_space_before_next_event, shortest_distance_to_next_factor_event
 double precision :: initial_two_spin_potential, final_two_spin_potential, distance_left_before_next_observation
 double precision :: active_spin_value, non_active_spin_value, initial_spin_value_difference, final_spin_value_difference
-double precision :: distance_to_next_factor_event, no_of_complete_spin_rotations
+double precision :: distance_to_next_factor_event, no_of_complete_spin_rotations, get_spin_difference
 
 active_spin_index = int(dfloat(no_of_sites) * rand()) + 1
 distance_left_before_next_observation = spin_space_distance_between_observations
@@ -21,7 +21,7 @@ do
     ! iterate over neighbouring_spin_indices
     do i = 1, 4
         non_active_spin_value = spin_field(neighbouring_spin_indices(i))
-        initial_spin_value_difference = modulo(active_spin_value - non_active_spin_value + pi, twopi) - pi
+        initial_spin_value_difference = get_spin_difference(active_spin_value, non_active_spin_value)
         uphill_distance_through_potential_space_before_next_event = - temperature * log(1.0d0 - rand())
         ! if factor derivative > 0
         if (initial_spin_value_difference > 0.0d0) then
