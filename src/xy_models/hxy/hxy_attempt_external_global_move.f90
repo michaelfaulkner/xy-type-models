@@ -25,12 +25,12 @@ if (floor(2.0d0 * rand()) == 0) then
         candidate_emergent_field_components(i) = get_spin_difference(candidate_spin_field(get_west_neighbour(i)), &
                                                                      candidate_spin_field(i))
         potential_difference = potential_difference + 0.5d0 * (candidate_emergent_field_components(i) ** 2 &
-                                                                - emergent_field_y(i) ** 2)
+                                                                - emergent_field(i, 2) ** 2)
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
-            emergent_field_y(i) = candidate_emergent_field_components(i)
+            emergent_field(i, 2) = candidate_emergent_field_components(i)
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
     end if
@@ -49,12 +49,12 @@ else
         candidate_emergent_field_components(i) = get_spin_difference(candidate_spin_field(i), &
                                                                      candidate_spin_field(get_south_neighbour(i)))
         potential_difference = potential_difference + 0.5d0 * (candidate_emergent_field_components(i) ** 2 &
-                                                                - emergent_field_x(i) ** 2)
+                                                                - emergent_field(i, 1) ** 2)
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
-            emergent_field_x(i) = candidate_emergent_field_components(i)
+            emergent_field(i, 1) = candidate_emergent_field_components(i)
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
     end if

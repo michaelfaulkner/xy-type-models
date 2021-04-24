@@ -9,7 +9,8 @@ double precision, parameter :: twopi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: pi_squared = 9.86960440108936d0
 double precision, parameter :: pi_squared_over_two = 4.93480220054468d0
-double precision, allocatable, dimension(:) :: spin_field, emergent_field_x, emergent_field_y
+double precision, allocatable, dimension(:) :: spin_field
+double precision, allocatable, dimension(:, :) :: emergent_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: spin_space_distance_between_observations
 double precision :: sum_of_squared_electric_field(2)

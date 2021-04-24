@@ -13,16 +13,16 @@ sum_of_squared_electric_field = (/ 0.0d0, 0.0d0 /)
 do i = 1, no_of_sites
     magnetisation(1) = magnetisation(1) + cos(spin_field(i))
     magnetisation(2) = magnetisation(2) + sin(spin_field(i))
-    sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field_y(i)
-    sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field_x(i)
+    sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field(i, 2)
+    sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field(i, 1)
     do n = 1, vacuum_permittivity_sum_cutoff
         sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
-                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field_y(i))
+                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field(i, 2))
         sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
-                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field_x(i))
+                                                                    (-1.0d0) ** (n + 1) * cos(n * emergent_field(i, 1))
     end do
-    sum_of_squared_electric_field(1) = sum_of_squared_electric_field(1) + emergent_field_x(i) * emergent_field_x(i)
-    sum_of_squared_electric_field(2) = sum_of_squared_electric_field(2) + emergent_field_y(i) * emergent_field_y(i)
+    sum_of_squared_electric_field(1) = sum_of_squared_electric_field(1) + emergent_field(i, 1) * emergent_field(i, 1)
+    sum_of_squared_electric_field(2) = sum_of_squared_electric_field(2) + emergent_field(i, 2) * emergent_field(i, 2)
 end do
 sum_of_2nd_derivative_of_potential(1) = 2.0d0 * sum_of_2nd_derivative_of_potential(1)
 sum_of_2nd_derivative_of_potential(2) = 2.0d0 * sum_of_2nd_derivative_of_potential(2)

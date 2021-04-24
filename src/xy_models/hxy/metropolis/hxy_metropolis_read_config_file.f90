@@ -24,7 +24,7 @@ if (algorithm_name /= 'hxy-metropolis') then
 end if
 
 no_of_sites = integer_lattice_length * integer_lattice_length
-allocate(spin_field(no_of_sites), emergent_field_x(no_of_sites), emergent_field_y(no_of_sites))
+allocate(spin_field(no_of_sites), emergent_field(no_of_sites, 2))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
 allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites), array_of_sites(no_of_sites))
 do i = 1, no_of_sites
