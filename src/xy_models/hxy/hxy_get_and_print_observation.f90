@@ -2,17 +2,17 @@ subroutine get_and_print_observation
 use variables
 implicit none
 integer :: i, n
-double precision :: potential
-double precision :: magnetisation(2), sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
+double precision :: potential, non_normalised_magnetisation(2)
+double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 
-magnetisation = (/ 0.0d0, 0.0d0 /)
+non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
 sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
 sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
 sum_of_squared_electric_field = (/ 0.0d0, 0.0d0 /)
 
 do i = 1, no_of_sites
-    magnetisation(1) = magnetisation(1) + cos(spin_field(i))
-    magnetisation(2) = magnetisation(2) + sin(spin_field(i))
+    non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
+    non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
     sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field(i, 2)
     sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field(i, 1)
     do n = 1, vacuum_permittivity_sum_cutoff
@@ -32,7 +32,7 @@ if (calculate_external_minimising_twist_field) then
     call external_minimising_twist_field_calculation
 end if
 
-write(20, 100) potential, magnetisation(1), magnetisation(2), &
+write(20, 100) potential, non_normalised_magnetisation(1), non_normalised_magnetisation(2), &
                 sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2), &
                 sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2), &
                 no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
