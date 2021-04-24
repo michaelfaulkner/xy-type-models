@@ -12,7 +12,7 @@ if (sign_of_twist < 0.5d0) then
     sign_of_twist = -1.0d0
 end if
 ! choose a twist in x direction with 0.5 probability
-if (floor(2 * rand()) == 0) then
+if (floor(2.0d0 * rand()) == 0) then
     ! compute and store candidate spin field (with twist applied)
     lattice_site = initial_lattice_site
     do i = 1, no_of_sites
