@@ -33,7 +33,7 @@ write(20, 100) potential, magnetisation_x, magnetisation_y, &
                 sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y, &
                 sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 
-100 format(ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14)
+100 format(ES30.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14)
 
 return
 end subroutine get_and_print_observation

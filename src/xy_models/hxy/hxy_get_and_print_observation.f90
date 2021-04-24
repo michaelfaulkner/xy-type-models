@@ -38,8 +38,8 @@ write(20, 100) potential, magnetisation(1), magnetisation(2), &
                 sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2), &
                 no_of_external_twists_to_minimise_potential_x, no_of_external_twists_to_minimise_potential_y
 
-100 format(ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", ES30.14, ", ", &
-            I2, ", ", I2)
+100 format(ES30.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", I29, &
+            ",", I29)
 
 return
 end subroutine get_and_print_observation
