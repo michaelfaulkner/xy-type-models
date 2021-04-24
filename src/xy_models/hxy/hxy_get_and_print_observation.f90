@@ -6,8 +6,6 @@ double precision :: magnetisation_x, magnetisation_y, potential
 double precision :: sum_of_1st_derivative_of_potential_x, sum_of_1st_derivative_of_potential_y
 double precision :: sum_of_2nd_derivative_of_potential_x, sum_of_2nd_derivative_of_potential_y
 
-call calculate_emergent_field
-
 magnetisation_x = 0.0d0
 magnetisation_y = 0.0d0
 sum_of_1st_derivative_of_potential_x = 0.0d0
