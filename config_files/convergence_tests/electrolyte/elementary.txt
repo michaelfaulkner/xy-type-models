@@ -8,8 +8,7 @@
 0			                                        number of temperature increments
 1.0d0       	                                    initial width_of_proposal_interval, x; interval = (-x / 2, x / 2]
 0.44d0  		                                    target_acceptance_rate_of_field_rotations
-1			                                        number of charge proposals/aux.-field proposal
-1			                                        number of external TSF proposals/aux.-field proposal
+0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves
 6.28318530717959d0 	                                elementary-charge value
 end

@@ -8,7 +8,7 @@ double precision :: potential_difference, candidate_electric_field_component
 sign_of_charge_hop = 2 * int(floor(2.0d0 * rand())) - 1
 proposed_charge_value = charge_configuration(lattice_site) + sign_of_charge_hop
 if (abs(proposed_charge_value) > 1) then
-    exit
+    return
 end if
 if (cartesian_component == 1) then
     proposed_neighbouring_charge_value = charge_configuration(get_east_neighbour(lattice_site)) - sign_of_charge_hop
@@ -16,7 +16,7 @@ else
     proposed_neighbouring_charge_value = charge_configuration(get_north_neighbour(lattice_site)) - sign_of_charge_hop
 end if
 if (abs(proposed_neighbouring_charge_value) > 1) then
-    exit
+    return
 end if
 
 candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + elementary_charge &

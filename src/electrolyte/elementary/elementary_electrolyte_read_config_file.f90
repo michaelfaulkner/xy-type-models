@@ -27,7 +27,7 @@ no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(electric_field(no_of_sites, 2))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
 allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites), array_of_sites(no_of_sites))
-allocate(rho(no_of_sites))
+allocate(charge_configuration(no_of_sites))
 do i = 1, no_of_sites
     array_of_sites(i) = i
 end do
