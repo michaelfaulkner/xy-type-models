@@ -23,7 +23,7 @@ if (floor(2.0d0 * rand()) == 0) then
         potential_difference = potential_difference + 0.5d0 * (candidate_emergent_field_components(i) ** 2 &
                                                                 - emergent_field(i, 2) ** 2)
     end do
-    if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
+    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
             emergent_field(i, 2) = candidate_emergent_field_components(i)
@@ -46,7 +46,7 @@ else
         potential_difference = potential_difference + 0.5d0 * (candidate_emergent_field_components(i) ** 2 &
                                                                 - emergent_field(i, 1) ** 2)
     end do
-    if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
+    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
             emergent_field(i, 1) = candidate_emergent_field_components(i)

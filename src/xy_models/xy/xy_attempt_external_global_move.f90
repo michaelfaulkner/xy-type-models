@@ -22,7 +22,7 @@ if (floor(2.0d0 * rand()) == 0) then
                                         - cos(candidate_spin_field(get_west_neighbour(i)) - candidate_spin_field(i)) &
                                         + cos(spin_field(get_west_neighbour(i)) - spin_field(i))
     end do
-    if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
+    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
         end do
@@ -43,7 +43,7 @@ else
                                         - cos(candidate_spin_field(i) - candidate_spin_field(get_south_neighbour(i))) &
                                         + cos(spin_field(i) - spin_field(get_south_neighbour(i)))
     end do
-    if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
+    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
             spin_field(i) = candidate_spin_field(i)
         end do

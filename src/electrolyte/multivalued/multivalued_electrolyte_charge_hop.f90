@@ -10,7 +10,7 @@ potential_difference = 0.5d0 * (candidate_electric_field_component * candidate_e
                                 - electric_field(lattice_site, cartesian_component) &
                                 * electric_field(lattice_site, cartesian_component))
 
-if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
     electric_field(lattice_site, cartesian_component) = candidate_electric_field_component
     no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
 end if

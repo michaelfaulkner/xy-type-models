@@ -23,7 +23,7 @@ do n = 1, no_of_sites
                             - emergent_field(get_north_neighbour(i), 1) * emergent_field(get_north_neighbour(i), 1) &
                             - emergent_field(get_east_neighbour(i), 2) * emergent_field(get_east_neighbour(i), 2))
 
-    if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+    if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
         spin_field(i) = candidate_spin_value
         emergent_field(i, 1) = candidate_emergent_field(1)
         emergent_field(i, 2) = candidate_emergent_field(2)

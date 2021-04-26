@@ -43,7 +43,7 @@ potential_difference = 0.5d0 &
         - electric_field(get_north_neighbour(lattice_site), 1) * electric_field(get_north_neighbour(lattice_site), 1) &
         - electric_field(get_east_neighbour(lattice_site), 2) * electric_field(get_east_neighbour(lattice_site), 2))
 
-if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
     electric_field(lattice_site, 1) = candidate_electric_field_component(1)
     electric_field(lattice_site, 2) = candidate_electric_field_component(2)
     electric_field(get_north_neighbour(lattice_site), 1) = candidate_electric_field_component(3)
