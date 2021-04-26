@@ -11,6 +11,6 @@ double precision, parameter :: pi = 3.14159265358979d0
 double precision, allocatable, dimension(:) :: spin_field
 double precision, allocatable, dimension(:, :) :: emergent_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations
+double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations, charge_hop_proportion
 double precision :: sum_of_squared_emergent_field(2)
 end module variables

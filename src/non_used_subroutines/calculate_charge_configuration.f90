@@ -4,8 +4,8 @@ implicit none
 integer :: i
 
 do i = 1, no_of_sites
-    rho(i) = floor((electric_field_x(i) + electric_field_y(i) - electric_field_x(get_west_neighbour(i)) - &
-                        electric_field_y(get_south_neighbour(i))) / twopi)
+    rho(i) = floor((electric_field(i, 1) + electric_field(i, 2)(i) - electric_field(get_west_neighbour(i), 1) - &
+                        electric_field(get_south_neighbour(i), 2)) / twopi)
 end do
 
 return

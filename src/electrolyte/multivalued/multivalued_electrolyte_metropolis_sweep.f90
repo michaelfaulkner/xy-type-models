@@ -1,107 +1,76 @@
 subroutine metropolis_sweep
 use variables
 implicit none
-integer i
+integer :: i, lattice_site
+double precision :: charge_hop_or_field_rotation
 
-call markov_chain_aux_field_GLE
-do i = 1, ratio_charge_updates
-    call markov_chain_charges_GLE
+call randomise_array_of_sites
+do i = 1, no_of_sites
+    lattice_site = array_of_sites(i)
+    charge_hop_or_field_rotation = rand()
+    if (charge_hop_or_field_rotation < charge_hop_proportion_over_two) then
+        call charge_hop(lattice_site, 1)
+    else if (charge_hop_or_field_rotation < charge_hop_proportion) then
+        call charge_hop(lattice_site, 2)
+    else
+        call field_rotation(lattice_site)
+    end if
 end do
 
 return
 end subroutine metropolis_sweep
 
 
-subroutine markov_chain_charges_GLE
-  use variables
-  implicit none
-  integer n, i, plusMinus
-  double precision deltaU, EfieldOld, EfieldNew
+subroutine charge_hop(lattice_site, cartesian_component)
+use variables
+implicit none
+integer :: lattice_site, cartesian_component
+double precision :: potential_difference, candidate_electric_field_component
 
-   do n = 1, 2 * no_of_sites
+candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + elementary_charge &
+                                        * (2.0d0 * floor(2.0d0 * rand()) - 1.0d0)
+potential_difference = 0.5d0 * (candidate_electric_field_component * candidate_electric_field_component &
+                                - electric_field(lattice_site, cartesian_component) &
+                                * electric_field(lattice_site, cartesian_component))
 
-      i = int(rand() * no_of_sites) + 1
+if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+    electric_field(lattice_site, cartesian_component) = candidate_electric_field_component
+    no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
+end if
 
-      if (floor(2 * rand()) .eq. 0) then
+return
+end subroutine charge_hop
 
-         EfieldOld = electric_field_x(i)
-         plusMinus = 2 * floor(2 * rand()) - 1
-         EfieldNew = EfieldOld + plusMinus * elementary_charge
-         deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
-         
-         ! METROPOLIS FILTER
 
-         if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-            electric_field_x(i) = EfieldNew
-            no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
-         end if
-            
-      else
+subroutine field_rotation(lattice_site)
+use variables
+implicit none
+integer :: lattice_site
+double precision :: field_rotation_value, potential_difference, candidate_electric_field_component(4)
 
-         EfieldOld = electric_field_y(i)
-         plusMinus = 2 * floor(2 * rand()) - 1
-         EfieldNew = EfieldOld + plusMinus * elementary_charge
-         deltaU = 0.5 * (EfieldNew * EfieldNew - EfieldOld * EfieldOld)
+field_rotation_value = width_of_proposal_interval * (rand() - 0.5d0)
+candidate_electric_field_component(1) = electric_field(lattice_site, 1) + field_rotation_value
+candidate_electric_field_component(2) = electric_field(lattice_site, 2) - field_rotation_value
+candidate_electric_field_component(3) = electric_field(get_north_neighbour(lattice_site), 1) - field_rotation_value
+candidate_electric_field_component(4) = electric_field(get_east_neighbour(lattice_site), 2) + field_rotation_value
 
-         ! METROPOLIS FILTER
+potential_difference = 0.5d0 &
+        * (candidate_electric_field_component(1) * candidate_electric_field_component(1) &
+        + candidate_electric_field_component(2) * candidate_electric_field_component(2) &
+        + candidate_electric_field_component(3) * candidate_electric_field_component(3) &
+        + candidate_electric_field_component(4) * candidate_electric_field_component(4) &
+        - electric_field(lattice_site, 1) * electric_field(lattice_site, 1) &
+        - electric_field(lattice_site, 2) * electric_field(lattice_site, 2) &
+        - electric_field(get_north_neighbour(lattice_site), 1) * electric_field(get_north_neighbour(lattice_site), 1) &
+        - electric_field(get_east_neighbour(lattice_site), 2) * electric_field(get_east_neighbour(lattice_site), 2))
 
-         if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-            electric_field_y(i) = EfieldNew
-            no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
-         end if
-
-      end if
-
-   end do
-   return
-
- end subroutine markov_chain_charges_GLE
-
-! **************************************
-! METROPOLIS MARKOV-CHAIN SUBROUTINE FOR AUXILIARY FIELD
-! **************************************
-
-subroutine markov_chain_aux_field_GLE
-  use variables
-  implicit none
-  integer n, i
-  double precision thetaOld, thetaNew, deltaTheta, Uold, Unew, deltaU
-  double precision Efield1old, Efield2old, Efield3old, Efield4old
-  double precision Efield1new, Efield2new, Efield3new, Efield4new
-
-   do n = 1, no_of_sites
-
-      i = int(rand() * no_of_sites) + 1
-      deltaTheta = width_of_proposal_interval * (rand() - 0.5)
-
-      ! CALL OLD ELECTRIC FIELD
-
-      Efield1old = electric_field_x(i)
-      Efield2old = electric_field_y(i)
-      Efield3old = electric_field_x(get_north_neighbour(i))
-      Efield4old = electric_field_y(get_east_neighbour(i))
-
-      ! PROPOSED ELECTRIC FIELD
-      
-      Efield1new = Efield1old + deltaTheta
-      Efield2new = Efield2old - deltaTheta
-      Efield3new = Efield3old - deltaTheta
-      Efield4new = Efield4old + deltaTheta
-
-      ! METROPOLIS FILTER
-
-      Uold = 0.5 * (Efield1old * Efield1old + Efield2old * Efield2old + Efield3old * Efield3old + Efield4old * Efield4old)
-      Unew = 0.5 * (Efield1new * Efield1new + Efield2new * Efield2new + Efield3new * Efield3new + Efield4new * Efield4new)
-      deltaU = Unew - Uold
-
-      if ((deltaU .lt. 0.0) .or. (exp(- beta * deltaU) .gt. rand())) then
-         electric_field_x(i) = Efield1new
-         electric_field_y(i) = Efield2new
-         electric_field_x(get_north_neighbour(i)) = Efield3new
-         electric_field_y(get_east_neighbour(i)) = Efield4new
-         no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
-      end if
-   end do
+if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
+    electric_field(lattice_site, 1) = candidate_electric_field_component(1)
+    electric_field(lattice_site, 2) = candidate_electric_field_component(2)
+    electric_field(get_north_neighbour(lattice_site), 1) = candidate_electric_field_component(3)
+    electric_field(get_east_neighbour(lattice_site), 2) = candidate_electric_field_component(4)
+    no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
+end if
   
-  return
-end subroutine markov_chain_aux_field_GLE
+return
+end subroutine field_rotation

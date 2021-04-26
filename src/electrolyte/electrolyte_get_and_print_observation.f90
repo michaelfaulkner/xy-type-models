@@ -6,10 +6,9 @@ double precision potential
 
 potential = 0.0d0
 do i = 1, no_of_sites
-    potential = potential + 0.5d0 * (electric_field_x(i) * electric_field_x(i) + &
-                                            electric_field_y(i) * electric_field_y(i))
+    potential = potential + 0.5d0 * (electric_field(i, 1) * electric_field(i, 1) &
+                                    + electric_field(i, 2) * electric_field(i, 2))
 end do
-
 call calculate_electric_field_sum
 
 write(20, 100) potential, electric_field_sum_x, electric_field_sum_y
@@ -27,8 +26,8 @@ integer i
 electric_field_sum_x = 0.0d0
 electric_field_sum_y = 0.0d0
 do i = 1, no_of_sites
-    electric_field_sum_x = electric_field_sum_x + electric_field_x(i)
-    electric_field_sum_y = electric_field_sum_y + electric_field_y(i)
+    electric_field_sum_x = electric_field_sum_x + electric_field(i, 1)
+    electric_field_sum_y = electric_field_sum_y + electric_field(i, 2)
 end do
 
 return

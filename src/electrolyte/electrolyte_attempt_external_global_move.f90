@@ -14,7 +14,7 @@ if (floor(2.0d0 * rand()) == 0) then
                                     - electric_field_sum_x * electric_field_sum_x) / dfloat(no_of_sites)
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, no_of_sites
-            electric_field_x(i) = electric_field_x(i) + sign_of_topological_sector_change * elementary_charge &
+            electric_field(i, 1) = electric_field(i, 1) + sign_of_topological_sector_change * elementary_charge &
                                     / integer_lattice_length
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
@@ -26,7 +26,7 @@ else
                                     - electric_field_sum_y * electric_field_sum_y) / dfloat(no_of_sites)
     if ((potential_difference < 0.0d0) .or. (rand() < exp(- beta * potential_difference))) then
         do i = 1, no_of_sites
-           electric_field_y(i) = electric_field_y(i) + sign_of_topological_sector_change * elementary_charge &
+           electric_field(i, 2) = electric_field(i, 2) + sign_of_topological_sector_change * elementary_charge &
                                     / integer_lattice_length
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1

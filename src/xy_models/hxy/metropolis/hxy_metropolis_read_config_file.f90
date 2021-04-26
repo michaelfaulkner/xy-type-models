@@ -30,6 +30,9 @@ allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites), array
 do i = 1, no_of_sites
     array_of_sites(i) = i
 end do
+! charge_hop_proportion is a dummy variable that allows the electrolyte and h/xy models to use the same
+! step-size adaptor in the same metropolis_algorithm.f90 file
+charge_hop_proportion = 0.0d0
 
 return
 end subroutine read_config_file

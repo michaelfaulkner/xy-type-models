@@ -8,5 +8,5 @@ integer :: no_of_observations, no_of_accepted_field_rotations, no_of_accepted_ex
 double precision, parameter :: twopi = 6.28318530717959d0
 double precision, allocatable, dimension(:) :: spin_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations
+double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations, charge_hop_proportion
 end module variables
