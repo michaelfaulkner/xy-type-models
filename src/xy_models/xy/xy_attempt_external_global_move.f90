@@ -12,7 +12,7 @@ if (sign_of_twist < 0.5d0) then
     sign_of_twist = -1.0d0
 end if
 ! choose a twist in x direction with 0.5 probability
-if (floor(2 * rand()) == 0) then
+if (floor(2.0d0 * rand()) == 0) then
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
@@ -22,8 +22,8 @@ if (floor(2 * rand()) == 0) then
     ! compute and store candidate emergent-field components and potential difference
     do i = 1, no_of_sites
         potential_difference = potential_difference &
-                                        - cos(candidate_spin_field(get_east_neighbour(i)) - candidate_spin_field(i)) &
-                                        + cos(spin_field(get_east_neighbour(i)) - spin_field(i))
+                                        - cos(candidate_spin_field(get_west_neighbour(i)) - candidate_spin_field(i)) &
+                                        + cos(spin_field(get_west_neighbour(i)) - spin_field(i))
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
@@ -43,8 +43,8 @@ else
     ! compute and store candidate emergent-field components and potential difference
     do i = 1, no_of_sites
         potential_difference = potential_difference &
-                                        - cos(candidate_spin_field(get_north_neighbour(i)) - candidate_spin_field(i)) &
-                                        + cos(spin_field(get_north_neighbour(i)) - spin_field(i))
+                                        - cos(candidate_spin_field(i) - candidate_spin_field(get_south_neighbour(i))) &
+                                        + cos(spin_field(i) - spin_field(get_south_neighbour(i)))
     end do
     if ((potential_difference < 0.0d0) .or. (rand() < exp(-beta * potential_difference))) then
         do i = 1, no_of_sites
