@@ -1,12 +1,12 @@
 subroutine attempt_external_global_move
 use variables
 implicit none
-integer :: i, lattice_site, initial_lattice_site
+integer :: i, lattice_site
 double precision :: potential_difference, sign_of_twist, get_spin_difference
 double precision, dimension(no_of_sites) :: candidate_spin_field, candidate_emergent_field_components
 
 potential_difference = 0.0d0
-initial_lattice_site = int(dfloat(no_of_sites) * rand()) + 1
+lattice_site = int(dfloat(no_of_sites) * rand()) + 1
 sign_of_twist = floor(2.0d0 * rand())
 if (sign_of_twist < 0.5d0) then
     sign_of_twist = -1.0d0
@@ -14,7 +14,6 @@ end if
 ! choose a twist in x direction with 0.5 probability
 if (floor(2.0d0 * rand()) == 0) then
     ! compute and store candidate spin field (with twist applied)
-    lattice_site = initial_lattice_site
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
                                                                 * sign_of_twist * twopi / dfloat(integer_lattice_length)
@@ -37,7 +36,6 @@ if (floor(2.0d0 * rand()) == 0) then
 ! else: attempt a twist in y direction
 else
     ! compute and store candidate spin field (with twist applied)
-    lattice_site = initial_lattice_site
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) &
                 + dfloat(mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length)) &
