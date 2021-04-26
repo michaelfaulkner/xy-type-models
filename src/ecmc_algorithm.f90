@@ -46,7 +46,8 @@ open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events
 else
-    write(300, 200) no_of_events, dfloat(no_of_accepted_external_global_moves) / (no_of_observations * dfloat(no_of_sites))
+    write(300, 200) no_of_events, dfloat(no_of_accepted_external_global_moves) / dfloat(no_of_observations) &
+                                    / dfloat(no_of_sites)
 end if
 close(300)
 
