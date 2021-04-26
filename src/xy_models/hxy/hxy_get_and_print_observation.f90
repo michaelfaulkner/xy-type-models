@@ -48,20 +48,20 @@ subroutine external_minimising_twist_field_calculation
 use variables
 implicit none
 integer :: i, n
-double precision :: potential_difference, get_spin_difference, current_sum_of_squared_emergent_field(2)
-double precision :: twisted_sum_of_squared_emergent_field(2)
+double precision :: potential_difference, get_spin_difference, current_sum_of_squared_emergent_field
+double precision :: twisted_sum_of_squared_emergent_field
 
 ! x direction; positive twist
 n = 1
 do
-    current_sum_of_squared_emergent_field(2) = sum_of_squared_emergent_field(2)
-    twisted_sum_of_squared_emergent_field(2) = 0.0d0
+    current_sum_of_squared_emergent_field = sum_of_squared_emergent_field(2)
+    twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_emergent_field(2) = twisted_sum_of_squared_emergent_field(2) &
+        twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
                             + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
                                                   spin_field(get_west_neighbour(i))) ** 2
     end do
-    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field(2) - current_sum_of_squared_emergent_field(2))
+    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
     if (potential_difference < 0.0d0) then
         no_of_external_twists_to_minimise_potential(1) = n
         n = n + 1
@@ -73,14 +73,14 @@ end do
 ! x direction; negative twist
 n = 1
 do
-    current_sum_of_squared_emergent_field(2) = sum_of_squared_emergent_field(2)
-    twisted_sum_of_squared_emergent_field(2) = 0.0d0
+    current_sum_of_squared_emergent_field = sum_of_squared_emergent_field(2)
+    twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_emergent_field(2) = twisted_sum_of_squared_emergent_field(2) &
+        twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
                             + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
                                                   spin_field(get_west_neighbour(i)))** 2
     end do
-    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field(2) - current_sum_of_squared_emergent_field(2))
+    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
     if (potential_difference < 0.0d0) then
         no_of_external_twists_to_minimise_potential(1) = n
         n = n + 1
@@ -92,14 +92,14 @@ end do
 ! y direction; positive twist
 n = 1
 do
-    current_sum_of_squared_emergent_field(1) = sum_of_squared_emergent_field(1)
-    twisted_sum_of_squared_emergent_field(1) = 0.0d0
+    current_sum_of_squared_emergent_field = sum_of_squared_emergent_field(1)
+    twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_emergent_field(1) = twisted_sum_of_squared_emergent_field(1) &
+        twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
                             + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
                                                   spin_field(get_south_neighbour(i))) ** 2
     end do
-    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field(1) - current_sum_of_squared_emergent_field(1))
+    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
     if (potential_difference < 0.0d0) then
         no_of_external_twists_to_minimise_potential(2) = n
         n = n + 1
@@ -111,14 +111,14 @@ end do
 ! y direction; negative twist
 n = 1
 do
-    current_sum_of_squared_emergent_field(1) = sum_of_squared_emergent_field(1)
-    twisted_sum_of_squared_emergent_field(1) = 0.0d0
+    current_sum_of_squared_emergent_field = sum_of_squared_emergent_field(1)
+    twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
-        twisted_sum_of_squared_emergent_field(1) = twisted_sum_of_squared_emergent_field(1) &
+        twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
                             + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
                                                   spin_field(get_south_neighbour(i))) ** 2
     end do
-    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field(1) - current_sum_of_squared_emergent_field(1))
+    potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
     if (potential_difference < 0.0d0) then
         no_of_external_twists_to_minimise_potential(2) = n
         n = n + 1
