@@ -8,9 +8,7 @@ do i = 1, no_of_sites
     electric_field(i, 2) = 0.0
     charge_configuration(i) = 0
 end do
-
-electric_field_sum_x = 0.0d0
-electric_field_sum_y = 0.0d0
+net_charge_displacement = (/ 0.0d0, 0.0d0 /)
 
 return
 end subroutine initialise_field_configuration
