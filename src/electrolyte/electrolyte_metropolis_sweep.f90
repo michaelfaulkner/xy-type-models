@@ -9,11 +9,11 @@ do i = 1, no_of_sites
     lattice_site = array_of_sites(i)
     charge_hop_or_field_rotation = rand()
     if (charge_hop_or_field_rotation < charge_hop_proportion_over_two) then
-        call charge_hop(lattice_site, 1)
+        call attempt_charge_hop(lattice_site, 1)
     else if (charge_hop_or_field_rotation < charge_hop_proportion) then
-        call charge_hop(lattice_site, 2)
+        call attempt_charge_hop(lattice_site, 2)
     else
-        call field_rotation(lattice_site)
+        call attempt_field_rotation(lattice_site)
     end if
 end do
 
@@ -21,7 +21,7 @@ return
 end subroutine metropolis_sweep
 
 
-subroutine field_rotation(lattice_site)
+subroutine attempt_field_rotation(lattice_site)
 use variables
 implicit none
 integer :: lattice_site
@@ -52,4 +52,4 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
 end if
   
 return
-end subroutine field_rotation
+end subroutine attempt_field_rotation

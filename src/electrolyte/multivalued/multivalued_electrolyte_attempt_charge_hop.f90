@@ -1,4 +1,4 @@
-subroutine charge_hop(lattice_site, cartesian_component)
+subroutine attempt_charge_hop(lattice_site, cartesian_component)
 use variables
 implicit none
 integer :: lattice_site, cartesian_component
@@ -16,4 +16,4 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
 end if
 
 return
-end subroutine charge_hop
+end subroutine attempt_charge_hop
