@@ -24,7 +24,6 @@ no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites), emergent_field(no_of_sites, 2))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
 allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites))
-spin_space_distance_between_observations = dfloat(no_of_sites) * pi
 
 return
 end subroutine read_config_file
