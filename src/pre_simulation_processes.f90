@@ -7,9 +7,14 @@ integer, allocatable :: seed(:)
 
 ! verify that the something has been parsed to the exectuable
 if (command_argument_count() /= 1) then
-    write(6, *) 'Error: parse configuration file to executable'
+    write(6, '(A)') 'Error: parse configuration file to executable'
     stop
 end if
+
+! welcome message; this also sets the version number
+write(6, '(A)') 'xy-type-models (version 1.0.0) - a FORTRAN/Python application for both event-chain and Metropolis Monte &
+                Carlo simulaiton of the XY model, harmonic XY (HXY) model and Maggs lattice-field electrolyte model &
+                (event-chain Monte Carlo (ECMC) only available for the XY and HXY models).'
 
 ! setup random-number sequence
 seed_size = 123456
@@ -33,6 +38,9 @@ else
 end if
 call setup_periodic_boundaries
 call initialise_field_configuration
+
+! message informing the start of the Markov process
+write(6, '(A, A, A)') 'Starting the Markov process of the ', trim(algorithm_name), ' simulation.'
 
 return
 end subroutine pre_simulation_processes

@@ -2,8 +2,10 @@ program ecmc_algorithm
 use variables
 implicit none
 integer :: i, j
+double precision :: start_time, end_time
 
 call pre_simulation_processes
+call cpu_time(start_time)
 
 do i = 0, no_of_temperature_increments
     write(6, '(A, F4.2)') 'Temperature = ', temperature
@@ -32,6 +34,11 @@ do i = 0, no_of_temperature_increments
     call output_no_of_events
     temperature = temperature + magnitude_of_temperature_increments
 end do
+
+call cpu_time(end_time)
+write(6, '(A, ES9.3, A)') 'Markov process complete; total runtime of the simulation = ', end_time - start_time, &
+                            ' seconds.'
+
 end program ecmc_algorithm
 
 
