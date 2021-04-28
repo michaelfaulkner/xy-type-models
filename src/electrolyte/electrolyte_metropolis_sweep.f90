@@ -2,15 +2,15 @@ subroutine metropolis_sweep
 use variables
 implicit none
 integer :: i, lattice_site
-double precision :: charge_hop_or_field_rotation
+double precision :: attempt_charge_hop_or_field_rotation
 
 call randomise_array_of_sites
 do i = 1, no_of_sites
     lattice_site = array_of_sites(i)
-    charge_hop_or_field_rotation = rand()
-    if (charge_hop_or_field_rotation < charge_hop_proportion_over_two) then
+    attempt_charge_hop_or_field_rotation = rand()
+    if (attempt_charge_hop_or_field_rotation < charge_hop_proportion_over_two) then
         call attempt_charge_hop(lattice_site, 1)
-    else if (charge_hop_or_field_rotation < charge_hop_proportion) then
+    else if (attempt_charge_hop_or_field_rotation < charge_hop_proportion) then
         call attempt_charge_hop(lattice_site, 2)
     else
         call attempt_field_rotation(lattice_site)
