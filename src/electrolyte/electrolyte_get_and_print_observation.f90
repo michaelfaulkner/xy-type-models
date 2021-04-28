@@ -10,8 +10,7 @@ do i = 1, no_of_sites
                                     + electric_field(i, 2) * electric_field(i, 2))
 end do
 
-write(20, 100) potential, - elementary_charge * dfloat(net_charge_displacement(1)), &
-                          - elementary_charge * dfloat(net_charge_displacement(2))
+write(20, 100) potential, - twopi * dfloat(net_charge_displacement(1)), - twopi * dfloat(net_charge_displacement(2))
 
 100 format(ES24.14, ", ", ES24.14, ", ", ES24.14)
 
