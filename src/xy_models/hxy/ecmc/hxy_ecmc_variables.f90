@@ -5,7 +5,7 @@ integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, 
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
 integer :: no_of_observations, no_of_events, no_of_accepted_external_global_moves, vacuum_permittivity_sum_cutoff
 integer :: no_of_external_twists_to_minimise_potential(2)
-double precision, parameter :: twopi = 6.28318530717959d0
+double precision, parameter :: two_pi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, parameter :: pi_squared = 9.86960440108936d0
 double precision, parameter :: pi_squared_over_two = 4.93480220054468d0

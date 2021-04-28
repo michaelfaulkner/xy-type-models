@@ -7,7 +7,7 @@ double precision :: candidate_spin_value, potential_difference
 call randomise_array_of_sites
 do n = 1, no_of_sites
     i = array_of_sites(n)
-    candidate_spin_value = mod(spin_field(i) + width_of_proposal_interval * (rand() - 0.5d0), twopi)
+    candidate_spin_value = mod(spin_field(i) + width_of_proposal_interval * (rand() - 0.5d0), two_pi)
 
     potential_difference = - cos(spin_field(get_east_neighbour(i)) - candidate_spin_value) &
                             - cos(spin_field(get_north_neighbour(i)) - candidate_spin_value) &

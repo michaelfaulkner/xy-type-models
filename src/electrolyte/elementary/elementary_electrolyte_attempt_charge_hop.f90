@@ -21,7 +21,7 @@ if (abs(proposed_neighbouring_charge_value) > 1) then
     return
 end if
 
-candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + twopi &
+candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + two_pi &
                                         * sign_of_proposed_field_increment
 potential_difference = 0.5d0 * (candidate_electric_field_component * candidate_electric_field_component &
                                 - electric_field(lattice_site, cartesian_component) &

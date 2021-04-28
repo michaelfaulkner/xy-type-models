@@ -13,7 +13,7 @@ if (floor(2.0d0 * rand()) == 0) then
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
-                                                                * sign_of_twist * twopi / dfloat(integer_lattice_length)
+                                                                * sign_of_twist * two_pi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute and store candidate emergent-field components and potential difference
@@ -36,7 +36,7 @@ else
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) &
                 + dfloat(mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length)) &
-                        * sign_of_twist * twopi / dfloat(integer_lattice_length)
+                        * sign_of_twist * two_pi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute and store candidate emergent-field components and potential difference

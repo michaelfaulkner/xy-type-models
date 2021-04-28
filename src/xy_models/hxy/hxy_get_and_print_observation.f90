@@ -58,7 +58,7 @@ do
     twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
-                            + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                            + get_spin_difference(spin_field(i) + dfloat(n) * two_pi / dfloat(integer_lattice_length), &
                                                   spin_field(get_west_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
@@ -77,7 +77,7 @@ do
     twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
-                            + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                            + get_spin_difference(spin_field(i) - dfloat(n) * two_pi / dfloat(integer_lattice_length), &
                                                   spin_field(get_west_neighbour(i)))** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
@@ -96,7 +96,7 @@ do
     twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
-                            + get_spin_difference(spin_field(i) + dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                            + get_spin_difference(spin_field(i) + dfloat(n) * two_pi / dfloat(integer_lattice_length), &
                                                   spin_field(get_south_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)
@@ -115,7 +115,7 @@ do
     twisted_sum_of_squared_emergent_field = 0.0d0
     do i = 1, no_of_sites
         twisted_sum_of_squared_emergent_field = twisted_sum_of_squared_emergent_field &
-                            + get_spin_difference(spin_field(i) - dfloat(n) * twopi / dfloat(integer_lattice_length), &
+                            + get_spin_difference(spin_field(i) - dfloat(n) * two_pi / dfloat(integer_lattice_length), &
                                                   spin_field(get_south_neighbour(i))) ** 2
     end do
     potential_difference = 0.5d0 * (twisted_sum_of_squared_emergent_field - current_sum_of_squared_emergent_field)

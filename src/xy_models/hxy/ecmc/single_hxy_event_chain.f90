@@ -33,7 +33,7 @@ do
                                             initial_two_spin_potential - &
                                             uphill_distance_through_potential_space_before_next_event
             final_spin_value_difference = pi - sqrt(pi_squared - 2.0d0 * final_two_spin_potential)
-            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
+            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * two_pi - &
                                                 initial_spin_value_difference - final_spin_value_difference
         ! else: factor derivative < 0 ==> go to bottom of potential well
         else
@@ -42,7 +42,7 @@ do
             final_two_spin_potential = (no_of_complete_spin_rotations + 1.0d0) * pi_squared_over_two - &
                                             uphill_distance_through_potential_space_before_next_event
             final_spin_value_difference = pi - sqrt(pi_squared - 2.0d0 * final_two_spin_potential)
-            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * twopi - &
+            distance_to_next_factor_event = (no_of_complete_spin_rotations + 0.5d0) * two_pi - &
                                                 initial_spin_value_difference - final_spin_value_difference
         end if
 
@@ -54,12 +54,12 @@ do
 
     if (distance_left_before_next_observation < shortest_distance_to_next_factor_event) then
         ! update active spin value and exit event chain in order to observe the system
-        spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, twopi)
+        spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, two_pi)
         call calculate_emergent_field
         exit
     else
         ! update active spin value and continute event chain
-        spin_field(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, twopi)
+        spin_field(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, two_pi)
         distance_left_before_next_observation = distance_left_before_next_observation - &
                                                     shortest_distance_to_next_factor_event
         active_spin_index = vetoeing_spin_index

@@ -5,7 +5,7 @@ integer :: i
 
 if (randomise_initial_field_configuration) then
     do i = 1, no_of_sites
-        spin_field(i) = twopi * rand()
+        spin_field(i) = two_pi * rand()
     end do
 else
     do i = 1, no_of_sites

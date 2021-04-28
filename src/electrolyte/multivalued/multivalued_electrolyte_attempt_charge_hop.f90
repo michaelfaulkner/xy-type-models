@@ -5,7 +5,7 @@ integer :: lattice_site, cartesian_component, sign_of_proposed_field_increment
 double precision :: potential_difference, candidate_electric_field_component
 
 sign_of_proposed_field_increment = 2 * int(2.0d0 * rand()) - 1
-candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + twopi &
+candidate_electric_field_component = electric_field(lattice_site, cartesian_component) + two_pi &
                                         * sign_of_proposed_field_increment
 potential_difference = 0.5d0 * (candidate_electric_field_component * candidate_electric_field_component &
                                 - electric_field(lattice_site, cartesian_component) &
