@@ -1,0 +1,13 @@
+'hxy-ecmc'                              algorithm_name
+'output/test_helicity_convergence/cutoff_202'     output directory
+8                                       lattice length
+100                                     number of equilibration iterations
+40000                                   number of observations (sample size)
+0.6d0                                   initial temperature
+1.6d0                                   final temperature
+10                                      number of temperature increments
+202                                     cut-off of 2nd deriv. of potential
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+.false.                                 calculate_external_minimising_twist_field
+end
