@@ -29,19 +29,26 @@ def get_specific_heat(simulation_directory, temperature_directory, beta, number_
 # xy models
 def get_helicity_modulus(simulation_directory, temperature_directory, beta, number_of_sites):
     sum_of_1st_derivative_of_potential_sample = get_entire_sample(simulation_directory, temperature_directory)[:, 3:5]
-    sum_of_2nd_derivative_of_potential_sample = get_entire_sample(simulation_directory, temperature_directory)[:, 5:7]
-    return np.mean(sum_of_2nd_derivative_of_potential_sample, axis=1) / number_of_sites - beta * np.mean(
-        (sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample, axis=0)) ** 2,
-        axis=1) / number_of_sites
+    return (get_inverse_vacuum_permittivity(simulation_directory, temperature_directory, beta, number_of_sites) - beta
+            * np.mean((sum_of_1st_derivative_of_potential_sample - np.mean(sum_of_1st_derivative_of_potential_sample,
+                                                                           axis=0)) ** 2, axis=1) / number_of_sites)
 
 
-def get_non_normalised_cartesian_magnetisation(simulation_directory, temperature_directory, beta, number_of_sites):
-    return get_entire_sample(simulation_directory, temperature_directory)[:, 1:3]
+def get_inverse_vacuum_permittivity(simulation_directory, temperature_directory, beta, number_of_sites):
+    return np.mean(get_entire_sample(simulation_directory, temperature_directory)[:, 5:7], axis=1) / number_of_sites
+
+
+def get_toroidal_vortex_polarisation(simulation_directory, temperature_directory, beta, number_of_sites):
+    return get_entire_sample(simulation_directory, temperature_directory)[:, 3:5] / number_of_sites
 
 
 def get_magnetisation_norm(simulation_directory, temperature_directory, beta, number_of_sites):
     return np.linalg.norm(get_non_normalised_cartesian_magnetisation(simulation_directory, temperature_directory, beta,
                                                                      number_of_sites), axis=1) / number_of_sites
+
+
+def get_non_normalised_cartesian_magnetisation(simulation_directory, temperature_directory, beta, number_of_sites):
+    return get_entire_sample(simulation_directory, temperature_directory)[:, 1:3]
 
 
 # Maggs-electrolyte models

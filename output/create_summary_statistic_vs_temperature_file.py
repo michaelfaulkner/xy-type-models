@@ -16,9 +16,11 @@ def main(config_file_name, summary_statistic_string):
     if (summary_statistic_string != 'acceptance_rates' and summary_statistic_string != 'number_of_events' and
             summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation_norm' and
             summary_statistic_string != 'specific_heat' and summary_statistic_string != 'inverse_permittivity' and
-            summary_statistic_string != 'topological_sector_fluctuations'):
+            summary_statistic_string != 'topological_sector_fluctuations' and
+            summary_statistic_string != 'inverse_vacuum_permittivity'):
         print('Give one of acceptance_rates, number_of_events, helicity_modulus, magnetisation_norm, specific_heat, '
-              'inverse_permittivity or topological_sector_fluctuations as the second positional argument.')
+              'inverse_permittivity, topological_sector_fluctuations or inverse_vacuum_permittivity as the second '
+              'positional argument.')
         exit()
 
     basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
@@ -39,9 +41,10 @@ def main(config_file_name, summary_statistic_string):
               'number_of_events, give acceptance_rates as the second positional argument.')
         exit()
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
-            (summary_statistic_string == 'magnetisation_norm' or summary_statistic_string == 'helicity_modulus')):
-        print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation or '
-              'helicity_modulus as the second positional argument.')
+            (summary_statistic_string == 'magnetisation_norm' or summary_statistic_string == 'helicity_modulus' or
+             summary_statistic_string != 'inverse_vacuum_permittivity')):
+        print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation, '
+              'helicity_modulus or inverse_vacuum_permittivity as the second positional argument.')
         exit()
         if ((algorithm_name == 'xy-ecmc' or algorithm_name == 'hxy-ecmc' or algorithm_name == 'xy-metropolis' or
              algorithm_name == 'hxy-metropolis') and (summary_statistic_string != 'inverse_permittivity' or
