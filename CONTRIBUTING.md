@@ -1,4 +1,4 @@
-# Contributing to JeLLyFysh
+# Contributing to xy-type-models
 
 ## Pull requests
 

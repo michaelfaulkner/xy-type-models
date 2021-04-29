@@ -15,10 +15,10 @@ In order to easily compare with the XY and HXY models, we have set q = 2\pi.
 For an introduction to the three-dimensional Maggs lattice-field electrolyte model in the canonical ensemble (for 
 particles), see [\[Maggs2002\]](https://doi.org/10.1103/PhysRevLett.88.196402). For an introduction to both the 
 two-dimensional lattice-field electrolyte model in the grand canonical ensemble (for particles) and its equivalence 
-with the two-dimensional Villain model of magnetism ([\[Villain1975\]](https://doi.org/10.1051/jphys:01975003606058100)
-), see [\[Faulkner2015\]](https://doi.org/10.1103/PhysRevB.91.155412). For an analysis of the similarities between the 
-HXY model and two-dimensional lattice-field electrolyte, see [\[Faulkner2017\]](
-https://doi.org/10.1088/1361-648X/aa523f).
+with the two-dimensional Villain model of magnetism ([\[Villain1975\]](
+https://doi.org/10.1051/jphys:01975003606058100)), see [\[Faulkner2015\]](https://doi.org/10.1103/PhysRevB.91.155412). 
+For an analysis of the similarities between the HXY model and two-dimensional lattice-field electrolyte, see 
+[\[Faulkner2017\]](https://doi.org/10.1088/1361-648X/aa523f).
 
 ## Installation
 
