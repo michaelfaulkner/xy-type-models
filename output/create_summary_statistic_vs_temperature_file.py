@@ -41,13 +41,13 @@ def main(config_file_name, summary_statistic_string):
         exit()
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
             (summary_statistic_string == 'magnetisation_norm' or summary_statistic_string == 'helicity_modulus' or
-             summary_statistic_string != 'inverse_vacuum_permittivity')):
+             summary_statistic_string == 'inverse_vacuum_permittivity')):
         print('ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation, '
               'helicity_modulus or inverse_vacuum_permittivity as the second positional argument.')
         exit()
     if ((algorithm_name == 'xy-ecmc' or algorithm_name == 'hxy-ecmc' or algorithm_name == 'xy-metropolis' or
-         algorithm_name == 'hxy-metropolis') and (summary_statistic_string != 'inverse_permittivity' or
-                                                  summary_statistic_string != 'topological_sector_fluctuations')):
+         algorithm_name == 'hxy-metropolis') and (summary_statistic_string == 'inverse_permittivity' or
+                                                  summary_statistic_string == 'topological_sector_fluctuations')):
         print('ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or '
               'topological_sector_fluctuations as the second positional argument.')
         exit()
