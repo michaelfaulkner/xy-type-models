@@ -56,6 +56,11 @@ def get_sum_of_electric_field(simulation_directory, temperature_directory, beta,
     return get_entire_sample(simulation_directory, temperature_directory)[:, 1:3]
 
 
+def get_toroidal_polarisation(simulation_directory, temperature_directory, beta, number_of_sites):
+    return get_sum_of_electric_field(simulation_directory, temperature_directory, beta,
+                                     number_of_sites) / number_of_sites
+
+
 def get_inverse_permittivity(simulation_directory, temperature_directory, beta, number_of_sites):
     sum_of_electric_field_sample = get_sum_of_electric_field(simulation_directory, temperature_directory, beta,
                                                              number_of_sites)
