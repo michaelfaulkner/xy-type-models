@@ -2,15 +2,15 @@
 
 # xy-type-models
 
-xy-type-models is a Fortran 90/Python application that implements the event-chain and Metropolis-Hastings Monte Carlo 
-algorithms for the simulation of two-dimensional XY-type models in statistical physics. xy-type-models is able to 
-perform event-chain and Metropolis-Hastings simulation of the XY and harmonic XY (HXY) spin models and 
-Metropolis-Hastings simulation of the Maggs lattice-field electrolyte model in the grand canonical ensemble (for 
-particles). Each model is defined on a two-dimensional square lattice. 
+xy-type-models is an open-source Fortran/Python application that implements the event-chain and Metropolis-Hastings 
+Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
+Event-chain and Metropolis-Hastings simulation is available for the XY and harmonic XY (HXY) spin models. 
+Metropolis-Hastings simulation is available for the Maggs lattice-field electrolyte model in the grand canonical 
+ensemble (for particles). Each model is defined on a two-dimensional square lattice. 
 
-We provide multivalued and elementary versions of lattice-field electrolyte. In the former, the charge value at each 
-lattice site can be any integer multiple of the elementary charge, q; in the latter, the charge values are zero or ±q. 
-In order to easily compare with the XY and HXY models, we have set q = 2\pi.
+We provide multivalued and elementary versions of the lattice-field electrolyte. In the former, the charge value at 
+each lattice site can be any integer multiple of the elementary charge, q; in the latter, the charge values are zero or 
+±q. In order to easily compare with the XY and HXY models, we have set q = 2\pi.
 
 For an introduction to the three-dimensional Maggs lattice-field electrolyte model in the canonical ensemble (for 
 particles), see [\[Maggs2002\]](https://doi.org/10.1103/PhysRevLett.88.196402). For an introduction to both the 
@@ -25,21 +25,21 @@ For an analysis of the similarities between the HXY model and two-dimensional la
 To install xy-type-models, clone this repository.
 
 The code that simulates the Markov processes was written in Fortran 90. The code that analyses the resultant samples 
-(i.e., that contained in the [`output`](output) directory) was written in Python using Python 3.8, though it is likely 
-to support any Python version >= 3.6 (but we need to check this). The sample-analysis code has been tested with CPython.
+(i.e., that contained in the [`output`](output) directory) was written in Python and is likely to support any Python 
+version >= 3.6 (though we need to check this). The sample-analysis code has been tested with CPython.
 
 The sample-analysis code depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](
-https://matplotlib.org) and [`rpy2`](https://rpy2.github.io). [`markov_chain_diagnostics.py`](
-output/markov_chain_diagnostics.py) depends on the R package [`LaplacesDemon`](
-https://cran.r-project.org/web/packages/LaplacesDemon/), which must be installed in R: download [the relevant binary](
-https://cran.r-project.org/web/packages/LaplacesDemon/) at CRAN and then run `R CMD INSTALL <binary location>` in your 
-terminal.
+https://matplotlib.org) and [`rpy2`](https://rpy2.github.io). To manage external Python packages, we use [conda](
+https://docs.conda.io/projects/conda/en/latest/) environments via the [miniconda distribution](
+https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](https://rpy2.github.io) to be buggy when 
+installed via conda. Instead, we `pip install rpy2` from within the project's conda environment (after having `conda 
+install`ed [`numpy`](https://numpy.org) and [`matplotlib`](https://matplotlib.org)).
 
-To manage external Python packages, we use [conda](https://docs.conda.io/projects/conda/en/latest/) environments via 
-the [miniconda distribution](https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](
-https://rpy2.github.io) to be buggy when installed via conda. Instead, we `pip install rpy2` from within the project's 
-conda environment (after having `conda install`ed [`numpy`](https://numpy.org) and [`matplotlib`](
-https://matplotlib.org)).
+[`markov_chain_diagnostics.py`](output/markov_chain_diagnostics.py) depends on the R packages [`LaplacesDemon`](
+https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
+https://cran.r-project.org/web/packages/mcmcse/). To install these R packages: download the binaries [here](
+https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) 
+and then run `R CMD INSTALL <binary location>` in your terminal.
 
 ## Implementation
 
