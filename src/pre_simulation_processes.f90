@@ -12,9 +12,9 @@ if (command_argument_count() /= 1) then
 end if
 
 ! welcome message; this also sets the version number
-write(6, '(A)') 'xy-type-models (version 1.0.0) - a Fortran 90/Python application for event-chain/Metropolis Monte &
-                Carlo simulation of the XY model, harmonic XY (HXY) model and Maggs lattice-field electrolyte model on &
-                a square, two-dimensional lattice (event-chain Monte Carlo only available for the XY and HXY models).'
+write(6, '(A)') 'xy-type-models (version 1.0.0) - a Fortran/Python application for event-chain/Metropolis Monte Carlo &
+                simulation of the XY model, harmonic XY (HXY) model and Maggs lattice-field electrolyte model on a &
+                square, two-dimensional lattice (event-chain Monte Carlo only available for the XY and HXY models).'
 
 ! setup random-number sequence
 seed_size = 123456
