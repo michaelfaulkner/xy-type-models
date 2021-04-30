@@ -5,8 +5,7 @@ import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-output_directory = os.path.abspath(this_directory + '/../')
-sys.path.insert(0, output_directory)
+sys.path.insert(0, this_directory)
 config_file = importlib.import_module('config_file')
 sample_getter = importlib.import_module('sample_getter')
 markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
