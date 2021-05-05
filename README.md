@@ -26,7 +26,8 @@ To install xy-type-models, clone this repository.
 
 The code that simulates the Markov processes was written in Fortran 90. The code that analyses the resultant samples 
 (i.e., that contained in the [`output`](output) directory) was written in Python and is likely to support any Python 
-version >= 3.6 (though we need to check this). The sample-analysis code has been tested with CPython.
+version >= 3.6 (though we need to check this). The Fortran / Python code has been tested with GNU Fortran (Homebrew GCC 
+10.2.0_4) 10.2.0 / CPython.
 
 The sample-analysis code depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](
 https://matplotlib.org) and [`rpy2`](https://rpy2.github.io). To manage external Python packages, we use [conda](
