@@ -7,15 +7,15 @@ import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_modules = os.path.abspath(this_directory + '/output/')
+directory_containing_modules = os.path.abspath(this_directory + "/output/")
 sys.path.insert(0, directory_containing_modules)
-config_data_getter = importlib.import_module('config_data_getter')
+config_data_getter = importlib.import_module("config_data_getter")
 
 
 def main(executable, config_file_name):
     no_of_jobs = config_data_getter.get_basic_data(config_file_name)[8]
     if no_of_jobs < 1:
-        print('ConfigurationError: For the value of no_of_jobs, give an integer not less than one.')
+        print("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
         exit()
     elif no_of_jobs == 1:
         run_single_simulation(executable, config_file_name)
@@ -30,21 +30,26 @@ def main(executable, config_file_name):
                   no_of_cpus, "CPUs are available.")
             pool = mp.Pool(no_of_cpus)
         for job_number in range(no_of_jobs):
-            os.system('cp ' + str(config_file_name) + ' ' + str(config_file_name) + '_run_' + str(job_number))
-            for line in fileinput.input(str(config_file_name) + '_run_' + str(job_number)):
+            # create directory in which to store temporary copies of parent config file
+            os.system("mkdir " + config_file_name.replace(".txt", ""))
+            config_file_copy = config_file_name.replace(".txt", "/run_" + str(job_number) + ".txt")
+            # create temporary copies of parent config file
+            os.system("cp " + config_file_name + " " + config_file_copy)
+            for line in fileinput.input(config_file_copy, inplace=True):
                 if 'output_directory' in line:
-                    print(line.replace("output_directory", "").replace(" ", "") + '_run_' + str(job_number))
+                    print(line.replace("' ", "/run_" + str(job_number) + "'"), end="")
                 else:
-                    print(line)
-        config_file_copies = [str(config_file_name) + '_run_' + str(job_number) for job_number in no_of_jobs]
+                    print(line, end="")
+        config_file_copies = [config_file_name + "/run_" + str(job_number) for job_number in no_of_jobs]
         pool.starmap(run_single_simulation, [(executable, config_file_copy) for config_file_copy in config_file_copies])
         pool.close()
-        [os.system('rm -r ' + str(config_file_copy)) for config_file_copy in config_file_copies]
+        # delete temporary copies of parent config file
+        os.system("rm -r " + config_file_name.replace(".txt", ""))
 
 
 def run_single_simulation(executable, config_file_name):
-    return os.system('./' + str(executable) + ' ' + str(config_file_name))
+    return os.system("./" + executable + " " + config_file_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1], sys.argv[2])
