@@ -10,17 +10,17 @@ import sys
 this_directory = os.path.dirname(os.path.abspath(__file__))
 output_directory = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, output_directory)
-config_file = importlib.import_module("config_file")
+config_data_getter = importlib.import_module("config_data_getter")
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
 
 def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
-    basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
+    basic_config_data = config_data_getter.get_basic_data(config_file_name)
     (algorithm_name, simulation_directory, lattice_length, no_of_equilibrium_iterations, temperature) = (
-        basic_configuration_data[0], basic_configuration_data[1], basic_configuration_data[2],
-        basic_configuration_data[3], basic_configuration_data[5])
+        basic_config_data[0], basic_config_data[1], basic_config_data[2],
+        basic_config_data[3], basic_config_data[5])
     beta = 1.0 / temperature
     number_of_sites = lattice_length ** 2
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))

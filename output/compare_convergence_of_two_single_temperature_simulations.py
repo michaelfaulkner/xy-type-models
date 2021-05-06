@@ -8,7 +8,7 @@ import sys
 # Add the directory that contains config_file, sample_getter and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
-config_file = importlib.import_module("config_file")
+config_data_getter = importlib.import_module("config_data_getter")
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
@@ -16,21 +16,21 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file_name_1, config_file_name_2):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
 
-    basic_configuration_data_1 = config_file.get_basic_configuration_data(config_file_name_1)
+    basic_config_data_1 = config_data_getter.get_basic_data(config_file_name_1)
     (algorithm_name_1, simulation_directory_1, lattice_length_1, no_of_equilibrium_iterations_1, temperature_1,
      no_of_temperature_increments_1) = (
-        basic_configuration_data_1[0], basic_configuration_data_1[1], basic_configuration_data_1[2],
-        basic_configuration_data_1[3], basic_configuration_data_1[5], basic_configuration_data_1[7])
+        basic_config_data_1[0], basic_config_data_1[1], basic_config_data_1[2],
+        basic_config_data_1[3], basic_config_data_1[5], basic_config_data_1[7])
     if no_of_temperature_increments_1 != 0:
         print('ConfigurationError: in the first configuration file, the value of the number of temperature increments '
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')
         exit()
 
-    basic_configuration_data_2 = config_file.get_basic_configuration_data(config_file_name_2)
+    basic_config_data_2 = config_data_getter.get_basic_data(config_file_name_2)
     (algorithm_name_2, simulation_directory_2, lattice_length_2, no_of_equilibrium_iterations_2, temperature_2,
      no_of_temperature_increments_2) = (
-        basic_configuration_data_2[0], basic_configuration_data_2[1], basic_configuration_data_2[2],
-        basic_configuration_data_2[3], basic_configuration_data_2[5], basic_configuration_data_2[7])
+        basic_config_data_2[0], basic_config_data_2[1], basic_config_data_2[2],
+        basic_config_data_2[3], basic_config_data_2[5], basic_config_data_2[7])
     if no_of_temperature_increments_2 != 0:
         print('ConfigurationError: in the second configuration file, the value of the number of temperature increments '
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')

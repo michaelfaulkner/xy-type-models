@@ -9,19 +9,19 @@ import sys
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
-config_file = importlib.import_module('config_file')
+config_data_getter = importlib.import_module('config_data_getter')
 sample_getter = importlib.import_module('sample_getter')
 markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 polyspectra = importlib.import_module('polyspectra')
 
 
 def main(config_file_name, power_spectrum_string):
-    basic_configuration_data = config_file.get_basic_configuration_data(config_file_name)
+    basic_config_data = config_data_getter.get_basic_data(config_file_name)
     (algorithm_name, simulation_directory, lattice_length, number_of_equilibrium_iterations, initial_temperature,
-     final_temperature, number_of_temperature_increments) = (basic_configuration_data[0], basic_configuration_data[1],
-                                                             basic_configuration_data[2], basic_configuration_data[3],
-                                                             basic_configuration_data[5], basic_configuration_data[6],
-                                                             basic_configuration_data[7])
+     final_temperature, number_of_temperature_increments) = (basic_config_data[0], basic_config_data[1],
+                                                             basic_config_data[2], basic_config_data[3],
+                                                             basic_config_data[5], basic_config_data[6],
+                                                             basic_config_data[7])
 
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
             (power_spectrum_string == 'magnetisation_norm' or power_spectrum_string == 'helicity_modulus' or
