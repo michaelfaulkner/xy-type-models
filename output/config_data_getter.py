@@ -1,7 +1,7 @@
 import csv
 
 
-def get_basic_configuration_data(config_file_name):
+def get_basic_data(config_file_name):
     with open(config_file_name, 'r') as config_file:
         config_data = csv.reader(config_file, delimiter='\t')
         for index, row in enumerate(config_data):
