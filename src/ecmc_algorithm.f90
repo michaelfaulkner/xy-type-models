@@ -49,7 +49,7 @@ implicit none
 character(100), parameter :: temperature_string="/temp_eq_"
 character(100) :: filename
 
-write (filename, '(A, F4.2, "//number_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature
+write (filename, '(A, F4.2, "//no_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature
 open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events

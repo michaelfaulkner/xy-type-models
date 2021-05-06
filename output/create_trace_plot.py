@@ -21,7 +21,7 @@ def main(config_file_name, summary_statistic_string):
         exit()
 
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
-    (algorithm_name, simulation_directory, lattice_length, number_of_equilibrium_iterations, temperature) = (
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, temperature) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2],
         basic_config_data[3], basic_config_data[5])
 
@@ -37,11 +37,11 @@ def main(config_file_name, summary_statistic_string):
               'topological_sector_fluctuations as the second positional argument.')
         exit()
 
-    number_of_sites = lattice_length ** 2
+    no_of_sites = integer_lattice_length ** 2
     beta = 1.0 / temperature
     temperature_directory = '/temp_eq_' + '{0:.2f}'.format(temperature)
     get_sample_method = getattr(sample_getter, 'get_' + summary_statistic_string)
-    sample = get_sample_method(simulation_directory, temperature_directory, beta, number_of_sites)
+    sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)
 
     plt.xlabel(r"time, $t$", fontsize=15, labelpad=10)
     plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
@@ -50,7 +50,7 @@ def main(config_file_name, summary_statistic_string):
     plt.tight_layout()
     plt.show()
     plt.clf()
-    plt.plot(sample[0:number_of_equilibrium_iterations], color='k', linewidth=1, linestyle='-')
+    plt.plot(sample[0:no_of_equilibrium_iterations], color='k', linewidth=1, linestyle='-')
     plt.tight_layout()
     plt.show()
 

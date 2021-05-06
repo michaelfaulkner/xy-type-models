@@ -1,12 +1,12 @@
 'hxy-metropolis'                                algorithm_name
-'output/polyspectra/hxy_metropolis'             output directory
-32                                              lattice length
-10000                                           number of equilibration iterations
-100000                                          number of observations (sample size)
-1.4d0                                           initial temperature
-2.0d0                                           final temperature
-3                                               number of temperature increments
-1.0d0   	                                    initial width_of_proposal_interval, x; interval = (-x / 2, x / 2]
+'output/polyspectra/hxy_metropolis'             output_directory
+32                                              integer_lattice_length
+10000                                           no_of_equilibration_sweeps
+100000                                          no_of_observations
+1.4d0                                           initial_temperature
+2.0d0                                           final_temperature
+3                                               no_of_temperature_increments
+1.0d0   	                                    width_of_proposal_interval (initial)
 0.8d0		                                    target_acceptance_rate_of_field_rotations
 0                                               cut-off of 2nd deriv. of potential
 .false.                                         randomise_initial_field_configuration

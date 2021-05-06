@@ -12,9 +12,9 @@ sys.path.insert(0, output_directory)
 sample_getter = importlib.import_module('sample_getter')
 
 
-def get_power_spectrum(sample, simulation_directory, temperature_directory, sampling_frequency=None):
+def get_power_spectrum(sample, output_directory, temperature_directory, sampling_frequency=None):
     if sampling_frequency is None:
-        acceptance_rates = sample_getter.get_acceptance_rates(simulation_directory, temperature_directory)
+        acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
         physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0
         sampling_frequency = 1.0 / physical_time_scale
     sample = np.atleast_2d(sample)

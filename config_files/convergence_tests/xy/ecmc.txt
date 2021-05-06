@@ -1,11 +1,11 @@
 'xy-ecmc'                               algorithm_name
-'output/convergence_tests/xy/ecmc'      output directory
-8                                       lattice length
-100                                     number of equilibration iterations
-40000                                   number of observations (sample size)
-0.8d0                                   initial temperature
-0.8d0                                   final temperature
-0                                       number of temperature increments
+'output/convergence_tests/xy/ecmc'      output_directory
+8                                       integer_lattice_length
+100                                     no_of_equilibration_sweeps
+40000                                   no_of_observations
+0.8d0                                   initial_temperature
+0.8d0                                   final_temperature
+0                                       no_of_temperature_increments
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 end

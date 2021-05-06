@@ -17,8 +17,8 @@ polyspectra = importlib.import_module('polyspectra')
 
 def main(config_file_name, power_spectrum_string):
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
-    (algorithm_name, simulation_directory, lattice_length, number_of_equilibrium_iterations, initial_temperature,
-     final_temperature, number_of_temperature_increments) = (basic_config_data[0], basic_config_data[1],
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, initial_temperature,
+     final_temperature, no_of_temperature_increments) = (basic_config_data[0], basic_config_data[1],
                                                              basic_config_data[2], basic_config_data[3],
                                                              basic_config_data[5], basic_config_data[6],
                                                              basic_config_data[7])
@@ -39,12 +39,12 @@ def main(config_file_name, power_spectrum_string):
               'topological_sector_fluctuations or toroidal_polarisation as the second positional argument.')
         exit()
 
-    if number_of_temperature_increments == 0:
+    if no_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
     else:
         magnitude_of_temperature_increments = (final_temperature -
-                                               initial_temperature) / number_of_temperature_increments
-    number_of_sites = lattice_length ** 2
+                                               initial_temperature) / no_of_temperature_increments
+    no_of_sites = integer_lattice_length ** 2
 
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     plt.xlabel(r"frequency, $\omega$", fontsize=15, labelpad=10)
@@ -53,13 +53,13 @@ def main(config_file_name, power_spectrum_string):
 
     temperature = final_temperature
     get_sample_method = getattr(sample_getter, 'get_' + power_spectrum_string)
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, number_of_temperature_increments + 1)))
-    for i in range(number_of_temperature_increments + 1):
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
+    for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = '/temp_eq_' + f'{temperature:.2f}'
-        sample = get_sample_method(simulation_directory, temperature_directory, beta, number_of_sites)[
-                 number_of_equilibrium_iterations:]
-        power_spectrum = polyspectra.get_power_spectrum(sample, simulation_directory, temperature_directory)
+        sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[
+                 no_of_equilibrium_iterations:]
+        power_spectrum = polyspectra.get_power_spectrum(sample, output_directory, temperature_directory)
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
                  label=f'temperature = {temperature:.2f}')
         plt.tight_layout()

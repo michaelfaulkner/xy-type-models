@@ -1,12 +1,12 @@
 'multivalued-electrolyte'                           algorithm_name
-'output/convergence_tests/electrolyte/multivalued'  output directory
-8                  	                                lattice length
-10000                	                            number of equilibration iterations
-100000	                                            number of observations (sample size)
-1.5d0                 	                            initial temperature
-1.5d0              	                                final temperature
-0			                                        number of temperature increments
-1.0d0       	                                    initial width_of_proposal_interval, x; interval = (-x / 2, x / 2]
+'output/convergence_tests/electrolyte/multivalued'  output_directory
+8                  	                                integer_lattice_length
+10000                	                            no_of_equilibration_sweeps
+100000	                                            no_of_observations
+1.5d0                 	                            initial_temperature
+1.5d0              	                                final_temperature
+0			                                        no_of_temperature_increments
+1.0d0       	                                    width_of_proposal_interval (initial)
 0.44d0  		                                    target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves

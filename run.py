@@ -1,4 +1,3 @@
-import csv
 import fileinput
 import importlib
 import multiprocessing as mp
@@ -15,7 +14,7 @@ config_data_getter = importlib.import_module('config_data_getter')
 
 def main(executable, config_file):
     basic_config_data = config_data_getter.get_basic_data(config_file)
-    simulation_directory, no_of_jobs = basic_config_data[1], basic_config_data[8]
+    output_directory, no_of_jobs = basic_config_data[1], basic_config_data[8]
     if no_of_jobs < 1:
         print('ConfigurationError: For the value of no_of_jobs, give an integer not less than one.')
         exit()
