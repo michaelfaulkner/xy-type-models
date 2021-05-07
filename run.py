@@ -1,15 +1,9 @@
+from version import version
 import fileinput
-import importlib
 import multiprocessing as mp
 import os
 import sys
-
-
-# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_modules = os.path.abspath(this_directory + "/output/")
-sys.path.insert(0, directory_containing_modules)
-config_data_getter = importlib.import_module("config_data_getter")
+import output.config_data_getter as config_data_getter
 
 
 def main(executable, config_file_name):
@@ -48,9 +42,17 @@ def main(executable, config_file_name):
         os.system("rm -r " + config_file_name.replace(".txt", ""))
 
 
+def print_start_message():
+    """Print the start message."""
+    print("xy-type-models (version {version}}) - a Fortran/Python application for event-chain/Metropolis Monte Carlo "
+          "simulation of the XY model, harmonic XY (HXY) model and Maggs lattice-field electrolyte model on a square, "
+          "two-dimensional lattice (event-chain Monte Carlo only available for the XY and HXY models).'")
+
+
 def run_single_simulation(executable, config_file_name):
     return os.system("./" + executable + " " + config_file_name)
 
 
 if __name__ == "__main__":
+    print_start_message()
     main(sys.argv[1], sys.argv[2])
