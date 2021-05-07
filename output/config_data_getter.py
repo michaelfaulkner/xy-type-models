@@ -21,5 +21,7 @@ def get_basic_data(config_file_name):
                 final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
             if 'no_of_temperature_increments' in row[0]:
                 no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
+            if 'no_of_jobs' in row[0]:
+                no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
     return (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, no_of_observations,
-            initial_temperature, final_temperature, no_of_temperature_increments)
+            initial_temperature, final_temperature, no_of_temperature_increments, no_of_jobs)

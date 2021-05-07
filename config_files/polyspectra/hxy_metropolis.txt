@@ -1,15 +1,15 @@
-'hxy-metropolis'                                algorithm_name
-'output/polyspectra/hxy_metropolis'             output_directory
-32                                              integer_lattice_length
-10000                                           no_of_equilibration_sweeps
-100000                                          no_of_observations
-1.4d0                                           initial_temperature
-2.0d0                                           final_temperature
-3                                               no_of_temperature_increments
-1.0d0   	                                    width_of_proposal_interval (initial)
-0.8d0		                                    target_acceptance_rate_of_field_rotations
-0                                               cut-off of 2nd deriv. of potential
-.false.                                         randomise_initial_field_configuration
-.false.                                         use_external_global_moves
-.false.                                         calculate_external_minimising_twist_field
-end
+'hxy-metropolis'                        algorithm_name
+'output/polyspectra/hxy_metropolis'     output_directory
+32                                      integer_lattice_length
+10000                                   no_of_equilibration_sweeps
+100000                                  no_of_observations
+1.4d0                                   initial_temperature
+2.0d0                                   final_temperature
+3                                       no_of_temperature_increments
+1.0d0   	                            width_of_proposal_interval (initial)
+0.8d0		                            target_acceptance_rate_of_field_rotations
+0                                       cut-off of 2nd deriv. of potential
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+.false.                                 calculate_external_minimising_twist_field
+1                                       no_of_jobs

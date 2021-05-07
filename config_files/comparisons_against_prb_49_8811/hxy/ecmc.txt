@@ -10,4 +10,4 @@
 .false.                                             randomise_initial_field_configuration
 .false.                                             use_external_global_moves
 .false.                                             calculate_external_minimising_twist_field
-end
+1                                                   no_of_jobs
