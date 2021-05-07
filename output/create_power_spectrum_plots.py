@@ -70,7 +70,7 @@ def main(config_file_name, power_spectrum_string):
                 number_of_cpus = mp.cpu_count()
                 pool = mp.Pool(number_of_cpus)
                 power_spectra = pool.starmap(
-                    polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" +
+                    polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/job_" +
                                                       str(job_number + 1), temperature_directory, beta, no_of_sites,
                                                       no_of_equilibration_sweeps) for job_number in range(no_of_jobs)])
                 pool.close()
