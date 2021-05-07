@@ -12,6 +12,7 @@ def main(executable, config_file_name):
         print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
         exit()
     elif no_of_parallel_jobs == 1:
+        print("Running a single Markov process.")
         run_single_simulation(executable, config_file_name)
     else:
         no_of_cpus = mp.cpu_count()
