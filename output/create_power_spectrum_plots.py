@@ -47,9 +47,9 @@ def main(config_file_name, power_spectrum_string):
     no_of_sites = integer_lattice_length ** 2
 
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
-    plt.xlabel(r"frequency, $\omega$", fontsize=15, labelpad=10)
-    plt.ylabel(r"$ S_X \left( \omega \right)$", fontsize=15, labelpad=10)
-    plt.tick_params(axis='both', which='major', labelsize=14, pad=10)
+    plt.xlabel(r"frequency, $\omega$", fontsize=10, labelpad=10)
+    plt.ylabel(r"$ S_X \left( \omega \right)$", fontsize=10, labelpad=10)
+    plt.tick_params(axis='both', which='major', labelsize=10, pad=10)
 
     temperature = final_temperature
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
