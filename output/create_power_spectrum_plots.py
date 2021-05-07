@@ -56,19 +56,29 @@ def main(config_file_name, power_spectrum_string):
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = '/temp_eq_' + f'{temperature:.2f}'
-        if no_of_jobs == 1:
-            power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
-                                                            temperature_directory, beta, no_of_sites,
-                                                            no_of_equilibration_sweeps)
-        else:
-            number_of_cpus = mp.cpu_count()
-            pool = mp.Pool(number_of_cpus)
-            power_spectra = pool.starmap(
-                polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" +
-                                                  str(job_number + 1), temperature_directory, beta, no_of_sites,
-                                                  no_of_equilibration_sweeps) for job_number in range(no_of_jobs)])
-            pool.close()
-            power_spectrum = np.mean(np.array(power_spectra), axis=0)
+
+        try:
+            with open(output_directory + "/" + power_spectrum_string +
+                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", 'r') as power_spectrum_file:
+                power_spectrum = np.loadtxt(power_spectrum_file, dtype=float, delimiter=',')
+        except IOError:
+            if no_of_jobs == 1:
+                power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
+                                                                temperature_directory, beta, no_of_sites,
+                                                                no_of_equilibration_sweeps)
+            else:
+                number_of_cpus = mp.cpu_count()
+                pool = mp.Pool(number_of_cpus)
+                power_spectra = pool.starmap(
+                    polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" +
+                                                      str(job_number + 1), temperature_directory, beta, no_of_sites,
+                                                      no_of_equilibration_sweeps) for job_number in range(no_of_jobs)])
+                pool.close()
+                power_spectrum = np.mean(np.array(power_spectra), axis=0)
+            with open(output_directory + "/" + power_spectrum_string +
+                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", 'w') as power_spectrum_file:
+                np.savetxt(power_spectrum_file, power_spectrum, delimiter=',')
+
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
                  label=f'temperature = {temperature:.2f}')
         plt.tight_layout()
