@@ -37,7 +37,7 @@ def main(executable, config_file_name):
             os.system("cp " + config_file_name + " " + config_file_copy)
             for line in fileinput.input(config_file_copy, inplace=True):
                 if 'output_directory' in line:
-                    print(line.replace("' ", "/run_" + str(job_number) + "'"), end="")
+                    print(line.replace("' ", "/run_" + str(job_number + 1) + "'"), end="")
                 else:
                     print(line, end="")
         config_file_copies = [config_file_name.replace(".txt", "/run_" + str(job_number + 1) + ".txt") for job_number in
