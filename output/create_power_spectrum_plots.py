@@ -18,10 +18,10 @@ polyspectra = importlib.import_module('polyspectra')
 def main(config_file_name, power_spectrum_string):
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, initial_temperature,
-     final_temperature, no_of_temperature_increments) = (basic_config_data[0], basic_config_data[1],
-                                                             basic_config_data[2], basic_config_data[3],
-                                                             basic_config_data[5], basic_config_data[6],
-                                                             basic_config_data[7])
+     final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
+                                                                     basic_config_data[2], basic_config_data[3],
+                                                                     basic_config_data[5], basic_config_data[6],
+                                                                     basic_config_data[7], basic_config_data[8])
 
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
             (power_spectrum_string == 'magnetisation_norm' or power_spectrum_string == 'helicity_modulus' or
@@ -57,9 +57,18 @@ def main(config_file_name, power_spectrum_string):
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = '/temp_eq_' + f'{temperature:.2f}'
-        sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[
-                 no_of_equilibrium_iterations:]
-        power_spectrum = polyspectra.get_power_spectrum(sample, output_directory, temperature_directory)
+        if no_of_jobs == 1:
+            sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[
+                     no_of_equilibrium_iterations:]
+            power_spectrum = polyspectra.get_power_spectrum(sample, output_directory, temperature_directory)
+        else:
+            power_spectra = []
+            for job_number in range(no_of_jobs):
+                job_directory = output_directory + "/run_" + str(job_number + 1)
+                sample = get_sample_method(job_directory, temperature_directory, beta, no_of_sites)[
+                         no_of_equilibrium_iterations:]
+                power_spectra.append(polyspectra.get_power_spectrum(sample, job_directory, temperature_directory))
+            power_spectrum = np.mean(np.array(power_spectra), axis=0)
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
                  label=f'temperature = {temperature:.2f}')
         plt.tight_layout()
