@@ -6,7 +6,6 @@ import numpy as np
 import os
 import sys
 
-
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
@@ -18,7 +17,7 @@ polyspectra = importlib.import_module('polyspectra')
 
 def main(config_file_name, power_spectrum_string):
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, initial_temperature,
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
                                                                      basic_config_data[2], basic_config_data[3],
                                                                      basic_config_data[5], basic_config_data[6],
@@ -60,11 +59,14 @@ def main(config_file_name, power_spectrum_string):
         if no_of_jobs == 1:
             power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
                                                             temperature_directory, beta, no_of_sites,
-                                                            no_of_equilibrium_iterations)
+                                                            no_of_equilibration_sweeps)
         else:
             number_of_cpus = mp.cpu_count()
             pool = mp.Pool(number_of_cpus)
-            power_spectra = pool.starmap(polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" + str(job_number + 1), temperature_directory, beta, no_of_sites, no_of_equilibrium_iterations) for job_number in range(no_of_jobs)])
+            power_spectra = pool.starmap(
+                polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" +
+                                                  str(job_number + 1), temperature_directory, beta, no_of_sites,
+                                                  no_of_equilibration_sweeps) for job_number in range(no_of_jobs)])
             pool.close()
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),

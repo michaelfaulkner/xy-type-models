@@ -12,16 +12,17 @@ def get_basic_data(config_file_name):
                 integer_lattice_length = int(row[0].replace("'", "").replace("integer_lattice_length", "").replace(" ",
                                                                                                                    ""))
             if 'no_of_equilibration_sweeps' in row[0]:
-                no_of_equilibrium_iterations = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
+                no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
             if 'no_of_observations' in row[0]:
                 no_of_observations = int(row[0].replace("no_of_observations", "").replace(" ", ""))
             if 'initial_temperature' in row[0]:
-                initial_temperature = float(row[0].replace("d0", "").replace("initial_temperature", "").replace(" ", ""))
+                initial_temperature = float(row[0].replace("d0", "").replace("initial_temperature", "").replace(" ",
+                                                                                                                ""))
             if 'final_temperature' in row[0]:
                 final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
             if 'no_of_temperature_increments' in row[0]:
                 no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
             if 'no_of_parallel_jobs' in row[0]:
                 no_of_parallel_jobs = int(row[0].replace("no_of_parallel_jobs", "").replace(" ", ""))
-    return (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, no_of_observations,
+    return (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, no_of_observations,
             initial_temperature, final_temperature, no_of_temperature_increments, no_of_parallel_jobs)

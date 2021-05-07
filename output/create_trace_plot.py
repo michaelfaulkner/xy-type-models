@@ -21,7 +21,7 @@ def main(config_file_name, summary_statistic_string):
         exit()
 
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, temperature) = (
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2],
         basic_config_data[3], basic_config_data[5])
 
@@ -50,7 +50,7 @@ def main(config_file_name, summary_statistic_string):
     plt.tight_layout()
     plt.show()
     plt.clf()
-    plt.plot(sample[0:no_of_equilibrium_iterations], color='k', linewidth=1, linestyle='-')
+    plt.plot(sample[0:no_of_equilibration_sweeps], color='k', linewidth=1, linestyle='-')
     plt.tight_layout()
     plt.show()
 

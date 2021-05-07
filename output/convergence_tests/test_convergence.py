@@ -18,7 +18,7 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file_name):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     basic_config_data = config_data_getter.get_basic_data(config_file_name)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibrium_iterations, temperature) = (
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5])
     beta = 1.0 / temperature
     no_of_sites = integer_lattice_length ** 2
@@ -26,11 +26,11 @@ def main(config_file_name):
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
         sample = sample_getter.get_potential(output_directory, temperature_directory, beta, no_of_sites)[
-                 no_of_equilibrium_iterations:]
+                 no_of_equilibration_sweeps:]
     elif (algorithm_name == 'hxy-ecmc' or algorithm_name == 'hxy-metropolis' or algorithm_name == 'xy-ecmc' or
             algorithm_name == 'xy-metropolis'):
         sample = sample_getter.get_magnetisation_norm(output_directory, temperature_directory, beta,
-                                                      no_of_sites)[no_of_equilibrium_iterations:]
+                                                      no_of_sites)[no_of_equilibration_sweeps:]
 
     if algorithm_name == 'elementary-electrolyte':
         reference_sample = np.loadtxt('output/convergence_tests/electrolyte/elementary/elementary_electrolyte_8x8_'
