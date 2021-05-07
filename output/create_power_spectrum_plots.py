@@ -52,22 +52,21 @@ def main(config_file_name, power_spectrum_string):
     plt.tick_params(axis='both', which='major', labelsize=14, pad=10)
 
     temperature = final_temperature
-    get_sample_method = getattr(sample_getter, 'get_' + power_spectrum_string)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = '/temp_eq_' + f'{temperature:.2f}'
         if no_of_jobs == 1:
-            sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[
-                     no_of_equilibrium_iterations:]
-            power_spectrum = polyspectra.get_power_spectrum(sample, output_directory, temperature_directory)
+            power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
+                                                            temperature_directory, beta, no_of_sites,
+                                                            no_of_equilibrium_iterations)
         else:
             power_spectra = []
             for job_number in range(no_of_jobs):
                 job_directory = output_directory + "/run_" + str(job_number + 1)
-                sample = get_sample_method(job_directory, temperature_directory, beta, no_of_sites)[
-                         no_of_equilibrium_iterations:]
-                power_spectra.append(polyspectra.get_power_spectrum(sample, job_directory, temperature_directory))
+                power_spectra.append(
+                    polyspectra.get_power_spectrum(power_spectrum_string, job_directory, temperature_directory, beta,
+                                                   no_of_sites, no_of_equilibrium_iterations))
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
                  label=f'temperature = {temperature:.2f}')
