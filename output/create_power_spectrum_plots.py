@@ -1,6 +1,7 @@
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
+import multiprocessing as mp
 import numpy as np
 import os
 import sys
@@ -61,12 +62,10 @@ def main(config_file_name, power_spectrum_string):
                                                             temperature_directory, beta, no_of_sites,
                                                             no_of_equilibrium_iterations)
         else:
-            power_spectra = []
-            for job_number in range(no_of_jobs):
-                job_directory = output_directory + "/run_" + str(job_number + 1)
-                power_spectra.append(
-                    polyspectra.get_power_spectrum(power_spectrum_string, job_directory, temperature_directory, beta,
-                                                   no_of_sites, no_of_equilibrium_iterations))
+            number_of_cpus = mp.cpu_count()
+            pool = mp.Pool(number_of_cpus)
+            power_spectra = pool.starmap(polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/run_" + str(job_number + 1), temperature_directory, beta, no_of_sites, no_of_equilibrium_iterations) for job_number in range(no_of_jobs)])
+            pool.close()
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
                  label=f'temperature = {temperature:.2f}')
