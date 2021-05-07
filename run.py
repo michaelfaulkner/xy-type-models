@@ -32,7 +32,7 @@ def main(executable, config_file_name):
         for job_number in range(no_of_parallel_jobs):
             # create directory in which to store temporary copies of parent config file
             os.system("mkdir -p " + config_file_name.replace(".txt", ""))
-            config_file_copy = config_file_name.replace(".txt", "/run_" + str(job_number) + ".txt")
+            config_file_copy = config_file_name.replace(".txt", "/run_" + str(job_number + 1) + ".txt")
             # create temporary copies of parent config file
             os.system("cp " + config_file_name + " " + config_file_copy)
             for line in fileinput.input(config_file_copy, inplace=True):
@@ -40,7 +40,8 @@ def main(executable, config_file_name):
                     print(line.replace("' ", "/run_" + str(job_number) + "'"), end="")
                 else:
                     print(line, end="")
-        config_file_copies = [config_file_name + "/run_" + str(job_number) for job_number in no_of_parallel_jobs]
+        config_file_copies = [config_file_name.replace(".txt", "/run_" + str(job_number + 1) + ".txt") for job_number in
+                              range(no_of_parallel_jobs)]
         pool.starmap(run_single_simulation, [(executable, config_file_copy) for config_file_copy in config_file_copies])
         pool.close()
         # delete temporary copies of parent config file
