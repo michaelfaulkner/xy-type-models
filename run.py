@@ -13,23 +13,23 @@ config_data_getter = importlib.import_module("config_data_getter")
 
 
 def main(executable, config_file_name):
-    no_of_jobs = config_data_getter.get_basic_data(config_file_name)[8]
-    if no_of_jobs < 1:
-        print("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
+    no_of_parallel_jobs = config_data_getter.get_basic_data(config_file_name)[8]
+    if no_of_parallel_jobs < 1:
+        print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
         exit()
-    elif no_of_jobs == 1:
+    elif no_of_parallel_jobs == 1:
         run_single_simulation(executable, config_file_name)
     else:
         no_of_cpus = mp.cpu_count()
-        if no_of_jobs < no_of_cpus:
-            print("Running", no_of_jobs, "Markov processes in parallel on", no_of_jobs, "CPUs, where",
+        if no_of_parallel_jobs < no_of_cpus:
+            print("Running", no_of_parallel_jobs, "Markov processes in parallel on", no_of_parallel_jobs, "CPUs, where",
                   no_of_cpus, "CPUs are available.")
-            pool = mp.Pool(no_of_jobs)
+            pool = mp.Pool(no_of_parallel_jobs)
         else:
-            print("Running", no_of_jobs, "Markov processes in parallel on", no_of_cpus, "CPUs, where",
+            print("Running", no_of_parallel_jobs, "Markov processes in parallel on", no_of_cpus, "CPUs, where",
                   no_of_cpus, "CPUs are available.")
             pool = mp.Pool(no_of_cpus)
-        for job_number in range(no_of_jobs):
+        for job_number in range(no_of_parallel_jobs):
             # create directory in which to store temporary copies of parent config file
             os.system("mkdir -p " + config_file_name.replace(".txt", ""))
             config_file_copy = config_file_name.replace(".txt", "/run_" + str(job_number) + ".txt")
@@ -40,7 +40,7 @@ def main(executable, config_file_name):
                     print(line.replace("' ", "/run_" + str(job_number) + "'"), end="")
                 else:
                     print(line, end="")
-        config_file_copies = [config_file_name + "/run_" + str(job_number) for job_number in no_of_jobs]
+        config_file_copies = [config_file_name + "/run_" + str(job_number) for job_number in no_of_parallel_jobs]
         pool.starmap(run_single_simulation, [(executable, config_file_copy) for config_file_copy in config_file_copies])
         pool.close()
         # delete temporary copies of parent config file
