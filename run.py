@@ -31,7 +31,7 @@ def main(executable, config_file_name):
             pool = mp.Pool(no_of_cpus)
         for job_number in range(no_of_jobs):
             # create directory in which to store temporary copies of parent config file
-            os.system("mkdir " + config_file_name.replace(".txt", ""))
+            os.system("mkdir -p " + config_file_name.replace(".txt", ""))
             config_file_copy = config_file_name.replace(".txt", "/run_" + str(job_number) + ".txt")
             # create temporary copies of parent config file
             os.system("cp " + config_file_name + " " + config_file_copy)
