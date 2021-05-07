@@ -23,4 +23,5 @@ clean:
 	rm *.o *.mod
 
 move-executable:
-	mv *.exe ../../../..
+	mkdir -p ../../../../executables
+	mv *.exe ../../../../executables
