@@ -76,7 +76,7 @@ def main(config_file_name, power_spectrum_string):
                 pool.close()
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
             with open(output_directory + "/" + power_spectrum_string +
-                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", 'w') as power_spectrum_file:
+                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=',')
 
         plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
@@ -86,6 +86,7 @@ def main(config_file_name, power_spectrum_string):
     legend = plt.legend(loc='upper right', fontsize=10)
     legend.get_frame().set_edgecolor('k')
     legend.get_frame().set_lw(1.5)
+    plt.savefig(output_directory + "/" + power_spectrum_string + "_power_spectrum.pdf", bbox_inches='tight')
     plt.show()
 
 
