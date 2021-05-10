@@ -18,11 +18,16 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
     basic_config_data = config_data_getter.get_basic_data(config_file)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature) = (
-        basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5])
+    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature, no_of_jobs) = (
+        basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
+        basic_config_data[8])
     beta = 1.0 / temperature
     no_of_sites = integer_lattice_length ** 2
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
+
+    if no_of_jobs != 1:
+        print("ConfigurationError: Parse a configuration file whose value of no_of_jobs is equal to one.")
+        exit()
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':
         sample = sample_getter.get_potential(output_directory, temperature_directory, beta, no_of_sites)[
