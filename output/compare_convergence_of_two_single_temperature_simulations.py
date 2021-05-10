@@ -61,7 +61,7 @@ def main(config_file_1, config_file_2):
 
     beta = 1.0 / temperature_1
     no_of_sites = integer_lattice_length_1 ** 2
-    temperature_directory = f"/temp_eq_{temperature_1:.2f}"
+    temperature_directory = f"temp_eq_{temperature_1:.2f}"
 
     if algorithm_name_1 == "elementary-electrolyte" or algorithm_name_1 == "multivalued-electrolyte":
         sample_1 = sample_getter.get_potential(output_directory_1, temperature_directory, beta, no_of_sites)[

@@ -59,7 +59,7 @@ def main(config_file, power_spectrum_string):
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
-        temperature_directory = "/temp_eq_" + f"{temperature:.2f}"
+        temperature_directory = f"temp_eq_{temperature:.2f}"
 
         try:
             with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",

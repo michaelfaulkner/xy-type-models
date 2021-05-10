@@ -65,7 +65,7 @@ def main(config_file, summary_statistic_string):
     temperature = initial_temperature
     output_file = open(output_directory + "/" + summary_statistic_string + "_vs_temperature.dat", "w")
     if summary_statistic_string == "acceptance_rates":
-        temperature_directory = f"/temp_eq_{temperature:.2f}"
+        temperature_directory = f"temp_eq_{temperature:.2f}"
         if no_of_jobs == 1:
             acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
         else:
@@ -87,7 +87,7 @@ def main(config_file, summary_statistic_string):
                               "acceptance rate (field rotations)".ljust(40) +
                               "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
     elif summary_statistic_string == "no_of_events":
-        temperature_directory = f"/temp_eq_{temperature:.2f}"
+        temperature_directory = f"temp_eq_{temperature:.2f}"
         if no_of_jobs == 1:
             no_of_events = sample_getter.get_no_of_events(output_directory, temperature_directory)
         else:
@@ -108,7 +108,7 @@ def main(config_file, summary_statistic_string):
     for i in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         beta = 1.0 / temperature
-        temperature_directory = f"/temp_eq_{temperature:.2f}"
+        temperature_directory = f"temp_eq_{temperature:.2f}"
         if summary_statistic_string == "acceptance_rates" or summary_statistic_string == "no_of_events":
             get_sample_method = getattr(sample_getter, "get_" + summary_statistic_string)
             if no_of_jobs == 1:
@@ -117,7 +117,10 @@ def main(config_file, summary_statistic_string):
                 acceptance_rates_or_no_of_events = np.mean([
                     get_sample_method(output_directory + "/job_" + str(job_number + 1), temperature_directory)
                     for job_number in range(no_of_jobs)], axis=0)
-            if len(acceptance_rates_or_no_of_events) == 2:
+            if len(acceptance_rates_or_no_of_events) == 1:
+                output_file.write(f"{temperature:.2f}".ljust(15) +
+                                  f"{acceptance_rates_or_no_of_events[0]:.14e}" + "\n")
+            elif len(acceptance_rates_or_no_of_events) == 2:
                 output_file.write(f"{temperature:.2f}".ljust(15) +
                                   f"{acceptance_rates_or_no_of_events[0]:.14e}".ljust(40) +
                                   f"{acceptance_rates_or_no_of_events[1]:.14e}" + "\n")

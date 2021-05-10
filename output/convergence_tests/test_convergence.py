@@ -23,7 +23,7 @@ def main(config_file):
         basic_config_data[8])
     beta = 1.0 / temperature
     no_of_sites = integer_lattice_length ** 2
-    temperature_directory = f"/temp_eq_{temperature:.2f}"
+    temperature_directory = f"temp_eq_{temperature:.2f}"
 
     if no_of_jobs != 1:
         print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")

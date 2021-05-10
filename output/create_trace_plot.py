@@ -44,7 +44,7 @@ def main(config_file, summary_statistic_string):
 
     no_of_sites = integer_lattice_length ** 2
     beta = 1.0 / temperature
-    temperature_directory = f"/temp_eq_{temperature:.2f}"
+    temperature_directory = f"temp_eq_{temperature:.2f}"
     get_sample_method = getattr(sample_getter, "get_" + summary_statistic_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)
 
