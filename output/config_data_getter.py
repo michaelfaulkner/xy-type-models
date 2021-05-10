@@ -1,8 +1,8 @@
 import csv
 
 
-def get_basic_data(config_file_name):
-    with open(config_file_name, 'r') as config_file:
+def get_basic_data(config_file_location):
+    with open(config_file_location, 'r') as config_file:
         for row in csv.reader(config_file, delimiter='\t'):
             if 'algorithm_name' in row[0]:
                 algorithm_name = row[0].replace("'", "").replace("algorithm_name", "").replace(" ", "")

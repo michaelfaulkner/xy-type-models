@@ -15,9 +15,9 @@ sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
 
-def main(config_file_name):
+def main(config_file):
     matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
-    basic_config_data = config_data_getter.get_basic_data(config_file_name)
+    basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5])
     beta = 1.0 / temperature

@@ -11,7 +11,7 @@ sample_getter = importlib.import_module('sample_getter')
 markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 
 
-def main(config_file_name, summary_statistic_string):
+def main(config_file, summary_statistic_string):
     if (summary_statistic_string != 'acceptance_rates' and summary_statistic_string != 'no_of_events' and
             summary_statistic_string != 'helicity_modulus' and summary_statistic_string != 'magnetisation_norm' and
             summary_statistic_string != 'specific_heat' and summary_statistic_string != 'inverse_permittivity' and
@@ -22,7 +22,7 @@ def main(config_file_name, summary_statistic_string):
               'positional argument.')
         exit()
 
-    basic_config_data = config_data_getter.get_basic_data(config_file_name)
+    basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments) = (basic_config_data[0], basic_config_data[1],
                                                          basic_config_data[2], basic_config_data[3],

@@ -6,14 +6,14 @@ import sys
 import output.config_data_getter as config_data_getter
 
 
-def main(executable, config_file_name):
-    no_of_parallel_jobs = config_data_getter.get_basic_data(config_file_name)[8]
+def main(executable, config_file):
+    no_of_parallel_jobs = config_data_getter.get_basic_data(config_file)[8]
     if no_of_parallel_jobs < 1:
         print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
         exit()
     elif no_of_parallel_jobs == 1:
         print("Running a single Markov process.")
-        run_single_simulation(executable, config_file_name)
+        run_single_simulation(executable, config_file)
     else:
         no_of_cpus = mp.cpu_count()
         if no_of_parallel_jobs < no_of_cpus:
@@ -25,12 +25,12 @@ def main(executable, config_file_name):
                   no_of_cpus, "CPUs are available.")
             pool = mp.Pool(no_of_cpus)
         # create directory in which to store temporary copies of parent config file
-        os.system("mkdir -p " + config_file_name.replace(".txt", ""))
-        config_file_copies = [config_file_name.replace(".txt", "/job_" + str(job_number + 1) + ".txt") for job_number in
+        os.system("mkdir -p " + config_file.replace(".txt", ""))
+        config_file_copies = [config_file.replace(".txt", "/job_" + str(job_number + 1) + ".txt") for job_number in
                               range(no_of_parallel_jobs)]
         for job_number, config_file_copy in enumerate(config_file_copies):
             # create temporary copies of parent config file
-            os.system("cp " + config_file_name + " " + config_file_copy)
+            os.system("cp " + config_file + " " + config_file_copy)
             for line in fileinput.input(config_file_copy, inplace=True):
                 if 'output_directory' in line:
                     print(line.replace("' ", "/job_" + str(job_number + 1) + "'"), end="")
@@ -39,7 +39,7 @@ def main(executable, config_file_name):
         pool.starmap(run_single_simulation, [(executable, config_file_copy) for config_file_copy in config_file_copies])
         pool.close()
         # delete temporary copies of parent config file
-        os.system("rm -r " + config_file_name.replace(".txt", ""))
+        os.system("rm -r " + config_file.replace(".txt", ""))
 
 
 def print_start_message():
@@ -49,8 +49,8 @@ def print_start_message():
           "two-dimensional lattice (event-chain Monte Carlo only available for the XY and HXY models).'")
 
 
-def run_single_simulation(executable, config_file_name):
-    return os.system("./" + executable + " " + config_file_name)
+def run_single_simulation(executable, config_file):
+    return os.system("./" + executable + " " + config_file)
 
 
 if __name__ == "__main__":

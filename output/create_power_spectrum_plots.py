@@ -15,8 +15,8 @@ markov_chain_diagnostics = importlib.import_module('markov_chain_diagnostics')
 polyspectra = importlib.import_module('polyspectra')
 
 
-def main(config_file_name, power_spectrum_string):
-    basic_config_data = config_data_getter.get_basic_data(config_file_name)
+def main(config_file, power_spectrum_string):
+    basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
                                                                      basic_config_data[2], basic_config_data[3],
