@@ -69,18 +69,18 @@ def main(config_file, power_spectrum_string):
             else:
                 number_of_cpus = mp.cpu_count()
                 pool = mp.Pool(number_of_cpus)
-                power_spectra = pool.starmap(
-                    polyspectra.get_power_spectrum, [(power_spectrum_string, output_directory + "/job_" +
-                                                      str(job_number + 1), temperature_directory, beta, no_of_sites,
-                                                      no_of_equilibration_sweeps) for job_number in range(no_of_jobs)])
+                power_spectra = pool.starmap(polyspectra.get_power_spectrum,
+                                             [(power_spectrum_string, output_directory + "/job_" + str(job_number + 1),
+                                               temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
+                                              for job_number in range(no_of_jobs)])
                 pool.close()
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
             with open(output_directory + "/" + power_spectrum_string +
                       f"_power_spectrum_temp_eq_{temperature:.2f}.csv", "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=',')
 
-        plt.plot(power_spectrum[0][0:250], power_spectrum[1][0:250], color=next(colors),
-                 label=f'temperature = {temperature:.2f}')
+        plt.plot(power_spectrum[0], power_spectrum[1], color=next(colors), label=f'temperature = {temperature:.2f}')
+        plt.xlim(-0.01, 0.25)
         plt.tight_layout()
         temperature -= magnitude_of_temperature_increments
     legend = plt.legend(loc='upper right', fontsize=10)
