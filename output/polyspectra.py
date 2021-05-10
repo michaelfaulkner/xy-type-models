@@ -7,14 +7,14 @@ import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_modules = os.path.abspath(this_directory + '/../')
+directory_containing_modules = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_modules)
-sample_getter = importlib.import_module('sample_getter')
+sample_getter = importlib.import_module("sample_getter")
 
 
 def get_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                        no_of_equilibration_sweeps, sampling_frequency=None):
-    get_sample_method = getattr(sample_getter, 'get_' + power_spectrum_string)
+    get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
     if sampling_frequency is None:
         acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
