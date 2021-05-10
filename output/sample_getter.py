@@ -4,17 +4,17 @@ import numpy as np
 
 # all models
 def get_acceptance_rates(output_directory, temperature_directory):
-    return np.atleast_1d(np.loadtxt(output_directory + temperature_directory + '/acceptance_rates.csv', dtype=float,
-                                    delimiter=','))
+    return np.atleast_1d(np.loadtxt(output_directory + temperature_directory + "/acceptance_rates.csv", dtype=float,
+                                    delimiter=","))
 
 
 def get_no_of_events(output_directory, temperature_directory):
-    return np.atleast_1d(np.loadtxt(output_directory + temperature_directory + '/no_of_events.csv', dtype=float,
-                                    delimiter=','))
+    return np.atleast_1d(np.loadtxt(output_directory + temperature_directory + "/no_of_events.csv", dtype=float,
+                                    delimiter=","))
 
 
 def get_entire_sample(output_directory, temperature_directory):
-    return np.loadtxt(output_directory + temperature_directory + '/sample.csv', dtype=float, delimiter=',')
+    return np.loadtxt(output_directory + temperature_directory + "/sample.csv", dtype=float, delimiter=",")
 
 
 def get_potential(output_directory, temperature_directory, beta, no_of_sites):
@@ -45,6 +45,12 @@ def get_toroidal_vortex_polarisation(output_directory, temperature_directory, be
 def get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites):
     return np.linalg.norm(get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
                                                                      no_of_sites), axis=1) / no_of_sites
+
+
+def get_magnetization_phase(output_directory, temperature_directory, beta, no_of_sites):
+    return np.array([math.atan(observation[1] / observation[0]) for observation in
+                     get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
+                                                                no_of_sites)]) / no_of_sites
 
 
 def get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
