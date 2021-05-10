@@ -51,6 +51,10 @@ def main(config_file, power_spectrum_string):
     plt.ylabel(r"$ S_X \left( \omega \right)$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
+    if no_of_jobs > 1:
+        no_of_cpus = mp.cpu_count()
+        pool = mp.Pool(no_of_cpus)
+
     temperature = final_temperature
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     for i in range(no_of_temperature_increments + 1):
@@ -58,8 +62,8 @@ def main(config_file, power_spectrum_string):
         temperature_directory = "/temp_eq_" + f"{temperature:.2f}"
 
         try:
-            with open(output_directory + "/" + power_spectrum_string +
-                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", "r") as power_spectrum_file:
+            with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
+                      "r") as power_spectrum_file:
                 power_spectrum = np.loadtxt(power_spectrum_file, dtype=float, delimiter=",")
         except IOError:
             if no_of_jobs == 1:
@@ -67,26 +71,25 @@ def main(config_file, power_spectrum_string):
                                                                 temperature_directory, beta, no_of_sites,
                                                                 no_of_equilibration_sweeps)
             else:
-                number_of_cpus = mp.cpu_count()
-                pool = mp.Pool(number_of_cpus)
                 power_spectra = pool.starmap(polyspectra.get_power_spectrum,
-                                             [(power_spectrum_string, output_directory + "/job_" + str(job_number + 1),
+                                             [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
                                                temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
                                               for job_number in range(no_of_jobs)])
-                pool.close()
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
-            with open(output_directory + "/" + power_spectrum_string +
-                      f"_power_spectrum_temp_eq_{temperature:.2f}.csv", "w") as power_spectrum_file:
+            with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
+                      "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
 
         plt.plot(power_spectrum[0], power_spectrum[1], color=next(colors), label=f"temperature = {temperature:.2f}")
         plt.xlim(-0.002, 0.05)
         plt.tight_layout()
         temperature -= magnitude_of_temperature_increments
+
+    pool.close()
     legend = plt.legend(loc="upper right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
-    plt.savefig(output_directory + "/" + power_spectrum_string + "_power_spectrum.pdf", bbox_inches="tight")
+    plt.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
     plt.show()
 
 
