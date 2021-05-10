@@ -18,22 +18,30 @@ def main(config_file_1, config_file_2):
 
     basic_config_data_1 = config_data_getter.get_basic_data(config_file_1)
     (algorithm_name_1, output_directory_1, integer_lattice_length_1, no_of_equilibration_sweeps_1, temperature_1,
-     no_of_temperature_increments_1) = (
-        basic_config_data_1[0], basic_config_data_1[1], basic_config_data_1[2],
-        basic_config_data_1[3], basic_config_data_1[5], basic_config_data_1[7])
+     no_of_temperature_increments_1, no_of_jobs_1) = (
+        basic_config_data_1[0], basic_config_data_1[1], basic_config_data_1[2], basic_config_data_1[3],
+        basic_config_data_1[5], basic_config_data_1[7], basic_config_data_1[8])
     if no_of_temperature_increments_1 != 0:
         print('ConfigurationError: in the first configuration file, the value of the no_of_temperature_increments '
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')
         exit()
+    if no_of_jobs_1 != 1:
+        print("ConfigurationError: In the first configuration file, the value of no_of_jobs is not equal to one. Parse "
+              "configuration files whose value of no_of_jobs is equal to one.")
+        exit()
 
     basic_config_data_2 = config_data_getter.get_basic_data(config_file_2)
     (algorithm_name_2, output_directory_2, integer_lattice_length_2, no_of_equilibration_sweeps_2, temperature_2,
-     no_of_temperature_increments_2) = (
-        basic_config_data_2[0], basic_config_data_2[1], basic_config_data_2[2],
-        basic_config_data_2[3], basic_config_data_2[5], basic_config_data_2[7])
+     no_of_temperature_increments_2, no_of_jobs_2) = (
+        basic_config_data_2[0], basic_config_data_2[1], basic_config_data_2[2], basic_config_data_2[3],
+        basic_config_data_2[5], basic_config_data_2[7], basic_config_data_2[8])
     if no_of_temperature_increments_2 != 0:
         print('ConfigurationError: in the second configuration file, the value of the no_of_temperature_increments '
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')
+        exit()
+    if no_of_jobs_2 != 1:
+        print("ConfigurationError: In the second configuration file, the value of no_of_jobs is not equal to one. Parse"
+              " configuration files whose value of no_of_jobs is equal to one.")
         exit()
 
     if (((algorithm_name_1 == 'hxy-ecmc' or algorithm_name_1 == 'hxy-metropolis') and not
