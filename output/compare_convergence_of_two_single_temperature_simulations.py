@@ -26,7 +26,7 @@ def main(config_file_1, config_file_2):
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')
         exit()
     if no_of_jobs_1 != 1:
-        print("ConfigurationError: In the first configuration file, the value of no_of_jobs is not equal to one. Parse "
+        print("ConfigurationError: In the first configuration file, the value of no_of_jobs is not equal to one. Give "
               "configuration files whose value of no_of_jobs is equal to one.")
         exit()
 
@@ -40,7 +40,7 @@ def main(config_file_1, config_file_2):
               'does not equal 0. In order to compare to single-temperature simulations, this is required.')
         exit()
     if no_of_jobs_2 != 1:
-        print("ConfigurationError: In the second configuration file, the value of no_of_jobs is not equal to one. Parse"
+        print("ConfigurationError: In the second configuration file, the value of no_of_jobs is not equal to one. Give"
               " configuration files whose value of no_of_jobs is equal to one.")
         exit()
 

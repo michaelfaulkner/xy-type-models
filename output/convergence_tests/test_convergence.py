@@ -26,7 +26,7 @@ def main(config_file):
     temperature_directory = '/temp_eq_' + str(format(temperature, '.2f'))
 
     if no_of_jobs != 1:
-        print("ConfigurationError: Parse a configuration file whose value of no_of_jobs is equal to one.")
+        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
         exit()
 
     if algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte':

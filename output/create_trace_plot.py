@@ -26,7 +26,7 @@ def main(config_file, summary_statistic_string):
         basic_config_data[8])
 
     if no_of_jobs != 1:
-        print("ConfigurationError: Parse a configuration file whose value of no_of_jobs is equal to one.")
+        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
         exit()
     if ((algorithm_name == 'elementary-electrolyte' or algorithm_name == 'multivalued-electrolyte') and
             (summary_statistic_string == 'magnetisation_norm' or summary_statistic_string == 'helicity_modulus')):

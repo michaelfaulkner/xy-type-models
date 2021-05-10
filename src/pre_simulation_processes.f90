@@ -5,9 +5,9 @@ character(100) :: config_file
 integer :: seed_size
 integer, allocatable :: seed(:)
 
-! verify that the something has been parsed to the exectuable
+! verify that the something has been passed to the exectuable
 if (command_argument_count() /= 1) then
-    write(6, '(A)') 'Error: parse configuration file to executable'
+    write(6, '(A)') 'Error: pass a configuration file to executable'
     stop
 end if
 
