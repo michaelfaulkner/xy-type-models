@@ -80,7 +80,7 @@ def main(config_file, power_spectrum_string):
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=',')
 
         plt.plot(power_spectrum[0], power_spectrum[1], color=next(colors), label=f'temperature = {temperature:.2f}')
-        plt.xlim(-0.01, 0.25)
+        plt.xlim(-0.002, 0.05)
         plt.tight_layout()
         temperature -= magnitude_of_temperature_increments
     legend = plt.legend(loc='upper right', fontsize=10)
