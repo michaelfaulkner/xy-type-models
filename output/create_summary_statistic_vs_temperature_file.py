@@ -27,7 +27,7 @@ def main(config_file, summary_statistic_string):
     basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = (
-        basic_config_data[0], basic_config_data[1],basic_config_data[2], basic_config_data[3], basic_config_data[5],
+        basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
         basic_config_data[6], basic_config_data[7], basic_config_data[8])
 
     if (algorithm_name == 'xy-ecmc' or algorithm_name == 'hxy-ecmc') and summary_statistic_string == 'acceptance_rates':

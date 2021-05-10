@@ -12,4 +12,4 @@
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 .false.                                 calculate_external_minimising_twist_field
-8                                      no_of_parallel_jobs
+32                                      no_of_parallel_jobs
