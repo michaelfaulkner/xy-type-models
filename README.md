@@ -22,19 +22,17 @@ For an analysis of the similarities between the HXY model and two-dimensional la
 
 ## Installation
 
-To install xy-type-models, clone this repository.
+To install xy-type-models, clone this repository, navigate to your xy-type-models directory and enter `make`. This 
+creates the Fortran executables, which are stored in a new directory called 'executables'. The Fortran executables 
+simulate the Markov processes.
 
-The code that simulates the Markov processes was written in Fortran 90. The code that analyses the resultant samples 
-(i.e., that contained in the [`output`](output) directory) was written in Python and is likely to support any Python 
-version >= 3.6 (though we need to check this). The Fortran / Python code has been tested with GNU Fortran (Homebrew GCC 
-10.2.0_4) 10.2.0 / CPython.
-
-The sample-analysis code depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](
-https://matplotlib.org) and [`rpy2`](https://rpy2.github.io). To manage external Python packages, we use [conda](
-https://docs.conda.io/projects/conda/en/latest/) environments via the [miniconda distribution](
+The code that analyses the resultant samples (i.e., that contained in the [`output`](output) directory) was written in 
+Python and depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](https://matplotlib.org), 
+[`rpy2`](https://rpy2.github.io) or [`scipy`](https://www.scipy.org). To manage external Python packages, we use 
+[conda](https://docs.conda.io/projects/conda/en/latest/) environments via the [miniconda distribution](
 https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](https://rpy2.github.io) to be buggy when 
 installed via conda. Instead, we `pip install rpy2` from within the project's conda environment (after having `conda 
-install`ed [`numpy`](https://numpy.org) and [`matplotlib`](https://matplotlib.org)).
+install`ed [`numpy`](https://numpy.org), [`matplotlib`](https://matplotlib.org) and [`scipy`](https://www.scipy.org)).
 
 [`markov_chain_diagnostics.py`](output/markov_chain_diagnostics.py) depends on the R packages [`LaplacesDemon`](
 https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
@@ -42,25 +40,25 @@ https://cran.r-project.org/web/packages/mcmcse/). To install these R packages: d
 https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) 
 and then run `R CMD INSTALL <binary location>` in your terminal.
 
-## Implementation
+The Fortran code was written in Fortran 90. The Python code is likely to support any Python version >= 3.6 (though we 
+need to check this). We tested the Fortran / Python code with GNU Fortran (Homebrew GCC 10.2.0_4) 10.2.0 / CPython.
 
-To create the Fortran executables, open your terminal, navigate to your xy-type-models directory and enter `make`. This 
-command creates all six executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, 
-`hxy_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and `multivalued_electrolyte_algorithm.exe`) by 
-running six different makefiles.
+## Implementation 
 
-Each makefile is located in the youngest child directory corresponding to the relevant 
-algorithm, e.g., the [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the 
-xy-ecmc directory](src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to your 
-xy-type-models directory and enter `make xy-ecmc`, `make xy-metropolis`, `make hxy-ecmc`, `make hxy-metropolis`, 
-`make elementary-electrolyte` or `make multivalued-electrolyte`. This will make the corresponding executable.
+The user interface of xy-type-models consists of the [`run.py`](run.py) script and a configuration file. The [`run.py`](
+run.py) script expects the path to the configuration file as the first positional argument. Configuration files should 
+be located in the [`config_files`](config_files) directory. 
 
-The user interface of xy-type-models consists of an executable and a configuration file. Each executable expects the 
-path to the configuration file as the first positional argument. Configuration files should be located in the [
-`config_files`](config_files) directory. To run an executable, stay in your xy-type-models directory and enter, e.g., 
-`./xy_ecmc_algorithm <configuration file>`. The generated sample data will appear in the [`output`](output) directory 
-(at a location given in the configuration file). Sample analysis can then be performed via scripts contained in the [
-`output`](output) directory.
+To run xy-type-models, open your terminal, navigate to the top directory and enter `python run.py 
+<configuration file>`. The generated sample data will appear in the [`output`](output) directory (at a location given 
+in the configuration file). Sample analysis can then be performed via the Python scripts in the [`output`](output) 
+directory.
+
+## Configuration files
+
+Configuration files are located in the [`config_files`](config_files) directory. 
+
+Add a description of the config files, inc the restricted order of elements inside them.
 
 ## Convergence tests
 
@@ -95,3 +93,15 @@ Metropolis-Hastings/event-chain simulation. The slow functions would then be rew
 equivalent C) code of xy-type-models. We would then benchmark super-aLby against xy-type-models; if the total CPU times 
 prove to be similar, this would provide evidence for Fortran/C code contained within a mediator-based, object-oriented 
 Python structure being the optimal approach to coding in statistical physics.
+
+## Makefiles
+
+The make command (when run in the top directory) creates all six executables (`xy_ecmc_algorithm.exe`, 
+`xy_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, 
+`elementary_electrolyte_algorithm.exe` and `multivalued_electrolyte_algorithm.exe`) by running six different makefiles.
+
+Each makefile is located in the youngest child directory corresponding to the relevant 
+algorithm, e.g., the [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the 
+xy-ecmc directory](src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to your 
+xy-type-models directory and enter `make xy-ecmc`, `make xy-metropolis`, `make hxy-ecmc`, `make hxy-metropolis`, 
+`make elementary-electrolyte` or `make multivalued-electrolyte`. This will make the corresponding executable.
