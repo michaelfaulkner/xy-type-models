@@ -1,5 +1,5 @@
 'hxy-metropolis'                                    algorithm_name
-'output/polyspectra/hxy_metropolis/acceptance_0.44' output_directory
+'output/polyspectra/hxy_metrop_accept_0_point_44'   output_directory
 32                                                  integer_lattice_length
 10000                                               no_of_equilibration_sweeps
 100000                                              no_of_observations
