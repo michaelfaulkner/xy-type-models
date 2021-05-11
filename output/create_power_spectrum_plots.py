@@ -80,7 +80,8 @@ def main(config_file, power_spectrum_string):
                       "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
 
-        plt.plot(power_spectrum[0], power_spectrum[1], color=next(colors), label=f"temperature = {temperature:.2f}")
+        plt.plot(power_spectrum[0, 1:], power_spectrum[1, 1:], color=next(colors),
+                 label=f"temperature = {temperature:.2f}")
         plt.xlim(-0.002, 0.05)
         plt.tight_layout()
         temperature -= magnitude_of_temperature_increments
