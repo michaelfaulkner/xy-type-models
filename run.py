@@ -42,29 +42,29 @@ def main(config_file):
     else:
         no_of_cpus = mp.cpu_count()
         if no_of_parallel_jobs < no_of_cpus:
-            print("Running", no_of_parallel_jobs, "Markov processes in parallel on", no_of_parallel_jobs, "CPUs, where",
-                  no_of_cpus, "CPUs are available.")
+            print(f"Running {no_of_parallel_jobs} Markov processes in parallel on {no_of_parallel_jobs} CPUs, where",
+                  f"{no_of_cpus} CPUs are available.")
             pool = mp.Pool(no_of_parallel_jobs)
         else:
-            print("Running", no_of_parallel_jobs, "Markov processes in parallel on", no_of_cpus, "CPUs, where",
-                  no_of_cpus, "CPUs are available.")
+            print(f"Running {no_of_parallel_jobs} Markov processes in parallel on {no_of_cpus} CPUs, where "
+                  f"{no_of_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
         # create directory in which to store temporary copies of parent config file
-        os.system("mkdir -p " + config_file.replace(".txt", ""))
-        config_file_copies = [config_file.replace(".txt", "/job_" + str(job_number + 1) + ".txt") for job_number in
+        os.system(f"mkdir -p {config_file.replace('.txt', '')}")
+        config_file_copies = [config_file.replace(".txt", f"/job_{job_number + 1}.txt") for job_number in
                               range(no_of_parallel_jobs)]
         for job_number, config_file_copy in enumerate(config_file_copies):
             # create temporary copies of parent config file
-            os.system("cp " + config_file + " " + config_file_copy)
+            os.system(f"cp {config_file} {config_file_copy}")
             for line in fileinput.input(config_file_copy, inplace=True):
-                if 'output_directory' in line:
-                    print(line.replace("' ", "/job_" + str(job_number + 1) + "'"), end="")
+                if "output_directory" in line:
+                    print(line.replace("' ", f"/job_{job_number + 1}'"), end="")
                 else:
                     print(line, end="")
         pool.starmap(run_single_simulation, [(executable, config_file_copy) for config_file_copy in config_file_copies])
         pool.close()
         # delete temporary copies of parent config file
-        os.system("rm -r " + config_file.replace(".txt", ""))
+        os.system(f"rm -r {config_file.replace('.txt', '')}")
 
 
 def print_start_message():
@@ -76,7 +76,7 @@ def print_start_message():
 
 
 def run_single_simulation(executable, config_file):
-    return os.system("./" + executable + " " + config_file)
+    return os.system(f"./{executable} {config_file}")
 
 
 if __name__ == "__main__":
