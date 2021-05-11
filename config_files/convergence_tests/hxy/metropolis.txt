@@ -8,7 +8,7 @@
 0                                               no_of_temperature_increments
 1.0d0   	                                    width_of_proposal_interval (initial)
 0.44d0		                                    target_acceptance_rate_of_field_rotations
-0                                               cut-off of 2nd deriv. of potential
+0                                               vacuum_permittivity_sum_cutoff
 .false.                                         randomise_initial_field_configuration
 .false.                                         use_external_global_moves
 .false.                                         calculate_external_minimising_twist_field
