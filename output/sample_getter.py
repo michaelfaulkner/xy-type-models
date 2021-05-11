@@ -50,7 +50,7 @@ def get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_
 def get_magnetisation_phase(output_directory, temperature_directory, beta, no_of_sites):
     return np.array([math.atan(observation[1] / observation[0]) for observation in
                      get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
-                                                                no_of_sites)]) / no_of_sites
+                                                                no_of_sites)])
 
 
 def get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
