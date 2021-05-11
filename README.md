@@ -4,6 +4,7 @@
 
 xy-type-models is an open-source, hybrid Fortran-Python application that implements the event-chain and 
 Metropolis-Hastings Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
+
 Event-chain and Metropolis-Hastings simulation is available for the XY and harmonic XY (HXY) spin models. 
 Metropolis-Hastings simulation is available for the Maggs lattice-field electrolyte model in the grand canonical 
 ensemble (for particles). Each model is defined on a two-dimensional square lattice. 
@@ -22,9 +23,9 @@ For an analysis of the similarities between the HXY model and two-dimensional la
 
 ## Installation
 
-To install xy-type-models, clone this repository, navigate to your xy-type-models directory and enter `make`. This 
-creates the Fortran executables, which are stored in a new directory called 'executables'. The Fortran executables 
-simulate the Markov processes.
+To install xy-type-models, clone this repository, navigate to the top xy-type-models directory and run `make`. This 
+creates the Fortran executables, which are stored in a new directory called `executables`. The Fortran executables 
+simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) directory.
 
 The code that analyses the resultant samples (i.e., that contained in the [`output`](output) directory) was written in 
 Python and depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](https://matplotlib.org), 
@@ -96,12 +97,13 @@ Python structure being the optimal approach to coding in statistical physics.
 
 ## Makefiles
 
-The make command (when run in the top directory) creates all six executables (`xy_ecmc_algorithm.exe`, 
-`xy_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, 
-`elementary_electrolyte_algorithm.exe` and `multivalued_electrolyte_algorithm.exe`) by running six different makefiles.
+In the top directory, the `make` command runs the [`makefile`](makefile) contained there. This creates all six 
+executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, 
+`hxy_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and `multivalued_electrolyte_algorithm.exe`) by 
+running six different makefiles.
 
-Each makefile is located in the youngest child directory corresponding to the relevant 
-algorithm, e.g., the [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the 
-xy-ecmc directory](src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to your 
-xy-type-models directory and enter `make xy-ecmc`, `make xy-metropolis`, `make hxy-ecmc`, `make hxy-metropolis`, 
+Each makefile is located in the youngest child directory corresponding to the relevant algorithm, e.g., the 
+[`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the xy-ecmc directory](
+src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to the top xy-type-models 
+directory and enter `make xy-ecmc`, `make xy-metropolis`, `make hxy-ecmc`, `make hxy-metropolis`, 
 `make elementary-electrolyte` or `make multivalued-electrolyte`. This will make the corresponding executable.
