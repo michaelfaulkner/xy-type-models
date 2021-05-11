@@ -55,7 +55,7 @@ def main(config_file, power_spectrum_string):
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
 
-    temperature = final_temperature
+    temperature = initial_temperature
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
@@ -84,7 +84,7 @@ def main(config_file, power_spectrum_string):
                  label=f"temperature = {temperature:.2f}")
         plt.xlim(-0.002, 0.05)
         plt.tight_layout()
-        temperature -= magnitude_of_temperature_increments
+        temperature += magnitude_of_temperature_increments
 
     pool.close()
     legend = plt.legend(loc="upper right", fontsize=10)
