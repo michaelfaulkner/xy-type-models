@@ -16,6 +16,8 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
                        no_of_equilibration_sweeps, sampling_frequency=None):
     get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
+    # the following line subtracts the Gaussian contribution ot the power spectrum,
+    # though numerical experiments seem to indicate it's redundant
     sample -= np.mean(sample, axis=0)
     if sampling_frequency is None:
         acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
