@@ -17,15 +17,18 @@ For an introduction to the three-dimensional Maggs lattice-field electrolyte mod
 particles), see [\[Maggs2002\]](https://doi.org/10.1103/PhysRevLett.88.196402). For an introduction to both the 
 two-dimensional lattice-field electrolyte model in the grand canonical ensemble (for particles) and its equivalence 
 with the two-dimensional Villain model of magnetism ([\[Villain1975\]](
-https://doi.org/10.1051/jphys:01975003606058100)), see [\[Faulkner2015\]](https://doi.org/10.1103/PhysRevB.91.155412). 
-For an analysis of the similarities between the HXY model and two-dimensional lattice-field electrolyte, see 
-[\[Faulkner2017\]](https://doi.org/10.1088/1361-648X/aa523f).
+https://doi.org/10.1051/jphys:01975003606058100)), see [\[Faulkner2015\]](https://doi.org/10.1103/PhysRevB.91.155412) 
+(Section II and Appendices B and C are particularly useful; the paper itself demonstrates the power of the model in 
+characterising the nonergodic phase of the Berezinskii-Kosterlitz-Thouless transition). For an analysis of the 
+similarities between the HXY model and two-dimensional lattice-field electrolyte, see [\[Faulkner2017\]](
+https://doi.org/10.1088/1361-648X/aa523f).
+
 
 ## Installation
 
-To install xy-type-models, clone this repository, navigate to the top xy-type-models directory and run `make`. This 
-creates the Fortran executables, which are stored in a new directory called `executables`. The Fortran executables 
-simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) directory.
+To install xy-type-models, clone this repository, navigate to the top xy-type-models directory and run `make`. The 
+`make` command creates the Fortran executables, and stores them in a new directory called `executables`. The Fortran 
+executables simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) directory.
 
 The code that analyses the resultant samples (i.e., that contained in the [`output`](output) directory) was written in 
 Python and depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](https://matplotlib.org), 
@@ -44,6 +47,7 @@ and then run `R CMD INSTALL <binary location>` in your terminal.
 The Fortran code was written in Fortran 90. The Python code is likely to support any Python version >= 3.6 (though we 
 need to check this). We tested the Fortran / Python code with GNU Fortran (Homebrew GCC 10.2.0_4) 10.2.0 / CPython.
 
+
 ## Implementation 
 
 The user interface of xy-type-models consists of the [`run.py`](run.py) script and a configuration file. The [`run.py`](
@@ -55,18 +59,130 @@ To run xy-type-models, open your terminal, navigate to the top directory and ent
 in the configuration file). Sample analysis can then be performed via the Python scripts in the [`output`](output) 
 directory.
 
+
 ## Configuration files
 
-Configuration files are located in the [`config_files`](config_files) directory. 
+Configuration files are located in the [`config_files`](config_files) directory. Their contents must follow the 
+strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form and 
+be followed with `d0`. All strings must be enclosed between two apostrophes, e.g., `'string'`. The value of  
+`output_directory` must start with `'output/`, i.e., the entire value must be of the form `'output/rest_of_string'`. 
+For the value of `output_directory`, refrain from giving long strings, as this can lead to Fortran runtime errors.
 
-Add a description of the config files, inc the restricted order of elements inside them.
+### hxy-ecmc configuration file (an example)
+
+```
+'hxy-ecmc'                              algorithm_name
+'output/convergence_tests/hxy/ecmc'     output_directory
+8                                       integer_lattice_length
+100                                     no_of_equilibration_sweeps
+40000                                   no_of_observations
+1.3d0                                   initial_temperature
+1.3d0                                   final_temperature
+0                                       no_of_temperature_increments
+0                                       vacuum_permittivity_sum_cutoff
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+.false.                                 calculate_external_minimising_twist_field
+1                                       no_of_parallel_jobs
+```
+
+### hxy-metropolis configuration file (an example)
+
+```
+'hxy-metropolis'                                algorithm_name
+'output/convergence_tests/hxy/metropolis'       output_directory
+8                                               integer_lattice_length
+10000                                           no_of_equilibration_sweeps
+100000                                          no_of_observations
+1.3d0                                           initial_temperature
+1.3d0                                           final_temperature
+0                                               no_of_temperature_increments
+1.0d0   	                                    width_of_proposal_interval (initial)
+0.44d0		                                    target_acceptance_rate_of_field_rotations
+0                                               vacuum_permittivity_sum_cutoff
+.false.                                         randomise_initial_field_configuration
+.false.                                         use_external_global_moves
+.false.                                         calculate_external_minimising_twist_field
+1                                               no_of_parallel_jobs
+```
+
+### xy-ecmc configuration file (an example)
+
+```
+'xy-ecmc'                               algorithm_name
+'output/convergence_tests/xy/ecmc'      output_directory
+8                                       integer_lattice_length
+100                                     no_of_equilibration_sweeps
+40000                                   no_of_observations
+0.8d0                                   initial_temperature
+0.8d0                                   final_temperature
+0                                       no_of_temperature_increments
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+1                                       no_of_parallel_jobs
+```
+
+### xy-metropolis configuration file (an example)
+
+```
+'xy-metropolis'                             algorithm_name
+'output/convergence_tests/xy/metropolis'    output_directory
+8                                           integer_lattice_length
+10000                                       no_of_equilibration_sweeps
+100000                                      no_of_observations
+0.8d0                                       initial_temperature
+0.8d0                                       final_temperature
+0                                           no_of_temperature_increments
+1.0d0    	                                width_of_proposal_interval (initial)
+0.44d0		                                target_acceptance_rate_of_field_rotations
+.false.                                     randomise_initial_field_configuration
+.false.                                     use_external_global_moves
+1                                           no_of_parallel_jobs
+```
+
+### elementary-electrolyte configuration file (an example)
+
+```
+'elementary-electrolyte'                            algorithm_name
+'output/convergence_tests/electrolyte/elementary'   output_directory
+8                  	                                integer_lattice_length
+10000                	                            no_of_equilibration_sweeps
+100000	                                            no_of_observations
+1.5d0                 	                            initial_temperature
+1.5d0              	                                final_temperature
+0			                                        no_of_temperature_increments
+1.0d0       	                                    width_of_proposal_interval (initial)
+0.44d0  		                                    target_acceptance_rate_of_field_rotations
+0.66666666666666d0                                  charge_hop_proportion
+.false.                                             use_external_global_moves
+1                                                   no_of_parallel_jobs
+```
+
+### multivalued-electrolyte configuration file (an example)
+
+```
+'multivalued-electrolyte'                           algorithm_name
+'output/convergence_tests/electrolyte/multivalued'  output_directory
+8                  	                                integer_lattice_length
+10000                	                            no_of_equilibration_sweeps
+100000	                                            no_of_observations
+1.5d0                 	                            initial_temperature
+1.5d0              	                                final_temperature
+0			                                        no_of_temperature_increments
+1.0d0       	                                    width_of_proposal_interval (initial)
+0.44d0  		                                    target_acceptance_rate_of_field_rotations
+0.66666666666666d0                                  charge_hop_proportion
+.false.                                             use_external_global_moves
+1                                                   no_of_parallel_jobs
+```
+
 
 ## Convergence tests
 
 In order to test the convergence of our code, we run (for example) 
 `python run.py config_files/convergence_tests/xy/ecmc.txt` followed by 
 `python output/convergence_tests/test_convergence.py config_files/convergence_tests/xy/ecmc.txt` (and similarly for the 
-other five executables). 
+other five algorithms). 
 
 This computes the effective sample size of the sample generated by the Markov process and produces a plot of the 
 cumulative distribution functions of both a reference sample and the generated sample. If the two cumulative 
@@ -95,14 +211,16 @@ therefore highly modular and beautiful. This would require additional super-aLby
 Metropolis-Hastings/event-chain simulation. The slow functions would then be rewritten using the Fortran (or perhaps 
 equivalent C) code of xy-type-models. We would then benchmark super-aLby against xy-type-models; if the total CPU times 
 prove to be similar, this would provide evidence for Fortran/C code contained within a mediator-based, object-oriented 
-Python structure being the optimal approach to coding in statistical physics.
+Python structure being the optimal approach to coding in statistical physics (since Python is relatively easy to read 
+and write and contains a lot of functionality).
+
 
 ## Makefiles
 
-In the top directory, the `make` command runs the [`makefile`](makefile) contained there. This creates all six 
-executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, 
-`hxy_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and `multivalued_electrolyte_algorithm.exe`) by 
-running six different makefiles.
+In the top directory, the `make` command runs the [`makefile`](makefile) contained there. By running six different 
+makefiles, this creates all six executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, 
+`hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and 
+`multivalued_electrolyte_algorithm.exe`) and stores them in a new directory called `executables`.
 
 Each makefile is located in the youngest child directory corresponding to the relevant algorithm, e.g., the 
 [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the xy-ecmc directory](
