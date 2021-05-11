@@ -2,8 +2,8 @@
 
 # xy-type-models
 
-xy-type-models is an open-source Fortran/Python application that implements the event-chain and Metropolis-Hastings 
-Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
+xy-type-models is an open-source, hybrid Fortran-Python application that implements the event-chain and 
+Metropolis-Hastings Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
 Event-chain and Metropolis-Hastings simulation is available for the XY and harmonic XY (HXY) spin models. 
 Metropolis-Hastings simulation is available for the Maggs lattice-field electrolyte model in the grand canonical 
 ensemble (for particles). Each model is defined on a two-dimensional square lattice. 

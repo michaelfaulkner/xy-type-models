@@ -69,10 +69,10 @@ def main(config_file):
 
 def print_start_message():
     """Print the start message."""
-    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a Fortran/Python "
-          f"application for event-chain/Metropolis Monte Carlo simulation of the XY model, harmonic XY (HXY) model and "
-          f"Maggs lattice-field electrolyte model on a square, two-dimensional lattice (event-chain Monte Carlo only "
-          f"available for the XY and HXY models).'")
+    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a hybrid "
+          f"Fortran-Python application for event-chain/Metropolis Monte Carlo simulation of the XY model, harmonic XY "
+          f"model and Maggs lattice-field electrolyte model on a square, two-dimensional lattice (event-chain Monte "
+          f"Carlo only available for the XY models).'")
 
 
 def run_single_simulation(executable, config_file):
