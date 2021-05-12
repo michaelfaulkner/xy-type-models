@@ -9,30 +9,7 @@ import output.config_data_getter as config_data_getter
 def main(config_file):
     basic_config_data = config_data_getter.get_basic_data(config_file)
     algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[8]
-
-    if algorithm_name == "hxy-ecmc":
-        executable = "executables/hxy_ecmc_algorithm.exe"
-    elif algorithm_name == "hxy-metropolis":
-        executable = "executables/hxy_metropolis_algorithm.exe"
-    elif algorithm_name == "xy-ecmc":
-        executable = "executables/xy_ecmc_algorithm.exe"
-    elif algorithm_name == "xy-metropolis":
-        executable = "executables/xy_metropolis_algorithm.exe"
-    elif algorithm_name == "elementary-electrolyte":
-        executable = "executables/elementary_electrolyte_algorithm.exe"
-    elif algorithm_name == "multivalued-electrolyte":
-        executable = "executables/multivalued_electrolyte_algorithm.exe"
-    else:
-        executable = None
-        print("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, xy-ecmc, "
-              "xy-metropolis, elementary-electrolyte or multivalued-electrolyte.")
-        exit()
-
-    if not os.path.isfile(executable):
-        print(f"Executable for the {algorithm_name} algorithm does not exist. Run 'make' or 'make {algorithm_name}' "
-              f"then try again.")
-        exit()
-
+    executable = get_executable(algorithm_name)
     if no_of_parallel_jobs < 1:
         print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
         exit()
@@ -73,6 +50,31 @@ def print_start_message():
           f"Fortran-Python application for event-chain/Metropolis Monte Carlo simulation of the XY model, harmonic XY "
           f"model and Maggs lattice-field electrolyte model on a square, two-dimensional lattice (event-chain Monte "
           f"Carlo only available for the XY models).'")
+
+
+def get_executable(algorithm_name):
+    if algorithm_name == "hxy-ecmc":
+        executable = "executables/hxy_ecmc_algorithm.exe"
+    elif algorithm_name == "hxy-metropolis":
+        executable = "executables/hxy_metropolis_algorithm.exe"
+    elif algorithm_name == "xy-ecmc":
+        executable = "executables/xy_ecmc_algorithm.exe"
+    elif algorithm_name == "xy-metropolis":
+        executable = "executables/xy_metropolis_algorithm.exe"
+    elif algorithm_name == "elementary-electrolyte":
+        executable = "executables/elementary_electrolyte_algorithm.exe"
+    elif algorithm_name == "multivalued-electrolyte":
+        executable = "executables/multivalued_electrolyte_algorithm.exe"
+    else:
+        executable = None
+        print("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, xy-ecmc, "
+              "xy-metropolis, elementary-electrolyte or multivalued-electrolyte.")
+        exit()
+    if not os.path.isfile(executable):
+        print(f"Executable for the {algorithm_name} algorithm does not exist. Run 'make' or 'make {algorithm_name}' "
+              f"then try again.")
+        exit()
+    return executable
 
 
 def run_single_simulation(executable, config_file):
