@@ -26,7 +26,7 @@ def main(config_file):
             print(f"Running {no_of_parallel_jobs} Markov processes in parallel on {no_of_cpus} CPUs, where "
                   f"{no_of_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
-        # create directory in which to store temporary copies of parent config file
+        # create directory in which to store temporary copies of the parent config file
         os.system(f"mkdir -p {config_file.replace('.txt', '')}")
         config_file_copies = [config_file.replace(".txt", f"/job_{job_number + 1}.txt") for job_number in
                               range(no_of_parallel_jobs)]
