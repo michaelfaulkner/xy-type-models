@@ -97,8 +97,8 @@ For the value of `output_directory`, refrain from giving long strings, as this c
 1.3d0                                           initial_temperature
 1.3d0                                           final_temperature
 0                                               no_of_temperature_increments
-1.0d0   	                                    width_of_proposal_interval (initial)
-0.44d0		                                    target_acceptance_rate_of_field_rotations
+1.0d0                                           width_of_proposal_interval (initial)
+0.44d0                                          target_acceptance_rate_of_field_rotations
 0                                               vacuum_permittivity_sum_cutoff
 .false.                                         randomise_initial_field_configuration
 .false.                                         use_external_global_moves
@@ -133,8 +133,8 @@ For the value of `output_directory`, refrain from giving long strings, as this c
 0.8d0                                       initial_temperature
 0.8d0                                       final_temperature
 0                                           no_of_temperature_increments
-1.0d0    	                                width_of_proposal_interval (initial)
-0.44d0		                                target_acceptance_rate_of_field_rotations
+1.0d0                                       width_of_proposal_interval (initial)
+0.44d0                                      target_acceptance_rate_of_field_rotations
 .false.                                     randomise_initial_field_configuration
 .false.                                     use_external_global_moves
 1                                           no_of_parallel_jobs
@@ -145,14 +145,14 @@ For the value of `output_directory`, refrain from giving long strings, as this c
 ```
 'elementary-electrolyte'                            algorithm_name
 'output/convergence_tests/electrolyte/elementary'   output_directory
-8                  	                                integer_lattice_length
+8                                                   integer_lattice_length
 10000                	                            no_of_equilibration_sweeps
 100000	                                            no_of_observations
 1.5d0                 	                            initial_temperature
-1.5d0              	                                final_temperature
-0			                                        no_of_temperature_increments
+1.5d0                                               final_temperature
+0                                                   no_of_temperature_increments
 1.0d0       	                                    width_of_proposal_interval (initial)
-0.44d0  		                                    target_acceptance_rate_of_field_rotations
+0.44d0                                              target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves
 1                                                   no_of_parallel_jobs
@@ -163,14 +163,14 @@ For the value of `output_directory`, refrain from giving long strings, as this c
 ```
 'multivalued-electrolyte'                           algorithm_name
 'output/convergence_tests/electrolyte/multivalued'  output_directory
-8                  	                                integer_lattice_length
+8                                                   integer_lattice_length
 10000                	                            no_of_equilibration_sweeps
 100000	                                            no_of_observations
 1.5d0                 	                            initial_temperature
-1.5d0              	                                final_temperature
-0			                                        no_of_temperature_increments
+1.5d0                                               final_temperature
+0                                                   no_of_temperature_increments
 1.0d0       	                                    width_of_proposal_interval (initial)
-0.44d0  		                                    target_acceptance_rate_of_field_rotations
+0.44d0                                              target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves
 1                                                   no_of_parallel_jobs
