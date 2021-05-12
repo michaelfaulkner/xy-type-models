@@ -25,7 +25,7 @@ def main(config_file, power_spectrum_string):
 
     check_for_config_errors(algorithm_name, power_spectrum_string)
     no_of_sites = integer_lattice_length ** 2
-    temperature = initial_temperature
+    temperature = final_temperature
     if no_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
     else:
@@ -69,9 +69,14 @@ def main(config_file, power_spectrum_string):
         axis[0].plot(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color,
                      label=f"temperature = {temperature:.2f}")
         axis[1].loglog(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color)
-        temperature += magnitude_of_temperature_increments
+        temperature -= magnitude_of_temperature_increments
 
     pool.close()
+    x = np.linspace(1.0e-4, 1.0, 10000)
+    y = 0.5 * x ** (-1)
+    axis[1].loglog(x, y, color="black")
+    y = 0.01 * x ** (-1.4)
+    axis[1].loglog(x, y, color="black")
     axis[0].set_xlim(-2.0e-4, 0.005)
     axis[1].set_xlim(1.0e-5, 1.0)
     figure.tight_layout()
