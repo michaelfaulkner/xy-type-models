@@ -13,35 +13,12 @@ sample_getter = importlib.import_module("sample_getter")
 
 def main(config_file, summary_statistic_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    if (summary_statistic_string != "helicity_modulus" and summary_statistic_string != "magnetisation_norm" and
-            summary_statistic_string != "magnetisation_phase" and summary_statistic_string != "specific_heat" and
-            summary_statistic_string != "inverse_permittivity" and
-            summary_statistic_string != "topological_sector_fluctuations"):
-        print("Give one of helicity_modulus, magnetisation_norm, specific_heat, inverse_permittivity or "
-              "topological_sector_fluctuations as the second positional argument.")
-        exit()
-
     basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature, no_of_jobs) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
         basic_config_data[8])
 
-    if no_of_jobs != 1:
-        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
-        exit()
-    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (summary_statistic_string == "magnetisation_norm" or summary_statistic_string == "magnetisation_phase" or
-             summary_statistic_string == "helicity_modulus")):
-        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase or helicity_modulus as the second positional argument.")
-        exit()
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis") and (summary_statistic_string == "inverse_permittivity" or
-                                                  summary_statistic_string == "topological_sector_fluctuations")):
-        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or "
-              "topological_sector_fluctuations as the second positional argument.")
-        exit()
-
+    check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string)
     no_of_sites = integer_lattice_length ** 2
     beta = 1.0 / temperature
     temperature_directory = f"temp_eq_{temperature:.2f}"
@@ -58,6 +35,31 @@ def main(config_file, summary_statistic_string):
     plt.plot(sample[0:no_of_equilibration_sweeps], color="k", linewidth=1, linestyle="-")
     plt.tight_layout()
     plt.show()
+
+
+def check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string):
+    if (summary_statistic_string != "helicity_modulus" and summary_statistic_string != "magnetisation_norm" and
+            summary_statistic_string != "magnetisation_phase" and summary_statistic_string != "specific_heat" and
+            summary_statistic_string != "inverse_permittivity" and
+            summary_statistic_string != "topological_sector_fluctuations"):
+        print("ConfigurationError: Give one of helicity_modulus, magnetisation_norm, specific_heat, "
+              "inverse_permittivity or topological_sector_fluctuations as the second positional argument.")
+        exit()
+    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
+            (summary_statistic_string == "magnetisation_norm" or summary_statistic_string == "magnetisation_phase" or
+             summary_statistic_string == "helicity_modulus")):
+        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
+              "magnetisation_phase or helicity_modulus as the second positional argument.")
+        exit()
+    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
+         algorithm_name == "hxy-metropolis") and (summary_statistic_string == "inverse_permittivity" or
+                                                  summary_statistic_string == "topological_sector_fluctuations")):
+        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or "
+              "topological_sector_fluctuations as the second positional argument.")
+        exit()
+    if no_of_jobs != 1:
+        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
+        exit()
 
 
 if __name__ == "__main__":

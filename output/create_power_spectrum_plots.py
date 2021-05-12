@@ -23,41 +23,26 @@ def main(config_file, power_spectrum_string):
                                                                      basic_config_data[5], basic_config_data[6],
                                                                      basic_config_data[7], basic_config_data[8])
 
-    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (power_spectrum_string == "magnetisation_norm" or power_spectrum_string == "magnetisation_norm" or
-             power_spectrum_string == "helicity_modulus" or power_spectrum_string == "inverse_vacuum_permittivity" or
-             power_spectrum_string == "toroidal_vortex_polarisation")):
-        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
-              "the second positional argument.")
-        exit()
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis") and (power_spectrum_string == "inverse_permittivity" or
-                                                  power_spectrum_string == "topological_sector_fluctuations" or
-                                                  power_spectrum_string == "toroidal_polarisation")):
-        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
-              "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
-        exit()
-
+    check_for_config_errors(algorithm_name, power_spectrum_string)
+    no_of_sites = integer_lattice_length ** 2
+    temperature = initial_temperature
     if no_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
     else:
         magnitude_of_temperature_increments = (final_temperature -
                                                initial_temperature) / no_of_temperature_increments
-    no_of_sites = integer_lattice_length ** 2
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     figure, axis = plt.subplots(2)
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.ylabel(r"$ S_X \left( f \right)$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
     if no_of_jobs > 1:
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
 
-    temperature = initial_temperature
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
@@ -94,6 +79,24 @@ def main(config_file, power_spectrum_string):
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
     figure.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
+
+
+def check_for_config_errors(algorithm_name, power_spectrum_string):
+    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
+            (power_spectrum_string == "magnetisation_norm" or power_spectrum_string == "magnetisation_norm" or
+             power_spectrum_string == "helicity_modulus" or power_spectrum_string == "inverse_vacuum_permittivity" or
+             power_spectrum_string == "toroidal_vortex_polarisation")):
+        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
+              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
+              "the second positional argument.")
+        exit()
+    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
+         algorithm_name == "hxy-metropolis") and (power_spectrum_string == "inverse_permittivity" or
+                                                  power_spectrum_string == "topological_sector_fluctuations" or
+                                                  power_spectrum_string == "toroidal_polarisation")):
+        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
+              "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
+        exit()
 
 
 if __name__ == "__main__":
