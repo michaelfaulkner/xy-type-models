@@ -47,8 +47,9 @@ def main(config_file, power_spectrum_string):
     no_of_sites = integer_lattice_length ** 2
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    plt.xlabel(r"frequency, $\omega$", fontsize=10, labelpad=10)
-    plt.ylabel(r"$ S_X \left( \omega \right)$", fontsize=10, labelpad=10)
+    figure, axis = plt.subplots(2)
+    plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
+    plt.ylabel(r"$ S_X \left( f \right)$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     if no_of_jobs > 1:
@@ -79,19 +80,20 @@ def main(config_file, power_spectrum_string):
             with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
                       "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
-
-        plt.plot(power_spectrum[0, 1:], power_spectrum[1, 1:], color=next(colors),
-                 label=f"temperature = {temperature:.2f}")
-        plt.xlim(-0.002, 0.05)
-        plt.tight_layout()
+        current_color = next(colors)
+        axis[0].plot(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color,
+                     label=f"temperature = {temperature:.2f}")
+        axis[1].loglog(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color)
         temperature += magnitude_of_temperature_increments
 
     pool.close()
-    legend = plt.legend(loc="upper right", fontsize=10)
+    axis[0].set_xlim(-2.0e-4, 0.005)
+    axis[1].set_xlim(1.0e-5, 1.0)
+    figure.tight_layout()
+    legend = axis[0].legend(loc="upper right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
-    plt.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
-    plt.show()
+    figure.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
 
 
 if __name__ == "__main__":
