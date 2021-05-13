@@ -16,6 +16,7 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
                        no_of_equilibration_sweeps, sampling_frequency=None):
     get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
+    # sample_variance = np.sum(np.var(np.atleast_2d(sample), axis=1))
     # the following line subtracts the Gaussian contribution ot the power spectrum,
     # though numerical experiments seem to indicate it's redundant
     sample -= np.mean(sample, axis=0)
