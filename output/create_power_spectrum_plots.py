@@ -72,13 +72,12 @@ def main(config_file, power_spectrum_string):
         temperature -= magnitude_of_temperature_increments
 
     pool.close()
-    x = np.linspace(1.0e-4, 1.0, 10000)
-    y = 0.5 * x ** (-1)
+    x = np.linspace(1.0e-4, 10.0, 10000)
+    y = 0.5 * x ** (-1.0)
     axis[1].loglog(x, y, color="black")
     y = 0.01 * x ** (-1.4)
     axis[1].loglog(x, y, color="black")
     axis[0].set_xlim(-2.0e-4, 0.005)
-    axis[1].set_xlim(1.0e-5, 1.0)
     figure.tight_layout()
     legend = axis[0].legend(loc="upper right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
@@ -105,4 +104,7 @@ def check_for_config_errors(algorithm_name, power_spectrum_string):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("IndexError: Two positional arguments required - give the configuration-file location and "
+              "the summary-statistic string whose power spectrum you wish to calculate.")
     main(sys.argv[1], sys.argv[2])
