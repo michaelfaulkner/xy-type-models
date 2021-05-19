@@ -1,0 +1,15 @@
+'hxy-metropolis'                                    algorithm_name
+'output/polyspectra/32x32/accept_0_point_6_1e6_obs' output_directory
+32                                                  integer_lattice_length
+10000                                               no_of_equilibration_sweeps
+1000000                                             no_of_observations
+1.2d0                                               initial_temperature
+2.0d0                                               final_temperature
+4                                                   no_of_temperature_increments
+1.0d0   	                                        width_of_proposal_interval (initial)
+0.6d0		                                        target_acceptance_rate_of_field_rotations
+0                                                   vacuum_permittivity_sum_cutoff
+.false.                                             randomise_initial_field_configuration
+.false.                                             use_external_global_moves
+.false.                                             calculate_external_minimising_twist_field
+64                                                  no_of_parallel_jobs
