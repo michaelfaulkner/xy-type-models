@@ -72,12 +72,12 @@ def main(config_file, power_spectrum_string):
         temperature -= magnitude_of_temperature_increments
 
     pool.close()
-    x = np.linspace(1.0e-4, 10.0, 10000)
+    x = np.linspace(1.0e-3, 10.0, 10000)
     y = 0.5 * x ** (-1.0)
     axis[1].loglog(x, y, color="black")
     y = 0.01 * x ** (-1.4)
     axis[1].loglog(x, y, color="black")
-    axis[0].set_xlim(-2.0e-4, 0.005)
+    # axis[0].set_xlim(-2.0e-4, 0.005)
     figure.tight_layout()
     legend = axis[0].legend(loc="upper right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
