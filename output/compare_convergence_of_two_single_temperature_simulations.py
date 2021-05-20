@@ -44,10 +44,14 @@ def main(config_file_1, config_file_2):
               " configuration files whose value of no_of_jobs is equal to one.")
         exit()
 
-    if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis") and not
-            (algorithm_name_2 == "hxy-ecmc" or algorithm_name_2 == "hxy-metropolis")) or
-        ((algorithm_name_1 == "xy-ecmc" or algorithm_name_1 == "xy-metropolis") and not
-            (algorithm_name_2 == "xy-ecmc" or algorithm_name_2 == "xy-metropolis")) or
+    if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or
+          algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not
+        (algorithm_name_2 == "hxy-ecmc" or algorithm_name_2 == "hxy-metropolis" or
+         algorithm_name_2 == "hxy-gaussian-noise-metropolis")) or
+        ((algorithm_name_1 == "xy-ecmc" or algorithm_name_1 == "xy-metropolis" or
+          algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not
+        (algorithm_name_2 == "xy-ecmc" or algorithm_name_2 == "xy-metropolis" or
+         algorithm_name_2 == "xy-gaussian-noise-metropolis")) or
         (algorithm_name_1 == "elementary-electrolyte" and algorithm_name_2 != "elementary-electrolyte") or
             (algorithm_name_1 == "multivalued-electrolyte" and algorithm_name_2 != "multivalued-electrolyte")):
         print("ConfigurationError: give the same model in each configuration file.")
@@ -68,8 +72,9 @@ def main(config_file_1, config_file_2):
                    no_of_equilibration_sweeps_1:]
         sample_2 = sample_getter.get_potential(output_directory_2, temperature_directory, beta, no_of_sites)[
                    no_of_equilibration_sweeps_2:]
-    elif (algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or algorithm_name_1 == "xy-ecmc" or
-            algorithm_name_1 == "xy-metropolis"):
+    elif (algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or
+          algorithm_name_1 == "hxy-gaussian-noise-metropolis" or algorithm_name_1 == "xy-ecmc" or
+          algorithm_name_1 == "xy-metropolis" or algorithm_name_1 == "xy-gaussian-noise-metropolis"):
         sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature_directory, beta, no_of_sites)[
                  no_of_equilibration_sweeps_1:]
         sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature_directory, beta,

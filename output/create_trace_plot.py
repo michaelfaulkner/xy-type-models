@@ -52,8 +52,10 @@ def check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string
               "magnetisation_phase or helicity_modulus as the second positional argument.")
         exit()
     if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis") and (summary_statistic_string == "inverse_permittivity" or
-                                                  summary_statistic_string == "topological_sector_fluctuations")):
+         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
+         algorithm_name == "hxy-gaussian-noise-metropolis") and (
+            summary_statistic_string == "inverse_permittivity" or
+            summary_statistic_string == "topological_sector_fluctuations")):
         print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or "
               "topological_sector_fluctuations as the second positional argument.")
         exit()

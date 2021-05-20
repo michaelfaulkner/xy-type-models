@@ -88,3 +88,23 @@
       rand = uni
       RETURN
       END
+
+
+function get_observation_of_normal_distribution(mean, standard_deviation)
+implicit none
+double precision :: get_observation_of_normal_distribution, mean, standard_deviation
+double precision :: uniform_rand_number_one, uniform_rand_number_two, unit_circle_transform
+
+do
+    uniform_rand_number_one = 2.0d0 * rand() - 1.0d0
+    uniform_rand_number_two = 2.0d0 * rand() - 1.0d0
+    unit_circle_transform = uniform_rand_number_one * uniform_rand_number_one &
+                                + uniform_rand_number_two * uniform_rand_number_two
+    if ((unit_circle_transform < 1.0d0).and.(unit_circle_transform /= 0.0d0)) then
+        exit
+    end if
+end do
+get_observation_of_normal_distribution = mean + standard_deviation * uniform_rand_number_one &
+                                            * dsqrt(- 2.0d0 * dlog(unit_circle_transform) / unit_circle_transform)
+
+end function get_observation_of_normal_distribution

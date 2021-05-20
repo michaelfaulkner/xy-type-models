@@ -18,8 +18,8 @@ read(10, *) randomise_initial_field_configuration
 read(10, *) use_external_global_moves
 read(10, *) calculate_external_minimising_twist_field
 
-if (algorithm_name /= 'hxy-metropolis') then
-   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-metropolis.'
+if ((algorithm_name /= 'hxy-metropolis').and.(algorithm_name /= 'hxy-gaussian-noise-metropolis')) then
+   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-metropolis or hxy-gaussian-noise-metropolis.'
    stop
 end if
 

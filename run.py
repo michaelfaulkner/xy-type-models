@@ -56,10 +56,14 @@ def get_executable(algorithm_name):
         executable = "executables/hxy_ecmc_algorithm.exe"
     elif algorithm_name == "hxy-metropolis":
         executable = "executables/hxy_metropolis_algorithm.exe"
+    elif algorithm_name == "hxy-gaussian-noise-metropolis":
+        executable = "executables/hxy_gaussian_noise_metropolis_algorithm.exe"
     elif algorithm_name == "xy-ecmc":
         executable = "executables/xy_ecmc_algorithm.exe"
     elif algorithm_name == "xy-metropolis":
         executable = "executables/xy_metropolis_algorithm.exe"
+    elif algorithm_name == "xy-gaussian-noise-metropolis":
+        executable = "executables/xy_gaussian_noise_metropolis_algorithm.exe"
     elif algorithm_name == "elementary-electrolyte":
         executable = "executables/elementary_electrolyte_algorithm.exe"
     elif algorithm_name == "multivalued-electrolyte":

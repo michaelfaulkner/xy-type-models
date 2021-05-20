@@ -95,9 +95,11 @@ def check_for_config_errors(algorithm_name, power_spectrum_string):
               "the second positional argument.")
         exit()
     if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis") and (power_spectrum_string == "inverse_permittivity" or
-                                                  power_spectrum_string == "topological_sector_fluctuations" or
-                                                  power_spectrum_string == "toroidal_polarisation")):
+         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
+         algorithm_name == "hxy-gaussian-noise-metropolis") and (
+            power_spectrum_string == "inverse_permittivity" or
+            power_spectrum_string == "topological_sector_fluctuations" or
+            power_spectrum_string == "toroidal_polarisation")):
         print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
               "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
         exit()

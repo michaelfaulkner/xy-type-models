@@ -1,4 +1,4 @@
-vpath %.f90 ../ ../../ ../../../ # asks make to look for .f90 files in the two directories above the current one (as well as in the current one)
+vpath %.f90 ../ ../../ ../../../ ../../../../ # asks make to look for .f90 files in the two directories above the current one (as well as in the current one)
 
 CFLAGS = gfortran -c -O
 OFLAGS = gfortran -O -o
@@ -23,5 +23,5 @@ clean:
 	rm *.o *.mod
 
 move-executable:
-	mkdir -p ../../../../executables
-	mv *.exe ../../../../executables
+	mkdir -p ../../../../../executables
+	mv *.exe ../../../../../executables

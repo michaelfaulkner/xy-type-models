@@ -32,8 +32,9 @@ def main(config_file):
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         sample = sample_getter.get_potential(output_directory, temperature_directory, beta, no_of_sites)[
                  no_of_equilibration_sweeps:]
-    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or algorithm_name == "xy-ecmc" or
-            algorithm_name == "xy-metropolis"):
+    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
+          algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
+          algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
         sample = sample_getter.get_magnetisation_norm(output_directory, temperature_directory, beta,
                                                       no_of_sites)[no_of_equilibration_sweeps:]
 
@@ -45,10 +46,12 @@ def main(config_file):
         reference_sample = np.loadtxt("output/convergence_tests/electrolyte/multivalued/multivalued_electrolyte_8x8_"
                                       "sites_temp_1_point_5_potential_reference_sample.dat",
                                       dtype=float)
-    if algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis":
+    if (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
+            algorithm_name == "hxy-gaussian-noise-metropolis"):
         reference_sample = np.loadtxt("output/convergence_tests/hxy/hxy_8x8_sites_temp_1_point_3_magnetisation_norm_"
                                       "reference_sample.dat", dtype=float)
-    if algorithm_name == "xy-ecmc" or algorithm_name == "xy-metropolis":
+    if (algorithm_name == "xy-ecmc" or algorithm_name == "xy-metropolis" or
+            algorithm_name == "xy-gaussian-noise-metropolis"):
         reference_sample = np.loadtxt("output/convergence_tests/xy/xy_8x8_sites_temp_0_point_8_magnetisation_norm_"
                                       "reference_sample.dat", dtype=float)
 
