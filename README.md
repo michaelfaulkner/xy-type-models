@@ -9,6 +9,9 @@ Event-chain and Metropolis-Hastings simulation is available for the XY and harmo
 Metropolis-Hastings simulation is available for the Maggs lattice-field electrolyte model in the grand canonical 
 ensemble (for particles). Each model is defined on a two-dimensional square lattice. 
 
+We provide uniform- and Gaussian-noise versions of the Metropolis-Hastings algorithm for the XY and HXY models. The 
+latter are labelled appropriately.
+
 We provide multivalued and elementary versions of the lattice-field electrolyte. In the former, the charge value at 
 each lattice site can be any integer multiple of the elementary charge, q; in the latter, the charge values are zero or 
 ±q. In order to easily compare with the XY and HXY models, we have set q = 2\pi.
@@ -107,6 +110,26 @@ Fortran runtime errors.
 1                                               no_of_parallel_jobs
 ```
 
+### hxy-gaussian-noise-metropolis configuration file (an example)
+
+```
+'hxy-gaussian-noise-metropolis'                             algorithm_name
+'output/convergence_tests/hxy/gaussian_noise_metropolis'    output_directory
+8                                                           integer_lattice_length
+10000                                                       no_of_equilibration_sweeps
+100000                                                      no_of_observations
+1.3d0                                                       initial_temperature
+1.3d0                                                       final_temperature
+0                                                           no_of_temperature_increments
+1.0d0                                                       width_of_proposal_interval (initial)
+0.44d0                                                      target_acceptance_rate_of_field_rotations
+0                                                           vacuum_permittivity_sum_cutoff
+.false.                                                     randomise_initial_field_configuration
+.false.                                                     use_external_global_moves
+.false.                                                     calculate_external_minimising_twist_field
+1                                                           no_of_parallel_jobs
+```
+
 ### xy-ecmc configuration file (an example)
 
 ```
@@ -139,6 +162,24 @@ Fortran runtime errors.
 .false.                                     randomise_initial_field_configuration
 .false.                                     use_external_global_moves
 1                                           no_of_parallel_jobs
+```
+
+### xy-gaussian-noise-metropolis configuration file (an example)
+
+```
+'xy-gaussian-noise-metropolis'                          algorithm_name
+'output/convergence_tests/xy/gaussian_noise_metropolis' output_directory
+8                                                       integer_lattice_length
+10000                                                   no_of_equilibration_sweeps
+100000                                                  no_of_observations
+0.8d0                                                   initial_temperature
+0.8d0                                                   final_temperature
+0                                                       no_of_temperature_increments
+1.0d0                                                   width_of_proposal_interval (initial)
+0.44d0                                                  target_acceptance_rate_of_field_rotations
+.false.                                                 randomise_initial_field_configuration
+.false.                                                 use_external_global_moves
+1                                                       no_of_parallel_jobs
 ```
 
 ### elementary-electrolyte configuration file (an example)
@@ -219,12 +260,14 @@ and write and contains a lot of functionality).
 ## Makefiles
 
 In the top directory, the `make` command runs the [`makefile`](makefile) contained there. By running six different 
-makefiles, this creates all six executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, 
-`hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and 
+makefiles, this creates all eight executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, 
+`xy_gaussian_noise_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, 
+`hxy_gaussian_noise_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and 
 `multivalued_electrolyte_algorithm.exe`) and stores them in a new directory called `executables`.
 
 Each makefile is located in the youngest child directory corresponding to the relevant algorithm, e.g., the 
 [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the xy-ecmc directory](
 src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to the top xy-type-models 
-directory and enter `make xy-ecmc`, `make xy-metropolis`, `make hxy-ecmc`, `make hxy-metropolis`, 
-`make elementary-electrolyte` or `make multivalued-electrolyte`. This will make the corresponding executable.
+directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-noise-metropolis`, `make hxy-ecmc`, 
+`make hxy-metropolis`, `make hxy-gaussian-noise-metropolis`, `make elementary-electrolyte` or 
+`make multivalued-electrolyte`. This will make the corresponding executable.
