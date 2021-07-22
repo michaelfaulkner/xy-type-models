@@ -31,3 +31,16 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
     component_averaged_power_spectrum = np.mean(power_spectrum, axis=0)
     return component_averaged_power_spectrum[0], np.array([item if abs(item) > 1.0e-15 else 0.0 for item in
                                                            component_averaged_power_spectrum[1]])
+
+
+def get_autocorrelator(sample, points=None):
+    sample_size = len(sample)
+    f = np.fft.fft(np.hstack([sample, np.zeros(sample_size)]))
+    autocorrelator = np.fft.ifft(f * np.conj(f))
+    autocorrelator = np.real(autocorrelator)
+    autocorrelator = autocorrelator[:(sample_size+1) // 2]
+    autocorrelator /= range(sample_size, sample_size // 2, -1)
+    if points is not None and points < len(autocorrelator):
+        return autocorrelator[:points]
+    else:
+        return autocorrelator
