@@ -33,6 +33,22 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
                                                            component_averaged_power_spectrum[1]])
 
 
+def get_correlator_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps, sampling_frequency=None, shifted_time_period=None):
+    get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
+    sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
+    relative_sample = sample - np.mean(sample)
+    if shifted_time_period is None:
+        shifted_time_period = int(0.1 * len(sample))
+    shifted_relative_sample = np.roll(relative_sample, shifted_time_period)
+    if sampling_frequency is None:
+        acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
+        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0
+        sampling_frequency = 1.0 / physical_time_scale
+    two_point_correlator = np.conj(relative_sample) * shifted_relative_sample
+    return signal.periodogram(two_point_correlator, fs=sampling_frequency)
+
+
 def get_autocorrelator(sample, points=None):
     sample_size = len(sample)
     f = np.fft.fft(np.hstack([sample, np.zeros(sample_size)]))
