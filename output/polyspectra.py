@@ -4,7 +4,6 @@ import numpy as np
 import os
 import sys
 
-
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_modules = os.path.abspath(this_directory + "/../")
@@ -35,12 +34,34 @@ def get_correlator_power_spectrum(power_spectrum_string, output_directory, tempe
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
+    relative_sample = sample - np.mean(sample, axis=0)
+    relative_sample = np.atleast_2d(relative_sample)
+    if len(relative_sample) > 1:
+        relative_sample = relative_sample.transpose()
+    if shifted_time_period is None:
+        shifted_time_period = int(0.1 * len(sample))
+    shifted_relative_sample = np.roll(relative_sample, shifted_time_period, axis=1)
+    two_point_correlator = np.conj(relative_sample) * shifted_relative_sample
+    power_spectrum = np.atleast_2d(
+        [signal.periodogram(component, fs=sampling_frequency) for component in two_point_correlator])
+    component_averaged_power_spectrum = np.mean(power_spectrum, axis=0)
+    return component_averaged_power_spectrum[0], np.array([item if abs(item) > 1.0e-15 else 0.0 for item in
+                                                           component_averaged_power_spectrum[1]])
+
+
+def get_magnetisation_phase_correlator_power_spectrum(output_directory, temperature_directory, beta, no_of_sites,
+                                                      no_of_equilibration_sweeps, sampling_frequency=None,
+                                                      shifted_time_period=None):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    sample = sample_getter.get_magnetisation_phase(output_directory, temperature_directory, beta, no_of_sites)[
+             no_of_equilibration_sweeps:]
     relative_sample = sample - np.mean(sample)
     if shifted_time_period is None:
         shifted_time_period = int(0.1 * len(sample))
     shifted_relative_sample = np.roll(relative_sample, shifted_time_period)
     two_point_correlator = np.conj(relative_sample) * shifted_relative_sample
-    return signal.periodogram(two_point_correlator, fs=sampling_frequency)
+    power_spectrum = signal.periodogram(two_point_correlator, fs=sampling_frequency)
+    return power_spectrum[0], np.array([item if abs(item) > 1.0e-15 else 0.0 for item in power_spectrum[1]])
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
