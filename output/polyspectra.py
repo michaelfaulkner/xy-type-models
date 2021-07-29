@@ -47,16 +47,3 @@ def get_correlator_power_spectrum(power_spectrum_string, output_directory, tempe
         sampling_frequency = 1.0 / physical_time_scale
     two_point_correlator = np.conj(relative_sample) * shifted_relative_sample
     return signal.periodogram(two_point_correlator, fs=sampling_frequency)
-
-
-def get_autocorrelator(sample, points=None):
-    sample_size = len(sample)
-    f = np.fft.fft(np.hstack([sample, np.zeros(sample_size)]))
-    autocorrelator = np.fft.ifft(f * np.conj(f))
-    autocorrelator = np.real(autocorrelator)
-    autocorrelator = autocorrelator[:(sample_size+1) // 2]
-    autocorrelator /= range(sample_size, sample_size // 2, -1)
-    if points is not None and points < len(autocorrelator):
-        return autocorrelator[:points]
-    else:
-        return autocorrelator
