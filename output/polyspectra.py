@@ -55,8 +55,7 @@ def get_component_averaged_power_spectrum(mean_zero_time_series, sampling_freque
         [signal.periodogram(component, fs=sampling_frequency) for component in mean_zero_time_series])
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
-    component_averaged_power_spectrum = np.mean(power_spectra, axis=0)[:, 1:]
-    return component_averaged_power_spectrum
+    return np.mean(power_spectra, axis=0)[:, 1:]
 
 
 '''
