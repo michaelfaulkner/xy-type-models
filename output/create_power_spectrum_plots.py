@@ -74,17 +74,18 @@ def main(config_file, power_spectrum_string):
         temperature -= magnitude_of_temperature_increments
 
     pool.close()
-    x = np.linspace(1.0e-3, 10.0, 10000)
-    y = 0.5 * x ** (-1.0)
-    axis[1].loglog(x, y, color="black")
-    y = 0.01 * x ** (-1.4)
-    axis[1].loglog(x, y, color="black")
+    x = np.linspace(1.0e-2, 10.0, 10000)
+    y = 0.01 * x ** (-1.0)
+    axis[1].loglog(x, y, color="red", label=r"$f^{-1}$")
+    y = 0.001 * x ** (-1.4)
+    axis[1].loglog(x, y, color="black", label=r"$f^{-1.4}$")
     axis[0].set_xlim(-0.01, 0.5)
-    axis[1].set_ylim(1.0e-5, 1000.0)
     figure.tight_layout()
-    legend = axis[0].legend(loc="upper right", fontsize=10)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(1.5)
+    legend = axis[0].legend(loc="upper right", fontsize=10), axis[1].legend(loc="lower left", fontsize=10)
+    legend[0].get_frame().set_edgecolor("k")
+    legend[0].get_frame().set_lw(1.5)
+    legend[1].get_frame().set_edgecolor("k")
+    legend[1].get_frame().set_lw(1.5)
     figure.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
 
 
