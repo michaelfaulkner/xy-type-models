@@ -17,7 +17,7 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
     get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
     # sample_variance = np.sum(np.var(np.atleast_2d(sample), axis=1))
-    return get_component_averaged_power_spectrum(get_mean_zero_time_series(sample), sampling_frequency)
+    return get_normalised_component_averaged_power_spectrum(get_mean_zero_time_series(sample), sampling_frequency)
 
 
 def get_correlator_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
@@ -30,7 +30,7 @@ def get_correlator_power_spectrum(power_spectrum_string, output_directory, tempe
         shifted_time_period = int(0.1 * len(sample))
     shifted_mean_zero_time_series = np.roll(mean_zero_time_series, shifted_time_period, axis=1)
     two_point_correlator = np.conj(mean_zero_time_series) * shifted_mean_zero_time_series
-    return get_component_averaged_power_spectrum(two_point_correlator, sampling_frequency)
+    return get_normalised_component_averaged_power_spectrum(two_point_correlator, sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
@@ -49,13 +49,15 @@ def get_mean_zero_time_series(sample):
     return mean_zero_sample
 
 
-def get_component_averaged_power_spectrum(mean_zero_time_series, sampling_frequency):
-    power_spectrum = np.atleast_2d(
-        [signal.periodogram(component, fs=sampling_frequency) for component in mean_zero_time_series])
-    component_averaged_power_spectrum = np.mean(power_spectrum, axis=0)
-    component_averaged_power_spectrum[1] = np.array([item if abs(item) > 1.0e-15 else 0.0 for item in
-                                                     component_averaged_power_spectrum[1]])
-    return component_averaged_power_spectrum
+def get_normalised_component_averaged_power_spectrum(mean_zero_time_series, sampling_frequency):
+    # the `[:, 1:]' below removes the f = 0 value as this value is invalid for a finite-time signal
+    power_spectra = np.atleast_2d(
+        [signal.periodogram(component, fs=sampling_frequency)[:, 1:] for component in mean_zero_time_series])
+    # now average over Cartesian components of original sample
+    component_averaged_power_spectrum = np.mean(power_spectra, axis=0)
+    # normalise power spectrum with respect to its low-frequency value
+    return (component_averaged_power_spectrum[0],
+            component_averaged_power_spectrum[1] / component_averaged_power_spectrum[1, 0])
 
 
 '''
