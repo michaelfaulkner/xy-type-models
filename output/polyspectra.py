@@ -29,7 +29,8 @@ def get_correlator_power_spectrum(power_spectrum_string, output_directory, tempe
         shifted_time_period = int(0.1 * len(mean_zero_time_series[0]))
     shifted_mean_zero_time_series = np.roll(mean_zero_time_series, shifted_time_period, axis=1)
     two_point_correlator = np.conj(mean_zero_time_series) * shifted_mean_zero_time_series
-    return get_component_averaged_power_spectrum(two_point_correlator, sampling_frequency)
+    mean_zero_two_point_correlator = two_point_correlator - np.mean(two_point_correlator, axis=0)
+    return get_component_averaged_power_spectrum(mean_zero_two_point_correlator, sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
