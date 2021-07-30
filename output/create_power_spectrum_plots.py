@@ -35,7 +35,7 @@ def main(config_file, power_spectrum_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     figure, axis = plt.subplots(2)
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-    plt.ylabel(r"$ S_X \left( f \right)$", fontsize=10, labelpad=10)
+    plt.ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
@@ -48,8 +48,8 @@ def main(config_file, power_spectrum_string):
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
         try:
-            with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
-                      "r") as power_spectrum_file:
+            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
+                      f"temp_eq_{temperature:.2f}.csv", "r") as power_spectrum_file:
                 power_spectrum = np.loadtxt(power_spectrum_file, dtype=float, delimiter=",")
         except IOError:
             if no_of_jobs == 1:
@@ -64,8 +64,8 @@ def main(config_file, power_spectrum_string):
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum[1] /= power_spectrum[1, 0]
-            with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
-                      "w") as power_spectrum_file:
+            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
+                      f"temp_eq_{temperature:.2f}.csv", "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
         current_color = next(colors)
         axis[0].plot(power_spectrum[0], power_spectrum[1], color=current_color,
@@ -86,7 +86,7 @@ def main(config_file, power_spectrum_string):
     legend[0].get_frame().set_lw(1.5)
     legend[1].get_frame().set_edgecolor("k")
     legend[1].get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/{power_spectrum_string}_power_spectrum.pdf", bbox_inches="tight")
+    figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf", bbox_inches="tight")
 
 
 def check_for_config_errors(algorithm_name, power_spectrum_string):
