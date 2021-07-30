@@ -56,9 +56,7 @@ def get_normalised_component_averaged_power_spectrum(mean_zero_time_series, samp
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
     component_averaged_power_spectrum = np.mean(power_spectra, axis=0)[:, 1:]
-    # normalise power spectrum with respect to its low-frequency value
-    return (component_averaged_power_spectrum[0],
-            component_averaged_power_spectrum[1] / component_averaged_power_spectrum[1, 0])
+    return component_averaged_power_spectrum
 
 
 '''

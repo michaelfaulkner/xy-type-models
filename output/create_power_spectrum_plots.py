@@ -62,13 +62,15 @@ def main(config_file, power_spectrum_string):
                                                temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
                                               for job_number in range(no_of_jobs)])
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
+            # normalise power spectrum with respect to its low-frequency value
+            power_spectrum[1] /= power_spectrum[1, 0]
             with open(f"{output_directory}/{power_spectrum_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
                       "w") as power_spectrum_file:
                 np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
         current_color = next(colors)
-        axis[0].plot(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color,
+        axis[0].plot(power_spectrum[0], power_spectrum[1], color=current_color,
                      label=f"temperature = {temperature:.2f}")
-        axis[1].loglog(power_spectrum[0, 1:], power_spectrum[1, 1:], color=current_color)
+        axis[1].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
         temperature -= magnitude_of_temperature_increments
 
     pool.close()
@@ -77,9 +79,7 @@ def main(config_file, power_spectrum_string):
     axis[1].loglog(x, y, color="black")
     y = 0.01 * x ** (-1.4)
     axis[1].loglog(x, y, color="black")
-    axis[0].set_xlim(0.0, 0.5)
-    axis[0].set_ylim(0.0, 5.0)
-    axis[1].set_xlim(1.0e-5, 1000.0)
+    axis[0].set_xlim(-0.01, 0.5)
     axis[1].set_ylim(1.0e-5, 1000.0)
     figure.tight_layout()
     legend = axis[0].legend(loc="upper right", fontsize=10)
