@@ -21,6 +21,7 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
 
 def get_correlator_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps, sampling_frequency=None, shifted_time_period=None):
+    # todo refaire shifted_time_period comme no_of_shifted_periods ou qqch comme ça
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     mean_zero_time_series = get_mean_zero_time_series(power_spectrum_string, output_directory, temperature_directory,
                                                       beta, no_of_sites, no_of_equilibration_sweeps)
