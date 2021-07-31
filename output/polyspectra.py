@@ -14,23 +14,23 @@ sample_getter = importlib.import_module("sample_getter")
 def get_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                        no_of_equilibration_sweeps, sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    mean_zero_time_series = get_mean_zero_time_series(power_spectrum_string, output_directory, temperature_directory,
-                                                      beta, no_of_sites, no_of_equilibration_sweeps)
-    return get_component_averaged_power_spectrum(mean_zero_time_series, sampling_frequency)
+    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
 def get_correlator_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps, sampling_frequency=None, shifted_time_period=None):
     # todo refaire shifted_time_period comme no_of_shifted_periods ou qqch comme ça
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    mean_zero_time_series = get_mean_zero_time_series(power_spectrum_string, output_directory, temperature_directory,
-                                                      beta, no_of_sites, no_of_equilibration_sweeps)
+    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    mean_zero_time_series = time_series - np.mean(time_series, axis=0)
     if shifted_time_period is None:
         shifted_time_period = int(0.1 * len(mean_zero_time_series[0]))
     shifted_mean_zero_time_series = np.roll(mean_zero_time_series, shifted_time_period, axis=1)
     two_point_correlator = np.conj(mean_zero_time_series) * shifted_mean_zero_time_series
-    mean_zero_two_point_correlator = two_point_correlator - np.mean(two_point_correlator, axis=0)
-    return get_component_averaged_power_spectrum(mean_zero_two_point_correlator, sampling_frequency)
+    return get_component_averaged_power_spectrum(two_point_correlator, sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
@@ -41,20 +41,19 @@ def get_sampling_frequency(output_directory, sampling_frequency, temperature_dir
     return sampling_frequency
 
 
-def get_mean_zero_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                              no_of_equilibration_sweeps):
+def get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                    no_of_equilibration_sweeps):
     get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
-    mean_zero_sample = sample - np.mean(sample, axis=0)
-    mean_zero_sample = np.atleast_2d(mean_zero_sample)
-    if len(mean_zero_sample) > 1:
-        mean_zero_sample = mean_zero_sample.transpose()
-    return mean_zero_sample
+    sample = np.atleast_2d(sample)
+    if len(sample) > 1:
+        sample = sample.transpose()
+    return sample
 
 
-def get_component_averaged_power_spectrum(mean_zero_time_series, sampling_frequency):
-    power_spectra = np.atleast_2d(
-        [signal.periodogram(component, fs=sampling_frequency) for component in mean_zero_time_series])
+def get_component_averaged_power_spectrum(time_series, sampling_frequency):
+    power_spectra = np.atleast_2d([signal.periodogram(component, fs=sampling_frequency) for component in
+                                   time_series - np.mean(time_series, axis=0)])
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
     return np.mean(power_spectra, axis=0)[:, 1:]
