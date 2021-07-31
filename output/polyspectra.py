@@ -19,18 +19,24 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
-def get_correlator_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                                  no_of_equilibration_sweeps, sampling_frequency=None, shifted_time_period=None):
-    # todo refaire shifted_time_period comme no_of_shifted_periods ou qqch comme ça
+def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                          no_of_equilibration_sweeps, sampling_frequency=None, no_of_octaves=4):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     mean_zero_time_series = time_series - np.mean(time_series, axis=0)
-    if shifted_time_period is None:
-        shifted_time_period = int(0.1 * len(mean_zero_time_series[0]))
-    shifted_mean_zero_time_series = np.roll(mean_zero_time_series, shifted_time_period, axis=1)
-    two_point_correlator = np.conj(mean_zero_time_series) * shifted_mean_zero_time_series
-    return get_component_averaged_power_spectrum(two_point_correlator, sampling_frequency)
+    # todo faut faire qqch pour faire en sorte que len(mean_zero_time_series[0]) / no_of_octaves soit un nombre entier ?
+    base_time_period_shift = int(len(mean_zero_time_series[0]) / no_of_octaves)
+    # todo reduire la durée de mean_zero_time_series pour faire les correlators ?
+    # todo axis=1 correct???
+    two_point_correlators = np.array(
+        [np.conj(mean_zero_time_series) * np.roll(mean_zero_time_series, base_time_period_shift * i, axis=1)
+         for i in range(no_of_octaves)])
+    correlator_power_spectra = np.array(
+        [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in two_point_correlators])
+    return [correlator_power_spectra[0, 0],
+            np.fft.fftfreq(len(correlator_power_spectra[:, 1].transpose()[0]), d=base_time_period_shift),
+            np.fft.fft(correlator_power_spectra[:, 1].transpose())]
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
