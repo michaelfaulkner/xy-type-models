@@ -28,7 +28,6 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     # todo faut faire qqch pour faire en sorte que len(mean_zero_time_series[0]) / no_of_octaves soit un nombre entier ?
     base_time_period_shift = int(len(mean_zero_time_series[0]) / no_of_octaves)
     # todo reduire la durée de mean_zero_time_series pour faire les correlators ?
-    # todo axis=1 correct???
     two_point_correlators = [
         np.conj(mean_zero_time_series) * np.roll(mean_zero_time_series, base_time_period_shift * i, axis=1) for i in
         range(no_of_octaves)]
