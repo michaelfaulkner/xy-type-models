@@ -53,7 +53,7 @@ def get_time_series(power_spectrum_string, output_directory, temperature_directo
 
 def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     power_spectra = np.atleast_2d([signal.periodogram(component, fs=sampling_frequency) for component in
-                                   time_series - np.mean(time_series, axis=0)])
+                                   time_series - np.mean(time_series, axis=1)])
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
     return np.mean(power_spectra, axis=0)[:, 1:]
