@@ -19,6 +19,18 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
+def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                     no_of_equilibration_sweeps, sampling_frequency=None, time_period_shift=10):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    mean_zero_time_series = time_series - np.mean(time_series, axis=0)
+    if time_period_shift > len(mean_zero_time_series[0]):
+        raise Exception("time_period_shift must be an integer not greater than the sample size.")
+    return get_component_averaged_power_spectrum(get_two_point_correlator(mean_zero_time_series, time_period_shift),
+                                                 sampling_frequency)
+
+
 def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                           no_of_equilibration_sweeps, sampling_frequency=None, no_of_octaves=2):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
@@ -42,18 +54,6 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     return [correlator_power_spectra[0, 0],
             np.fft.fftfreq(len(transposed_correlator_power_spectra[0]), d=base_time_period_shift),
             np.fft.fft(transposed_correlator_power_spectra).transpose()]
-
-
-def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                                     no_of_equilibration_sweeps, sampling_frequency=None, time_period_shift=10):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                                  no_of_equilibration_sweeps)
-    mean_zero_time_series = time_series - np.mean(time_series, axis=0)
-    if time_period_shift > len(mean_zero_time_series[0]):
-        raise Exception("time_period_shift must be an integer not greater than the sample size.")
-    return get_component_averaged_power_spectrum(get_two_point_correlator(mean_zero_time_series, time_period_shift),
-                                                 sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
