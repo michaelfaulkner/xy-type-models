@@ -20,21 +20,27 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
 
 
 def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                          no_of_equilibration_sweeps, sampling_frequency=None, no_of_octaves=4):
+                          no_of_equilibration_sweeps, sampling_frequency=None, no_of_octaves=2):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     mean_zero_time_series = time_series - np.mean(time_series, axis=0)
     try:
-        base_time_period_shift = int(len(mean_zero_time_series[0]) / no_of_octaves)
-    except len(mean_zero_time_series[0]) % no_of_octaves != 0:
-        raise Exception("Sample size must be an integer multiple of no_of_octaves in get_power_trispectrum().")
+        base_time_period_shift = int(len(mean_zero_time_series[0]) / (2 ** no_of_octaves))
+    except no_of_octaves < 0:
+        raise Exception("no_of_octaves must be a non-negative integer.")
+    except len(mean_zero_time_series[0]) % (2 ** no_of_octaves) != 0:
+        raise Exception("Sample size must be an integer multiple of (2 ** no_of_octaves).")
+    # create 2 ** no_of_octaves two-point correlators; as the time series is not periodic, we chop off the first / last
+    # i * base_time_period_shift elements of each copy of the time series (rather than using np.roll())
     correlators = [np.conj(mean_zero_time_series[:, i * base_time_period_shift:])
                    * mean_zero_time_series[:, :len(mean_zero_time_series[0]) - i * base_time_period_shift]
-                   for i in range(no_of_octaves)]
+                   for i in range(2 ** no_of_octaves)]
+    # in the following, [:].reshape(-1, 2 ** no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves)))
+    # removes all the power spectra with non-common frequency values
     correlator_power_spectra = np.array(
-        [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(
-            -1, no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / no_of_octaves)) for correlator in correlators])
+        [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** no_of_octaves)[
+         :, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) for correlator in correlators])
     transposed_correlator_power_spectra = correlator_power_spectra[:, 1].transpose()
     return [correlator_power_spectra[0, 0],
             np.fft.fftfreq(len(transposed_correlator_power_spectra[0]), d=base_time_period_shift),
