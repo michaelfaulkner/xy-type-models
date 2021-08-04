@@ -31,13 +31,10 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
         raise Exception("no_of_octaves must be a non-negative integer.")
     except len(mean_zero_time_series[0]) % (2 ** no_of_octaves) != 0:
         raise Exception("Sample size must be an integer multiple of (2 ** no_of_octaves).")
-    # create 2 ** no_of_octaves two-point correlators; as the time series is not periodic, we chop off the first / last
-    # i * base_time_period_shift elements of each copy of the time series (rather than using np.roll())
-    correlators = [np.conj(mean_zero_time_series[:, i * base_time_period_shift:])
-                   * mean_zero_time_series[:, :len(mean_zero_time_series[0]) - i * base_time_period_shift]
-                   for i in range(2 ** no_of_octaves)]
-    # in the following, [:].reshape(-1, 2 ** no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves)))
-    # removes all the power spectra with non-common frequency values
+    # create 2 ** no_of_octaves two-point correlators
+    correlators = [get_two_point_correlator(time_series, i * base_time_period_shift) for i in range(2 ** no_of_octaves)]
+    # [:].reshape(-1, 2 ** no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) removes
+    # (from the following) all the power spectra with non-common frequency values
     correlator_power_spectra = np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** no_of_octaves)[
          :, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) for correlator in correlators])
@@ -45,6 +42,18 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     return [correlator_power_spectra[0, 0],
             np.fft.fftfreq(len(transposed_correlator_power_spectra[0]), d=base_time_period_shift),
             np.fft.fft(transposed_correlator_power_spectra).transpose()]
+
+
+def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                     no_of_equilibration_sweeps, sampling_frequency=None, time_period_shift=10):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    mean_zero_time_series = time_series - np.mean(time_series, axis=0)
+    if time_period_shift > len(mean_zero_time_series[0]):
+        raise Exception("time_period_shift must be an integer not greater than the sample size.")
+    return get_component_averaged_power_spectrum(get_two_point_correlator(mean_zero_time_series, time_period_shift),
+                                                 sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
@@ -71,6 +80,12 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
     return np.mean(power_spectra, axis=0)[:, 1:]
+
+
+def get_two_point_correlator(time_series, time_period_shift):
+    """As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
+        time series (rather than using np.roll())"""
+    return np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
 '''
