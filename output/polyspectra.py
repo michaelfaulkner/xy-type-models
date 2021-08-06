@@ -40,7 +40,7 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     if 2 ** no_of_octaves >= len(time_series[0]):
         raise Exception("2 ** no_of_octaves must be less than the sample size.")
     if len(time_series[0]) % (2 ** no_of_octaves) != 0:
-        time_series = time_series[:, :len(time_series[0]) - len(time_series[0]) // (2 ** no_of_octaves)]
+        time_series = time_series[:, :len(time_series[0]) - len(time_series[0]) // (2 ** no_of_octaves) - 1]
     base_time_period_shift = int(len(time_series[0]) / (2 ** no_of_octaves))
     # create 2 ** no_of_octaves two-point correlators
     correlators = [get_two_point_correlator(time_series - np.mean(time_series, axis=0), i * base_time_period_shift)
