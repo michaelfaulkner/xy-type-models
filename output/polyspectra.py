@@ -47,12 +47,12 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
                    for i in range(2 ** no_of_octaves)]
     # [:].reshape(-1, 2 ** no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) removes
     # (from the following) all the power spectra with non-common frequency values
-    correlator_power_spectra = np.array(
+    power_spectra_of_correlators = np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** no_of_octaves)[
          :, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) for correlator in correlators])
-    transposed_correlator_power_spectra = correlator_power_spectra[:, 1].transpose()
+    transposed_correlator_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     return [np.fft.fftfreq(len(transposed_correlator_power_spectra[0]), d=base_time_period_shift),
-            correlator_power_spectra[0, 0], np.fft.fft(transposed_correlator_power_spectra).transpose()]
+            power_spectra_of_correlators[0, 0], np.fft.fft(transposed_correlator_power_spectra).transpose()]
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
