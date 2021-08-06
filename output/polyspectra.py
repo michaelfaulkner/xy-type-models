@@ -24,8 +24,8 @@ def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, te
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
-    if time_period_shift > len(time_series[0]):
-        raise Exception("time_period_shift must be an integer not greater than the sample size.")
+    if time_period_shift >= len(time_series[0]):
+        raise Exception("time_period_shift must be an integer less than the sample size.")
     return get_component_averaged_power_spectrum(
         get_two_point_correlator(time_series - np.mean(time_series, axis=0), time_period_shift), sampling_frequency)
 
