@@ -39,6 +39,8 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
         raise Exception("no_of_octaves must be a positive integer.")
     if 2 ** no_of_octaves >= len(time_series[0]):
         raise Exception("2 ** no_of_octaves must be less than the sample size.")
+    # remove supplementary elements of each component i of time_series (w.r.t. enforcing
+    # len(time_series[i]) == 2 ** no_of_octaves)
     if len(time_series[0]) % (2 ** no_of_octaves) != 0:
         time_series = time_series[:, :len(time_series[0]) - len(time_series[0]) // (2 ** no_of_octaves) - 1]
     base_time_period_shift = int(len(time_series[0]) / (2 ** no_of_octaves))
@@ -50,9 +52,9 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     power_spectra_of_correlators = np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** no_of_octaves)[
          :, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) for correlator in correlators])
-    transposed_correlator_power_spectra = power_spectra_of_correlators[:, 1].transpose()
-    return [np.fft.fftfreq(len(transposed_correlator_power_spectra[0]), d=base_time_period_shift),
-            power_spectra_of_correlators[0, 0], np.fft.fft(transposed_correlator_power_spectra).transpose()]
+    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
+    return [np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift),
+            power_spectra_of_correlators[0, 0], np.fft.fft(transposed_power_spectra).transpose()]
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
