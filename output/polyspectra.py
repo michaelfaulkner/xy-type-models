@@ -47,11 +47,13 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     # create 2 ** no_of_octaves two-point correlators
     correlators = [get_two_point_correlator(time_series - np.mean(time_series, axis=0), i * base_time_period_shift)
                    for i in range(2 ** no_of_octaves)]
-    # [:].reshape(-1, 2 ** no_of_octaves)[:, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) removes
-    # (from the following) all the power spectra with non-common frequency values
-    power_spectra_of_correlators = np.array(
-        [get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** no_of_octaves)[
-         :, 0].reshape(2, int(len(correlator[0]) / (2 ** no_of_octaves))) for correlator in correlators])
+    # in the following, [:].reshape(-1, 2 ** (no_of_octaves - index - 1)))[:, 0].reshape(2, int(len(correlator[0])
+    # / (2 ** (no_of_octaves - index - 1))))) removes each element from each power_spectrum whose frequency value does
+    # not correspond to one of the frequency values of the power spectrum of the shortest correlator
+    power_spectra_of_correlators = np.array([
+        get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(-1, 2 ** (
+                no_of_octaves - index - 1))[:, 0].reshape(2, int(len(correlator[0]) / (2 ** (
+                    no_of_octaves - index - 1)))) for index, correlator in enumerate(correlators)])
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     return [np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift),
             power_spectra_of_correlators[0, 0], np.fft.fft(transposed_power_spectra).transpose()]
