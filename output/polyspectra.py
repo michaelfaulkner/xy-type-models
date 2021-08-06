@@ -40,7 +40,7 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     if 2 ** no_of_octaves >= len(time_series[0]):
         raise Exception("2 ** no_of_octaves must be less than the sample size.")
     # remove supplementary elements of each component i of time_series (w.r.t. enforcing
-    # len(time_series[i]) == 2 ** no_of_octaves)
+    # len(time_series[i]) % (2 ** no_of_octaves) == 0)
     if len(time_series[0]) % (2 ** no_of_octaves) != 0:
         time_series = time_series[:, :len(time_series[0]) - len(time_series[0]) // (2 ** no_of_octaves) - 1]
     base_time_period_shift = int(len(time_series[0]) / (2 ** no_of_octaves))
