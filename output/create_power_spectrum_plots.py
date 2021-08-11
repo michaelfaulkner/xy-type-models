@@ -73,7 +73,8 @@ def main(config_file, power_spectrum_string):
         axis[1].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
         temperature -= magnitude_of_temperature_increments
 
-    pool.close()
+    if no_of_jobs > 1:
+        pool.close()
     x = np.linspace(1.0e-2, 10.0, 10000)
     y = 0.01 * x ** (-1.0)
     axis[1].loglog(x, y, color="red", label=r"$f^{-1}$")
