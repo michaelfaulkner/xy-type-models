@@ -32,30 +32,25 @@ def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, te
 
 
 def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                          no_of_equilibration_sweeps, no_of_octaves=2, sampling_frequency=None):
+                          no_of_equilibration_sweeps, no_of_octaves=2, base_time_period_shift=1,
+                          sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
-    # remove supplementary elements of each component i of time_series (s.t. its new length is a power of 2)
-    time_series = time_series[:, :2 ** (math.floor(math.log(len(time_series[0]), 2)))]
-    if 2 ** no_of_octaves >= len(time_series[0]):
-        raise Exception("2 ** no_of_octaves must be less than the smallest power of 2 that is less than the sample "
-                        "size.")
-    base_time_period_shift = int(len(time_series[0]) / (2 ** no_of_octaves))
-    # create 2 ** no_of_octaves two-point correlators
-    correlators = [get_two_point_correlator(time_series - np.mean(time_series, axis=1), i * base_time_period_shift)
-                   for i in range(2 ** no_of_octaves)]
-    # in the following, [:].reshape(-1, int(len(correlator[0]) / len(correlators[len(correlators) - 1][0])))[
-    # :, int(len(correlator[0]) / len(correlators[len(correlators) - 1][0])) - 1].reshape(2, int(len(correlators[
-    # len(correlators) - 1][0]) / 2)) removes each element from each power_spectrum whose frequency value does not
-    # correspond to one of the frequency values of the power spectrum of the shortest correlator
-    power_spectra_of_correlators = np.array([
-        get_component_averaged_power_spectrum(correlator, sampling_frequency)[:].reshape(
-            -1, int(len(correlator[0]) / len(correlators[len(correlators) - 1][0])))[
-            :, int(len(correlator[0]) / len(correlators[len(correlators) - 1][0])) - 1].reshape(
-            2, int(len(correlators[len(correlators) - 1][0]) / 2)) for correlator in correlators])
+    if base_time_period_shift * 2 ** no_of_octaves >= len(time_series[0]):
+        raise Exception("base_time_period_shift * 2 ** no_of_octaves must be less than the smallest power of 2 that is "
+                        "less than the sample size.")
+    # create 2 ** no_of_octaves two-point correlators; here, [:, :len(time_series[0]) - 2 ** (no_of_octaves + 1)
+    # * base_time_period_shift] ensures that (each component of) all correlators are the same length, which ensures
+    # that their power spectra have common frequency values
+    correlators = [
+        get_two_point_correlator(time_series - np.mean(time_series, axis=1), (i + 1) * base_time_period_shift)[
+            :, :len(time_series[0]) - 2 ** (no_of_octaves + 1) * base_time_period_shift]
+        for i in range(2 ** no_of_octaves)]
+    power_spectra_of_correlators = np.array([get_component_averaged_power_spectrum(correlator, sampling_frequency)
+                                             for correlator in correlators])
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     return [np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift),
             power_spectra_of_correlators[0, 0], np.fft.fft(transposed_power_spectra).transpose().real]
