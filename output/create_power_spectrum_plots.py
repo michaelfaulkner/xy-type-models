@@ -42,7 +42,7 @@ def main(config_file, power_spectrum_string):
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     trispectrum_figure, trispectrum_axis = plt.subplots(2 ** no_of_trispectrum_octaves, figsize=(10, 10))
-    plt.xlabel(r"frequency, $f'$ $(t^{-1})$", fontsize=10, labelpad=10)
+    plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
@@ -155,7 +155,7 @@ def main(config_file, power_spectrum_string):
 
     for index in range(2 ** no_of_trispectrum_octaves):
         trispectrum_axis[index].set_ylabel(
-            fr"$S_X^3 \left( f', f_{index} \right)$ / $S_X^3 \left( f_0', f_{index} \right)$", fontsize=10, labelpad=10)
+            fr"$S_X^3 \left( f, f_{index}' \right)$ / $S_X^3 \left( f_0, f_{index}' \right)$", fontsize=10, labelpad=10)
     trispectrum_figure.tight_layout()
     trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
