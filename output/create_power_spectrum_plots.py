@@ -123,11 +123,15 @@ def main(config_file, power_spectrum_string):
         for index, correlator in enumerate(power_spectrum_of_correlators):
             if index == 0:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color,
-                                       label=f"temperature = {temperature:.2f}")
+                                                   label=f"temperature = {temperature:.2f}")
             else:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
-        for index in range(len(power_trispectrum[0])):
-            trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color)
+        for index in range(2 ** no_of_trispectrum_octaves):
+            if index == 0:
+                trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
+                                               label=f"temperature = {temperature:.2f}")
+            else:
+                trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color)
 
         temperature -= magnitude_of_temperature_increments
 
@@ -138,7 +142,7 @@ def main(config_file, power_spectrum_string):
     correlators_axis[0].loglog(x, 0.01 * x ** (-1.0), color="red", label=r"$f^{-1}$")
     correlators_axis[0].loglog(x, 0.001 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
     correlators_axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
-    for index in range(len(power_spectrum_of_correlators)):
+    for index in range(no_of_power_2_correlators + no_of_power_10_correlators):
         if index < no_of_power_2_correlators:
             correlators_axis[index + 1].set_ylabel(
                 fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)})$",
