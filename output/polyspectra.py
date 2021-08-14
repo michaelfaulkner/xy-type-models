@@ -58,7 +58,7 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
             2, int(len(correlators[len(correlators) - 1][0]) / 2)) for correlator in correlators])
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     return [np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift),
-            power_spectra_of_correlators[0, 0], np.fft.fft(transposed_power_spectra).transpose()]
+            power_spectra_of_correlators[0, 0], np.fft.fft(transposed_power_spectra).transpose().real]
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
