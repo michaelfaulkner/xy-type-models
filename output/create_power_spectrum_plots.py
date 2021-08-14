@@ -31,15 +31,18 @@ def main(config_file, power_spectrum_string):
     else:
         magnitude_of_temperature_increments = (final_temperature -
                                                initial_temperature) / no_of_temperature_increments
-
-    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     no_of_power_2_correlators = 3
     no_of_power_10_correlators = 4
-    figure, axis = plt.subplots(1 + no_of_power_2_correlators + no_of_power_10_correlators, figsize=(10, 20))
+    no_of_trispectrum_octaves = 3
+    trispectrum_base_period_shift = 1
+
+    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
+    correlators_figure, correlators_axis = plt.subplots(1 + no_of_power_2_correlators + no_of_power_10_correlators,
+                                                        figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-    trispectrum_figure, trispectrum_axis = plt.subplots(8, figsize=(10, 10))
-    plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
+    trispectrum_figure, trispectrum_axis = plt.subplots(2 ** no_of_trispectrum_octaves, figsize=(10, 10))
+    plt.xlabel(r"frequency, $f'$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
@@ -88,18 +91,15 @@ def main(config_file, power_spectrum_string):
         if no_of_jobs == 1:
             power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
                                                                   temperature_directory, beta, no_of_sites,
-                                                                  no_of_equilibration_sweeps, no_of_octaves=3)
+                                                                  no_of_equilibration_sweeps, no_of_trispectrum_octaves,
+                                                                  trispectrum_base_period_shift)
         else:
             power_trispectra = pool.starmap(polyspectra.get_power_trispectrum,
                                             [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
-                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps, 3)
+                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+                                              no_of_trispectrum_octaves, trispectrum_base_period_shift)
                                              for job_number in range(no_of_jobs)])
             power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
-
-        '''for index in range(len(power_trispectrum[0])):
-            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_{index}_"
-                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                np.savetxt(data_file, power_trispectrum, delimiter=",")'''
 
         # attempt at normalising power trispectrum with respect to its low-frequency value; final 2 lines throw errors
         '''print(power_trispectrum[2][:])
@@ -113,14 +113,19 @@ def main(config_file, power_spectrum_string):
         print(power_trispectrum[2][:] / power_trispectrum[2][:, 0])
         print([spectrum[:] / spectrum[:, 0] for spectrum in power_trispectrum[2]])'''
 
+        '''for index in range(len(power_trispectrum[0])):
+            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_{index}_"
+                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
+                np.savetxt(data_file, power_trispectrum, delimiter=",")'''
+
         current_color = next(colors)
-        axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
+        correlators_axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
         for index, correlator in enumerate(power_spectrum_of_correlators):
             if index == 0:
-                axis[index + 1].loglog(correlator[0], correlator[1], color=current_color,
+                correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color,
                                        label=f"temperature = {temperature:.2f}")
             else:
-                axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
+                correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
         for index in range(len(power_trispectrum[0])):
             trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color)
 
@@ -130,26 +135,39 @@ def main(config_file, power_spectrum_string):
         pool.close()
 
     x = np.linspace(1.0e-2, 10.0, 10000)
-    axis[0].loglog(x, 0.01 * x ** (-1.0), color="red", label=r"$f^{-1}$")
-    axis[0].loglog(x, 0.001 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
-    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
+    correlators_axis[0].loglog(x, 0.01 * x ** (-1.0), color="red", label=r"$f^{-1}$")
+    correlators_axis[0].loglog(x, 0.001 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
+    correlators_axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
     for index in range(len(power_spectrum_of_correlators)):
         if index < no_of_power_2_correlators:
-            axis[index + 1].set_ylabel(
+            correlators_axis[index + 1].set_ylabel(
                 fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)})$",
                 fontsize=10,
                 labelpad=10)
         else:
-            axis[index + 1].set_ylabel(
+            correlators_axis[index + 1].set_ylabel(
                 fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, "
                 fr"$Y(t) = X(t) X(t + {10 ** (index - no_of_power_2_correlators + 1)})$", fontsize=10, labelpad=10)
-    figure.tight_layout()
-    legend = axis[0].legend(loc="lower left", fontsize=10), axis[1].legend(loc="lower left", fontsize=10)
-    legend[0].get_frame().set_edgecolor("k")
-    legend[0].get_frame().set_lw(1.5)
-    legend[1].get_frame().set_edgecolor("k")
-    legend[1].get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf", bbox_inches="tight")
+    correlators_figure.tight_layout()
+    correlators_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
+                          correlators_axis[1].legend(loc="lower left", fontsize=10))
+    correlators_legend[0].get_frame().set_edgecolor("k")
+    correlators_legend[0].get_frame().set_lw(1.5)
+    correlators_legend[1].get_frame().set_edgecolor("k")
+    correlators_legend[1].get_frame().set_lw(1.5)
+    correlators_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf",
+                               bbox_inches="tight")
+
+    for index in range(2 ** no_of_trispectrum_octaves):
+        trispectrum_axis[index].set_ylabel(
+            fr"$S_X^3 \left( f', f_{index} \right)$ / $S_X^3 \left( f_0', f_{index} \right)$", fontsize=10, labelpad=10)
+    trispectrum_figure.tight_layout()
+    trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
+                          correlators_axis[1].legend(loc="lower left", fontsize=10))
+    trispectrum_legend[0].get_frame().set_edgecolor("k")
+    trispectrum_legend[0].get_frame().set_lw(1.5)
+    trispectrum_legend[1].get_frame().set_edgecolor("k")
+    trispectrum_legend[1].get_frame().set_lw(1.5)
     trispectrum_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum.pdf",
                                bbox_inches="tight")
 
