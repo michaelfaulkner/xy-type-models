@@ -33,9 +33,13 @@ def main(config_file, power_spectrum_string):
                                                initial_temperature) / no_of_temperature_increments
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    figure, axis = plt.subplots(2)
+    no_of_power_2_correlators = 3
+    no_of_power_10_correlators = 4
+    figure, axis = plt.subplots(1 + no_of_power_2_correlators + no_of_power_10_correlators, figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-    plt.ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
+    plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+    trispectrum_figure, trispectrum_axis = plt.subplots(8, figsize=(10, 10))
+    plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
@@ -49,8 +53,8 @@ def main(config_file, power_spectrum_string):
 
         try:
             with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
-                      f"temp_eq_{temperature:.2f}.csv", "r") as power_spectrum_file:
-                power_spectrum = np.loadtxt(power_spectrum_file, dtype=float, delimiter=",")
+                      f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
+                power_spectrum = np.loadtxt(data_file, dtype=float, delimiter=",")
         except IOError:
             if no_of_jobs == 1:
                 power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
@@ -65,29 +69,87 @@ def main(config_file, power_spectrum_string):
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum[1] /= power_spectrum[1, 0]
             with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
-                      f"temp_eq_{temperature:.2f}.csv", "w") as power_spectrum_file:
-                np.savetxt(power_spectrum_file, power_spectrum, delimiter=",")
+                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
+                np.savetxt(data_file, power_spectrum, delimiter=",")
+
+        power_spectrum_of_correlators = []
+        for index in range(no_of_power_2_correlators):
+            compute_power_spectra_of_correlators(beta, index, 2, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
+                                                 output_directory, pool, power_spectrum_of_correlators,
+                                                 power_spectrum_string, temperature, temperature_directory)
+
+        for index in range(no_of_power_10_correlators):
+            compute_power_spectra_of_correlators(beta, index, 10, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
+                                                 output_directory, pool, power_spectrum_of_correlators,
+                                                 power_spectrum_string, temperature, temperature_directory)
+
+        if no_of_jobs == 1:
+            power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
+                                                                  temperature_directory, beta, no_of_sites,
+                                                                  no_of_equilibration_sweeps, no_of_octaves=3)
+        else:
+            power_trispectra = pool.starmap(polyspectra.get_power_trispectrum,
+                                            [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+                                              None, 3) for job_number in range(no_of_jobs)])
+            power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+
+        '''for index in range(len(power_trispectrum[0])):
+            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_{index}_"
+                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
+                np.savetxt(data_file, power_trispectrum, delimiter=",")'''
+
+        # attempt at normalising power trispectrum with respect to its low-frequency value; final 2 lines throw errors
+        '''print(power_trispectrum[2][:])
+        print(power_trispectrum[2][:, 0])
+        print(power_trispectrum[2][0])
+        print(power_trispectrum[2][0, 0])
+        print(power_trispectrum[2][0] / power_trispectrum[2][0, 0])
+        print(power_trispectrum[2][1])
+        print(power_trispectrum[2][1, 0])
+        print(power_trispectrum[2][1] / power_trispectrum[2][1, 0])
+        print(power_trispectrum[2][:] / power_trispectrum[2][:, 0])
+        print([spectrum[:] / spectrum[:, 0] for spectrum in power_trispectrum[2]])'''
+
         current_color = next(colors)
-        axis[0].plot(power_spectrum[0], power_spectrum[1], color=current_color,
-                     label=f"temperature = {temperature:.2f}")
-        axis[1].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
+        axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
+        for index, correlator in enumerate(power_spectrum_of_correlators):
+            if index == 0:
+                axis[index + 1].loglog(correlator[0], correlator[1], color=current_color,
+                                       label=f"temperature = {temperature:.2f}")
+            else:
+                axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
+        for index in range(len(power_trispectrum[0])):
+            trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color)
+
         temperature -= magnitude_of_temperature_increments
 
     if no_of_jobs > 1:
         pool.close()
+
     x = np.linspace(1.0e-2, 10.0, 10000)
-    y = 0.01 * x ** (-1.0)
-    axis[1].loglog(x, y, color="red", label=r"$f^{-1}$")
-    y = 0.001 * x ** (-1.4)
-    axis[1].loglog(x, y, color="black", label=r"$f^{-1.4}$")
-    axis[0].set_xlim(-0.01, 0.5)
+    axis[0].loglog(x, 0.01 * x ** (-1.0), color="red", label=r"$f^{-1}$")
+    axis[0].loglog(x, 0.001 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
+    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
+    for index in range(len(power_spectrum_of_correlators)):
+        if index < no_of_power_2_correlators:
+            axis[index + 1].set_ylabel(
+                fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)})$",
+                fontsize=10,
+                labelpad=10)
+        else:
+            axis[index + 1].set_ylabel(
+                fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, "
+                fr"$Y(t) = X(t) X(t + {10 ** (index - no_of_power_2_correlators + 1)})$", fontsize=10, labelpad=10)
     figure.tight_layout()
-    legend = axis[0].legend(loc="upper right", fontsize=10), axis[1].legend(loc="lower left", fontsize=10)
+    legend = axis[0].legend(loc="lower left", fontsize=10), axis[1].legend(loc="lower left", fontsize=10)
     legend[0].get_frame().set_edgecolor("k")
     legend[0].get_frame().set_lw(1.5)
     legend[1].get_frame().set_edgecolor("k")
     legend[1].get_frame().set_lw(1.5)
     figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf", bbox_inches="tight")
+    trispectrum_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum.pdf",
+                               bbox_inches="tight")
 
 
 def check_for_config_errors(algorithm_name, power_spectrum_string):
@@ -108,6 +170,37 @@ def check_for_config_errors(algorithm_name, power_spectrum_string):
         print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
               "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
         exit()
+
+
+def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
+                                         output_directory, pool, power_spectrum_of_correlators, power_spectrum_string,
+                                         temperature, temperature_directory):
+    try:
+        with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_of_correlator_"
+                  f"time_shift_eq_{base ** (index + 1)}_temp_eq_{temperature:.2f}.csv", "r") as data_file:
+            correlator_power_spectrum = np.loadtxt(data_file, dtype=float, delimiter=",")
+    except IOError:
+        if no_of_jobs == 1:
+            correlator_power_spectrum = polyspectra.get_power_spectrum_of_correlator(power_spectrum_string,
+                                                                                     output_directory,
+                                                                                     temperature_directory,
+                                                                                     beta, no_of_sites,
+                                                                                     no_of_equilibration_sweeps,
+                                                                                     time_period_shift=(
+                                                                                             base ** (index + 1)))
+        else:
+            correlator_power_spectra = pool.starmap(
+                polyspectra.get_power_spectrum_of_correlator,
+                [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}", temperature_directory,
+                  beta, no_of_sites, no_of_equilibration_sweeps, None, base ** (index + 1))
+                 for job_number in range(no_of_jobs)])
+            correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
+        # normalise power spectrum with respect to its low-frequency value
+        correlator_power_spectrum[1] /= correlator_power_spectrum[1, 0]
+        with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_of_correlator_"
+                  f"time_shift_eq_{base ** (index + 1)}_temp_eq_{temperature:.2f}.csv", "w") as data_file:
+            np.savetxt(data_file, correlator_power_spectrum, delimiter=",")
+    power_spectrum_of_correlators.append(correlator_power_spectrum)
 
 
 if __name__ == "__main__":
