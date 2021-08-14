@@ -46,6 +46,8 @@ def main(config_file, power_spectrum_string):
     if no_of_jobs > 1:
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
+    else:
+        pool = None
 
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
