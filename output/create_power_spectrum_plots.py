@@ -90,8 +90,8 @@ def main(config_file, power_spectrum_string):
         else:
             power_trispectra = pool.starmap(polyspectra.get_power_trispectrum,
                                             [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
-                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-                                              None, 3) for job_number in range(no_of_jobs)])
+                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps, 3)
+                                             for job_number in range(no_of_jobs)])
             power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
 
         '''for index in range(len(power_trispectrum[0])):
@@ -192,7 +192,7 @@ def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_
             correlator_power_spectra = pool.starmap(
                 polyspectra.get_power_spectrum_of_correlator,
                 [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}", temperature_directory,
-                  beta, no_of_sites, no_of_equilibration_sweeps, None, base ** (index + 1))
+                  beta, no_of_sites, no_of_equilibration_sweeps, base ** (index + 1))
                  for job_number in range(no_of_jobs)])
             correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
         # normalise power spectrum with respect to its low-frequency value

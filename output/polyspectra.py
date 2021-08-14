@@ -21,7 +21,7 @@ def get_power_spectrum(power_spectrum_string, output_directory, temperature_dire
 
 
 def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                                     no_of_equilibration_sweeps, sampling_frequency=None, time_period_shift=10):
+                                     no_of_equilibration_sweeps, time_period_shift=10, sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
@@ -32,7 +32,7 @@ def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, te
 
 
 def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                          no_of_equilibration_sweeps, sampling_frequency=None, no_of_octaves=2):
+                          no_of_equilibration_sweeps, no_of_octaves=2, sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
