@@ -101,17 +101,8 @@ def main(config_file, power_spectrum_string):
                                              for job_number in range(no_of_jobs)])
             power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
 
-        # attempt at normalising power trispectrum with respect to its low-frequency value; final 2 lines throw errors
-        '''print(power_trispectrum[2][:])
-        print(power_trispectrum[2][:, 0])
-        print(power_trispectrum[2][0])
-        print(power_trispectrum[2][0, 0])
-        print(power_trispectrum[2][0] / power_trispectrum[2][0, 0])
-        print(power_trispectrum[2][1])
-        print(power_trispectrum[2][1, 0])
-        print(power_trispectrum[2][1] / power_trispectrum[2][1, 0])
-        print(power_trispectrum[2][:] / power_trispectrum[2][:, 0])
-        print([spectrum[:] / spectrum[:, 0] for spectrum in power_trispectrum[2]])'''
+        # normalise power trispectrum with respect to its low-frequency value
+        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
 
         '''for index in range(len(power_trispectrum[0])):
             with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_{index}_"
