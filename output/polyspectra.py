@@ -41,12 +41,12 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     if base_time_period_shift * 2 ** no_of_octaves >= len(time_series[0]):
         raise Exception("base_time_period_shift * 2 ** no_of_octaves must be less than the smallest power of 2 that is "
                         "less than the sample size.")
-    # create 2 ** no_of_octaves two-point correlators; here, [:, :len(time_series[0]) - 2 ** (no_of_octaves + 1)
+    # create 2 ** no_of_octaves two-point correlators; here, [:, :len(time_series[0]) - (2 ** no_of_octaves - 1)
     # * base_time_period_shift] ensures that (each component of) all correlators are the same length, which ensures
     # that their power spectra have common frequency values
     correlators = [
-        get_two_point_correlator(time_series - np.mean(time_series, axis=1), (i + 1) * base_time_period_shift)[
-            :, :len(time_series[0]) - 2 ** (no_of_octaves + 1) * base_time_period_shift]
+        get_two_point_correlator(time_series - np.mean(time_series, axis=1), i * base_time_period_shift)[
+            :, :len(time_series[0]) - (2 ** no_of_octaves - 1) * base_time_period_shift]
         for i in range(2 ** no_of_octaves)]
     power_spectra_of_correlators = np.array([get_component_averaged_power_spectrum(correlator, sampling_frequency)
                                              for correlator in correlators])
