@@ -54,7 +54,7 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     spectra_in_frequency_shift_space = np.array(
         [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
-         if (0 < index == 2 ** (math.floor(math.log(index, 2))))])
+         if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
     return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
             power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
 

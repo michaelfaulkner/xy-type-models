@@ -41,7 +41,7 @@ def main(config_file, power_spectrum_string):
                                                         figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-    trispectrum_figure, trispectrum_axis = plt.subplots(no_of_trispectrum_octaves + 1, figsize=(10, 10))
+    trispectrum_figure, trispectrum_axis = plt.subplots(no_of_trispectrum_octaves + 2, figsize=(10, 10))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
@@ -94,7 +94,7 @@ def main(config_file, power_spectrum_string):
             with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
                 power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-            for index in range(no_of_trispectrum_octaves + 1):
+            for index in range(no_of_trispectrum_octaves + 2):
                 with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
                     data = np.loadtxt(data_file, dtype=float,delimiter=",")
@@ -121,7 +121,7 @@ def main(config_file, power_spectrum_string):
             with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-            for index in range(no_of_trispectrum_octaves + 1):
+            for index in range(no_of_trispectrum_octaves + 2):
                 with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                     np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
@@ -134,7 +134,7 @@ def main(config_file, power_spectrum_string):
                                                    label=f"temperature = {temperature:.2f}")
             else:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
-        for index in range(no_of_trispectrum_octaves + 1):
+        for index in range(no_of_trispectrum_octaves + 2):
             if index == 0:
                 trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
                                                label=f"temperature = {temperature:.2f}")
@@ -170,8 +170,11 @@ def main(config_file, power_spectrum_string):
     correlators_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf",
                                bbox_inches="tight")
 
-    for index in range(no_of_trispectrum_octaves + 1):
+    for index in range(no_of_trispectrum_octaves + 2):
         if index == 0:
+            trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, f' = 0 \right)|$ / $|S_X^3 \left( f_0, f' = 0 "
+                                               fr"\right)|$", fontsize=10, labelpad=10)
+        elif index == 1:
             trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' "
                                                fr"\right)|$, $f_0' = {power_trispectrum[0][0]}$", fontsize=10,
                                                labelpad=10)
