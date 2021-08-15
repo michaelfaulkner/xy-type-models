@@ -33,7 +33,7 @@ def main(config_file, power_spectrum_string):
                                                initial_temperature) / no_of_temperature_increments
     no_of_power_2_correlators = 3
     no_of_power_10_correlators = 4
-    no_of_trispectrum_octaves = 3
+    no_of_trispectrum_octaves = 2
     trispectrum_base_period_shift = 1
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
@@ -41,7 +41,7 @@ def main(config_file, power_spectrum_string):
                                                         figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-    trispectrum_figure, trispectrum_axis = plt.subplots(2 ** no_of_trispectrum_octaves, figsize=(10, 10))
+    trispectrum_figure, trispectrum_axis = plt.subplots(no_of_trispectrum_octaves + 1, figsize=(10, 10))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
@@ -93,7 +93,7 @@ def main(config_file, power_spectrum_string):
             with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_f_prime_frequency_values_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 power_trispectrum[0] = np.loadtxt(data_file, dtype=float, delimiter=",")
-            for index in range(2 ** no_of_trispectrum_octaves):
+            for index in range(no_of_trispectrum_octaves + 1):
                 with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                     power_trispectrum[1], power_trispectrum[2][index] = np.loadtxt(
@@ -117,7 +117,7 @@ def main(config_file, power_spectrum_string):
             with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_f_prime_frequency_values_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-            for index in range(2 ** no_of_trispectrum_octaves):
+            for index in range(no_of_trispectrum_octaves + 1):
                 with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                     np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
@@ -130,7 +130,7 @@ def main(config_file, power_spectrum_string):
                                                    label=f"temperature = {temperature:.2f}")
             else:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
-        for index in range(2 ** no_of_trispectrum_octaves):
+        for index in range(no_of_trispectrum_octaves + 1):
             if index == 0:
                 trispectrum_axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
                                                label=f"temperature = {temperature:.2f}")
@@ -166,9 +166,14 @@ def main(config_file, power_spectrum_string):
     correlators_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf",
                                bbox_inches="tight")
 
-    for index in range(2 ** no_of_trispectrum_octaves):
-        trispectrum_axis[index].set_ylabel(
-            fr"$S_X^3 \left( f, f_{index}' \right)$ / $S_X^3 \left( f_0, f_{index}' \right)$", fontsize=10, labelpad=10)
+    for index in range(no_of_trispectrum_octaves + 1):
+        if index == 0:
+            trispectrum_axis[index].set_ylabel(fr"$S_X^3 \left( f, f_0' \right)$ / $S_X^3 \left( f_0, f_0' \right)$, "
+                                               fr"$f_0' = {power_trispectrum[0][0]}$", fontsize=10, labelpad=10)
+        else:
+            trispectrum_axis[index].set_ylabel(fr"$S_X^3 \left( f, {2 ** index} f_0' \right)$ / $S_X^3 \left( f_0, "
+                                               fr"{2 ** index} f_0' \right)$, $f_0' = {power_trispectrum[0][0]}$",
+                                               fontsize=10, labelpad=10)
     trispectrum_figure.tight_layout()
     trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
