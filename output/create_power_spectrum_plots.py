@@ -172,11 +172,12 @@ def main(config_file, power_spectrum_string):
 
     for index in range(no_of_trispectrum_octaves + 1):
         if index == 0:
-            trispectrum_axis[index].set_ylabel(fr"$S_X^3 \left( f, f_0' \right)$ / $S_X^3 \left( f_0, f_0' \right)$, "
-                                               fr"$f_0' = {power_trispectrum[0][0]}$", fontsize=10, labelpad=10)
+            trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' "
+                                               fr"\right)|$, $f_0' = {power_trispectrum[0][0]}$", fontsize=10,
+                                               labelpad=10)
         else:
-            trispectrum_axis[index].set_ylabel(fr"$S_X^3 \left( f, {2 ** index} f_0' \right)$ / $S_X^3 \left( f_0, "
-                                               fr"{2 ** index} f_0' \right)$, $f_0' = {power_trispectrum[0][0]}$",
+            trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, {2 ** index} f_0' \right)|$ / $|S_X^3 \left( f_0, "
+                                               fr"{2 ** index} f_0' \right)|$, $f_0' = {power_trispectrum[0][0]}$",
                                                fontsize=10, labelpad=10)
     trispectrum_figure.tight_layout()
     trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
