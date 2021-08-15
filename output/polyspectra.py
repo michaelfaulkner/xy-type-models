@@ -83,8 +83,10 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
 
 def get_two_point_correlator(time_series, time_period_shift):
     """As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
-        time series (rather than using np.roll())"""
-    return np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift]
+        time series (rather than using np.roll()).  Previously, we returned
+        np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
+        but have since removed the np.conj() operation as we only consider real-valued signals."""
+    return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
 '''
