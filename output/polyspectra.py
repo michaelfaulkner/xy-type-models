@@ -52,13 +52,11 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     power_spectra_of_correlators = np.array([get_component_averaged_power_spectrum(correlator, sampling_frequency)
                                              for correlator in correlators])
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
-    octave_frequencies = np.array([abs(frequency) for index, frequency in
-                                   enumerate(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift))
-                                   if (0 < index == 2 ** (math.floor(math.log(index, 2))))])
     spectra_in_frequency_shift_space = np.array(
         [item for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose().real)
          if (0 < index == 2 ** (math.floor(math.log(index, 2))))])
-    return [octave_frequencies, power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
+    return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
+            power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):

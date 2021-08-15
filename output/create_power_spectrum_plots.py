@@ -89,15 +89,19 @@ def main(config_file, power_spectrum_string):
                                                  power_spectrum_string, temperature, temperature_directory)
 
         try:
-            power_trispectrum = [[], [], []]
-            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_f_prime_frequency_values_"
-                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                power_trispectrum[0] = np.loadtxt(data_file, dtype=float, delimiter=",")
+            power_trispectrum = []
+            stored_spectra = []
+            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
+                      f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
+                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
             for index in range(no_of_trispectrum_octaves + 1):
                 with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
-                          f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                    power_trispectrum[1], power_trispectrum[2][index] = np.loadtxt(
-                        data_file, dtype=float, delimiter=",")
+                          f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
+                    data = np.loadtxt(data_file, dtype=float,delimiter=",")
+                    if index == 0:
+                        power_trispectrum.append(data[0])
+                    stored_spectra.append(data[1])
+            power_trispectrum.append(np.array(stored_spectra))
         except IOError:
             if no_of_jobs == 1:
                 power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
@@ -114,7 +118,7 @@ def main(config_file, power_spectrum_string):
                 power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
             # normalise power trispectrum with respect to its low-frequency value
             power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
-            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_f_prime_frequency_values_"
+            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_trispectrum[0], delimiter=",")
             for index in range(no_of_trispectrum_octaves + 1):

@@ -1,8 +1,8 @@
 'hxy-metropolis'                        algorithm_name
 'output/polyspectra/test_trispectrum'   output_directory
 8                                       integer_lattice_length
-10                                   no_of_equilibration_sweeps
-40                                  no_of_observations
+10000                                   no_of_equilibration_sweeps
+100000                                  no_of_observations
 0.5d0                                   initial_temperature
 0.5d0                                   final_temperature
 0                                       no_of_temperature_increments
@@ -12,4 +12,4 @@
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 .false.                                 calculate_external_minimising_twist_field
-1                                      no_of_parallel_jobs
+32                                      no_of_parallel_jobs
