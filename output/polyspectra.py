@@ -32,13 +32,40 @@ def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, te
 
 
 def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                          no_of_equilibration_sweeps, no_of_octaves=2, base_time_period_shift=1,
+                          no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2, base_time_period_shift=1,
                           sampling_frequency=None):
+    if no_of_octaves <= 0:
+        raise Exception("no_of_octaves must be a positive integer.")
+    if no_of_jobs == 1:
+        power_spectra_of_correlators = get_power_spectra_of_correlators(power_spectrum_string, output_directory,
+                                                                        temperature_directory, beta, no_of_sites,
+                                                                        no_of_equilibration_sweeps,
+                                                                        base_time_period_shift, no_of_octaves,
+                                                                        sampling_frequency)
+    else:
+        power_spectra_of_correlators = pool.starmap(get_power_spectra_of_correlators,
+                                                    [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                                      temperature_directory, beta, no_of_sites,
+                                                      no_of_equilibration_sweeps, base_time_period_shift, no_of_octaves,
+                                                      sampling_frequency)
+                                                     for job_number in range(no_of_jobs)])
+        power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
+    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
+    spectra_in_frequency_shift_space = [np.absolute(item) for index, item in
+                                        enumerate(np.fft.fft(transposed_power_spectra).transpose())
+                                        if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))]
+    # normalise power trispectrum with respect to its low-frequency value
+    spectra_in_frequency_shift_space = [spectrum / spectrum[0] for spectrum in spectra_in_frequency_shift_space]
+    return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
+            power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
+
+
+def get_power_spectra_of_correlators(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                     no_of_equilibration_sweeps, base_time_period_shift, no_of_octaves,
+                                     sampling_frequency):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
-    if no_of_octaves <= 0:
-        raise Exception("no_of_octaves must be a positive integer.")
     if base_time_period_shift * 2 ** (no_of_octaves + 1) >= len(time_series[0]):
         raise Exception("base_time_period_shift * 2 ** (no_of_octaves + 1) must be less than the smallest power of 2 "
                         "that is less than the sample size.")
@@ -49,14 +76,8 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), i * base_time_period_shift)[
             :, :len(time_series[0]) - (2 ** (no_of_octaves + 1) - 1) * base_time_period_shift]
         for i in range(2 ** (no_of_octaves + 1))]
-    power_spectra_of_correlators = np.array([get_component_averaged_power_spectrum(correlator, sampling_frequency)
-                                             for correlator in correlators])
-    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
-    spectra_in_frequency_shift_space = np.array(
-        [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
-         if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
-    return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
-            power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
+    return np.array(
+        [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
