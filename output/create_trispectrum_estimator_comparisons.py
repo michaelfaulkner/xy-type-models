@@ -34,19 +34,19 @@ def main(config_file, power_spectrum_string):
     trispectrum_base_period_shift = 1
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    figure, axis = plt.subplots(3, figsize=(10, 10))
-    plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-    plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-
     if no_of_jobs > 1:
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
     else:
         pool = None
 
-    for i in range(1):
+    for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
+        figure, axis = plt.subplots(3, 2, figsize=(10, 10))
+        [axis[2, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
+        plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+
         power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
                                                               temperature_directory, beta, no_of_sites,
                                                               no_of_equilibration_sweeps, no_of_jobs, pool,
@@ -58,50 +58,63 @@ def main(config_file, power_spectrum_string):
                                                                             trispectrum_base_period_shift)
         for index in range(3):
             if index == 0:
-                axis[index].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                   label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
+                                      label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
+                                      label="shortcut estimator")
             elif index == 1:
-                axis[index].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                   label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
+                                      label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
+                                      label="shortcut estimator")
             elif index == 2:
-                axis[index].loglog(power_trispectrum_direct[1],
-                                   power_trispectrum_direct[2][len(power_trispectrum_direct[2]) - 1],
-                                   color='blue', label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_direct[1],
+                                      power_trispectrum_direct[2][len(power_trispectrum_direct[2]) - 1],
+                                      color='blue', label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum[1],
+                                      power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
+                                      label="shortcut estimator")
 
             if index == 0:
-                axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
-                                   label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
+                                      label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
+                                      label="direct estimator")
             elif index == 1:
-                axis[index].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
-                                   label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
+                                      label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
+                                      label="direct estimator")
             elif index == 2:
-                axis[index].loglog(power_trispectrum[1],
-                                   power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
-                                   label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum[1],
+                                      power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
+                                      label="shortcut estimator")
+                axis[index, 1].loglog(power_trispectrum_direct[1],
+                                      power_trispectrum_direct[2][len(power_trispectrum_direct[2]) - 1],
+                                      color='blue', label="direct estimator")
 
         for index in range(3):
             if index == 0:
-                axis[index].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f'=0 \right)$",
-                                       fontsize=10,
-                                       labelpad=10)
+                axis[index, 0].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f'=0 \right)$",
+                                          fontsize=10,
+                                          labelpad=10)
             elif index == 1:
-                axis[index].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
-                                       fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
+                                          fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
             else:
-                axis[index].set_ylabel(fr"$|S_X^3 \left( f, {len(power_trispectrum_direct[2])} f_0' \right)|$ / "
-                                       fr"$|S_X^3 \left(f_0, {len(power_trispectrum_direct[2])} f_0' \right)|$, "
-                                       fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {len(power_trispectrum_direct[2])} f_0' \right)|$ / "
+                                          fr"$|S_X^3 \left(f_0, {len(power_trispectrum_direct[2])} f_0' \right)|$, "
+                                          fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
 
         figure.tight_layout()
-        trispectrum_legend = (axis[0].legend(loc="lower left", fontsize=10),
-                              axis[1].legend(loc="lower left", fontsize=10),
-                              axis[2].legend(loc="lower left", fontsize=10))
+        trispectrum_legend = (axis[0, 0].legend(loc="lower left", fontsize=10),
+                              axis[0, 1].legend(loc="lower left", fontsize=10))
         for legend in trispectrum_legend:
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{power_spectrum_string}_compare_power_trispectrum_functions"
                        f"_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
-
+        figure.clear()
         temperature -= magnitude_of_temperature_increments
 
     if no_of_jobs > 1:
