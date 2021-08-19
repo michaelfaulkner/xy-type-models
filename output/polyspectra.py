@@ -37,6 +37,28 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
     if no_of_jobs == 1:
+        power_trispectrum = get_single_observation_of_power_trispectrum(power_spectrum_string, output_directory,
+                                                                        temperature_directory, beta, no_of_sites,
+                                                                        no_of_equilibration_sweeps, no_of_octaves,
+                                                                        base_time_period_shift, sampling_frequency)
+    else:
+        power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
+                                        [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                          temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+                                          no_of_octaves, base_time_period_shift, sampling_frequency)
+                                         for job_number in range(no_of_jobs)])
+        power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+    # normalise estimator of power trispectrum with respect to its low-frequency value
+    power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+    return power_trispectrum
+
+
+def get_power_trispectrum_direct(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+                                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2,
+                                 base_time_period_shift=1, sampling_frequency=None):
+    if no_of_octaves <= 0:
+        raise Exception("no_of_octaves must be a positive integer.")
+    if no_of_jobs == 1:
         power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(power_spectrum_string,
                                                                                     output_directory,
                                                                                     temperature_directory, beta,
@@ -60,33 +82,6 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     spectra_in_frequency_shift_space = [spectrum / spectrum[0] for spectrum in spectra_in_frequency_shift_space]
     return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
             power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
-
-
-def get_power_trispectrum_estimator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
-                                    no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2,
-                                    base_time_period_shift=1, sampling_frequency=None):
-    if no_of_octaves <= 0:
-        raise Exception("no_of_octaves must be a positive integer.")
-    if no_of_jobs == 1:
-        power_trispectrum_estimator = get_single_observation_of_power_trispectrum_estimator(power_spectrum_string,
-                                                                                            output_directory,
-                                                                                            temperature_directory, beta,
-                                                                                            no_of_sites,
-                                                                                            no_of_equilibration_sweeps,
-                                                                                            no_of_octaves,
-                                                                                            base_time_period_shift,
-                                                                                            sampling_frequency)
-    else:
-        power_trispectrum_estimators = pool.starmap(get_single_observation_of_power_trispectrum_estimator,
-                                                    [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
-                                                      temperature_directory, beta, no_of_sites,
-                                                      no_of_equilibration_sweeps, no_of_octaves, base_time_period_shift,
-                                                      sampling_frequency)
-                                                     for job_number in range(no_of_jobs)])
-        power_trispectrum_estimator = np.mean(np.array(power_trispectrum_estimators, dtype=object), axis=0)
-    # normalise estimator of power trispectrum with respect to its low-frequency value
-    power_trispectrum_estimator[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum_estimator[2]]
-    return power_trispectrum_estimator
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
@@ -143,10 +138,9 @@ def get_power_spectra_of_trispectrum_correlators(power_spectrum_string, output_d
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
 
 
-def get_single_observation_of_power_trispectrum_estimator(power_spectrum_string, output_directory,
-                                                          temperature_directory, beta, no_of_sites,
-                                                          no_of_equilibration_sweeps, no_of_octaves=2,
-                                                          base_time_period_shift=1, sampling_frequency=None):
+def get_single_observation_of_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta,
+                                                no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
+                                                base_time_period_shift=1, sampling_frequency=None):
     power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(power_spectrum_string, output_directory,
                                                                                 temperature_directory, beta,
                                                                                 no_of_sites, no_of_equilibration_sweeps,
