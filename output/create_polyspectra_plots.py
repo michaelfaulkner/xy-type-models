@@ -154,10 +154,9 @@ def main(config_file, power_spectrum_string):
     correlators_figure.tight_layout()
     correlators_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
-    correlators_legend[0].get_frame().set_edgecolor("k")
-    correlators_legend[0].get_frame().set_lw(1.5)
-    correlators_legend[1].get_frame().set_edgecolor("k")
-    correlators_legend[1].get_frame().set_lw(1.5)
+    for legend in correlators_legend:
+        legend.get_frame().set_edgecolor("k")
+        legend.get_frame().set_lw(1.5)
     correlators_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf",
                                bbox_inches="tight")
 
@@ -176,10 +175,9 @@ def main(config_file, power_spectrum_string):
     trispectrum_figure.tight_layout()
     trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
-    trispectrum_legend[0].get_frame().set_edgecolor("k")
-    trispectrum_legend[0].get_frame().set_lw(1.5)
-    trispectrum_legend[1].get_frame().set_edgecolor("k")
-    trispectrum_legend[1].get_frame().set_lw(1.5)
+    for legend in trispectrum_legend:
+        legend.get_frame().set_edgecolor("k")
+        legend.get_frame().set_lw(1.5)
     trispectrum_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum.pdf",
                                bbox_inches="tight")
 
