@@ -65,4 +65,8 @@ def check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("IndexError: Two positional arguments required - give the configuration-file location and "
+              "the string of the observable whose trace plot you wish to create.")
+        raise SystemExit
     main(sys.argv[1], sys.argv[2])

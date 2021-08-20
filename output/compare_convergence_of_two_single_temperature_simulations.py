@@ -104,4 +104,8 @@ def main(config_file_1, config_file_2):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("IndexError: Two positional arguments required - give the configuration-file location and "
+              "the string of the observable whose CDF you wish to compare.")
+        raise SystemExit
     main(sys.argv[1], sys.argv[2])
