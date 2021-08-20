@@ -15,6 +15,7 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string):
+    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
     config_data_getter.check_for_observable_error(algorithm_name, observable_string)
@@ -24,7 +25,6 @@ def main(config_file, observable_string):
     no_of_trispectrum_octaves = 6
     trispectrum_base_period_shift = 1
 
-    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     if no_of_jobs > 1:
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
