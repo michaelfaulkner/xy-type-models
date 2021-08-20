@@ -207,7 +207,6 @@ def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("IndexError: Two positional arguments required - give the configuration-file location and "
-              "the string of the observable whose power spectrum you wish to calculate.")
-        raise SystemExit
+        raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
+                        "the string of the observable whose polyspectra you wish to estimate.")
     main(sys.argv[1], sys.argv[2])

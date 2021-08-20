@@ -72,4 +72,7 @@ def main(config_file):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise Exception("InterfaceError: One positional argument required - give the location of the configuration "
+                        "file.")
     main(sys.argv[1])

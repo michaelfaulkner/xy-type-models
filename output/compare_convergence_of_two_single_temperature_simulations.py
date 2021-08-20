@@ -104,6 +104,6 @@ def get_required_config_data_and_error_check(config_file_1, config_file_2):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("IndexError: Two positional arguments required - give the locations of the two configuration files.")
-        raise SystemExit
+        raise Exception("InterfaceError: Two positional arguments required - give the locations of the two "
+                        "configuration files.")
     main(sys.argv[1], sys.argv[2])
