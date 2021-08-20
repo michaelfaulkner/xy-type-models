@@ -55,7 +55,7 @@ def main(config_file_1, config_file_2):
         (algorithm_name_1 == "elementary-electrolyte" and algorithm_name_2 != "elementary-electrolyte") or
             (algorithm_name_1 == "multivalued-electrolyte" and algorithm_name_2 != "multivalued-electrolyte")):
         print("ConfigurationError: give the same model in each configuration file.")
-        raise SystemExitexit()
+        raise SystemExit
     if temperature_1 != temperature_2:
         print("ConfigurationError: give the same initial_temperature in each configuration file.")
         raise SystemExit
