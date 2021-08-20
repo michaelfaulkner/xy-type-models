@@ -30,7 +30,7 @@ def main(config_file, power_spectrum_string):
     else:
         magnitude_of_temperature_increments = (final_temperature -
                                                initial_temperature) / no_of_temperature_increments
-    no_of_trispectrum_octaves = 2
+    no_of_trispectrum_octaves = 3
     trispectrum_base_period_shift = 1
 
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
@@ -43,9 +43,6 @@ def main(config_file, power_spectrum_string):
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
-        figure, axis = plt.subplots(3, 2, figsize=(10, 10))
-        [axis[2, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
-        plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
         power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
                                                               temperature_directory, beta, no_of_sites,
@@ -56,6 +53,11 @@ def main(config_file, power_spectrum_string):
                                                                             no_of_equilibration_sweeps, no_of_jobs,
                                                                             pool, no_of_trispectrum_octaves,
                                                                             trispectrum_base_period_shift)
+
+        figure, axis = plt.subplots(3, 2, figsize=(10, 10))
+        [axis[2, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
+        plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+
         for index in range(3):
             if index == 0:
                 axis[index, 0].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
@@ -102,8 +104,8 @@ def main(config_file, power_spectrum_string):
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
                                           fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
             else:
-                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {len(power_trispectrum_direct[2])} f_0' \right)|$ / "
-                                          fr"$|S_X^3 \left(f_0, {len(power_trispectrum_direct[2])} f_0' \right)|$, "
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$ / "
+                                          fr"$|S_X^3 \left(f_0, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
                                           fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
 
         figure.tight_layout()
@@ -114,7 +116,7 @@ def main(config_file, power_spectrum_string):
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{power_spectrum_string}_compare_power_trispectrum_functions"
                        f"_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
-        figure.clear()
+        figure.clf()
         temperature -= magnitude_of_temperature_increments
 
     if no_of_jobs > 1:
