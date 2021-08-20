@@ -26,3 +26,23 @@ def get_basic_data(config_file_location):
                 no_of_parallel_jobs = int(row[0].replace("no_of_parallel_jobs", "").replace(" ", ""))
     return (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, no_of_observations,
             initial_temperature, final_temperature, no_of_temperature_increments, no_of_parallel_jobs)
+
+
+def check_for_config_errors(algorithm_name, observable_string):
+    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
+            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_norm" or
+             observable_string == "helicity_modulus" or observable_string == "inverse_vacuum_permittivity" or
+             observable_string == "toroidal_vortex_polarisation")):
+        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
+              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
+              "the second positional argument.")
+        raise SystemExit
+    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
+         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
+         algorithm_name == "hxy-gaussian-noise-metropolis") and (
+            observable_string == "inverse_permittivity" or
+            observable_string == "topological_sector_fluctuations" or
+            observable_string == "toroidal_polarisation")):
+        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
+              "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
+        raise SystemExit

@@ -15,15 +15,14 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
 
 
-def main(config_file, power_spectrum_string):
+def main(config_file, observable_string):
     basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
                                                                      basic_config_data[2], basic_config_data[3],
                                                                      basic_config_data[5], basic_config_data[6],
                                                                      basic_config_data[7], basic_config_data[8])
-
-    check_for_config_errors(algorithm_name, power_spectrum_string)
+    config_data_getter.check_for_config_errors(algorithm_name, observable_string)
     no_of_sites = integer_lattice_length ** 2
     temperature = final_temperature
     if no_of_temperature_increments == 0:
@@ -57,23 +56,23 @@ def main(config_file, power_spectrum_string):
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
         try:
-            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
+            with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
                       f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
                 power_spectrum = np.loadtxt(data_file, dtype=float, delimiter=",")
         except IOError:
             if no_of_jobs == 1:
-                power_spectrum = polyspectra.get_power_spectrum(power_spectrum_string, output_directory,
+                power_spectrum = polyspectra.get_power_spectrum(observable_string, output_directory,
                                                                 temperature_directory, beta, no_of_sites,
                                                                 no_of_equilibration_sweeps)
             else:
                 power_spectra = pool.starmap(polyspectra.get_power_spectrum,
-                                             [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                             [(observable_string, f"{output_directory}/job_{job_number + 1}",
                                                temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
                                               for job_number in range(no_of_jobs)])
                 power_spectrum = np.mean(np.array(power_spectra), axis=0)
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum[1] /= power_spectrum[1, 0]
-            with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_"
+            with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_spectrum, delimiter=",")
 
@@ -81,21 +80,21 @@ def main(config_file, power_spectrum_string):
         for index in range(no_of_power_2_correlators):
             compute_power_spectra_of_correlators(beta, index, 2, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
                                                  output_directory, pool, power_spectrum_of_correlators,
-                                                 power_spectrum_string, temperature, temperature_directory)
+                                                 observable_string, temperature, temperature_directory)
 
         for index in range(no_of_power_10_correlators):
             compute_power_spectra_of_correlators(beta, index, 10, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
                                                  output_directory, pool, power_spectrum_of_correlators,
-                                                 power_spectrum_string, temperature, temperature_directory)
+                                                 observable_string, temperature, temperature_directory)
 
         try:
             power_trispectrum = []
             stored_spectra = []
-            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
+            with open(f"{output_directory}/{observable_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
                 power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
             for index in range(no_of_trispectrum_octaves + 2):
-                with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
                     data = np.loadtxt(data_file, dtype=float, delimiter=",")
                     if index == 0:
@@ -103,17 +102,17 @@ def main(config_file, power_spectrum_string):
                     stored_spectra.append(data[1])
             power_trispectrum.append(np.array(stored_spectra))
         except IOError:
-            power_trispectrum = polyspectra.get_power_trispectrum(power_spectrum_string, output_directory,
+            power_trispectrum = polyspectra.get_power_trispectrum(observable_string, output_directory,
                                                                   temperature_directory, beta, no_of_sites,
                                                                   no_of_equilibration_sweeps, no_of_jobs, pool,
                                                                   no_of_trispectrum_octaves,
                                                                   trispectrum_base_period_shift,
                                                                   sampling_frequency=None)
-            with open(f"{output_directory}/{power_spectrum_string}_power_trispectrum_base_octave_frequency_value_"
+            with open(f"{output_directory}/{observable_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_trispectrum[0], delimiter=",")
             for index in range(no_of_trispectrum_octaves + 2):
-                with open(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum_f_prime_{index}_"
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_f_prime_{index}_"
                           f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                     np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
 
@@ -157,7 +156,7 @@ def main(config_file, power_spectrum_string):
     for legend in correlators_legend:
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(1.5)
-    correlators_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum.pdf",
+    correlators_figure.savefig(f"{output_directory}/{observable_string}_normalised_power_spectrum.pdf",
                                bbox_inches="tight")
 
     for index in range(no_of_trispectrum_octaves + 2):
@@ -178,28 +177,8 @@ def main(config_file, power_spectrum_string):
     for legend in trispectrum_legend:
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(1.5)
-    trispectrum_figure.savefig(f"{output_directory}/{power_spectrum_string}_normalised_power_trispectrum.pdf",
+    trispectrum_figure.savefig(f"{output_directory}/{observable_string}_normalised_power_trispectrum.pdf",
                                bbox_inches="tight")
-
-
-def check_for_config_errors(algorithm_name, power_spectrum_string):
-    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (power_spectrum_string == "magnetisation_norm" or power_spectrum_string == "magnetisation_norm" or
-             power_spectrum_string == "helicity_modulus" or power_spectrum_string == "inverse_vacuum_permittivity" or
-             power_spectrum_string == "toroidal_vortex_polarisation")):
-        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
-              "the second positional argument.")
-        exit()
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
-         algorithm_name == "hxy-gaussian-noise-metropolis") and (
-            power_spectrum_string == "inverse_permittivity" or
-            power_spectrum_string == "topological_sector_fluctuations" or
-            power_spectrum_string == "toroidal_polarisation")):
-        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
-              "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
-        exit()
 
 
 def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
@@ -236,5 +215,5 @@ def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("IndexError: Two positional arguments required - give the configuration-file location and "
-              "the summary-statistic string whose power spectrum you wish to calculate.")
+              "the string of the observable whose power spectrum you wish to calculate.")
     main(sys.argv[1], sys.argv[2])

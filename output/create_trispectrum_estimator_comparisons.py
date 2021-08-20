@@ -6,6 +6,7 @@ import os
 import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
+
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
 config_data_getter = importlib.import_module("config_data_getter")
@@ -21,8 +22,7 @@ def main(config_file, observable_string):
                                                                      basic_config_data[2], basic_config_data[3],
                                                                      basic_config_data[5], basic_config_data[6],
                                                                      basic_config_data[7], basic_config_data[8])
-
-    check_for_config_errors(algorithm_name, observable_string)
+    config_data_getter.check_for_config_errors(algorithm_name, observable_string)
     no_of_sites = integer_lattice_length ** 2
     temperature = final_temperature
     if no_of_temperature_increments == 0:
@@ -123,29 +123,9 @@ def main(config_file, observable_string):
         pool.close()
 
 
-def check_for_config_errors(algorithm_name, observable_string):
-    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_norm" or
-             observable_string == "helicity_modulus" or observable_string == "inverse_vacuum_permittivity" or
-             observable_string == "toroidal_vortex_polarisation")):
-        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
-              "the second positional argument.")
-        raise SystemExit
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
-         algorithm_name == "hxy-gaussian-noise-metropolis") and (
-            observable_string == "inverse_permittivity" or
-            observable_string == "topological_sector_fluctuations" or
-            observable_string == "toroidal_polarisation")):
-        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
-              "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")
-        raise SystemExit
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("IndexError: Two positional arguments required - give the configuration-file location and "
-              "the summary-statistic string whose power spectrum you wish to calculate.")
+              "the string of the observable whose power spectrum you wish to calculate.")
         raise SystemExit
     main(sys.argv[1], sys.argv[2])
