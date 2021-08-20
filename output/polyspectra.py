@@ -152,20 +152,3 @@ def get_single_observation_of_power_trispectrum(observable_string, output_direct
          if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
     return [np.atleast_1d(np.fft.fftfreq(len(transposed_power_spectra[0]), d=base_time_period_shift)[1]),
             power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
-
-
-'''
-def get_magnetisation_phase_correlator_power_spectrum(output_directory, temperature_directory, beta, no_of_sites,
-                                                      no_of_equilibration_sweeps, sampling_frequency=None,
-                                                      shifted_time_period=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    sample = sample_getter.get_magnetisation_phase(output_directory, temperature_directory, beta, no_of_sites)[
-             no_of_equilibration_sweeps:]
-    relative_sample = sample - np.mean(sample)
-    if shifted_time_period is None:
-        shifted_time_period = int(0.1 * len(sample))
-    shifted_relative_sample = np.roll(relative_sample, shifted_time_period)
-    two_point_correlator = np.conj(relative_sample) * shifted_relative_sample
-    power_spectrum = signal.periodogram(two_point_correlator, fs=sampling_frequency)
-    return power_spectrum[0], np.array([item if abs(item) > 1.0e-15 else 0.0 for item in power_spectrum[1]])
-'''
