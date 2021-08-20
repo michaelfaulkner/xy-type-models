@@ -12,18 +12,18 @@ sys.path.insert(0, directory_containing_modules)
 sample_getter = importlib.import_module("sample_getter")
 
 
-def get_power_spectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_spectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                        no_of_equilibration_sweeps, sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
-def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_spectrum_of_correlator(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                      no_of_equilibration_sweeps, time_period_shift=10, sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     if time_period_shift >= len(time_series[0]):
         raise Exception("time_period_shift must be an integer less than the sample size.")
@@ -31,19 +31,19 @@ def get_power_spectrum_of_correlator(power_spectrum_string, output_directory, te
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
 
 
-def get_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_trispectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                           no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2, base_time_period_shift=1,
                           sampling_frequency=None):
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
     if no_of_jobs == 1:
-        power_trispectrum = get_single_observation_of_power_trispectrum(power_spectrum_string, output_directory,
+        power_trispectrum = get_single_observation_of_power_trispectrum(observable_string, output_directory,
                                                                         temperature_directory, beta, no_of_sites,
                                                                         no_of_equilibration_sweeps, no_of_octaves,
                                                                         base_time_period_shift, sampling_frequency)
     else:
         power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
-                                        [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                        [(observable_string, f"{output_directory}/job_{job_number + 1}",
                                           temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
                                           no_of_octaves, base_time_period_shift, sampling_frequency)
                                          for job_number in range(no_of_jobs)])
@@ -53,13 +53,13 @@ def get_power_trispectrum(power_spectrum_string, output_directory, temperature_d
     return power_trispectrum
 
 
-def get_power_trispectrum_direct(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_trispectrum_direct(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                  no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2,
                                  base_time_period_shift=1, sampling_frequency=None):
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
     if no_of_jobs == 1:
-        power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(power_spectrum_string,
+        power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string,
                                                                                     output_directory,
                                                                                     temperature_directory, beta,
                                                                                     no_of_sites,
@@ -68,7 +68,7 @@ def get_power_trispectrum_direct(power_spectrum_string, output_directory, temper
                                                                                     no_of_octaves, sampling_frequency)
     else:
         power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
-                                                    [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}",
+                                                    [(observable_string, f"{output_directory}/job_{job_number + 1}",
                                                       temperature_directory, beta, no_of_sites,
                                                       no_of_equilibration_sweeps, base_time_period_shift, no_of_octaves,
                                                       sampling_frequency)
@@ -92,9 +92,9 @@ def get_sampling_frequency(output_directory, sampling_frequency, temperature_dir
     return sampling_frequency
 
 
-def get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                     no_of_equilibration_sweeps):
-    get_sample_method = getattr(sample_getter, "get_" + power_spectrum_string)
+    get_sample_method = getattr(sample_getter, "get_" + observable_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
     sample = np.atleast_2d(sample)
     if len(sample) > 1:
@@ -118,11 +118,11 @@ def get_two_point_correlator(time_series, time_period_shift):
     return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
-def get_power_spectra_of_trispectrum_correlators(power_spectrum_string, output_directory, temperature_directory, beta,
+def get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
                                                  no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
                                                  no_of_octaves, sampling_frequency):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(power_spectrum_string, output_directory, temperature_directory, beta, no_of_sites,
+    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     if base_time_period_shift * 2 ** (no_of_octaves + 1) >= len(time_series[0]):
         raise Exception("base_time_period_shift * 2 ** (no_of_octaves + 1) must be less than the smallest power of 2 "
@@ -138,10 +138,10 @@ def get_power_spectra_of_trispectrum_correlators(power_spectrum_string, output_d
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
 
 
-def get_single_observation_of_power_trispectrum(power_spectrum_string, output_directory, temperature_directory, beta,
+def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
                                                 no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
                                                 base_time_period_shift=1, sampling_frequency=None):
-    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(power_spectrum_string, output_directory,
+    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string, output_directory,
                                                                                 temperature_directory, beta,
                                                                                 no_of_sites, no_of_equilibration_sweeps,
                                                                                 base_time_period_shift, no_of_octaves,
