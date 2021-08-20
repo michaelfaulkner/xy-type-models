@@ -16,12 +16,11 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string):
-    (final_temperature, initial_temperature, no_of_sites, no_of_equilibration_sweeps, no_of_jobs,
-     no_of_temperature_increments, output_directory) = config_data_getter.get_polyspectra_config_data(config_file,
-                                                                                                      observable_string)
-    (temperature,
-     magnitude_of_temperature_increments) = config_data_getter.get_current_temperature_and_magnitude_of_increments(
-        final_temperature, initial_temperature, no_of_temperature_increments)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
+    config_data_getter.check_for_observable_error(algorithm_name, observable_string)
+    (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
+        initial_temperature, final_temperature, no_of_temperature_increments)
 
     no_of_trispectrum_octaves = 3
     trispectrum_base_period_shift = 1

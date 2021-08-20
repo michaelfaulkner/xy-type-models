@@ -14,20 +14,11 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
 
 def main(config_file, observable_string):
-    basic_config_data = config_data_getter.get_basic_data(config_file)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = (
-        basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
-        basic_config_data[6], basic_config_data[7], basic_config_data[8])
-
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
     check_for_config_errors(algorithm_name, observable_string)
-    temperature = initial_temperature
-    no_of_sites = integer_lattice_length ** 2
-    if no_of_temperature_increments == 0:
-        magnitude_of_temperature_increments = 0.0
-    else:
-        magnitude_of_temperature_increments = (final_temperature -
-                                               initial_temperature) / no_of_temperature_increments
+    (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
+        initial_temperature, final_temperature, no_of_temperature_increments)
 
     output_file = open(output_directory + "/" + observable_string + "_vs_temperature.dat", "w")
     if observable_string == "acceptance_rates":

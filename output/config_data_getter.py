@@ -11,10 +11,9 @@ def get_basic_data(config_file_location):
             if 'integer_lattice_length' in row[0]:
                 integer_lattice_length = int(row[0].replace("'", "").replace("integer_lattice_length", "").replace(" ",
                                                                                                                    ""))
+                no_of_sites = integer_lattice_length ** 2
             if 'no_of_equilibration_sweeps' in row[0]:
                 no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
-            if 'no_of_observations' in row[0]:
-                no_of_observations = int(row[0].replace("no_of_observations", "").replace(" ", ""))
             if 'initial_temperature' in row[0]:
                 initial_temperature = float(row[0].replace("d0", "").replace("initial_temperature", "").replace(" ",
                                                                                                                 ""))
@@ -24,11 +23,11 @@ def get_basic_data(config_file_location):
                 no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
             if 'no_of_parallel_jobs' in row[0]:
                 no_of_parallel_jobs = int(row[0].replace("no_of_parallel_jobs", "").replace(" ", ""))
-    return (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, no_of_observations,
-            initial_temperature, final_temperature, no_of_temperature_increments, no_of_parallel_jobs)
+    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+            final_temperature, no_of_temperature_increments, no_of_parallel_jobs)
 
 
-def check_for_config_errors(algorithm_name, observable_string):
+def check_for_observable_error(algorithm_name, observable_string):
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
             (observable_string == "magnetisation_norm" or observable_string == "magnetisation_norm" or
              observable_string == "helicity_modulus" or observable_string == "inverse_vacuum_permittivity" or
@@ -48,25 +47,10 @@ def check_for_config_errors(algorithm_name, observable_string):
         raise SystemExit
 
 
-def get_current_temperature_and_magnitude_of_increments(final_temperature, initial_temperature,
-                                                        no_of_temperature_increments):
+def get_temperature_and_magnitude_of_increments(initial_temperature, final_temperature, no_of_temperature_increments):
     temperature = final_temperature
     if no_of_temperature_increments == 0:
         magnitude_of_temperature_increments = 0.0
     else:
-        magnitude_of_temperature_increments = (final_temperature -
-                                               initial_temperature) / no_of_temperature_increments
+        magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
     return temperature, magnitude_of_temperature_increments
-
-
-def get_polyspectra_config_data(config_file, observable_string):
-    basic_config_data = get_basic_data(config_file)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
-                                                                     basic_config_data[2], basic_config_data[3],
-                                                                     basic_config_data[5], basic_config_data[6],
-                                                                     basic_config_data[7], basic_config_data[8])
-    check_for_config_errors(algorithm_name, observable_string)
-    no_of_sites = integer_lattice_length ** 2
-    return (final_temperature, initial_temperature, no_of_sites, no_of_equilibration_sweeps, no_of_jobs,
-            no_of_temperature_increments, output_directory)

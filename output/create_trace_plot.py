@@ -13,13 +13,11 @@ sample_getter = importlib.import_module("sample_getter")
 
 def main(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    basic_config_data = config_data_getter.get_basic_data(config_file)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature, no_of_jobs) = (
-        basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
-        basic_config_data[8])
-
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
     check_for_config_errors(algorithm_name, no_of_jobs, observable_string)
-    no_of_sites = integer_lattice_length ** 2
+    temperature = final_temperature
+
     beta = 1.0 / temperature
     temperature_directory = f"temp_eq_{temperature:.2f}"
     get_sample_method = getattr(sample_getter, "get_" + observable_string)

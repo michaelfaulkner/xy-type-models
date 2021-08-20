@@ -8,7 +8,7 @@ import output.config_data_getter as config_data_getter
 
 def main(config_file):
     basic_config_data = config_data_getter.get_basic_data(config_file)
-    algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[8]
+    algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[7]
     executable = get_executable(algorithm_name)
     if no_of_parallel_jobs < 1:
         print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
