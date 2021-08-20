@@ -32,7 +32,6 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
-
         power_trispectrum = polyspectra.try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps,
                                                                                  no_of_jobs, no_of_sites,
                                                                                  no_of_trispectrum_octaves,
