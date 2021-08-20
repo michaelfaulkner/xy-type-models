@@ -209,4 +209,5 @@ if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("IndexError: Two positional arguments required - give the configuration-file location and "
               "the string of the observable whose power spectrum you wish to calculate.")
+        raise SystemExit
     main(sys.argv[1], sys.argv[2])
