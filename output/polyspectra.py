@@ -47,9 +47,7 @@ def get_power_trispectrum(observable_string, output_directory, temperature_direc
                                           temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
                                           no_of_octaves, base_time_period_shift, sampling_frequency)
                                          for job_number in range(no_of_jobs)])
-        [print(index, power_trispectrum[0]) for index, power_trispectrum in enumerate(power_trispectra)]
         power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
-        print(power_trispectrum[0])
     # normalise estimator of power trispectrum with respect to its low-frequency value
     power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
     return power_trispectrum
