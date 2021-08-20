@@ -11,18 +11,18 @@ config_data_getter = importlib.import_module("config_data_getter")
 sample_getter = importlib.import_module("sample_getter")
 
 
-def main(config_file, summary_statistic_string):
+def main(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     basic_config_data = config_data_getter.get_basic_data(config_file)
     (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, temperature, no_of_jobs) = (
         basic_config_data[0], basic_config_data[1], basic_config_data[2], basic_config_data[3], basic_config_data[5],
         basic_config_data[8])
 
-    check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string)
+    check_for_config_errors(algorithm_name, no_of_jobs, observable_string)
     no_of_sites = integer_lattice_length ** 2
     beta = 1.0 / temperature
     temperature_directory = f"temp_eq_{temperature:.2f}"
-    get_sample_method = getattr(sample_getter, "get_" + summary_statistic_string)
+    get_sample_method = getattr(sample_getter, "get_" + observable_string)
     sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)
 
     plt.xlabel(r"time, $t$", fontsize=15, labelpad=10)
@@ -37,31 +37,29 @@ def main(config_file, summary_statistic_string):
     plt.show()
 
 
-def check_for_config_errors(algorithm_name, no_of_jobs, summary_statistic_string):
-    if (summary_statistic_string != "helicity_modulus" and summary_statistic_string != "magnetisation_norm" and
-            summary_statistic_string != "magnetisation_phase" and summary_statistic_string != "specific_heat" and
-            summary_statistic_string != "inverse_permittivity" and
-            summary_statistic_string != "topological_sector_fluctuations"):
+def check_for_config_errors(algorithm_name, no_of_jobs, observable_string):
+    if (observable_string != "helicity_modulus" and observable_string != "magnetisation_norm" and
+            observable_string != "magnetisation_phase" and observable_string != "specific_heat" and
+            observable_string != "inverse_permittivity" and observable_string != "topological_sector_fluctuations"):
         print("ConfigurationError: Give one of helicity_modulus, magnetisation_norm, specific_heat, "
               "inverse_permittivity or topological_sector_fluctuations as the second positional argument.")
-        exit()
+        raise SystemExit
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (summary_statistic_string == "magnetisation_norm" or summary_statistic_string == "magnetisation_phase" or
-             summary_statistic_string == "helicity_modulus")):
+            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase" or
+             observable_string == "helicity_modulus")):
         print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
               "magnetisation_phase or helicity_modulus as the second positional argument.")
-        exit()
+        raise SystemExit
     if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
          algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
          algorithm_name == "hxy-gaussian-noise-metropolis") and (
-            summary_statistic_string == "inverse_permittivity" or
-            summary_statistic_string == "topological_sector_fluctuations")):
+            observable_string == "inverse_permittivity" or observable_string == "topological_sector_fluctuations")):
         print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or "
               "topological_sector_fluctuations as the second positional argument.")
-        exit()
+        raise SystemExit
     if no_of_jobs != 1:
         print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
-        exit()
+        raise SystemExit
 
 
 if __name__ == "__main__":

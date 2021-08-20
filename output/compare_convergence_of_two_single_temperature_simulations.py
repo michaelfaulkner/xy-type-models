@@ -24,11 +24,11 @@ def main(config_file_1, config_file_2):
     if no_of_temperature_increments_1 != 0:
         print("ConfigurationError: in the first configuration file, the value of the no_of_temperature_increments "
               "does not equal 0. In order to compare to single-temperature simulations, this is required.")
-        exit()
+        raise SystemExit
     if no_of_jobs_1 != 1:
         print("ConfigurationError: In the first configuration file, the value of no_of_jobs is not equal to one. Give "
               "configuration files whose value of no_of_jobs is equal to one.")
-        exit()
+        raise SystemExit
 
     basic_config_data_2 = config_data_getter.get_basic_data(config_file_2)
     (algorithm_name_2, output_directory_2, integer_lattice_length_2, no_of_equilibration_sweeps_2, temperature_2,
@@ -38,11 +38,11 @@ def main(config_file_1, config_file_2):
     if no_of_temperature_increments_2 != 0:
         print("ConfigurationError: in the second configuration file, the value of the no_of_temperature_increments "
               "does not equal 0. In order to compare to single-temperature simulations, this is required.")
-        exit()
+        raise SystemExit
     if no_of_jobs_2 != 1:
         print("ConfigurationError: In the second configuration file, the value of no_of_jobs is not equal to one. Give"
               " configuration files whose value of no_of_jobs is equal to one.")
-        exit()
+        raise SystemExit
 
     if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or
           algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not
@@ -55,13 +55,13 @@ def main(config_file_1, config_file_2):
         (algorithm_name_1 == "elementary-electrolyte" and algorithm_name_2 != "elementary-electrolyte") or
             (algorithm_name_1 == "multivalued-electrolyte" and algorithm_name_2 != "multivalued-electrolyte")):
         print("ConfigurationError: give the same model in each configuration file.")
-        exit()
+        raise SystemExitexit()
     if temperature_1 != temperature_2:
         print("ConfigurationError: give the same initial_temperature in each configuration file.")
-        exit()
+        raise SystemExit
     if integer_lattice_length_1 != integer_lattice_length_2:
         print("ConfigurationError: give the same integer_lattice_length in each configuration file.")
-        exit()
+        raise SystemExit
 
     beta = 1.0 / temperature_1
     no_of_sites = integer_lattice_length_1 ** 2
@@ -105,7 +105,6 @@ def main(config_file_1, config_file_2):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("IndexError: Two positional arguments required - give the configuration-file location and "
-              "the string of the observable whose CDF you wish to compare.")
+        print("IndexError: Two positional arguments required - give the locations of the two configuration files.")
         raise SystemExit
     main(sys.argv[1], sys.argv[2])
