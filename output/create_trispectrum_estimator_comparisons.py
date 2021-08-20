@@ -33,18 +33,16 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_trispectrum = polyspectra.try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, no_of_jobs,
-                                                                     no_of_sites, no_of_trispectrum_octaves,
-                                                                     observable_string, output_directory, pool,
-                                                                     temperature, temperature_directory,
-                                                                     trispectrum_base_period_shift)
-        power_trispectrum_direct = polyspectra.try_to_load_normalised_power_trispectrum_direct(beta, no_of_equilibration_sweeps,
-                                                                                   no_of_jobs, no_of_sites,
-                                                                                   no_of_trispectrum_octaves,
-                                                                                   observable_string, output_directory,
-                                                                                   pool, temperature,
-                                                                                   temperature_directory,
-                                                                                   trispectrum_base_period_shift)
+        power_trispectrum = polyspectra.try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps,
+                                                                                 no_of_jobs, no_of_sites,
+                                                                                 no_of_trispectrum_octaves,
+                                                                                 observable_string, output_directory,
+                                                                                 pool, temperature,
+                                                                                 temperature_directory,
+                                                                                 trispectrum_base_period_shift)
+        power_trispectrum_direct = polyspectra.try_to_load_normalised_power_trispectrum_direct(
+            beta, no_of_equilibration_sweeps, no_of_jobs, no_of_sites, no_of_trispectrum_octaves, observable_string,
+            output_directory, pool, temperature, temperature_directory, trispectrum_base_period_shift)
 
         figure, axis = plt.subplots(3, 2, figsize=(10, 10))
         [axis[2, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
