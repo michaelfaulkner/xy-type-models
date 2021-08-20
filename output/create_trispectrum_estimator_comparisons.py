@@ -15,16 +15,13 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
 
 
-def main(config_file, observable_string):
+def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectrum_base_period_shift=1):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
     config_data_getter.check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
-
-    no_of_trispectrum_octaves = 3
-    trispectrum_base_period_shift = 1
 
     if no_of_jobs > 1:
         no_of_cpus = mp.cpu_count()
@@ -93,11 +90,11 @@ def main(config_file, observable_string):
                                           fontsize=10, labelpad=10)
             elif index == 1:
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
-                                          fr"$f_0' = {power_trispectrum_direct[0][0]:.2e}$", fontsize=10, labelpad=10)
+                                          fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
             else:
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$ / "
                                           fr"$|S_X^3 \left(f_0, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
-                                          fr"$f_0' = {power_trispectrum_direct[0][0]:.2e}$", fontsize=10, labelpad=10)
+                                          fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
 
         figure.tight_layout()
         trispectrum_legend = (axis[0, 0].legend(loc="lower left", fontsize=10),
@@ -115,7 +112,20 @@ def main(config_file, observable_string):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
-                        "the string of the observable whose power trispectrum you wish to estimate.")
-    main(sys.argv[1], sys.argv[2])
+                        "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
+                        "may provide no_of_trispectrum_octaves (default value is 3) and trispectrum_base_period_shift "
+                        "(default value is 1).")
+    if len(sys.argv) == 3:
+        print("Two positional arguments provided.  In addition, you may provide no_of_trispectrum_octaves (default "
+              "value is 3) and trispectrum_base_period_shift (default value is 1).")
+        main(sys.argv[1], sys.argv[2])
+    elif len(sys.argv) == 4:
+        print("Three positional arguments provided.  The third must be no_of_trispectrum_octaves.  In addition, you may"
+              " provide trispectrum_base_period_shift (default value is 1).")
+        main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
+    elif len(sys.argv) == 5:
+        print("Four positional arguments provided.  The third / fourth must be no_of_trispectrum_octaves / "
+              "trispectrum_base_period_shift.")
+        main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
