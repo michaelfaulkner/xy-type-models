@@ -7,6 +7,7 @@ import os
 import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
+
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
 config_data_getter = importlib.import_module("config_data_getter")
@@ -16,20 +17,12 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string):
-    basic_config_data = config_data_getter.get_basic_data(config_file)
-    (algorithm_name, output_directory, integer_lattice_length, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = (basic_config_data[0], basic_config_data[1],
-                                                                     basic_config_data[2], basic_config_data[3],
-                                                                     basic_config_data[5], basic_config_data[6],
-                                                                     basic_config_data[7], basic_config_data[8])
-    config_data_getter.check_for_config_errors(algorithm_name, observable_string)
-    no_of_sites = integer_lattice_length ** 2
-    temperature = final_temperature
-    if no_of_temperature_increments == 0:
-        magnitude_of_temperature_increments = 0.0
-    else:
-        magnitude_of_temperature_increments = (final_temperature -
-                                               initial_temperature) / no_of_temperature_increments
+    (final_temperature, initial_temperature, no_of_sites, no_of_equilibration_sweeps, no_of_jobs,
+     no_of_temperature_increments, output_directory) = config_data_getter.get_polyspectra_config_data(config_file,
+                                                                                                      observable_string)
+    (temperature,
+     magnitude_of_temperature_increments) = config_data_getter.get_current_temperature_and_magnitude_of_increments(
+        final_temperature, initial_temperature, no_of_temperature_increments)
     no_of_power_2_correlators = 3
     no_of_power_10_correlators = 4
     no_of_trispectrum_octaves = 2
