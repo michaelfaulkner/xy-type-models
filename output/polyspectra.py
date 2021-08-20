@@ -6,7 +6,6 @@ import os
 import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-from output.create_trispectrum_estimator_comparisons import polyspectra
 
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_modules = os.path.abspath(this_directory + "/../")
@@ -179,11 +178,10 @@ def try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, n
                 stored_spectra.append(data[1])
         power_trispectrum.append(np.array(stored_spectra))
     except IOError:
-        power_trispectrum = polyspectra.get_normalised_power_trispectrum(observable_string, output_directory,
-                                                                         temperature_directory, beta, no_of_sites,
-                                                                         no_of_equilibration_sweeps, no_of_jobs, pool,
-                                                                         no_of_trispectrum_octaves,
-                                                                         trispectrum_base_period_shift)
+        power_trispectrum = get_normalised_power_trispectrum(observable_string, output_directory, temperature_directory,
+                                                             beta, no_of_sites, no_of_equilibration_sweeps, no_of_jobs,
+                                                             pool, no_of_trispectrum_octaves,
+                                                             trispectrum_base_period_shift)
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_trispectrum_octaves}"
                   f"_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
@@ -216,12 +214,11 @@ def try_to_load_normalised_power_trispectrum_direct(beta, no_of_equilibration_sw
                 stored_spectra.append(data[1])
         power_trispectrum_direct.append(np.array(stored_spectra))
     except IOError:
-        power_trispectrum_direct = polyspectra.get_normalised_power_trispectrum_direct(observable_string, output_directory,
-                                                                                       temperature_directory, beta,
-                                                                                       no_of_sites, no_of_equilibration_sweeps,
-                                                                                       no_of_jobs, pool,
-                                                                                       no_of_trispectrum_octaves,
-                                                                                       trispectrum_base_period_shift)
+        power_trispectrum_direct = get_normalised_power_trispectrum_direct(observable_string, output_directory,
+                                                                           temperature_directory, beta, no_of_sites,
+                                                                           no_of_equilibration_sweeps, no_of_jobs, pool,
+                                                                           no_of_trispectrum_octaves,
+                                                                           trispectrum_base_period_shift)
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
                   f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv",
                   "w") as data_file:

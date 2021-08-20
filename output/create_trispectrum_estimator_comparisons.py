@@ -6,7 +6,6 @@ import os
 import sys
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-from output.polyspectra import try_to_load_normalised_power_trispectrum_direct, try_to_load_normalised_power_trispectrum
 
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
@@ -34,12 +33,12 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_trispectrum = try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, no_of_jobs,
+        power_trispectrum = polyspectra.try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, no_of_jobs,
                                                                      no_of_sites, no_of_trispectrum_octaves,
                                                                      observable_string, output_directory, pool,
                                                                      temperature, temperature_directory,
                                                                      trispectrum_base_period_shift)
-        power_trispectrum_direct = try_to_load_normalised_power_trispectrum_direct(beta, no_of_equilibration_sweeps,
+        power_trispectrum_direct = polyspectra.try_to_load_normalised_power_trispectrum_direct(beta, no_of_equilibration_sweeps,
                                                                                    no_of_jobs, no_of_sites,
                                                                                    no_of_trispectrum_octaves,
                                                                                    observable_string, output_directory,
