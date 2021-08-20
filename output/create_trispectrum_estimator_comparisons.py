@@ -90,15 +90,14 @@ def main(config_file, observable_string):
         for index in range(3):
             if index == 0:
                 axis[index, 0].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f'=0 \right)$",
-                                          fontsize=10,
-                                          labelpad=10)
+                                          fontsize=10, labelpad=10)
             elif index == 1:
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
-                                          fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
+                                          fr"$f_0' = {power_trispectrum_direct[0][0]:.2e}$", fontsize=10, labelpad=10)
             else:
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$ / "
                                           fr"$|S_X^3 \left(f_0, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
-                                          fr"$f_0' = {power_trispectrum_direct[0][0]}$", fontsize=10, labelpad=10)
+                                          fr"$f_0' = {power_trispectrum_direct[0][0]:.2e}$", fontsize=10, labelpad=10)
 
         figure.tight_layout()
         trispectrum_legend = (axis[0, 0].legend(loc="lower left", fontsize=10),

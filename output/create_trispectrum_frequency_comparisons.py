@@ -43,11 +43,11 @@ def main(config_file, observable_string):
         plt.ylabel(fr"$|S_X^3 \left( f, f' \right)|$ / $|S_X^3 \left( f_0, f' \right)|$", fontsize=10, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
         plt.loglog(power_trispectrum[1], power_trispectrum[2][1], color='blue',
-                   label=fr"f' = {power_trispectrum[0][0]}")
+                   label=fr"f' = {power_trispectrum[0][0]:.2e}")
         plt.loglog(power_trispectrum[1], power_trispectrum[2][2], color='green',
-                   label=r"f' = 2" " x " fr"{power_trispectrum[0][0]}")
+                   label=r"f' = 2" " x " fr"{power_trispectrum[0][0]:.2e}")
         plt.loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color='black',
-                   label=fr"f' = {2 ** no_of_trispectrum_octaves}" " x " fr"{power_trispectrum[0][0]}")
+                   label=fr"f' = {2 ** no_of_trispectrum_octaves}" " x " fr"{power_trispectrum[0][0]:.2e}")
         plt.loglog(power_trispectrum[1], power_trispectrum[2][0], color='red', label=r"f' = 0")
         plt.tight_layout()
         legend = plt.legend(loc="lower left", fontsize=10)
