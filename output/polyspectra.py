@@ -123,6 +123,23 @@ def get_two_point_correlator(time_series, time_period_shift):
     return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
+def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
+                                                no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
+                                                base_time_period_shift=1, sampling_frequency=None):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string, output_directory,
+                                                                                temperature_directory, beta,
+                                                                                no_of_sites, no_of_equilibration_sweeps,
+                                                                                base_time_period_shift, no_of_octaves,
+                                                                                sampling_frequency)
+    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
+    norm_of_spectra_in_frequency_shift_space = np.array(
+        [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
+         if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
+    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
+            power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
+
+
 def get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
                                                  no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
                                                  no_of_octaves, sampling_frequency):
@@ -141,23 +158,6 @@ def get_power_spectra_of_trispectrum_correlators(observable_string, output_direc
         for i in range(2 ** (no_of_octaves + 1))]
     return np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
-
-
-def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
-                                                no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
-                                                base_time_period_shift=1, sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string, output_directory,
-                                                                                temperature_directory, beta,
-                                                                                no_of_sites, no_of_equilibration_sweeps,
-                                                                                base_time_period_shift, no_of_octaves,
-                                                                                sampling_frequency)
-    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
-    norm_of_spectra_in_frequency_shift_space = np.array(
-        [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
-         if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
-    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
-            power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
 
 
 def try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
