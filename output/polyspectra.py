@@ -47,7 +47,9 @@ def get_power_trispectrum(observable_string, output_directory, temperature_direc
                                           temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
                                           no_of_octaves, base_time_period_shift, sampling_frequency)
                                          for job_number in range(no_of_jobs)])
+        [print(index, power_trispectrum[0]) for index, power_trispectrum in enumerate(power_trispectra)]
         power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+        print(power_trispectrum[0])
     # normalise estimator of power trispectrum with respect to its low-frequency value
     power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
     return power_trispectrum
@@ -83,7 +85,7 @@ def get_power_trispectrum_direct(observable_string, output_directory, temperatur
                                         if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))]
     # normalise power trispectrum with respect to its low-frequency value
     spectra_in_frequency_shift_space = [spectrum / spectrum[0] for spectrum in spectra_in_frequency_shift_space]
-    return [np.atleast_1d(sampling_frequency / (len(transposed_power_spectra[0]) * base_time_period_shift)),
+    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
             power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
 
 
@@ -154,5 +156,5 @@ def get_single_observation_of_power_trispectrum(observable_string, output_direct
     norm_of_spectra_in_frequency_shift_space = np.array(
         [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
          if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
-    return [np.atleast_1d(sampling_frequency / (len(transposed_power_spectra[0]) * base_time_period_shift)),
+    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
             power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
