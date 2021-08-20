@@ -15,7 +15,10 @@ def main(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
-    check_for_config_errors(algorithm_name, no_of_jobs, observable_string)
+    config_data_getter.check_for_observable_error(algorithm_name, observable_string)
+    if no_of_jobs != 1:
+        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
+        raise SystemExit
     temperature = final_temperature
 
     beta = 1.0 / temperature
@@ -33,31 +36,6 @@ def main(config_file, observable_string):
     plt.plot(sample[0:no_of_equilibration_sweeps], color="k", linewidth=1, linestyle="-")
     plt.tight_layout()
     plt.show()
-
-
-def check_for_config_errors(algorithm_name, no_of_jobs, observable_string):
-    if (observable_string != "helicity_modulus" and observable_string != "magnetisation_norm" and
-            observable_string != "magnetisation_phase" and observable_string != "specific_heat" and
-            observable_string != "inverse_permittivity" and observable_string != "topological_sector_fluctuations"):
-        print("ConfigurationError: Give one of helicity_modulus, magnetisation_norm, specific_heat, "
-              "inverse_permittivity or topological_sector_fluctuations as the second positional argument.")
-        raise SystemExit
-    if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase" or
-             observable_string == "helicity_modulus")):
-        print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase or helicity_modulus as the second positional argument.")
-        raise SystemExit
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
-         algorithm_name == "hxy-gaussian-noise-metropolis") and (
-            observable_string == "inverse_permittivity" or observable_string == "topological_sector_fluctuations")):
-        print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity or "
-              "topological_sector_fluctuations as the second positional argument.")
-        raise SystemExit
-    if no_of_jobs != 1:
-        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
-        raise SystemExit
 
 
 if __name__ == "__main__":

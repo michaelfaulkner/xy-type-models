@@ -28,8 +28,21 @@ def get_basic_data(config_file_location):
 
 
 def check_for_observable_error(algorithm_name, observable_string):
+    if (observable_string != "magnetisation_norm" and observable_string != "magnetisation_phase" and
+            observable_string != "helicity_modulus" and observable_string != "inverse_vacuum_permittivity" and
+            observable_string != "toroidal_vortex_polarisation" and observable_string != "specific_heat" and
+            observable_string != "inverse_permittivity" and observable_string != "topological_sector_fluctuations" and
+            observable_string != "toroidal_vortex_polarisation"):
+        print("ConfigurationError: Give one of magnetisation_norm, magnetisation_phase, helicity_modulus, "
+              "inverse_vacuum_permittivity, toroidal_vortex_polarisation, specific_heat, inverse_permittivity, "
+              "topological_sector_fluctuations or toroidal_vortex_polarisation as the second positional argument.")
+        raise SystemExit
+    check_for_observable_vs_algorithm_error(algorithm_name, observable_string)
+
+
+def check_for_observable_vs_algorithm_error(algorithm_name, observable_string):
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_norm" or
+            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase" or
              observable_string == "helicity_modulus" or observable_string == "inverse_vacuum_permittivity" or
              observable_string == "toroidal_vortex_polarisation")):
         print("ConfigurationError: This is an Maggs-electrolyte model: do not give either magnetisation_norm, "
