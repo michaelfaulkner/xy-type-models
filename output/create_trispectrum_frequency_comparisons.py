@@ -2,6 +2,7 @@ import importlib
 import matplotlib
 import matplotlib.pyplot as plt
 import multiprocessing as mp
+import numpy as np
 import os
 import sys
 
@@ -39,24 +40,39 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
                                                                                  temperature_directory,
                                                                                  trispectrum_base_period_shift)
 
-        plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-        plt.ylabel(fr"$|S_X^3 \left( f, f' \right)|$ / $|S_X^3 \left( f_0, f' \right)|$", fontsize=10, labelpad=10)
+        figure, axis = plt.subplots(1, 2, figsize=(10, 5))
+        [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
+        axis[0].set_ylabel(fr"$|S_X^3 \left( f, f' \right)|$ / $|S_X^3 \left( f_0, f' \right)|$", fontsize=10,
+                           labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-        plt.loglog(power_trispectrum[1], power_trispectrum[2][1], color='blue',
-                   label=fr"f' = {power_trispectrum[0][0]:.2e}")
-        plt.loglog(power_trispectrum[1], power_trispectrum[2][2], color='green',
-                   label=r"f' = 2" " x " fr"{power_trispectrum[0][0]:.2e}")
-        plt.loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color='black',
-                   label=fr"f' = {2 ** no_of_trispectrum_octaves}" " x " fr"{power_trispectrum[0][0]:.2e}")
-        plt.loglog(power_trispectrum[1], power_trispectrum[2][0], color='red', label=r"f' = 0")
-        plt.tight_layout()
-        legend = plt.legend(loc="lower left", fontsize=10)
-        legend.get_frame().set_edgecolor("k")
-        legend.get_frame().set_lw(1.5)
-        plt.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_frequencies_"
-                    f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
-        plt.clf()
 
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_octaves + 2)))
+        for index in range(no_of_trispectrum_octaves + 2):
+            current_color = next(colors)
+            if index == 0:
+                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color, label=r"f' = 0")
+            else:
+                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
+                               label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
+
+        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_octaves + 2))))
+        for index in range(no_of_trispectrum_octaves + 1, -1, -1):
+            current_color = next(colors)
+            if index == 0:
+                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color, label=r"f' = 0")
+            else:
+                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
+                               label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
+
+        figure.tight_layout()
+        trispectrum_legend = (axis[0].legend(loc="lower left", fontsize=7.5),
+                              axis[1].legend(loc="lower left", fontsize=7.5))
+        for legend in trispectrum_legend:
+            legend.get_frame().set_edgecolor("k")
+            legend.get_frame().set_lw(1.5)
+        figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_frequencies_"
+                       f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
+        figure.clf()
         temperature -= magnitude_of_temperature_increments
 
     if no_of_jobs > 1:
