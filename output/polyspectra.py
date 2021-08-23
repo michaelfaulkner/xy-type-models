@@ -190,74 +190,61 @@ def get_power_spectra_of_trispectrum_correlators(observable_string, output_direc
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
 
 
-def try_to_load_normalised_power_trispectrum(beta, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
-                                             no_of_trispectrum_octaves, observable_string, output_directory, pool,
-                                             temperature, temperature_directory, trispectrum_base_period_shift):
+def try_to_load_normalised_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
+                                             no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
+                                             base_time_period_shift, no_of_octaves, direct=False,
+                                             sampling_frequency=None):
+    temperature = 1.0 / beta
     try:
         power_trispectrum = []
         stored_spectra = []
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_trispectrum_octaves}"
-                  f"_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
-            power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-        for index in range(no_of_trispectrum_octaves + 2):
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
-                      f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_"
-                      f"prime.csv", "r") as data_file:
-                data = np.loadtxt(data_file, dtype=float, delimiter=",")
-                if index == 0:
-                    power_trispectrum.append(data[0])
-                stored_spectra.append(data[1])
+        if direct:
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
+                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+        else:
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
+                      f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
+                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+        for index in range(no_of_octaves + 2):
+            if direct:
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                          f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
+                          "r") as data_file:
+                    data = np.loadtxt(data_file, dtype=float, delimiter=",")
+                    if index == 0:
+                        power_trispectrum.append(data[0])
+                    stored_spectra.append(data[1])
+            else:
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
+                          f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "r") as data_file:
+                    data = np.loadtxt(data_file, dtype=float, delimiter=",")
+                    if index == 0:
+                        power_trispectrum.append(data[0])
+                    stored_spectra.append(data[1])
         power_trispectrum.append(np.array(stored_spectra))
     except IOError:
-        power_trispectrum = get_normalised_power_trispectrum(observable_string, output_directory, temperature_directory,
-                                                             beta, no_of_sites, no_of_equilibration_sweeps, no_of_jobs,
-                                                             pool, no_of_trispectrum_octaves,
-                                                             trispectrum_base_period_shift)
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_trispectrum_octaves}"
-                  f"_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
-            np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        for index in range(no_of_trispectrum_octaves + 2):
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
-                      f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_"
-                      f"prime.csv", "w") as data_file:
-                np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
+        if direct:
+            power_trispectrum = get_normalised_power_trispectrum_direct(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves, base_time_period_shift, sampling_frequency)
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
+                np.savetxt(data_file, power_trispectrum[0], delimiter=",")
+            for index in range(no_of_octaves + 2):
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                          f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
+                          "w") as data_file:
+                    np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
+        else:
+            power_trispectrum = get_normalised_power_trispectrum(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves, base_time_period_shift, sampling_frequency)
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
+                      f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
+                np.savetxt(data_file, power_trispectrum[0], delimiter=",")
+            for index in range(no_of_octaves + 2):
+                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
+                          f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "w") as data_file:
+                    np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
-
-
-def try_to_load_normalised_power_trispectrum_direct(beta, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
-                                                    no_of_trispectrum_octaves, observable_string, output_directory,
-                                                    pool, temperature, temperature_directory,
-                                                    trispectrum_base_period_shift):
-    try:
-        power_trispectrum_direct = []
-        stored_spectra = []
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                  f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv",
-                  "r") as data_file:
-            power_trispectrum_direct.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-        for index in range(no_of_trispectrum_octaves + 2):
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                      f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_"
-                      f"prime.csv", "r") as data_file:
-                data = np.loadtxt(data_file, dtype=float, delimiter=",")
-                if index == 0:
-                    power_trispectrum_direct.append(data[0])
-                stored_spectra.append(data[1])
-        power_trispectrum_direct.append(np.array(stored_spectra))
-    except IOError:
-        power_trispectrum_direct = get_normalised_power_trispectrum_direct(observable_string, output_directory,
-                                                                           temperature_directory, beta, no_of_sites,
-                                                                           no_of_equilibration_sweeps, no_of_jobs, pool,
-                                                                           no_of_trispectrum_octaves,
-                                                                           trispectrum_base_period_shift)
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                  f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv",
-                  "w") as data_file:
-            np.savetxt(data_file, power_trispectrum_direct[0], delimiter=",")
-        for index in range(no_of_trispectrum_octaves + 2):
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                      f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_"
-                      f"prime.csv", "w") as data_file:
-                np.savetxt(data_file, np.array([power_trispectrum_direct[1], power_trispectrum_direct[2][index]]),
-                           delimiter=",")
-    return power_trispectrum_direct
