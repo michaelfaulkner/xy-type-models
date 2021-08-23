@@ -99,8 +99,7 @@ def main(config_file, observable_string):
                                                                              temperature_directory, beta, no_of_sites,
                                                                              no_of_equilibration_sweeps, no_of_jobs,
                                                                              pool, no_of_trispectrum_octaves,
-                                                                             trispectrum_base_period_shift,
-                                                                             sampling_frequency=None)
+                                                                             trispectrum_base_period_shift)
             with open(f"{output_directory}/{observable_string}_power_trispectrum_base_octave_frequency_value_"
                       f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
                 np.savetxt(data_file, power_trispectrum[0], delimiter=",")
