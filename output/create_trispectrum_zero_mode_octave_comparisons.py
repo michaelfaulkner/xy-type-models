@@ -29,6 +29,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
     else:
         pool = None
 
+    max_no_of_octaves = 7
+
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
@@ -39,8 +41,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
                            labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
-        colors = iter(plt.cm.rainbow(np.linspace(0, 1, 7)))
-        for no_of_trispectrum_octaves in range(1, 8):
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_octaves)))
+        for no_of_trispectrum_octaves in range(1, max_no_of_octaves + 1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
                 observable_string, output_directory, temperature_directory, beta, no_of_sites,
@@ -48,8 +50,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                            label=f"no of octaves = {no_of_trispectrum_octaves}")
 
-        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, 7))))
-        for no_of_trispectrum_octaves in range(7, 0, -1):
+        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, max_no_of_octaves))))
+        for no_of_trispectrum_octaves in range(max_no_of_octaves, 0, -1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
                 observable_string, output_directory, temperature_directory, beta, no_of_sites,
