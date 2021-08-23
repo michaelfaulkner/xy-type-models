@@ -32,6 +32,27 @@ def get_power_spectrum_of_correlator(observable_string, output_directory, temper
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
 
 
+def get_normalised_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory, beta,
+                                               no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
+                                               no_of_octaves=2, base_time_period_shift=1, sampling_frequency=None):
+    if no_of_octaves <= 0:
+        raise Exception("no_of_octaves must be a positive integer.")
+    if no_of_jobs == 1:
+        power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
+            observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+            no_of_octaves, base_time_period_shift, sampling_frequency)
+    else:
+        power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
+                                                   [(observable_string, f"{output_directory}/job_{job_number + 1}",
+                                                     temperature_directory, beta, no_of_sites,
+                                                     no_of_equilibration_sweeps, no_of_octaves, base_time_period_shift,
+                                                     sampling_frequency) for job_number in range(no_of_jobs)])
+        power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
+    # normalise estimator of power trispectrum with respect to its low-frequency value
+    power_trispectrum_zero_mode = [spectrum / spectrum[0] for spectrum in power_trispectrum_zero_mode]
+    return power_trispectrum_zero_mode
+
+
 def get_normalised_power_trispectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                      no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2,
                                      base_time_period_shift=1, sampling_frequency=None):
@@ -120,6 +141,16 @@ def get_two_point_correlator(time_series, time_period_shift):
         np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
         but have since removed the np.conj() operation as we only consider real-valued signals."""
     return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
+
+
+def get_single_observation_of_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory,
+                                                          beta, no_of_sites, no_of_equilibration_sweeps,
+                                                          no_of_octaves=2, base_time_period_shift=1,
+                                                          sampling_frequency=None):
+    return np.mean(
+        get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
+                                                     no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
+                                                     no_of_octaves, sampling_frequency), axis=0)
 
 
 def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
