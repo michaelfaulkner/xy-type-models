@@ -49,7 +49,7 @@ def get_normalised_power_trispectrum_zero_mode(observable_string, output_directo
                                                      sampling_frequency) for job_number in range(no_of_jobs)])
         power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
     # normalise estimator of power trispectrum with respect to its low-frequency value
-    power_trispectrum_zero_mode = [spectrum / spectrum[0] for spectrum in power_trispectrum_zero_mode]
+    power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
     return power_trispectrum_zero_mode
 
 
