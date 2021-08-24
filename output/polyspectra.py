@@ -14,11 +14,29 @@ sample_getter = importlib.import_module("sample_getter")
 
 
 def get_power_spectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                       no_of_equilibration_sweeps, sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                                  no_of_equilibration_sweeps)
-    return get_component_averaged_power_spectrum(time_series, sampling_frequency)
+                       no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
+    temperature = 1 / beta
+    try:
+        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_temp_eq_{temperature:.2f}.csv",
+                  "r") as data_file:
+            return np.loadtxt(data_file, dtype=float, delimiter=",")
+    except IOError:
+        if no_of_jobs == 1:
+            power_spectrum = get_single_observation_of_power_spectrum(observable_string, output_directory,
+                                                                      temperature_directory, beta, no_of_sites,
+                                                                      no_of_equilibration_sweeps, sampling_frequency)
+        else:
+            power_spectra = pool.starmap(get_single_observation_of_power_spectrum,
+                                         [(observable_string, f"{output_directory}/job_{job_number + 1}",
+                                           temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
+                                          for job_number in range(no_of_jobs)])
+            power_spectrum = np.mean(np.array(power_spectra), axis=0)
+        # normalise power spectrum with respect to its low-frequency value
+        power_spectrum[1] /= power_spectrum[1, 0]
+        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
+                  f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
+            np.savetxt(data_file, power_spectrum, delimiter=",")
+        return power_spectrum
 
 
 def get_power_spectrum_of_correlator(observable_string, output_directory, temperature_directory, beta, no_of_sites,
@@ -162,6 +180,14 @@ def get_normalised_power_trispectrum_as_defined(observable_string, output_direct
                       "w") as data_file:
                 np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
+
+
+def get_single_observation_of_power_spectrum(observable_string, output_directory, temperature_directory, beta,
+                                             no_of_sites, no_of_equilibration_sweeps, sampling_frequency=None):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):

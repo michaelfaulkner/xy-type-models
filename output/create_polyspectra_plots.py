@@ -48,27 +48,8 @@ def main(config_file, observable_string):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        try:
-            with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
-                      f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
-                power_spectrum = np.loadtxt(data_file, dtype=float, delimiter=",")
-        except IOError:
-            if no_of_jobs == 1:
-                power_spectrum = polyspectra.get_power_spectrum(observable_string, output_directory,
-                                                                temperature_directory, beta, no_of_sites,
-                                                                no_of_equilibration_sweeps)
-            else:
-                power_spectra = pool.starmap(polyspectra.get_power_spectrum,
-                                             [(observable_string, f"{output_directory}/job_{job_number + 1}",
-                                               temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps)
-                                              for job_number in range(no_of_jobs)])
-                power_spectrum = np.mean(np.array(power_spectra), axis=0)
-            # normalise power spectrum with respect to its low-frequency value
-            power_spectrum[1] /= power_spectrum[1, 0]
-            with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
-                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                np.savetxt(data_file, power_spectrum, delimiter=",")
-
+        power_spectrum = polyspectra.get_power_spectrum(observable_string, output_directory, temperature_directory,
+                                                        beta, no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool)
         power_spectrum_of_correlators = []
         for index in range(no_of_power_2_correlators):
             compute_power_spectra_of_correlators(beta, index, 2, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
@@ -79,34 +60,11 @@ def main(config_file, observable_string):
             compute_power_spectra_of_correlators(beta, index, 10, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
                                                  output_directory, pool, power_spectrum_of_correlators,
                                                  observable_string, temperature, temperature_directory)
-
-        try:
-            power_trispectrum = []
-            stored_spectra = []
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_base_octave_frequency_value_"
-                      f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
-                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-            for index in range(no_of_trispectrum_octaves + 2):
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_f_prime_{index}_"
-                          f"temp_eq_{temperature:.2f}.csv", "r") as data_file:
-                    data = np.loadtxt(data_file, dtype=float, delimiter=",")
-                    if index == 0:
-                        power_trispectrum.append(data[0])
-                    stored_spectra.append(data[1])
-            power_trispectrum.append(np.array(stored_spectra))
-        except IOError:
-            power_trispectrum = polyspectra.get_normalised_power_trispectrum(observable_string, output_directory,
-                                                                             temperature_directory, beta, no_of_sites,
-                                                                             no_of_equilibration_sweeps, no_of_jobs,
-                                                                             pool, no_of_trispectrum_octaves,
-                                                                             trispectrum_base_period_shift)
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_base_octave_frequency_value_"
-                      f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-            for index in range(no_of_trispectrum_octaves + 2):
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_f_prime_{index}_"
-                          f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
-                    np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
+        power_trispectrum = polyspectra.get_normalised_power_trispectrum(observable_string, output_directory,
+                                                                         temperature_directory, beta, no_of_sites,
+                                                                         no_of_equilibration_sweeps, no_of_jobs, pool,
+                                                                         no_of_trispectrum_octaves,
+                                                                         trispectrum_base_period_shift)
 
         current_color = next(colors)
         correlators_axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
@@ -153,16 +111,16 @@ def main(config_file, observable_string):
 
     for index in range(no_of_trispectrum_octaves + 2):
         if index == 0:
-            trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, f' = 0 \right)|$ / $|S_X^3 \left( f_0, f' = 0 "
-                                               fr"\right)|$", fontsize=10, labelpad=10)
+            trispectrum_axis[index].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f' = 0 "
+                                               fr"\right)$", fontsize=10, labelpad=10)
         elif index == 1:
             trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' "
-                                               fr"\right)|$, $f_0' = {power_trispectrum[0][0]}$", fontsize=10,
+                                               fr"\right)|$, $f_0' = {power_trispectrum[0][0]:.2f}$", fontsize=10,
                                                labelpad=10)
         else:
             trispectrum_axis[index].set_ylabel(fr"$|S_X^3 \left( f, {2 ** (index - 1)} f_0' \right)|$ / $|S_X^3 \left( "
                                                fr"f_0, {2 ** (index - 1)} f_0' \right)|$, "
-                                               fr"$f_0' = {power_trispectrum[0][0]}$", fontsize=10, labelpad=10)
+                                               fr"$f_0' = {power_trispectrum[0][0]:.2f}$", fontsize=10, labelpad=10)
     trispectrum_figure.tight_layout()
     trispectrum_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
