@@ -15,7 +15,7 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
 
 
-def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectrum_base_period_shift=1):
+def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispectrum_base_period_shift=1):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
@@ -29,8 +29,6 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
     else:
         pool = None
 
-    max_no_of_octaves = 7
-
     for i in range(no_of_temperature_increments + 1):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
@@ -41,8 +39,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
                            labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
-        colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_octaves)))
-        for no_of_trispectrum_octaves in range(1, max_no_of_octaves + 1):
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves)))
+        for no_of_trispectrum_octaves in range(1, max_no_of_trispectrum_octaves + 1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
                 observable_string, output_directory, temperature_directory, beta, no_of_sites,
@@ -50,8 +48,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                            label=f"no of octaves = {no_of_trispectrum_octaves}")
 
-        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, max_no_of_octaves))))
-        for no_of_trispectrum_octaves in range(max_no_of_octaves, 0, -1):
+        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves))))
+        for no_of_trispectrum_octaves in range(max_no_of_trispectrum_octaves, 0, -1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
                 observable_string, output_directory, temperature_directory, beta, no_of_sites,
@@ -75,15 +73,22 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=4, trispectru
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
+    if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
                         "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
-                        "may provide trispectrum_base_period_shift (default value is 1) in the third position.")
+                        "may provide max_no_of_trispectrum_octaves (default value is 8) and "
+                        "trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
+                        "(respectively).")
     if len(sys.argv) == 3:
-        print("Two positional arguments provided.  In addition, you may provide trispectrum_base_period_shift (default "
-              "value is 1) in the third position.")
+        print("Two positional arguments provided.  In addition, you may provide max_no_of_trispectrum_octaves (default "
+              "value is 8) and trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
+              "(respectively).")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
-        print("Three positional arguments provided.  The third must be trispectrum_base_period_shift (default value is "
-              "1).")
+        print("Three positional arguments provided.  The third must be max_no_of_trispectrum_octaves.  In addition, you"
+              " may provide trispectrum_base_period_shift (default value is 1) in the fourth position.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
+    elif len(sys.argv) == 5:
+        print("Four positional arguments provided.  The third / fourth must be max_no_of_trispectrum_octaves / "
+              "trispectrum_base_period_shift.")
+        main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
