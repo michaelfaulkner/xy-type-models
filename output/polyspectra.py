@@ -59,7 +59,7 @@ def get_normalised_power_trispectrum_zero_mode(observable_string, output_directo
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
                   f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}.csv", "r") as data_file:
-            return np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=","))
+            return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
         if no_of_jobs == 1:
             power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
