@@ -11,8 +11,7 @@ def main(config_file):
     algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[7]
     executable = get_executable(algorithm_name)
     if no_of_parallel_jobs < 1:
-        print("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
-        exit()
+        raise Exception("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
     elif no_of_parallel_jobs == 1:
         print("Running a single Markov process.")
         run_single_simulation(executable, config_file)
@@ -69,14 +68,11 @@ def get_executable(algorithm_name):
     elif algorithm_name == "multivalued-electrolyte":
         executable = "executables/multivalued_electrolyte_algorithm.exe"
     else:
-        executable = None
-        print("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, xy-ecmc, "
-              "xy-metropolis, elementary-electrolyte or multivalued-electrolyte.")
-        exit()
+        raise Exception("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, "
+                        "xy-ecmc, xy-metropolis, elementary-electrolyte or multivalued-electrolyte.")
     if not os.path.isfile(executable):
-        print(f"Executable for the {algorithm_name} algorithm does not exist. Run 'make' or 'make {algorithm_name}' "
-              f"then try again.")
-        exit()
+        raise Exception(f"Executable for the {algorithm_name} algorithm does not exist.  Run 'make' or 'make "
+                        f"{algorithm_name}' then try again.")
     return executable
 
 
