@@ -35,7 +35,7 @@ call setup_periodic_boundaries
 call initialise_field_configuration
 
 ! message informing the start of the Markov process
-write(6, '(A, A, A)') 'Starting the Markov process of the ', trim(algorithm_name), ' simulation.'
+write(6, '(A, A, A)') 'Starting the ', trim(algorithm_name), ' simulation.'
 
 return
 end subroutine pre_simulation_processes

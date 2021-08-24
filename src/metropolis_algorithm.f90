@@ -46,7 +46,7 @@ do i = 0, no_of_temperature_increments
 end do
 
 call cpu_time(end_time)
-write(6, '(A, ES9.3, A)') 'Markov process complete; total runtime of the simulation = ', end_time - start_time, &
+write(6, '(A, ES9.3, A)') 'Markov process complete.  Total runtime of the simulation = ', end_time - start_time, &
                             ' seconds.'
 
 end program metropolis_algorithm
