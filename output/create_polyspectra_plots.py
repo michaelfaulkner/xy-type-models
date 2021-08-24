@@ -71,7 +71,8 @@ def main(config_file, observable_string):
         for index, correlator in enumerate(power_spectrum_of_correlators):
             if index == 0:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color,
-                                                   label=f"temperature = {temperature:.2f}")
+                                                   label=fr"temperature = {temperature:.2f}, $\Delta t = "
+                                                         fr"{0.5 / power_spectrum[0, 0] / len(power_spectrum[0]):.2e}$")
             else:
                 correlators_axis[index + 1].loglog(correlator[0], correlator[1], color=current_color)
         for index in range(no_of_trispectrum_octaves + 2):
@@ -92,14 +93,12 @@ def main(config_file, observable_string):
     correlators_axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
     for index in range(no_of_power_2_correlators + no_of_power_10_correlators):
         if index < no_of_power_2_correlators:
-            correlators_axis[index + 1].set_ylabel(
-                fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)})$",
-                fontsize=10,
-                labelpad=10)
+            correlators_axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
+                                                   fr"X(t + {2 ** (index + 1)} \Delta t)$", fontsize=10, labelpad=10)
         else:
-            correlators_axis[index + 1].set_ylabel(
-                fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, "
-                fr"$Y(t) = X(t) X(t + {10 ** (index - no_of_power_2_correlators + 1)})$", fontsize=10, labelpad=10)
+            correlators_axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
+                                                   fr"X(t + {10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
+                                                   fontsize=10, labelpad=10)
     correlators_figure.tight_layout()
     correlators_legend = (correlators_axis[0].legend(loc="lower left", fontsize=10),
                           correlators_axis[1].legend(loc="lower left", fontsize=10))
