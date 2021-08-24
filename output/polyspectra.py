@@ -58,20 +58,43 @@ def get_normalised_power_trispectrum(observable_string, output_directory, temper
                                      base_time_period_shift=1, sampling_frequency=None):
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
-    if no_of_jobs == 1:
-        power_trispectrum = get_single_observation_of_power_trispectrum(observable_string, output_directory,
-                                                                        temperature_directory, beta, no_of_sites,
-                                                                        no_of_equilibration_sweeps, no_of_octaves,
-                                                                        base_time_period_shift, sampling_frequency)
-    else:
-        power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
-                                        [(observable_string, f"{output_directory}/job_{job_number + 1}",
-                                          temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-                                          no_of_octaves, base_time_period_shift, sampling_frequency)
-                                         for job_number in range(no_of_jobs)])
-        power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
-    # normalise estimator of power trispectrum with respect to its low-frequency value
-    power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+    temperature = 1.0 / beta
+    try:
+        power_trispectrum = []
+        stored_spectra = []
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
+                  f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
+            power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+        for index in range(no_of_octaves + 2):
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
+                      f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "r") as data_file:
+                data = np.loadtxt(data_file, dtype=float, delimiter=",")
+                if index == 0:
+                    power_trispectrum.append(data[0])
+                stored_spectra.append(data[1])
+        power_trispectrum.append(np.array(stored_spectra))
+    except IOError:
+        if no_of_jobs == 1:
+            power_trispectrum = get_single_observation_of_power_trispectrum(observable_string, output_directory,
+                                                                            temperature_directory, beta, no_of_sites,
+                                                                            no_of_equilibration_sweeps, no_of_octaves,
+                                                                            base_time_period_shift, sampling_frequency)
+        else:
+            power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
+                                            [(observable_string, f"{output_directory}/job_{job_number + 1}",
+                                              temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+                                              no_of_octaves, base_time_period_shift, sampling_frequency)
+                                             for job_number in range(no_of_jobs)])
+            power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+        # normalise estimator of power trispectrum with respect to its low-frequency value
+        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
+                  f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
+            np.savetxt(data_file, power_trispectrum[0], delimiter=",")
+        for index in range(no_of_octaves + 2):
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
+                      f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "w") as data_file:
+                np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
 
 
@@ -80,33 +103,55 @@ def get_normalised_power_trispectrum_direct(observable_string, output_directory,
                                             base_time_period_shift=1, sampling_frequency=None):
     if no_of_octaves <= 0:
         raise Exception("no_of_octaves must be a positive integer.")
-    if no_of_jobs == 1:
-        sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-        power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string,
-                                                                                    output_directory,
-                                                                                    temperature_directory, beta,
-                                                                                    no_of_sites,
-                                                                                    no_of_equilibration_sweeps,
-                                                                                    base_time_period_shift,
-                                                                                    no_of_octaves, sampling_frequency)
-    else:
-        power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
-                                                    [(observable_string, f"{output_directory}/job_{job_number + 1}",
-                                                      temperature_directory, beta, no_of_sites,
-                                                      no_of_equilibration_sweeps, base_time_period_shift, no_of_octaves,
-                                                      sampling_frequency)
-                                                     for job_number in range(no_of_jobs)])
-        power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
-        sampling_frequency = get_sampling_frequency(f"{output_directory}/job_1", sampling_frequency,
-                                                    temperature_directory)
-    transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
-    spectra_in_frequency_shift_space = [np.absolute(item) for index, item in
-                                        enumerate(np.fft.fft(transposed_power_spectra).transpose())
-                                        if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))]
-    # normalise power trispectrum with respect to its low-frequency value
-    spectra_in_frequency_shift_space = [spectrum / spectrum[0] for spectrum in spectra_in_frequency_shift_space]
-    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
-            power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
+    temperature = 1.0 / beta
+    try:
+        power_trispectrum = []
+        stored_spectra = []
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
+            power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+        for index in range(no_of_octaves + 2):
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
+                      "r") as data_file:
+                data = np.loadtxt(data_file, dtype=float, delimiter=",")
+                if index == 0:
+                    power_trispectrum.append(data[0])
+                stored_spectra.append(data[1])
+        power_trispectrum.append(np.array(stored_spectra))
+    except IOError:
+        if no_of_jobs == 1:
+            sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+            power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, base_time_period_shift, no_of_octaves, sampling_frequency)
+        else:
+            power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
+                                                        [(observable_string, f"{output_directory}/job_{job_number + 1}",
+                                                          temperature_directory, beta, no_of_sites,
+                                                          no_of_equilibration_sweeps, base_time_period_shift,
+                                                          no_of_octaves, sampling_frequency)
+                                                         for job_number in range(no_of_jobs)])
+            power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
+            sampling_frequency = get_sampling_frequency(f"{output_directory}/job_1", sampling_frequency,
+                                                        temperature_directory)
+        transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
+        spectra_in_frequency_shift_space = [np.absolute(item) for index, item in
+                                            enumerate(np.fft.fft(transposed_power_spectra).transpose())
+                                            if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))]
+        # normalise power trispectrum with respect to its low-frequency value
+        spectra_in_frequency_shift_space = [spectrum / spectrum[0] for spectrum in spectra_in_frequency_shift_space]
+        power_trispectrum = [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
+                             power_spectra_of_correlators[0, 0], spectra_in_frequency_shift_space]
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
+            np.savetxt(data_file, power_trispectrum[0], delimiter=",")
+        for index in range(no_of_octaves + 2):
+            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
+                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
+                      "w") as data_file:
+                np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
+    return power_trispectrum
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
@@ -189,63 +234,3 @@ def get_power_spectra_of_trispectrum_correlators(observable_string, output_direc
         for i in range(2 ** (no_of_octaves + 1))]
     return np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
-
-
-def try_to_load_normalised_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
-                                             no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
-                                             base_time_period_shift, no_of_octaves, direct=False,
-                                             sampling_frequency=None):
-    temperature = 1.0 / beta
-    try:
-        power_trispectrum = []
-        stored_spectra = []
-        if direct:
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
-                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-        else:
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
-                      f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv") as data_file:
-                power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-        for index in range(no_of_octaves + 2):
-            if direct:
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                          f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
-                          "r") as data_file:
-                    data = np.loadtxt(data_file, dtype=float, delimiter=",")
-                    if index == 0:
-                        power_trispectrum.append(data[0])
-                    stored_spectra.append(data[1])
-            else:
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
-                          f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "r") as data_file:
-                    data = np.loadtxt(data_file, dtype=float, delimiter=",")
-                    if index == 0:
-                        power_trispectrum.append(data[0])
-                    stored_spectra.append(data[1])
-        power_trispectrum.append(np.array(stored_spectra))
-    except IOError:
-        if direct:
-            power_trispectrum = get_normalised_power_trispectrum_direct(
-                observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves, base_time_period_shift, sampling_frequency)
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                      f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
-                np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-            for index in range(no_of_octaves + 2):
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_direct_"
-                          f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv",
-                          "w") as data_file:
-                    np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
-        else:
-            power_trispectrum = get_normalised_power_trispectrum(
-                observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves, base_time_period_shift, sampling_frequency)
-            with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves_"
-                      f"temp_eq_{temperature:.2f}_delta_f_prime_value.csv", "w") as data_file:
-                np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-            for index in range(no_of_octaves + 2):
-                with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_{no_of_octaves}_octaves"
-                          f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "w") as data_file:
-                    np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
-    return power_trispectrum
