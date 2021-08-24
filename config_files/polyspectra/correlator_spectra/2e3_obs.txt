@@ -1,8 +1,8 @@
 'hxy-metropolis'                                    algorithm_name
-'output/polyspectra/correlator_spectra/10e3_obs'    output_directory
+'output/polyspectra/correlator_spectra/2e3_obs'     output_directory
 32                                                  integer_lattice_length
 10000                                               no_of_equilibration_sweeps
-1000                                                no_of_observations
+2000                                                no_of_observations
 0.5d0                                               initial_temperature
 2.2d0                                               final_temperature
 2                                                   no_of_temperature_increments
