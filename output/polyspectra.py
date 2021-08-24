@@ -147,10 +147,11 @@ def get_single_observation_of_power_trispectrum_zero_mode(observable_string, out
                                                           beta, no_of_sites, no_of_equilibration_sweeps,
                                                           no_of_octaves=2, base_time_period_shift=1,
                                                           sampling_frequency=None):
-    return np.mean(
-        get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
-                                                     no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
-                                                     no_of_octaves, sampling_frequency), axis=0)
+    power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
+        observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+        base_time_period_shift, no_of_octaves, sampling_frequency)
+    return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
+            np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
 
 
 def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
