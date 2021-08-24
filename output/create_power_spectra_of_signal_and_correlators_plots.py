@@ -74,7 +74,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
     for index in range(no_of_power_2_correlators + no_of_power_10_correlators):
         if index < no_of_power_2_correlators:
             axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
-                                       fr"X(t + {2 ** (index + 1)} \Delta t)$", fontsize=10, labelpad=10)
+                                       fr"X(t + {2 ** (index + 1)} \Delta t)$", fontsize=7.5, labelpad=10)
         else:
             axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
                                        fr"X(t + {10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
