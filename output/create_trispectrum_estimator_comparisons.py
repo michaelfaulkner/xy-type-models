@@ -36,7 +36,7 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
         power_trispectrum = polyspectra.get_normalised_power_trispectrum(
             observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
             no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
-        power_trispectrum_direct = polyspectra.get_normalised_power_trispectrum_direct(
+        power_trispectrum_as_defined = polyspectra.get_normalised_power_trispectrum_as_defined(
             observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
             no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
 
@@ -46,19 +46,19 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
 
         for index in range(3):
             if index == 0:
-                axis[index, 0].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                      label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
+                                      color='blue', label="estimator as defined")
                 axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
             elif index == 1:
-                axis[index, 0].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                      label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
+                                      color='blue', label="estimator as defined")
                 axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
             elif index == 2:
-                axis[index, 0].loglog(power_trispectrum_direct[1],
-                                      power_trispectrum_direct[2][len(power_trispectrum_direct[2]) - 1],
-                                      color='blue', label="direct estimator")
+                axis[index, 0].loglog(power_trispectrum_as_defined[1],
+                                      power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
+                                      color='blue', label="estimator as defined")
                 axis[index, 0].loglog(power_trispectrum[1],
                                       power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
                                       label="shortcut estimator")
@@ -66,20 +66,20 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
             if index == 0:
                 axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
-                axis[index, 1].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                      label="direct estimator")
+                axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
+                                      color='blue', label="estimator as defined")
             elif index == 1:
                 axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
-                axis[index, 1].loglog(power_trispectrum_direct[1], power_trispectrum_direct[2][index], color='blue',
-                                      label="direct estimator")
+                axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
+                                      color='blue', label="estimator as defined")
             elif index == 2:
                 axis[index, 1].loglog(power_trispectrum[1],
                                       power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
                                       label="shortcut estimator")
-                axis[index, 1].loglog(power_trispectrum_direct[1],
-                                      power_trispectrum_direct[2][len(power_trispectrum_direct[2]) - 1],
-                                      color='blue', label="direct estimator")
+                axis[index, 1].loglog(power_trispectrum_as_defined[1],
+                                      power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
+                                      color='blue', label="estimator as defined")
 
         for index in range(3):
             if index == 0:
@@ -99,7 +99,7 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
         for legend in trispectrum_legend:
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
-        figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_functions_"
+        figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_estimators_"
                        f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
