@@ -53,14 +53,13 @@ def main(config_file, observable_string):
                                                                    no_of_equilibration_sweeps, no_of_jobs, pool)
         power_spectrum_of_correlators = []
         for index in range(no_of_power_2_correlators):
-            compute_power_spectra_of_correlators(beta, index, 2, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
-                                                 output_directory, pool, power_spectrum_of_correlators,
-                                                 observable_string, temperature, temperature_directory)
-
+            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, no_of_jobs, pool, 2 ** (index + 1)))
         for index in range(no_of_power_10_correlators):
-            compute_power_spectra_of_correlators(beta, index, 10, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
-                                                 output_directory, pool, power_spectrum_of_correlators,
-                                                 observable_string, temperature, temperature_directory)
+            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, no_of_jobs, pool, 10 ** (index + 1)))
         power_trispectrum = polyspectra.get_normalised_power_trispectrum(observable_string, output_directory,
                                                                          temperature_directory, beta, no_of_sites,
                                                                          no_of_equilibration_sweeps, no_of_jobs, pool,
@@ -130,37 +129,6 @@ def main(config_file, observable_string):
         legend.get_frame().set_lw(1.5)
     trispectrum_figure.savefig(f"{output_directory}/{observable_string}_normalised_power_trispectrum.pdf",
                                bbox_inches="tight")
-
-
-def compute_power_spectra_of_correlators(beta, index, base, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
-                                         output_directory, pool, power_spectrum_of_correlators, power_spectrum_string,
-                                         temperature, temperature_directory):
-    try:
-        with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_of_correlator_"
-                  f"time_shift_eq_{base ** (index + 1)}_temp_eq_{temperature:.2f}.csv", "r") as data_file:
-            correlator_power_spectrum = np.loadtxt(data_file, dtype=float, delimiter=",")
-    except IOError:
-        if no_of_jobs == 1:
-            correlator_power_spectrum = polyspectra.get_power_spectrum_of_correlator(power_spectrum_string,
-                                                                                     output_directory,
-                                                                                     temperature_directory,
-                                                                                     beta, no_of_sites,
-                                                                                     no_of_equilibration_sweeps,
-                                                                                     time_period_shift=(
-                                                                                             base ** (index + 1)))
-        else:
-            correlator_power_spectra = pool.starmap(
-                polyspectra.get_power_spectrum_of_correlator,
-                [(power_spectrum_string, f"{output_directory}/job_{job_number + 1}", temperature_directory,
-                  beta, no_of_sites, no_of_equilibration_sweeps, base ** (index + 1))
-                 for job_number in range(no_of_jobs)])
-            correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
-        # normalise power spectrum with respect to its low-frequency value
-        correlator_power_spectrum[1] /= correlator_power_spectrum[1, 0]
-        with open(f"{output_directory}/{power_spectrum_string}_normalised_power_spectrum_of_correlator_"
-                  f"time_shift_eq_{base ** (index + 1)}_temp_eq_{temperature:.2f}.csv", "w") as data_file:
-            np.savetxt(data_file, correlator_power_spectrum, delimiter=",")
-    power_spectrum_of_correlators.append(correlator_power_spectrum)
 
 
 if __name__ == "__main__":

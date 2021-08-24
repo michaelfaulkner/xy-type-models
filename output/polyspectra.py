@@ -15,7 +15,7 @@ sample_getter = importlib.import_module("sample_getter")
 
 def get_normalised_power_spectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
-    temperature = 1 / beta
+    temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_temp_eq_{temperature:.2f}.csv",
                   "r") as data_file:
@@ -40,14 +40,30 @@ def get_normalised_power_spectrum(observable_string, output_directory, temperatu
 
 
 def get_power_spectrum_of_correlator(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                                     no_of_equilibration_sweeps, time_period_shift=10, sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
-    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                                  no_of_equilibration_sweeps)
-    if time_period_shift >= len(time_series[0]):
-        raise Exception("time_period_shift must be an integer less than the sample size.")
-    return get_component_averaged_power_spectrum(
-        get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
+                                     no_of_equilibration_sweeps, no_of_jobs, pool, time_period_shift=10,
+                                     sampling_frequency=None):
+    temperature = 1.0 / beta
+    try:
+        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_of_correlator_"
+                  f"time_shift_eq_{time_period_shift}_temp_eq_{temperature:.2f}.csv", "r") as data_file:
+            return np.loadtxt(data_file, dtype=float, delimiter=",")
+    except IOError:
+        if no_of_jobs == 1:
+            correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, time_period_shift, sampling_frequency)
+        else:
+            correlator_power_spectra = pool.starmap(
+                get_single_observation_of_power_spectrum_of_correlator,
+                [(observable_string, f"{output_directory}/job_{job_number + 1}", temperature_directory, beta,
+                  no_of_sites, no_of_equilibration_sweeps, time_period_shift) for job_number in range(no_of_jobs)])
+            correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
+        # normalise power spectrum with respect to its low-frequency value
+        correlator_power_spectrum[1] /= correlator_power_spectrum[1, 0]
+        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_of_correlator_"
+                  f"time_shift_eq_{time_period_shift}_temp_eq_{temperature:.2f}.csv", "w") as data_file:
+            np.savetxt(data_file, correlator_power_spectrum, delimiter=",")
+        return correlator_power_spectrum
 
 
 def get_normalised_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory, beta,
@@ -188,6 +204,18 @@ def get_single_observation_of_power_spectrum(observable_string, output_directory
     time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
+
+
+def get_single_observation_of_power_spectrum_of_correlator(observable_string, output_directory, temperature_directory,
+                                                           beta, no_of_sites, no_of_equilibration_sweeps,
+                                                           time_period_shift=10, sampling_frequency=None):
+    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps)
+    if time_period_shift >= len(time_series[0]):
+        raise Exception("time_period_shift must be an integer less than the sample size.")
+    return get_component_averaged_power_spectrum(
+        get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
 
 
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
