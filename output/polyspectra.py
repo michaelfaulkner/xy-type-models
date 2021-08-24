@@ -68,37 +68,6 @@ def get_power_spectrum_of_correlator(observable_string, output_directory, temper
         return correlator_power_spectrum
 
 
-def get_normalised_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory, beta,
-                                               no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
-                                               no_of_octaves=2, base_time_period_shift=1, sampling_frequency=None):
-    if no_of_octaves <= 0:
-        raise Exception("no_of_octaves must be a positive integer.")
-    temperature = 1 / beta
-    try:
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
-                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}.csv", "r") as data_file:
-            return np.loadtxt(data_file, dtype=float, delimiter=",")
-    except IOError:
-        if no_of_jobs == 1:
-            power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
-                observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                no_of_equilibration_sweeps, no_of_octaves, base_time_period_shift, sampling_frequency)
-        else:
-            power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
-                                                       [(observable_string, f"{output_directory}/job_{job_number + 1}",
-                                                         temperature_directory, beta, no_of_sites,
-                                                         no_of_equilibration_sweeps, no_of_octaves,
-                                                         base_time_period_shift,
-                                                         sampling_frequency) for job_number in range(no_of_jobs)])
-            power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
-        # normalise estimator of power trispectrum with respect to its low-frequency value
-        power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
-        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
-                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}.csv", "w") as data_file:
-            np.savetxt(data_file, power_trispectrum_zero_mode, delimiter=",")
-        return power_trispectrum_zero_mode
-
-
 def get_normalised_power_trispectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                      no_of_equilibration_sweeps, no_of_jobs, pool, no_of_octaves=2,
                                      base_time_period_shift=1, sampling_frequency=None):
@@ -142,6 +111,37 @@ def get_normalised_power_trispectrum(observable_string, output_directory, temper
                       f"_temp_eq_{temperature:.2f}_f_prime_eq_{index}_x_delta_f_prime.csv", "w") as data_file:
                 np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
+
+
+def get_normalised_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory, beta,
+                                               no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
+                                               no_of_octaves=2, base_time_period_shift=1, sampling_frequency=None):
+    if no_of_octaves <= 0:
+        raise Exception("no_of_octaves must be a positive integer.")
+    temperature = 1 / beta
+    try:
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
+                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}.csv", "r") as data_file:
+            return np.loadtxt(data_file, dtype=float, delimiter=",")
+    except IOError:
+        if no_of_jobs == 1:
+            power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
+                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                no_of_equilibration_sweeps, no_of_octaves, base_time_period_shift, sampling_frequency)
+        else:
+            power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
+                                                       [(observable_string, f"{output_directory}/job_{job_number + 1}",
+                                                         temperature_directory, beta, no_of_sites,
+                                                         no_of_equilibration_sweeps, no_of_octaves,
+                                                         base_time_period_shift,
+                                                         sampling_frequency) for job_number in range(no_of_jobs)])
+            power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
+        # normalise estimator of power trispectrum with respect to its low-frequency value
+        power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
+        with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
+                  f"{no_of_octaves}_octaves_temp_eq_{temperature:.2f}.csv", "w") as data_file:
+            np.savetxt(data_file, power_trispectrum_zero_mode, delimiter=",")
+        return power_trispectrum_zero_mode
 
 
 def get_normalised_power_trispectrum_as_defined(observable_string, output_directory, temperature_directory, beta,
@@ -222,17 +222,6 @@ def get_single_observation_of_power_spectrum_of_correlator(observable_string, ou
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
 
 
-def get_single_observation_of_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory,
-                                                          beta, no_of_sites, no_of_equilibration_sweeps,
-                                                          no_of_octaves=2, base_time_period_shift=1,
-                                                          sampling_frequency=None):
-    power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
-        observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-        base_time_period_shift, no_of_octaves, sampling_frequency)
-    return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
-            np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
-
-
 def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
                                                 no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
                                                 base_time_period_shift=1, sampling_frequency=None):
@@ -248,6 +237,17 @@ def get_single_observation_of_power_trispectrum(observable_string, output_direct
          if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
     return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
             power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
+
+
+def get_single_observation_of_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory,
+                                                          beta, no_of_sites, no_of_equilibration_sweeps,
+                                                          no_of_octaves=2, base_time_period_shift=1,
+                                                          sampling_frequency=None):
+    power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
+        observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+        base_time_period_shift, no_of_octaves, sampling_frequency)
+    return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
+            np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
 
 
 # basic methods
