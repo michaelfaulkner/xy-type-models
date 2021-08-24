@@ -13,8 +13,8 @@ sys.path.insert(0, directory_containing_modules)
 sample_getter = importlib.import_module("sample_getter")
 
 
-def get_power_spectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                       no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
+def get_normalised_power_spectrum(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                  no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
     temperature = 1 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_temp_eq_{temperature:.2f}.csv",

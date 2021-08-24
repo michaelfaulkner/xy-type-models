@@ -48,8 +48,9 @@ def main(config_file, observable_string):
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_spectrum = polyspectra.get_power_spectrum(observable_string, output_directory, temperature_directory,
-                                                        beta, no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool)
+        power_spectrum = polyspectra.get_normalised_power_spectrum(observable_string, output_directory,
+                                                                   temperature_directory, beta, no_of_sites,
+                                                                   no_of_equilibration_sweeps, no_of_jobs, pool)
         power_spectrum_of_correlators = []
         for index in range(no_of_power_2_correlators):
             compute_power_spectra_of_correlators(beta, index, 2, no_of_equilibration_sweeps, no_of_jobs, no_of_sites,
