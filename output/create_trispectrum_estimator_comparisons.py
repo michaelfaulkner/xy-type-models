@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 import os
 import sys
+import time
 
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
 config_data_getter = importlib.import_module("config_data_getter")
@@ -29,6 +29,7 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
     else:
         pool = None
 
+    start_time = time.time()
     for i in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         beta = 1.0 / temperature
@@ -88,6 +89,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
                        f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
+    end_time = time.time()
+    print(f"Sample analysis complete.  Total runtime = {end_time - start_time} seconds.")
 
     if no_of_jobs > 1:
         pool.close()
