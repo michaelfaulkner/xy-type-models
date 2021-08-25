@@ -123,7 +123,7 @@ def get_normalised_power_trispectrum_zero_mode(observable_string, output_directo
                                                no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
-        raise Exception("no_of_octaves must be a positive integer.")
+        raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     temperature = 1 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_zero_mode_"
@@ -156,7 +156,7 @@ def get_normalised_power_trispectrum_as_defined(observable_string, output_direct
                                                 no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                 sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
-        raise Exception("no_of_octaves must be a positive integer.")
+        raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     temperature = 1.0 / beta
     try:
         power_trispectrum = []
@@ -235,29 +235,31 @@ def get_single_observation_of_power_spectrum_of_correlator(observable_string, ou
 
 
 def get_single_observation_of_power_trispectrum(observable_string, output_directory, temperature_directory, beta,
-                                                no_of_sites, no_of_equilibration_sweeps, no_of_octaves=2,
-                                                base_time_period_shift=1, sampling_frequency=None):
+                                                no_of_sites, no_of_equilibration_sweeps,
+                                                no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
+                                                sampling_frequency=None):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string, output_directory,
                                                                                 temperature_directory, beta,
                                                                                 no_of_sites, no_of_equilibration_sweeps,
-                                                                                base_time_period_shift, no_of_octaves,
+                                                                                base_time_period_shift,
+                                                                                no_of_auxiliary_frequency_octaves,
                                                                                 sampling_frequency)
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     norm_of_spectra_in_frequency_shift_space = np.array(
         [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
          if (index == 0 or index == 2 ** (math.floor(math.log(index, 2))))])
-    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_octaves + 1) * base_time_period_shift)),
+    return [np.atleast_1d(sampling_frequency / (2 ** (no_of_auxiliary_frequency_octaves + 1) * base_time_period_shift)),
             power_spectra_of_correlators[0, 0], norm_of_spectra_in_frequency_shift_space]
 
 
 def get_single_observation_of_power_trispectrum_zero_mode(observable_string, output_directory, temperature_directory,
                                                           beta, no_of_sites, no_of_equilibration_sweeps,
-                                                          no_of_octaves=2, base_time_period_shift=1,
+                                                          no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                           sampling_frequency=None):
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
         observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-        base_time_period_shift, no_of_octaves, sampling_frequency)
+        base_time_period_shift, no_of_auxiliary_frequency_octaves, sampling_frequency)
     return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
             np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
 
@@ -300,19 +302,19 @@ def get_two_point_correlator(time_series, time_period_shift):
 
 def get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
                                                  no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
-                                                 no_of_octaves, sampling_frequency):
+                                                 no_of_auxiliary_frequency_octaves, sampling_frequency):
     sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
-    if base_time_period_shift * 2 ** (no_of_octaves + 1) >= len(time_series[0]):
-        raise Exception("base_time_period_shift * 2 ** (no_of_octaves + 1) must be less than the smallest power of 2 "
-                        "that is less than the sample size.")
-    # create 2 ** (no_of_octaves + 1) two-point correlators; here, [:, :len(time_series[0]) -
-    # (2 ** (no_of_octaves + 1) - 1) * base_time_period_shift] ensures that (each component of) all correlators are the
-    # same length, which ensures that their power spectra have common frequency values
+    if base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) >= len(time_series[0]):
+        raise Exception("base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) must be less than the "
+                        "smallest power of 2 that is less than the sample size.")
+    # create 2 ** (no_of_auxiliary_frequency_octaves + 1) two-point correlators; here, [:, :len(time_series[0]) -
+    # (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift] ensures that (each component of) all
+    # correlators are the same length, which ensures that their power spectra have common frequency values
     correlators = [
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), i * base_time_period_shift)[
-            :, :len(time_series[0]) - (2 ** (no_of_octaves + 1) - 1) * base_time_period_shift]
-        for i in range(2 ** (no_of_octaves + 1))]
+            :, :len(time_series[0]) - (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift]
+        for i in range(2 ** (no_of_auxiliary_frequency_octaves + 1))]
     return np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
