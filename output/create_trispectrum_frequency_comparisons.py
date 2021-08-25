@@ -31,6 +31,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         pool = None
 
     for i in range(no_of_temperature_increments + 1):
+        print(f"Temperature = {temperature:.2f}")
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
