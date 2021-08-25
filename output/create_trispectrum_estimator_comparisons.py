@@ -40,22 +40,25 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
             observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
             no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
 
-        figure, axis = plt.subplots(3, 2, figsize=(10, 10))
-        [axis[2, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
+        figure, axis = plt.subplots(2, 2, figsize=(10, 10))
+        [axis[1, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
-        for index in range(3):
+        for index in range(2):
             if index == 0:
                 axis[index, 0].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
                                       color='blue', label="estimator as defined")
                 axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
-            elif index == 1:
-                axis[index, 0].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
-                                      color='blue', label="estimator as defined")
-                axis[index, 0].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
+
+                axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
                                       label="shortcut estimator")
-            elif index == 2:
+                axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
+                                      color='blue', label="estimator as defined")
+
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
+                                          fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
+            else:
                 axis[index, 0].loglog(power_trispectrum_as_defined[1],
                                       power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
                                       color='blue', label="estimator as defined")
@@ -63,17 +66,6 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
                                       power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
                                       label="shortcut estimator")
 
-            if index == 0:
-                axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
-                                      label="shortcut estimator")
-                axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
-                                      color='blue', label="estimator as defined")
-            elif index == 1:
-                axis[index, 1].loglog(power_trispectrum[1], power_trispectrum[2][index], color='red',
-                                      label="shortcut estimator")
-                axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
-                                      color='blue', label="estimator as defined")
-            elif index == 2:
                 axis[index, 1].loglog(power_trispectrum[1],
                                       power_trispectrum[2][len(power_trispectrum[2]) - 1], color='red',
                                       label="shortcut estimator")
@@ -81,14 +73,6 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
                                       power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
                                       color='blue', label="estimator as defined")
 
-        for index in range(3):
-            if index == 0:
-                axis[index, 0].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f'=0 \right)$",
-                                          fontsize=10, labelpad=10)
-            elif index == 1:
-                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
-                                          fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
-            else:
                 axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$ / "
                                           fr"$|S_X^3 \left(f_0, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
                                           fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
