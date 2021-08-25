@@ -35,8 +35,8 @@ def get_normalised_power_spectrum(observable_string, output_directory, temperatu
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
         # normalise power spectrum with respect to its low-frequency value
         power_spectrum[1] /= power_spectrum[1, 0]
-        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_"
-                  f"temp_eq_{temperature:.2f}.csv", "w") as data_file:
+        with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_temp_eq_{temperature:.2f}.csv",
+                  "w") as data_file:
             np.savetxt(data_file, power_spectrum, delimiter=",")
         return power_spectrum
 
