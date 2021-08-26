@@ -87,7 +87,8 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
     for legend in correlators_legend:
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/{observable_string}_power_spectra_of_signal_and_correlators.pdf",
+    figure.savefig(f"{output_directory}/{observable_string}_power_spectra_of_signal_and_correlators_"
+                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                    bbox_inches="tight")
 
 

@@ -65,8 +65,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     trispectrum_legend = axis[1].legend(loc="lower left", fontsize=10)
     trispectrum_legend.get_frame().set_edgecolor("k")
     trispectrum_legend.get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/{observable_string}_polyspectra.pdf", bbox_inches="tight")
-
+    figure.savefig(f"{output_directory}/{observable_string}_polyspectra_{int(no_of_sites ** 0.5)}x"
+                   f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
     if no_of_jobs > 1:
         pool.close()
 

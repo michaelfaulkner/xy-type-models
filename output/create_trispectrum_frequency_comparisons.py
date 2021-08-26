@@ -78,7 +78,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_auxiliary_frequencies_"
-                       f"{no_of_trispectrum_auxiliary_frequency_octaves}_octaves_temp_eq_{temperature:.2f}.pdf",
+                       f"{no_of_trispectrum_auxiliary_frequency_octaves}_octaves_temp_eq_{temperature:.2f}_"
+                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                        bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
