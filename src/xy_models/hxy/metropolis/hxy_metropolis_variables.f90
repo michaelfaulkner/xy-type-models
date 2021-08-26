@@ -3,9 +3,10 @@ character(100) :: output_directory, algorithm_name
 logical :: use_external_global_moves, randomise_initial_field_configuration, calculate_external_minimising_twist_field
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer, allocatable, dimension(:) :: array_of_sites
+integer(kind=8) :: no_of_accepted_field_rotations
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
-integer :: no_of_observations, no_of_accepted_field_rotations, no_of_accepted_external_global_moves
-integer :: vacuum_permittivity_sum_cutoff, no_of_external_twists_to_minimise_potential(2)
+integer :: no_of_observations, no_of_accepted_external_global_moves, vacuum_permittivity_sum_cutoff
+integer :: no_of_external_twists_to_minimise_potential(2)
 double precision, parameter :: two_pi = 6.28318530717959d0
 double precision, parameter :: pi = 3.14159265358979d0
 double precision, allocatable, dimension(:) :: spin_field
