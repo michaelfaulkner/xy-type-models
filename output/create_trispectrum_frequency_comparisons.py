@@ -82,8 +82,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                        bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
-    end_time = time.time()
-    print(f"Sample analysis complete.  Total runtime = {end_time - start_time} seconds.")
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs > 1:
         pool.close()

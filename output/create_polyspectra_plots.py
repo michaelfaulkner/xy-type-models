@@ -59,8 +59,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                              fr"f' = {power_trispectrum[0][0] * 2.0 ** (len(power_trispectrum[2]) - 1):.2e}")
 
         temperature -= magnitude_of_temperature_increments
-    end_time = time.time()
-    print(f"Sample analysis complete.  Total runtime = {end_time - start_time} seconds.")
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     figure.tight_layout()
     trispectrum_legend = axis[1].legend(loc="lower left", fontsize=10)

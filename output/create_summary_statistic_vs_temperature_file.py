@@ -110,8 +110,7 @@ def main(config_file, observable_string):
             output_file.write(f"{temperature:.2f}".ljust(15) + f"{sample_mean:.14e}".ljust(35) + f"{sample_error:.14e}"
                               + "\n")
         temperature += magnitude_of_temperature_increments
-    end_time = time.time()
-    print(f"Sample analysis complete.  Total runtime = {end_time - start_time} seconds.")
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs > 1:
         pool.close()

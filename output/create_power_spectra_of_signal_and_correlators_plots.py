@@ -65,8 +65,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
                 axis[index + 1].loglog(spectrum[0], spectrum[1], color=current_color)
 
         temperature -= magnitude_of_temperature_increments
-    end_time = time.time()
-    print(f"Sample analysis complete.  Total runtime = {end_time - start_time} seconds.")
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs > 1:
         pool.close()
