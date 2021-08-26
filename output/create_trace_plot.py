@@ -17,8 +17,7 @@ def main(config_file, observable_string):
      final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
     config_data_getter.check_for_observable_error(algorithm_name, observable_string)
     if no_of_jobs != 1:
-        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
-        raise SystemExit
+        raise Exception("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
     temperature = final_temperature
 
     beta = 1.0 / temperature
