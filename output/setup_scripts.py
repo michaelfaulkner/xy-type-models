@@ -3,7 +3,7 @@ import matplotlib
 import multiprocessing as mp
 
 
-def get_basic_data(config_file_location):
+def get_config_data(config_file_location):
     with open(config_file_location, 'r') as config_file:
         for row in csv.reader(config_file, delimiter='\t'):
             if 'algorithm_name' in row[0]:
@@ -74,7 +74,7 @@ def get_temperature_and_magnitude_of_increments(initial_temperature, final_tempe
 def set_up_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = get_basic_data(config_file)
+     final_temperature, no_of_temperature_increments, no_of_jobs) = get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)

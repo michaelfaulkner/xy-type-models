@@ -7,8 +7,8 @@ import output.setup_scripts as setup_scripts
 
 
 def main(config_file):
-    basic_config_data = setup_scripts.get_basic_data(config_file)
-    algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[7]
+    config_data = setup_scripts.get_config_data(config_file)
+    algorithm_name, no_of_parallel_jobs = config_data[0], config_data[7]
     executable = get_executable(algorithm_name)
     if no_of_parallel_jobs < 1:
         raise Exception("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")

@@ -17,7 +17,7 @@ sample_getter = importlib.import_module("sample_getter")
 def main(config_file, observable_string, length_of_trace_plot=1000, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = setup_scripts.get_basic_data(config_file)
+     final_temperature, no_of_temperature_increments, no_of_jobs) = setup_scripts.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
