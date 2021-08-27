@@ -21,7 +21,7 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
     if no_of_jobs != 1:
-        sample_directory = output_directory + f"/job_1"
+        sample_directory = f"{output_directory}/job_1"
     else:
         sample_directory = output_directory
 
@@ -50,6 +50,7 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                     bbox_inches="tight")
+        plt.clf()
 
         temperature = temperature - magnitude_of_temperature_increments
 
