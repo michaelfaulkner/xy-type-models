@@ -8,7 +8,7 @@ import time
 # Add the directory that contains config_file and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
-config_data_getter = importlib.import_module("config_data_getter")
+setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
@@ -17,7 +17,7 @@ polyspectra = importlib.import_module("polyspectra")
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=2,
          trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-     no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = config_data_getter.set_up_polyspectra_script(
+     no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = setup_scripts.set_up_polyspectra_script(
         config_file, observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))

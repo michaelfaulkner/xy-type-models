@@ -10,7 +10,7 @@ import sys
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_modules = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_modules)
-config_data_getter = importlib.import_module("config_data_getter")
+setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
@@ -18,7 +18,7 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 def main(config_file):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
+     final_temperature, no_of_temperature_increments, no_of_jobs) = setup_scripts.get_basic_data(config_file)
     if no_of_jobs != 1:
         print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
         raise SystemExit

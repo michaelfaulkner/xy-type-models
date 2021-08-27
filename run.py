@@ -3,11 +3,11 @@ import fileinput
 import multiprocessing as mp
 import os
 import sys
-import output.config_data_getter as config_data_getter
+import output.setup_scripts as setup_scripts
 
 
 def main(config_file):
-    basic_config_data = config_data_getter.get_basic_data(config_file)
+    basic_config_data = setup_scripts.get_basic_data(config_file)
     algorithm_name, no_of_parallel_jobs = basic_config_data[0], basic_config_data[7]
     executable = get_executable(algorithm_name)
     if no_of_parallel_jobs < 1:

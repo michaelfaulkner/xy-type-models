@@ -8,7 +8,7 @@ import sys
 # Add the directory that contains config_file, sample_getter and markov_chain_diagnostics to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
-config_data_getter = importlib.import_module("config_data_getter")
+setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 
@@ -57,11 +57,11 @@ def main(config_file_1, config_file_2):
 
 def get_required_config_data_and_error_check(config_file_1, config_file_2):
     (algorithm_name_1, output_directory_1, no_of_sites_1, no_of_equilibration_sweeps_1, initial_temperature_1,
-     final_temperature_1, no_of_temperature_increments_1, no_of_jobs_1) = config_data_getter.get_basic_data(
+     final_temperature_1, no_of_temperature_increments_1, no_of_jobs_1) = setup_scripts.get_basic_data(
         config_file_1)
     temperature_1 = initial_temperature_1
     (algorithm_name_2, output_directory_2, no_of_sites_2, no_of_equilibration_sweeps_2, initial_temperature_2,
-     final_temperature_2, no_of_temperature_increments_2, no_of_jobs_2) = config_data_getter.get_basic_data(
+     final_temperature_2, no_of_temperature_increments_2, no_of_jobs_2) = setup_scripts.get_basic_data(
         config_file_2)
     temperature_2 = initial_temperature_2
     if no_of_temperature_increments_1 != 0:

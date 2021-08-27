@@ -10,16 +10,16 @@ import numpy as np
 
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, this_directory)
-config_data_getter = importlib.import_module("config_data_getter")
+setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
 
 
 def main(config_file, observable_string, length_of_trace_plot=1000, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
-    config_data_getter.check_for_observable_error(algorithm_name, observable_string)
-    (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
+     final_temperature, no_of_temperature_increments, no_of_jobs) = setup_scripts.get_basic_data(config_file)
+    setup_scripts.check_for_observable_error(algorithm_name, observable_string)
+    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
     if no_of_jobs != 1:
         sample_directory = output_directory + f"/job_{random.choice(range(no_of_jobs)) + 1}"
