@@ -67,7 +67,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_convergence_of_power_trispectrum_zero_auxiliary_"
-                       f"frequency_mode_w_no_of_auxiliary_frequency_octaves_temp_eq_{temperature:.2f}.pdf",
+                       f"frequency_mode_w_no_of_auxiliary_frequency_octaves_temp_eq_{temperature:.2f}_"
+                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                        bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
