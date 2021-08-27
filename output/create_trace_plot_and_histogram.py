@@ -1,5 +1,4 @@
 import importlib
-import random
 import matplotlib
 import matplotlib.pyplot as plt
 import os
@@ -22,7 +21,7 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
     if no_of_jobs != 1:
-        sample_directory = output_directory + f"/job_{random.choice(range(no_of_jobs)) + 1}"
+        sample_directory = output_directory + f"/job_1"
     else:
         sample_directory = output_directory
 
