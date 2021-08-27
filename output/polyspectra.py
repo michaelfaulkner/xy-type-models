@@ -278,8 +278,8 @@ def get_time_series(observable_string, output_directory, temperature_directory, 
 
 
 def get_component_averaged_power_spectrum(time_series, sampling_frequency):
-    power_spectra = np.atleast_2d([signal.periodogram(component, fs=sampling_frequency) for component in
-                                   time_series - np.mean(time_series, axis=1)])
+    power_spectra = np.atleast_2d([signal.periodogram(component_2, fs=sampling_frequency) for component_2 in
+                                   [component_1 - np.mean(component_1) for component_1 in time_series]])
     # now average over Cartesian components of original sample, where the `[:, 1:]' removes the f = 0 value as...
     # ...this value is invalid for a finite-time signal
     return np.mean(power_spectra, axis=0)[:, 1:]
@@ -306,7 +306,8 @@ def get_power_spectra_of_trispectrum_correlators(observable_string, output_direc
     # (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift] ensures that (each component of) all
     # correlators are the same length, which ensures that their power spectra have common frequency values
     correlators = [
-        get_two_point_correlator(time_series - np.mean(time_series, axis=1), i * base_time_period_shift)[
+        get_two_point_correlator(np.atleast_2d([component - np.mean(component) for component in time_series]),
+                                 i * base_time_period_shift)[
             :, :len(time_series[0]) - (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift]
         for i in range(2 ** (no_of_auxiliary_frequency_octaves + 1))]
     return np.array(
