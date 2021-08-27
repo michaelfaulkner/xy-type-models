@@ -1,7 +1,5 @@
 import importlib
-import matplotlib
 import matplotlib.pyplot as plt
-import multiprocessing as mp
 import numpy as np
 import os
 import sys
@@ -18,12 +16,9 @@ polyspectra = importlib.import_module("polyspectra")
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=2,
          trispectrum_base_period_shift=1):
-    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
-    config_data_getter.check_for_observable_error(algorithm_name, observable_string)
-    (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
+     no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = config_data_getter.set_up_polyspectra_script(
+        config_file, observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     figure, axis = plt.subplots(2, figsize=(10, 10))
@@ -32,12 +27,6 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     axis[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$ / $\left| S_X^3 \left( f_0, f' \right) \right|$",
                        fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-
-    if no_of_jobs > 1:
-        no_of_cpus = mp.cpu_count()
-        pool = mp.Pool(no_of_cpus)
-    else:
-        pool = None
 
     start_time = time.time()
     for i in range(no_of_temperature_increments + 1):

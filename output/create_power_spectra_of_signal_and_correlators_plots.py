@@ -1,7 +1,5 @@
 import importlib
-import matplotlib
 import matplotlib.pyplot as plt
-import multiprocessing as mp
 import numpy as np
 import os
 import sys
@@ -17,23 +15,14 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_power_10_correlators=4):
-    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = config_data_getter.get_basic_data(config_file)
-    config_data_getter.check_for_observable_error(algorithm_name, observable_string)
-    (temperature, magnitude_of_temperature_increments) = config_data_getter.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
+     no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = config_data_getter.set_up_polyspectra_script(
+        config_file, observable_string)
 
     figure, axis = plt.subplots(1 + no_of_power_2_correlators + no_of_power_10_correlators, figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
-
-    if no_of_jobs > 1:
-        no_of_cpus = mp.cpu_count()
-        pool = mp.Pool(no_of_cpus)
-    else:
-        pool = None
 
     start_time = time.time()
     for i in range(no_of_temperature_increments + 1):

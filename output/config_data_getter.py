@@ -1,4 +1,6 @@
 import csv
+import matplotlib
+import multiprocessing as mp
 
 
 def get_basic_data(config_file_location):
@@ -67,3 +69,19 @@ def get_temperature_and_magnitude_of_increments(initial_temperature, final_tempe
     else:
         magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
     return temperature, magnitude_of_temperature_increments
+
+
+def set_up_polyspectra_script(config_file, observable_string):
+    matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+     final_temperature, no_of_temperature_increments, no_of_jobs) = get_basic_data(config_file)
+    check_for_observable_error(algorithm_name, observable_string)
+    (temperature, magnitude_of_temperature_increments) = get_temperature_and_magnitude_of_increments(
+        initial_temperature, final_temperature, no_of_temperature_increments)
+    if no_of_jobs > 1:
+        no_of_cpus = mp.cpu_count()
+        pool = mp.Pool(no_of_cpus)
+    else:
+        pool = None
+    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
+            no_of_jobs, temperature, magnitude_of_temperature_increments, pool)
