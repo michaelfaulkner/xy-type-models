@@ -64,12 +64,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
                         "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
-                        "may provide no_of_trispectrum_auxiliary_frequency_octaves (default value is 3) and "
+                        "may provide no_of_trispectrum_auxiliary_frequency_octaves (default value is 2) and "
                         "trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
                         "(respectively).")
     if len(sys.argv) == 3:
         print("Two positional arguments provided.  In addition, you may provide "
-              "no_of_trispectrum_auxiliary_frequency_octaves (default value is 3) and trispectrum_base_period_shift "
+              "no_of_trispectrum_auxiliary_frequency_octaves (default value is 2) and trispectrum_base_period_shift "
               "(default value is 1) in the third and fourth positions (respectively).")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
