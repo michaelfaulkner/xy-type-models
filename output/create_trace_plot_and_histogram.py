@@ -29,14 +29,17 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
         get_sample_method = getattr(sample_getter, "get_" + observable_string)
-        sample = np.atleast_2d(
-            get_sample_method(sample_directory, temperature_directory, beta, no_of_sites)).transpose()
+        sample = np.atleast_2d(get_sample_method(sample_directory, temperature_directory, beta, no_of_sites))
+        if len(sample) > 1:
+            sample = sample.transpose()
+        sample = sample[0]
 
         plt.xlabel(r"time, $t$", fontsize=15, labelpad=10)
         plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-        plt.plot(sample[0, no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot], color="k",
-                 linewidth=1, linestyle="-")
+        plt.plot(sample[no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]
+                 - np.mean(sample[no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]),
+                 color="k", linewidth=1, linestyle="-")
         plt.tight_layout()
         plt.savefig(f"{output_directory}/{observable_string}_vs_time_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
@@ -46,7 +49,7 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
         plt.xlabel(r"$x$", fontsize=15, labelpad=10)
         plt.ylabel(r"$ \mathbb{P} \left( |x| < |X| < |x| + |dx| \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-        plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
+        plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
