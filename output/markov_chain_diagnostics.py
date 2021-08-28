@@ -6,21 +6,33 @@ laplaces_demon_r_package = r_packages.importr('LaplacesDemon')
 mcmcse_r_package = r_packages.importr('mcmcse')
 
 
-def get_effective_sample_size(sample):
-    return np.array(laplaces_demon_r_package.ESS(sample))[0]
+def get_effective_sample_size(one_dimensional_sample):
+    if len(np.atleast_2d(one_dimensional_sample)) > 1:
+        raise Exception("Error: the sample passed to markov_chain_diagnostics.get_effective_sample_size() must be one "
+                        "(Cartesian) dimensional.")
+    return np.array(laplaces_demon_r_package.ESS(one_dimensional_sample))[0]
 
 
-def get_thinned_sample(sample, thinning_level):
-    sample_indices_to_keep = np.array([i for i in range(len(sample)) if i % thinning_level == 0])
-    return np.take(sample, sample_indices_to_keep)
+def get_thinned_sample(one_dimensional_sample, thinning_level):
+    if len(np.atleast_2d(one_dimensional_sample)) > 1:
+        raise Exception("Error: the sample passed to markov_chain_diagnostics.get_thinned_sample() must be one "
+                        "(Cartesian) dimensional.")
+    sample_indices_to_keep = np.array([i for i in range(len(one_dimensional_sample)) if i % thinning_level == 0])
+    return np.take(one_dimensional_sample, sample_indices_to_keep)
 
 
-def get_sample_mean_and_error(sample):
-    sample_mean_and_error = np.array(mcmcse_r_package.mcse(sample))
+def get_sample_mean_and_error(one_dimensional_sample):
+    if len(np.atleast_2d(one_dimensional_sample)) > 1:
+        raise Exception("Error: the sample passed to markov_chain_diagnostics.get_sample_mean_and_error() must be one "
+                        "(Cartesian) dimensional.")
+    sample_mean_and_error = np.array(mcmcse_r_package.mcse(one_dimensional_sample))
     return sample_mean_and_error[0, 0], sample_mean_and_error[1, 0]
 
 
-def get_cumulative_distribution(input_sample):
-    bin_values = np.arange(1, len(input_sample) + 1) / float(len(input_sample))
-    ordered_input_sample = np.sort(input_sample)
-    return ordered_input_sample, bin_values
+def get_cumulative_distribution(one_dimensional_sample):
+    if len(np.atleast_2d(one_dimensional_sample)) > 1:
+        raise Exception("Error: the sample passed to markov_chain_diagnostics.get_cumulative_distribution() must be "
+                        "one (Cartesian) dimensional.")
+    bin_values = np.arange(1, len(one_dimensional_sample) + 1) / float(len(one_dimensional_sample))
+    ordered_sample = np.sort(one_dimensional_sample)
+    return ordered_sample, bin_values
