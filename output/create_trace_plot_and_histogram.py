@@ -29,7 +29,8 @@ def main(config_file, observable_string, length_of_trace_plot=1000, number_of_hi
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
         get_sample_method = getattr(sample_getter, "get_" + observable_string)
-        sample = np.atleast_2d(get_sample_method(sample_directory, temperature_directory, beta, no_of_sites))
+        sample = np.atleast_2d(
+            get_sample_method(sample_directory, temperature_directory, beta, no_of_sites)).transpose()
 
         plt.xlabel(r"time, $t$", fontsize=15, labelpad=10)
         plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
