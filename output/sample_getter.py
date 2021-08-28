@@ -63,13 +63,11 @@ def get_sum_of_electric_field(output_directory, temperature_directory, beta, no_
 
 
 def get_toroidal_polarisation(output_directory, temperature_directory, beta, no_of_sites):
-    return get_sum_of_electric_field(output_directory, temperature_directory, beta,
-                                     no_of_sites) / no_of_sites
+    return get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites) / no_of_sites
 
 
 def get_inverse_permittivity(output_directory, temperature_directory, beta, no_of_sites):
-    sum_of_electric_field_sample = get_sum_of_electric_field(output_directory, temperature_directory, beta,
-                                                             no_of_sites)
+    sum_of_electric_field_sample = get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites)
     return 1.0 - beta * np.mean((sum_of_electric_field_sample - np.mean(sum_of_electric_field_sample, axis=0)) ** 2,
                                 axis=1) / no_of_sites
 
@@ -77,13 +75,11 @@ def get_inverse_permittivity(output_directory, temperature_directory, beta, no_o
 def get_topological_sector_fluctuations(output_directory, temperature_directory, beta, no_of_sites):
     # n.b. in PRB 91, 155412, topological_sector_fluctuations were defined w/out the factor of 1/2 to account for each
     # Cartesian dimension of the system; in the return line below, this corresponds to the first np.mean() -> np.sum()
-    topological_sector_sample = get_topological_sector(output_directory, temperature_directory, beta,
-                                                       no_of_sites)
+    topological_sector_sample = get_topological_sector(output_directory, temperature_directory, beta, no_of_sites)
     return 4.0 * beta * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0))
                                                ** 2, axis=1)
 
 
 def get_topological_sector(output_directory, temperature_directory, beta, no_of_sites):
-    sum_of_electric_field_sample = get_sum_of_electric_field(output_directory, temperature_directory, beta,
-                                                             no_of_sites)
+    sum_of_electric_field_sample = get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites)
     return (sum_of_electric_field_sample + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
