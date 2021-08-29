@@ -53,6 +53,11 @@ def get_magnetisation_phase(output_directory, temperature_directory, beta, no_of
                                                                 no_of_sites)])
 
 
+def get_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
+    return get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
+                                                      no_of_sites) / no_of_sites
+
+
 def get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
     return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
 
