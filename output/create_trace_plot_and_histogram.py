@@ -37,14 +37,16 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         sample = np.atleast_2d(get_sample_method(sample_directory, temperature_directory, beta, no_of_sites))
         if len(sample) > 1:
             sample = sample.transpose()
-        sample = sample[0]
 
         plt.xlabel(r"time, $t$ ($s$)", fontsize=15, labelpad=10)
-        plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
+        if len(sample) > 1:
+            plt.ylabel(r"$ x_1 \left( t \right)$", fontsize=15, labelpad=10)
+        else:
+            plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.plot(np.arange(length_of_trace_plot) * physical_time_step,
-                 sample[no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]
-                 - np.mean(sample[no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]),
+                 sample[0, no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]
+                 - np.mean(sample[0, no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]),
                  color="k", linewidth=1, linestyle="-")
         plt.tight_layout()
         plt.savefig(f"{output_directory}/{observable_string}_vs_time_temp_eq_{temperature:.2f}_"
@@ -52,10 +54,14 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
                     bbox_inches="tight")
         plt.clf()
 
-        plt.xlabel(r"$x$", fontsize=15, labelpad=10)
-        plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
+        if len(sample) > 1:
+            plt.xlabel(r"$x_1$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x_1 \right)$ / const", fontsize=15, labelpad=10)
+        else:
+            plt.xlabel(r"$x$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-        plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
+        plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
