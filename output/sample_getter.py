@@ -3,6 +3,14 @@ import numpy as np
 
 
 # all models
+def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
+    if sampling_frequency is None:
+        acceptance_rates = get_acceptance_rates(output_directory, temperature_directory)
+        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0
+        sampling_frequency = 1.0 / physical_time_scale
+    return sampling_frequency
+
+
 def get_acceptance_rates(output_directory, temperature_directory):
     return np.atleast_1d(np.loadtxt(f"{output_directory}/{temperature_directory}/acceptance_rates.csv", dtype=float,
                                     delimiter=","))

@@ -178,7 +178,8 @@ def get_normalised_power_trispectrum_as_defined(observable_string, output_direct
         power_trispectrum.append(np.array(stored_spectra))
     except IOError:
         if no_of_jobs == 1:
-            sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+            sampling_frequency = sample_getter.get_sampling_frequency(output_directory, sampling_frequency,
+                                                                      temperature_directory)
             power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
                 observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves,
@@ -191,7 +192,7 @@ def get_normalised_power_trispectrum_as_defined(observable_string, output_direct
                                                           no_of_auxiliary_frequency_octaves, sampling_frequency)
                                                          for job_number in range(no_of_jobs)])
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
-            sampling_frequency = get_sampling_frequency(f"{output_directory}/job_1", sampling_frequency,
+            sampling_frequency = sample_getter.get_sampling_frequency(f"{output_directory}/job_1", sampling_frequency,
                                                         temperature_directory)
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
         norm_of_spectra_in_auxiliary_frequency_space = [np.absolute(item) for index, item in
@@ -219,7 +220,8 @@ def get_normalised_power_trispectrum_as_defined(observable_string, output_direct
 
 def get_single_observation_of_power_spectrum(observable_string, output_directory, temperature_directory, beta,
                                              no_of_sites, no_of_equilibration_sweeps, sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    sampling_frequency = sample_getter.get_sampling_frequency(output_directory, sampling_frequency,
+                                                              temperature_directory)
     time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
@@ -228,7 +230,7 @@ def get_single_observation_of_power_spectrum(observable_string, output_directory
 def get_single_observation_of_power_spectrum_of_correlator(observable_string, output_directory, temperature_directory,
                                                            beta, no_of_sites, no_of_equilibration_sweeps,
                                                            time_period_shift=10, sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    sampling_frequency = sample_getter.get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
     time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     if time_period_shift >= len(time_series[0]):
@@ -241,7 +243,8 @@ def get_single_observation_of_power_trispectrum(observable_string, output_direct
                                                 no_of_sites, no_of_equilibration_sweeps,
                                                 no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                 sampling_frequency=None):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    sampling_frequency = sample_getter.get_sampling_frequency(output_directory, sampling_frequency,
+                                                              temperature_directory)
     power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(observable_string, output_directory,
                                                                                 temperature_directory, beta,
                                                                                 no_of_sites, no_of_equilibration_sweeps,
@@ -268,14 +271,6 @@ def get_single_observation_of_power_trispectrum_zero_mode(observable_string, out
 
 
 # basic methods
-
-def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
-    if sampling_frequency is None:
-        acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature_directory)
-        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0
-        sampling_frequency = 1.0 / physical_time_scale
-    return sampling_frequency
-
 
 def get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                     no_of_equilibration_sweeps):
@@ -306,7 +301,8 @@ def get_two_point_correlator(time_series, time_period_shift):
 def get_power_spectra_of_trispectrum_correlators(observable_string, output_directory, temperature_directory, beta,
                                                  no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
                                                  no_of_auxiliary_frequency_octaves, sampling_frequency):
-    sampling_frequency = get_sampling_frequency(output_directory, sampling_frequency, temperature_directory)
+    sampling_frequency = sample_getter.get_sampling_frequency(output_directory, sampling_frequency,
+                                                              temperature_directory)
     time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
                                   no_of_equilibration_sweeps)
     if base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) >= len(time_series[0]):
