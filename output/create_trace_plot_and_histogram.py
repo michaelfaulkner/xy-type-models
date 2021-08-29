@@ -39,7 +39,7 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
             sample = sample.transpose()
         sample = sample[0]
 
-        plt.xlabel(r"time, $t$", fontsize=15, labelpad=10)
+        plt.xlabel(r"time, $t$ ($s$)", fontsize=15, labelpad=10)
         plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.plot(np.arange(length_of_trace_plot) * physical_time_step,
@@ -53,10 +53,10 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         plt.clf()
 
         plt.xlabel(r"$x$", fontsize=15, labelpad=10)
-        plt.ylabel(r"$ \mathbb{P} \left( |x| < |X| < |x| + |dx| \right)$", fontsize=15, labelpad=10)
+        plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
-                 bins=number_of_histogram_bins)
+                 bins=number_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                     bbox_inches="tight")
