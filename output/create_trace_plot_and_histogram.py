@@ -40,9 +40,9 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
 
         plt.xlabel(r"time, $t$ ($s$)", fontsize=15, labelpad=10)
         if len(sample) > 1:
-            plt.ylabel(r"$ x_1 \left( t \right)$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$ x_1 \left( t \right) - \bar{x_1}$", fontsize=15, labelpad=10)
         else:
-            plt.ylabel(r"$ x \left( t \right)$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$ x \left( t \right) - \bar{x}$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.plot(np.arange(length_of_trace_plot) * physical_time_step,
                  sample[0, no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]
@@ -55,11 +55,11 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         plt.clf()
 
         if len(sample) > 1:
-            plt.xlabel(r"$x_1$", fontsize=15, labelpad=10)
-            plt.ylabel(r"$\pi \left( x_1 \right)$ / const", fontsize=15, labelpad=10)
+            plt.xlabel(r"$x_1 - \bar{x_1}$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x_1 - \bar{x_1} \right)$ / const", fontsize=15, labelpad=10)
         else:
-            plt.xlabel(r"$x$", fontsize=15, labelpad=10)
-            plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
+            plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x - \bar{x} \right)$ / const", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins, density=True)
