@@ -61,8 +61,8 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
             plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
             plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-        plt.hist((sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]))
-                 / np.var(sample[0, no_of_equilibration_sweeps:]), bins=number_of_histogram_bins, density=True)
+        plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
+                 bins=number_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
                     f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                     bbox_inches="tight")
