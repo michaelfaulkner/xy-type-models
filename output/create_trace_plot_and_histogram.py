@@ -56,10 +56,10 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
 
         if len(sample) > 1:
             plt.xlabel(r"$x_1 - \bar{x_1}$", fontsize=15, labelpad=10)
-            plt.ylabel(r"$\pi \left( x_1 \right)$ / const", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x_1 \right)$", fontsize=15, labelpad=10)
         else:
             plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
-            plt.ylabel(r"$\pi \left( x \right)$ / const", fontsize=15, labelpad=10)
+            plt.ylabel(r"$\pi \left( x \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins, density=True)
