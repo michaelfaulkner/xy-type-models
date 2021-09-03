@@ -48,8 +48,8 @@ def main(config_file, number_of_histogram_bins=1000):
                                                                                beta, no_of_sites)
 
             figure, axis = plt.subplots(3, 2, figsize=(10, 10))
-            axis[2, 0].set_xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
-            axis[2, 1].set_xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
+            axis[2, 0].set_xlabel(r"$x$", fontsize=15, labelpad=10)
+            axis[2, 1].set_xlabel(r"$x$", fontsize=15, labelpad=10)
             axis[0, 0].set_ylabel(r"$\pi \left( x = m_{x / y} \right)$", fontsize=15, labelpad=10)
             axis[1, 0].set_ylabel(r"$\pi \left( x = |m_{x / y}| \right)$", fontsize=15, labelpad=10)
             axis[2, 0].set_ylabel(r"$\pi \left( x = || m \|| \right)$ / $\pi \left[ x = \phi \left( m \right) \right]$",
