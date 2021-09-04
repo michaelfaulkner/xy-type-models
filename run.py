@@ -69,7 +69,8 @@ def get_executable(algorithm_name):
         executable = "executables/multivalued_electrolyte_algorithm.exe"
     else:
         raise Exception("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, "
-                        "xy-ecmc, xy-metropolis, elementary-electrolyte or multivalued-electrolyte.")
+                        "hxy-gaussian-noise-metropolis, xy-ecmc, xy-metropolis, xy-gaussian-noise-metropolis, "
+                        "elementary-electrolyte or multivalued-electrolyte.")
     if not os.path.isfile(executable):
         raise Exception(f"Executable for the {algorithm_name} algorithm does not exist.  Run 'make' or 'make "
                         f"{algorithm_name}' then try again.")
