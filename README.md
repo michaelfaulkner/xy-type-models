@@ -69,8 +69,9 @@ Configuration files are located in the [`config_files`](config_files) directory.
 strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form to 
 14 significant figures and with the suffix `d0`. All strings must be enclosed between two apostrophes, e.g., 
 `'string'`. The value of `output_directory` must start with `'output/`, i.e., the entire value must be of the form 
-`'output/rest_of_string'`. For the value of `output_directory`, refrain from giving long strings, as this can lead to 
-Fortran runtime errors.
+`'output/rest_of_string'`. For the value of `output_directory`, i) refrain from giving long strings, as this can lead to 
+Fortran runtime errors. Ensure 10 spaces between the value of `output_directory` and the word `output_directory` 
+itself, as this avoids Fortran errors when performing multiple parallel runs.
 
 ### hxy-ecmc configuration file (an example)
 
