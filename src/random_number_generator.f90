@@ -93,6 +93,8 @@
 function get_observation_of_normal_distribution(mean, standard_deviation)
 ! this is the Bell-Knop version of the Box-Muller transform -- see:
 ! https://en.wikipedia.org/wiki/Box–Muller_transform#Polar_form
+! this function has been tested against np.random.normal(loc=mean, scale=standard_deviation, size=10000) for...
+! ...multiple values of mean and standard_deviation
 implicit none
 double precision :: get_observation_of_normal_distribution, mean, standard_deviation
 double precision :: uniform_rand_number_one, uniform_rand_number_two, unit_circle_transform
