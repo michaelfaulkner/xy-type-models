@@ -43,9 +43,9 @@ def get_normalised_power_spectrum(algorithm_name, observable_string, output_dire
         return power_spectrum
 
 
-def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature_directory, beta,
-                                     no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool, time_period_shift=10,
-                                     sampling_frequency=None):
+def get_normalised_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory,
+                                                temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+                                                no_of_jobs, pool, time_period_shift=10, sampling_frequency=None):
     temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_of_correlator_"

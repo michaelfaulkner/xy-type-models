@@ -35,11 +35,11 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
                                                                    no_of_equilibration_sweeps, no_of_jobs, pool)
         power_spectrum_of_correlators = []
         for index in range(no_of_power_2_correlators):
-            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+            power_spectrum_of_correlators.append(polyspectra.get_normalised_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, 2 ** (index + 1)))
         for index in range(no_of_power_10_correlators):
-            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+            power_spectrum_of_correlators.append(polyspectra.get_normalised_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, 10 ** (index + 1)))
 
