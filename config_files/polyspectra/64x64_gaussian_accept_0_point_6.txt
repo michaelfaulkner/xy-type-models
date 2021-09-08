@@ -1,5 +1,5 @@
 'hxy-gaussian-noise-metropolis'                             algorithm_name
-'output/polyspectra/64x64_gaussian_accept_0_point_8'        output_directory
+'output/polyspectra/64x64_gaussian_accept_0_point_6'        output_directory
 64                                                          integer_lattice_length
 10000                                                       no_of_equilibration_sweeps
 1000000                                                     no_of_observations
@@ -7,7 +7,7 @@
 2.2d0                                                       final_temperature
 4                                                           no_of_temperature_increments
 5.0d0   	                                                width_of_proposal_interval (initial)
-0.8d0		                                                target_acceptance_rate_of_field_rotations
+0.6d0		                                                target_acceptance_rate_of_field_rotations
 0                                                           vacuum_permittivity_sum_cutoff
 .false.                                                     randomise_initial_field_configuration
 .false.                                                     use_external_global_moves
