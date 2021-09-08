@@ -6,8 +6,8 @@ import numpy as np
 def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
     if sampling_frequency is None:
         acceptance_rates = get_acceptance_rates(output_directory, temperature_directory)
-        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0  # uniform noise
-        # physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 2.0  # Gaussian noise
+        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 6.0  # uniform noise
+        # physical_time_scale = 2.0 * acceptance_rates[1] * acceptance_rates[0] ** 2  # Gaussian noise
         sampling_frequency = 1.0 / physical_time_scale
     return sampling_frequency
 
