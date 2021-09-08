@@ -75,8 +75,9 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_estimators_"
-                       f"{no_of_trispectrum_octaves}_octaves_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
-                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
+                       f"max_shift_eq_{2 ** no_of_trispectrum_octaves}_x_{trispectrum_base_period_shift}_delta_t_"
+                       f"temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                       f"{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
