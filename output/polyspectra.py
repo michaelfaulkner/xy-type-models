@@ -48,7 +48,7 @@ def get_normalised_power_spectrum_of_correlator(algorithm_name, observable_strin
     temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_of_correlator_"
-                  f"time_shift_eq_{time_period_shift}_temp_eq_{temperature:.2f}.csv", "r") as data_file:
+                  f"time_shift_eq_{time_period_shift}_delta_t_temp_eq_{temperature:.2f}.csv", "r") as data_file:
             return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
         if no_of_jobs == 1:
@@ -65,7 +65,7 @@ def get_normalised_power_spectrum_of_correlator(algorithm_name, observable_strin
         # normalise power spectrum with respect to its low-frequency value
         correlator_power_spectrum[1] /= correlator_power_spectrum[1, 0]
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_of_correlator_"
-                  f"time_shift_eq_{time_period_shift}_temp_eq_{temperature:.2f}.csv", "w") as data_file:
+                  f"time_shift_eq_{time_period_shift}_delta_t_temp_eq_{temperature:.2f}.csv", "w") as data_file:
             np.savetxt(data_file, correlator_power_spectrum, delimiter=",")
         return correlator_power_spectrum
 
