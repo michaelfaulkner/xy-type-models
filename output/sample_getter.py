@@ -3,13 +3,17 @@ import numpy as np
 
 
 # all models
-def get_sampling_frequency(output_directory, sampling_frequency, temperature_directory):
+def get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_directory):
     if sampling_frequency is None:
-        acceptance_rates = get_acceptance_rates(output_directory, temperature_directory)
-        physical_time_scale = acceptance_rates[1] * acceptance_rates[0] ** 2 / 6.0  # uniform noise
-        # physical_time_scale = 2.0 * acceptance_rates[1] * acceptance_rates[0] ** 2  # Gaussian noise
-        sampling_frequency = 1.0 / physical_time_scale
+        return 1.0 / get_physical_time_step(algorithm_name, output_directory, temperature_directory)
     return sampling_frequency
+
+
+def get_physical_time_step(algorithm_name, output_directory, temperature_directory):
+    acceptance_rates = get_acceptance_rates(output_directory, temperature_directory)
+    if algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis":
+        return 2.0 * acceptance_rates[1] * acceptance_rates[0] ** 2  # emergent Langevin diffusivity for Gaussian noise
+    return acceptance_rates[1] * acceptance_rates[0] ** 2 / 6.0  # emergent Langevin diffusivity for uniform noise
 
 
 def get_acceptance_rates(output_directory, temperature_directory):

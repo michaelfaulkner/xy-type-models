@@ -35,12 +35,13 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_spectrum = polyspectra.get_normalised_power_spectrum(observable_string, output_directory,
+        power_spectrum = polyspectra.get_normalised_power_spectrum(algorithm_name, observable_string, output_directory,
                                                                    temperature_directory, beta, no_of_sites,
                                                                    no_of_equilibration_sweeps, no_of_jobs, pool)
         power_trispectrum = polyspectra.get_normalised_power_trispectrum(
-            observable_string, output_directory, temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-            no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
+            algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+            no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
+            trispectrum_base_period_shift)
 
         axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
         axis[1].loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color=current_color,

@@ -30,17 +30,17 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_spectrum = polyspectra.get_normalised_power_spectrum(observable_string, output_directory,
+        power_spectrum = polyspectra.get_normalised_power_spectrum(algorithm_name, observable_string, output_directory,
                                                                    temperature_directory, beta, no_of_sites,
                                                                    no_of_equilibration_sweeps, no_of_jobs, pool)
         power_spectrum_of_correlators = []
         for index in range(no_of_power_2_correlators):
             power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
-                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, 2 ** (index + 1)))
         for index in range(no_of_power_10_correlators):
             power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
-                observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, 10 ** (index + 1)))
 
         current_color = next(colors)

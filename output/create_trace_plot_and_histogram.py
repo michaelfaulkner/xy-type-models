@@ -31,7 +31,8 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         print(f"Temperature = {temperature:.2f}")
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
-        physical_time_step = 1.0 / sample_getter.get_sampling_frequency(sample_directory, None, temperature_directory)
+        physical_time_step = sample_getter.get_physical_time_step(algorithm_name, output_directory,
+                                                                  temperature_directory)
         length_of_trace_plot = int(max_physical_time / physical_time_step)
         get_sample_method = getattr(sample_getter, "get_" + observable_string)
         sample = np.atleast_2d(get_sample_method(sample_directory, temperature_directory, beta, no_of_sites))
