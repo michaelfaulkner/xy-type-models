@@ -29,7 +29,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
-    for i in range(no_of_temperature_increments + 1):
+    for _ in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         current_color = next(colors)
         beta = 1.0 / temperature
@@ -46,7 +46,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
         axis[1].loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color=current_color,
                        label=fr"temperature = {temperature:.2f}; "
-                             fr"f' = {power_trispectrum[0][0] * 2.0 ** (len(power_trispectrum[2]) - 1):.2e}")
+                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")

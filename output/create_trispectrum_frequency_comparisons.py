@@ -21,7 +21,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         config_file, observable_string)
 
     start_time = time.time()
-    for i in range(no_of_temperature_increments + 1):
+    for _ in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
@@ -48,7 +48,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                 axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                                label=r"f' = 0")
             else:
-                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][index - 1], color=current_color,
+                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][2 ** index - 1], color=current_color,
                                label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
 
         colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 2))))
@@ -58,7 +58,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                 axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                                label=r"f' = 0")
             else:
-                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][index - 1], color=current_color,
+                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][2 ** index - 1], color=current_color,
                                label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
 
         figure.tight_layout()
