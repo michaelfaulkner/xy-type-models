@@ -35,6 +35,9 @@ def get_normalised_power_spectrum(algorithm_name, observable_string, output_dire
                                            no_of_sites, no_of_equilibration_sweeps)
                                           for job_number in range(no_of_jobs)])
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
+        # discard spectrum for all frequencies >= 0.1 since
+        # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
+        power_spectrum = power_spectrum[:, :np.argmax(power_spectrum[0] > 0.1) - 1]
         # normalise power spectrum with respect to its low-frequency value
         power_spectrum[1] /= power_spectrum[1, 0]
         with open(f"{output_directory}/{observable_string}_normalised_power_spectrum_temp_eq_{temperature:.2f}.csv",
@@ -110,6 +113,11 @@ def get_normalised_power_trispectrum(algorithm_name, observable_string, output_d
                                               no_of_auxiliary_frequency_octaves, base_time_period_shift,
                                               sampling_frequency) for job_number in range(no_of_jobs)])
             power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+        # discard trispectrum for all frequencies >= 0.1 since
+        # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
+        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1
+        power_trispectrum[1] = power_trispectrum[1][:max_power_trispectrum_index]
+        power_trispectrum[2] = power_trispectrum[2][:, :max_power_trispectrum_index]
         # normalise estimator of power trispectrum with respect to its low-frequency value
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
@@ -213,6 +221,11 @@ def get_normalised_power_trispectrum_as_defined(algorithm_name, observable_strin
                              * sampling_frequency / base_time_period_shift
                              / 2 ** (no_of_auxiliary_frequency_octaves + 1), power_spectra_of_correlators[0, 0],
                              norm_of_spectra_in_auxiliary_frequency_space]
+        # discard trispectrum for all frequencies >= 0.1 since
+        # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
+        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1
+        power_trispectrum[1] = power_trispectrum[1][:max_power_trispectrum_index]
+        power_trispectrum[2] = power_trispectrum[2][:, :max_power_trispectrum_index]
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_as_defined_"
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
                   f"temp_eq_{temperature:.2f}_auxiliary_frequencies.csv", "w") as data_file:
