@@ -1,5 +1,6 @@
 from scipy import signal
 import importlib
+import math
 import numpy as np
 import os
 import sys
@@ -82,13 +83,12 @@ def get_normalised_power_trispectrum(algorithm_name, observable_string, output_d
         stored_spectra = []
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                  f"temp_eq_{temperature:.2f}_auxiliary_frequencies.csv", "w") as data_file:
+                  f"temp_eq_{temperature:.2f}_auxiliary_frequencies.csv", "r") as data_file:
             power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
-        for index in range(2 ** no_of_auxiliary_frequency_octaves):
+        for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
                       f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                      f"temp_eq_{temperature:.2f}_f_prime_eq_{index + 1}_x_{base_time_period_shift}_x_"
-                      f"delta_f_prime.csv", "r") as data_file:
+                      f"temp_eq_{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime.csv", "r") as data_file:
                 data = np.loadtxt(data_file, dtype=float, delimiter=",")
                 if index == 0:
                     power_trispectrum.append(data[0])
@@ -116,11 +116,10 @@ def get_normalised_power_trispectrum(algorithm_name, observable_string, output_d
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
                   f"temp_eq_{temperature:.2f}_auxiliary_frequencies.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        for index in range(2 ** no_of_auxiliary_frequency_octaves):
+        for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
                       f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                      f"temp_eq_{temperature:.2f}_f_prime_eq_{index + 1}_x_{base_time_period_shift}_x_"
-                      f"delta_f_prime.csv", "w") as data_file:
+                      f"temp_eq_{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime.csv", "w") as data_file:
                 np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
 
@@ -131,11 +130,11 @@ def get_normalised_power_trispectrum_zero_mode(algorithm_name, observable_string
                                                base_time_period_shift=1, sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
-    temperature = 1 / beta
+    temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                  f"temp_eq_{temperature:.2f}_zero_auxiliary_frequency_mode.csv", "r") as data_file:
+                  f"temp_eq_{temperature:.2f}_f_prime_eq_zero.csv", "r") as data_file:
             return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
         if no_of_jobs == 1:
@@ -156,7 +155,7 @@ def get_normalised_power_trispectrum_zero_mode(algorithm_name, observable_string
         power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_"
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                  f"temp_eq_{temperature:.2f}_zero_auxiliary_frequency_mode.csv", "w") as data_file:
+                  f"temp_eq_{temperature:.2f}_f_prime_eq_zero.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum_zero_mode, delimiter=",")
         return power_trispectrum_zero_mode
 
@@ -178,8 +177,7 @@ def get_normalised_power_trispectrum_as_defined(algorithm_name, observable_strin
         for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_as_defined_"
                       f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                      f"temp_eq_{temperature:.2f}_f_prime_eq_{index + 1}_x_{base_time_period_shift}_x_"
-                      f"delta_f_prime.csv", "r") as data_file:
+                      f"temp_eq_{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime.csv", "r") as data_file:
                 data = np.loadtxt(data_file, dtype=float, delimiter=",")
                 if index == 0:
                     power_trispectrum.append(data[0])
@@ -207,14 +205,14 @@ def get_normalised_power_trispectrum_as_defined(algorithm_name, observable_strin
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
         norm_of_spectra_in_auxiliary_frequency_space = [np.absolute(item) for index, item in
                                                         enumerate(np.fft.fft(transposed_power_spectra).transpose())
-                                                        if 0 < index <= 2 ** no_of_auxiliary_frequency_octaves]
+                                                        if 0 < index == 2 ** (math.floor(math.log(index, 2)))]
         # normalise power trispectrum with respect to its low-frequency value
         norm_of_spectra_in_auxiliary_frequency_space = [spectrum / spectrum[0] for spectrum in
                                                         norm_of_spectra_in_auxiliary_frequency_space]
-        power_trispectrum = [
-            np.array([(index + 1) * sampling_frequency / base_time_period_shift / 2 ** (
-                    no_of_auxiliary_frequency_octaves + 1) for index in range(2 ** no_of_auxiliary_frequency_octaves)]),
-            power_spectra_of_correlators[0, 0], norm_of_spectra_in_auxiliary_frequency_space]
+        power_trispectrum = [np.array([2 ** index for index in range(no_of_auxiliary_frequency_octaves + 1)])
+                             * sampling_frequency / base_time_period_shift
+                             / 2 ** (no_of_auxiliary_frequency_octaves + 1), power_spectra_of_correlators[0, 0],
+                             norm_of_spectra_in_auxiliary_frequency_space]
         with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_as_defined_"
                   f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
                   f"temp_eq_{temperature:.2f}_auxiliary_frequencies.csv", "w") as data_file:
@@ -222,8 +220,7 @@ def get_normalised_power_trispectrum_as_defined(algorithm_name, observable_strin
         for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_normalised_power_trispectrum_as_defined_"
                       f"max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_"
-                      f"temp_eq_{temperature:.2f}_f_prime_eq_{index + 1}_x_{base_time_period_shift}_x_"
-                      f"delta_f_prime.csv", "w") as data_file:
+                      f"temp_eq_{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime.csv", "w") as data_file:
                 np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
     return power_trispectrum
 
@@ -269,10 +266,10 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     norm_of_spectra_in_auxiliary_frequency_space = np.array(
         [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
-         if 0 < index <= 2 ** no_of_auxiliary_frequency_octaves])
-    return [np.array([(index + 1) * sampling_frequency / base_time_period_shift / 2 ** (
-            no_of_auxiliary_frequency_octaves + 1) for index in range(2 ** no_of_auxiliary_frequency_octaves)]),
-            power_spectra_of_correlators[0, 0], norm_of_spectra_in_auxiliary_frequency_space]
+         if 0 < index == 2 ** (math.floor(math.log(index, 2)))])
+    return [np.array([2 ** index for index in range(no_of_auxiliary_frequency_octaves + 1)]) * sampling_frequency
+            / base_time_period_shift / 2 ** (no_of_auxiliary_frequency_octaves + 1), power_spectra_of_correlators[0, 0],
+            norm_of_spectra_in_auxiliary_frequency_space]
 
 
 def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory,

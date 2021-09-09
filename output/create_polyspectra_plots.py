@@ -43,16 +43,13 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
-        if temperature_index == 0:
-            auxiliary_frequency_index = len(power_trispectrum[0]) - 1
-            high_temperature_auxiliary_frequency = power_trispectrum[0][auxiliary_frequency_index]
-        else:
-            auxiliary_frequency_index = (np.abs(power_trispectrum[0] - high_temperature_auxiliary_frequency)).argmin()
+        '''max_power_spectrum_index = np.argmax(power_spectrum[0] > 0.1) - 1
+        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1'''
 
         axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
-        axis[1].loglog(power_trispectrum[1], power_trispectrum[2][auxiliary_frequency_index], color=current_color,
+        axis[1].loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color=current_color,
                        label=fr"temperature = {temperature:.2f}; "
-                             fr"f' = {power_trispectrum[0][auxiliary_frequency_index]:.2e}")
+                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
