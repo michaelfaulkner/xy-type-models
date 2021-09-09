@@ -29,7 +29,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
-    for _ in range(no_of_temperature_increments + 1):
+    for temperature_index in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         current_color = next(colors)
         beta = 1.0 / temperature
@@ -43,10 +43,16 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
+        if temperature_index == 0:
+            auxiliary_frequency_index = len(power_trispectrum[0]) - 1
+            high_temperature_auxiliary_frequency = power_trispectrum[0][auxiliary_frequency_index]
+        else:
+            auxiliary_frequency_index = (np.abs(power_trispectrum[0] - high_temperature_auxiliary_frequency)).argmin()
+
         axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
-        axis[1].loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color=current_color,
+        axis[1].loglog(power_trispectrum[1], power_trispectrum[2][auxiliary_frequency_index], color=current_color,
                        label=fr"temperature = {temperature:.2f}; "
-                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
+                             fr"f' = {power_trispectrum[0][auxiliary_frequency_index]:.2e}")
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
@@ -55,8 +61,10 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     trispectrum_legend = axis[1].legend(loc="lower left", fontsize=10)
     trispectrum_legend.get_frame().set_edgecolor("k")
     trispectrum_legend.get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/{observable_string}_polyspectra_{int(no_of_sites ** 0.5)}x"
-                   f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
+    figure.savefig(f"{output_directory}/{observable_string}_polyspectra_max_trispectrum_shift_eq_"
+                   f"{2 ** no_of_trispectrum_auxiliary_frequency_octaves}_x_{trispectrum_base_period_shift}_delta_t_"
+                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
+                   bbox_inches="tight")
     if no_of_jobs > 1:
         pool.close()
 
