@@ -69,7 +69,7 @@ def main(config_file, number_of_histogram_bins=1000):
             axis[2, 1].hist(magnetisation_phase_sample[no_of_equilibration_sweeps:], bins=number_of_histogram_bins,
                             density=True)
             plt.savefig(f"{output_directory}/magnetisation_histograms_temp_eq_{temperature:.2f}_"
-                        f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
+                        f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
                         f"job_{job_index + 1}.pdf", bbox_inches="tight")
             plt.clf()
 

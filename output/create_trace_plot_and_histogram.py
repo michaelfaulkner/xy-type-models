@@ -51,7 +51,7 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
                  color="k", linewidth=1, linestyle="-")
         plt.tight_layout()
         plt.savefig(f"{output_directory}/{observable_string}_vs_time_temp_eq_{temperature:.2f}_"
-                    f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
+                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                     bbox_inches="tight")
         plt.clf()
 
@@ -65,7 +65,7 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
-                    f"{int(no_of_sites ** 0.5)}_{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
+                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                     bbox_inches="tight")
         plt.clf()
 
