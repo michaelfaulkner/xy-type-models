@@ -14,8 +14,8 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
 
 
-def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=2,
-         trispectrum_base_period_shift=1):
+def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=3,
+         trispectrum_base_period_shift=10):
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
      no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = setup_scripts.set_up_polyspectra_script(
         config_file, observable_string)
@@ -43,10 +43,10 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
-        # note frequency indices in order to discard spectrum for all frequencies >= 0.1 since
+        # note frequency indices in order to discard spectrum (trispectrum) for all frequencies >= 0.1 (5.0e-3)  since
         # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
-        max_power_spectrum_index = np.argmax(power_spectrum[0] > 0.1) - 1
-        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1
+        max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
+        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 5.0e-3) - 1
 
         axis[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color)
@@ -74,17 +74,17 @@ if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
                         "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
-                        "may provide no_of_trispectrum_auxiliary_frequency_octaves (default value is 2) and "
-                        "trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
+                        "may provide no_of_trispectrum_auxiliary_frequency_octaves (default value is 3) and "
+                        "trispectrum_base_period_shift (default value is 10) in the third and fourth positions "
                         "(respectively).")
     if len(sys.argv) == 3:
         print("Two positional arguments provided.  In addition, you may provide "
-              "no_of_trispectrum_auxiliary_frequency_octaves (default value is 2) and trispectrum_base_period_shift "
-              "(default value is 1) in the third and fourth positions (respectively).")
+              "no_of_trispectrum_auxiliary_frequency_octaves (default value is 3) and trispectrum_base_period_shift "
+              "(default value is 10) in the third and fourth positions (respectively).")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
         print("Three positional arguments provided.  The third must be no_of_trispectrum_auxiliary_frequency_octaves.  "
-              "In addition, you may provide trispectrum_base_period_shift (default value is 1) in the fourth position.")
+              "In addition, you may provide trispectrum_base_period_shift (default value is 10) in the fourth position.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
     elif len(sys.argv) == 5:
         print("Four positional arguments provided.  The third / fourth must be "
