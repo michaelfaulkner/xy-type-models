@@ -43,13 +43,17 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
-        '''max_power_spectrum_index = np.argmax(power_spectrum[0] > 0.1) - 1
-        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1'''
+        # note frequency indices in order to discard spectrum for all frequencies >= 0.1 since
+        # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
+        max_power_spectrum_index = np.argmax(power_spectrum[0] > 0.1) - 1
+        max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 0.1) - 1
 
-        axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
-        axis[1].loglog(power_trispectrum[1], power_trispectrum[2][len(power_trispectrum[2]) - 1], color=current_color,
-                       label=fr"temperature = {temperature:.2f}; "
-                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
+        axis[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
+                       color=current_color)
+        axis[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
+                       power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
+                       color=current_color, label=fr"temperature = {temperature:.2f}; "
+                                                  fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
