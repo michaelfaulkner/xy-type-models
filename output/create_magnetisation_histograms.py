@@ -79,7 +79,7 @@ def main(config_file, number_of_histogram_bins=1000):
             plt.savefig(f"{output_directory}/magnetisation_histograms_temp_eq_{temperature:.2f}_"
                         f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
                         f"job_{job_index + 1}.pdf", bbox_inches="tight")
-            plt.clf()
+            plt.close()
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
