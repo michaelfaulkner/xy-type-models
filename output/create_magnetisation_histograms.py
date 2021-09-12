@@ -50,10 +50,18 @@ def main(config_file, number_of_histogram_bins=1000):
             figure, axis = plt.subplots(3, 2, figsize=(10, 10))
             axis[2, 0].set_xlabel(r"$x$", fontsize=15, labelpad=10)
             axis[2, 1].set_xlabel(r"$x$", fontsize=15, labelpad=10)
-            axis[0, 0].set_ylabel(r"$\pi \left( x = m_{x / y} \right)$", fontsize=15, labelpad=10)
-            axis[1, 0].set_ylabel(r"$\pi \left( x = |m_{x / y}| \right)$", fontsize=15, labelpad=10)
-            axis[2, 0].set_ylabel(r"$\pi \left( x = || m \|| \right)$ / $\pi \left[ x = \phi \left( m \right) \right]$",
-                                  fontsize=15, labelpad=10)
+            axis[0, 0].set_ylabel(r"$\pi \left( x = m_x \right)$", fontsize=15, labelpad=10)
+            axis[0, 1].yaxis.set_label_position("right")
+            axis[0, 1].yaxis.tick_right()
+            axis[0, 1].set_ylabel(r"$\pi \left( x = m_y \right)$", fontsize=15, labelpad=10)
+            axis[1, 0].set_ylabel(r"$\pi \left( x = |m_x| \right)$", fontsize=15, labelpad=10)
+            axis[1, 1].yaxis.set_label_position("right")
+            axis[1, 1].yaxis.tick_right()
+            axis[1, 1].set_ylabel(r"$\pi \left( x = |m_y| \right)$", fontsize=15, labelpad=10)
+            axis[2, 0].set_ylabel(r"$\pi \left( x = || m \|| \right)$", fontsize=15, labelpad=10)
+            axis[2, 1].yaxis.set_label_position("right")
+            axis[2, 1].yaxis.tick_right()
+            axis[2, 1].set_ylabel(r"$\pi \left( x = \phi_m \right)$", fontsize=15, labelpad=10)
             plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
             axis[0, 0].hist(cartesian_magnetisation_sample[0, no_of_equilibration_sweeps:],
