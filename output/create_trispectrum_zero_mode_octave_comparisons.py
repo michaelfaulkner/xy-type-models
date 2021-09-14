@@ -1,16 +1,11 @@
 import importlib
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 import sys
 import time
 
-# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-this_directory = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, this_directory)
+# import additional modules
 setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 polyspectra = importlib.import_module("polyspectra")
 
 

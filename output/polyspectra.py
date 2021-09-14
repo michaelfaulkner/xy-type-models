@@ -2,14 +2,8 @@ from scipy import signal
 import importlib
 import math
 import numpy as np
-import os
-import sys
 
-# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-
-this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_modules = os.path.abspath(this_directory + "/../")
-sys.path.insert(0, directory_containing_modules)
+# import sample_getter module
 sample_getter = importlib.import_module("sample_getter")
 
 

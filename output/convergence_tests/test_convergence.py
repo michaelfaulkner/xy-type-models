@@ -5,20 +5,22 @@ import numpy as np
 import os
 import sys
 
-
-# Add the directory that contains config_file, sample_getter and markov_chain_diagnostics to sys.path
+# import additional modules; have to add the directories that contain sample_getter.py, markov_chain_diagnostics.py
+# and run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_modules = os.path.abspath(this_directory + "/../")
-sys.path.insert(0, directory_containing_modules)
-setup_scripts = importlib.import_module("setup_scripts")
+directory_containing_most_modules = os.path.abspath(this_directory + "/../")
+sys.path.insert(0, directory_containing_most_modules)
+directory_containing_run_script = os.path.abspath(this_directory + "/../../")
+sys.path.insert(0, directory_containing_run_script)
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
+run_script = importlib.import_module("run")
 
 
 def main(config_file):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = setup_scripts.get_config_data(config_file)
+     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     if no_of_jobs != 1:
         print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
         raise SystemExit

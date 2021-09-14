@@ -1,34 +1,14 @@
-import csv
+import importlib
 import matplotlib
 import multiprocessing as mp
+import os
+import sys
 
-
-def get_config_data(config_file_location):
-    with open(config_file_location, 'r') as config_file:
-        for row in csv.reader(config_file, delimiter='\t'):
-            if 'algorithm_name' in row[0]:
-                algorithm_name = row[0].replace("'", "").replace("algorithm_name", "").replace(" ", "")
-            if 'output_directory' in row[0]:
-                output_directory = row[0].replace("'", "").replace("output_directory", "").replace(" ", "")
-            if 'integer_lattice_length' in row[0]:
-                integer_lattice_length = int(row[0].replace("'", "").replace("integer_lattice_length", "").replace(" ",
-                                                                                                                   ""))
-                no_of_sites = integer_lattice_length ** 2
-            if 'no_of_equilibration_sweeps' in row[0]:
-                no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
-            if 'initial_temperature' in row[0]:
-                initial_temperature = float(row[0].replace("d0", "").replace("initial_temperature", "").replace(" ",
-                                                                                                                ""))
-            if 'final_temperature' in row[0]:
-                final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
-            if 'no_of_temperature_increments' in row[0]:
-                no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
-            if 'no_of_jobs' in row[0]:
-                no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
-            if 'max_no_of_cpus' in row[0]:
-                max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
-    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-            final_temperature, no_of_temperature_increments, no_of_jobs, max_no_of_cpus)
+# import the run script as a module; have to add the directory that contains run.py to sys.path
+this_directory = os.path.dirname(os.path.abspath(__file__))
+directory_containing_run_script = os.path.abspath(this_directory + "/../")
+sys.path.insert(0, directory_containing_run_script)
+run_script = importlib.import_module("run")
 
 
 def check_for_observable_error(algorithm_name, observable_string):
@@ -79,7 +59,7 @@ def get_temperature_and_magnitude_of_increments(initial_temperature, final_tempe
 def set_up_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = get_config_data(config_file)
+     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)

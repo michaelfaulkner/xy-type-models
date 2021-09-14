@@ -1,23 +1,24 @@
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import sys
 import time
 
-# Add the directory that contains config_file and markov_chain_diagnostics to sys.path
-import numpy as np
-
+# import additional modules; have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, this_directory)
+directory_containing_run_script = os.path.abspath(this_directory + "/../")
+sys.path.insert(0, directory_containing_run_script)
 setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
+run_script = importlib.import_module("run")
 
 
 def main(config_file, observable_string, max_physical_time=100.0, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = setup_scripts.get_config_data(config_file)
+     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)

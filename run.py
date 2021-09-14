@@ -1,13 +1,20 @@
 from version import version
+import csv
 import fileinput
 import multiprocessing as mp
 import os
 import sys
-import output.setup_scripts as setup_scripts
+
+
+def print_start_message():
+    """Print the start message."""
+    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a hybrid "
+          f"Fortran-Python application for event-chain/Metropolis Monte Carlo simulation of two-dimensional XY-type "
+          f"models in statistical physics.")
 
 
 def main(config_file):
-    config_data = setup_scripts.get_config_data(config_file)
+    config_data = get_config_data(config_file)
     algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[7], config_data[8]
     executable = get_executable(algorithm_name)
     if no_of_jobs < 1:
@@ -47,11 +54,32 @@ def main(config_file):
         os.system(f"rm -r {config_file.replace('.txt', '')}")
 
 
-def print_start_message():
-    """Print the start message."""
-    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a hybrid "
-          f"Fortran-Python application for event-chain/Metropolis Monte Carlo simulation of two-dimensional XY-type "
-          f"models in statistical physics.")
+def get_config_data(config_file_location):
+    with open(config_file_location, 'r') as config_file:
+        for row in csv.reader(config_file, delimiter='\t'):
+            if 'algorithm_name' in row[0]:
+                algorithm_name = row[0].replace("'", "").replace("algorithm_name", "").replace(" ", "")
+            if 'output_directory' in row[0]:
+                output_directory = row[0].replace("'", "").replace("output_directory", "").replace(" ", "")
+            if 'integer_lattice_length' in row[0]:
+                integer_lattice_length = int(row[0].replace("'", "").replace("integer_lattice_length", "").replace(" ",
+                                                                                                                   ""))
+                no_of_sites = integer_lattice_length ** 2
+            if 'no_of_equilibration_sweeps' in row[0]:
+                no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
+            if 'initial_temperature' in row[0]:
+                initial_temperature = float(row[0].replace("d0", "").replace("initial_temperature", "").replace(" ",
+                                                                                                                ""))
+            if 'final_temperature' in row[0]:
+                final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
+            if 'no_of_temperature_increments' in row[0]:
+                no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
+            if 'no_of_jobs' in row[0]:
+                no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
+            if 'max_no_of_cpus' in row[0]:
+                max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
+    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
+            final_temperature, no_of_temperature_increments, no_of_jobs, max_no_of_cpus)
 
 
 def get_executable(algorithm_name):
