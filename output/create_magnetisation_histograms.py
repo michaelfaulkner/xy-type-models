@@ -16,8 +16,8 @@ sample_getter = importlib.import_module("sample_getter")
 
 def main(config_file, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs) = setup_scripts.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
+     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = setup_scripts.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")

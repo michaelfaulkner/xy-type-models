@@ -30,8 +30,9 @@ https://doi.org/10.1088/1361-648X/aa523f).
 ## Installation
 
 To install xy-type-models, clone this repository, navigate to the top xy-type-models directory and run `make`. The 
-`make` command creates the Fortran executables, and stores them in a new directory called `executables`. The Fortran 
-executables simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) directory.
+`make` command creates the eight Fortran executables, and stores them in a new directory called `executables`. The 
+Fortran executables simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) 
+directory.
 
 The code that analyses the resultant samples (i.e., that contained in the [`output`](output) directory) was written in 
 Python and depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](https://matplotlib.org), 
@@ -69,9 +70,14 @@ Configuration files are located in the [`config_files`](config_files) directory.
 strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form to 
 14 significant figures and with the suffix `d0`. All strings must be enclosed between two apostrophes, e.g., 
 `'string'`. The value of `output_directory` must start with `'output/`, i.e., the entire value must be of the form 
-`'output/rest_of_string'`. For the value of `output_directory`, i) refrain from giving long strings, as this can lead to 
-Fortran runtime errors. Ensure 10 spaces between the value of `output_directory` and the word `output_directory` 
-itself, as this avoids Fortran errors when performing multiple parallel runs.
+`'output/rest_of_string'`. For the value of `output_directory`, i) refrain from giving long strings, as this can lead 
+to Fortran runtime errors, and ii) ensure 10 spaces between the value of `output_directory` and the word 
+`output_directory` itself, as this avoids Fortran errors when performing multiple runs of the same simulation (the 
+number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and  `max_no_of_cpus` must be positive 
+integers. For the value of `max_no_of_cpus`, we recommend giving half the number of CPUs available on your personal 
+machine, e.g., for a four-core machine with two threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, 
+xy-type-models will perform two sets of four parallel runs of the same simulation, and similarly for certain 
+sample-analysis processes.
 
 ### hxy-ecmc configuration file (an example)
 
@@ -88,7 +94,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 .false.                                 calculate_external_minimising_twist_field
-1                                       no_of_parallel_jobs
+1                                       no_of_jobs
+4                                       max_no_of_cpus
 ```
 
 ### hxy-metropolis configuration file (an example)
@@ -108,7 +115,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 .false.                                         randomise_initial_field_configuration
 .false.                                         use_external_global_moves
 .false.                                         calculate_external_minimising_twist_field
-1                                               no_of_parallel_jobs
+1                                               no_of_jobs
+4                                               max_no_of_cpus
 ```
 
 ### hxy-gaussian-noise-metropolis configuration file (an example)
@@ -128,7 +136,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 .false.                                                     randomise_initial_field_configuration
 .false.                                                     use_external_global_moves
 .false.                                                     calculate_external_minimising_twist_field
-1                                                           no_of_parallel_jobs
+1                                                           no_of_jobs
+4                                                           max_no_of_cpus
 ```
 
 ### xy-ecmc configuration file (an example)
@@ -144,7 +153,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 0                                       no_of_temperature_increments
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
-1                                       no_of_parallel_jobs
+1                                       no_of_jobs
+4                                       max_no_of_cpus
 ```
 
 ### xy-metropolis configuration file (an example)
@@ -162,7 +172,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 0.44d0                                      target_acceptance_rate_of_field_rotations
 .false.                                     randomise_initial_field_configuration
 .false.                                     use_external_global_moves
-1                                           no_of_parallel_jobs
+1                                           no_of_jobs
+4                                           max_no_of_cpus
 ```
 
 ### xy-gaussian-noise-metropolis configuration file (an example)
@@ -180,7 +191,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 0.44d0                                                  target_acceptance_rate_of_field_rotations
 .false.                                                 randomise_initial_field_configuration
 .false.                                                 use_external_global_moves
-1                                                       no_of_parallel_jobs
+1                                                       no_of_jobs
+4                                                       max_no_of_cpus
 ```
 
 ### elementary-electrolyte configuration file (an example)
@@ -198,7 +210,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 0.44d0                                              target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves
-1                                                   no_of_parallel_jobs
+1                                                   no_of_jobs
+4                                                   max_no_of_cpus
 ```
 
 ### multivalued-electrolyte configuration file (an example)
@@ -216,7 +229,8 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 0.44d0                                              target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                  charge_hop_proportion
 .false.                                             use_external_global_moves
-1                                                   no_of_parallel_jobs
+1                                                   no_of_jobs
+4                                                   max_no_of_cpus
 ```
 
 
@@ -225,7 +239,7 @@ itself, as this avoids Fortran errors when performing multiple parallel runs.
 In order to test the convergence of our code, we run (for example) 
 `python run.py config_files/convergence_tests/xy/ecmc.txt` followed by 
 `python output/convergence_tests/test_convergence.py config_files/convergence_tests/xy/ecmc.txt` (and similarly for the 
-other five algorithms). 
+other seven algorithms). 
 
 This computes the effective sample size of the sample generated by the Markov process and produces a plot of the 
 cumulative distribution functions of both a reference sample and the generated sample. If the two cumulative 
@@ -260,7 +274,7 @@ and write and contains a lot of functionality).
 
 ## Makefiles
 
-In the top directory, the `make` command runs the [`makefile`](makefile) contained there. By running six different 
+In the top directory, the `make` command runs the [`makefile`](makefile) contained there. By running eight different 
 makefiles, this creates all eight executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, 
 `xy_gaussian_noise_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, 
 `hxy_gaussian_noise_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and 
@@ -271,4 +285,5 @@ Each makefile is located in the youngest child directory corresponding to the re
 src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to the top xy-type-models 
 directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-noise-metropolis`, `make hxy-ecmc`, 
 `make hxy-metropolis`, `make hxy-gaussian-noise-metropolis`, `make elementary-electrolyte` or 
-`make multivalued-electrolyte`. This will make the corresponding executable.
+`make multivalued-electrolyte`. This will create the corresponding executable and store it in the `executables` 
+directory.

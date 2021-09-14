@@ -8,27 +8,31 @@ import output.setup_scripts as setup_scripts
 
 def main(config_file):
     config_data = setup_scripts.get_config_data(config_file)
-    algorithm_name, no_of_parallel_jobs = config_data[0], config_data[7]
+    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[7], config_data[8]
     executable = get_executable(algorithm_name)
-    if no_of_parallel_jobs < 1:
-        raise Exception("ConfigurationError: For the value of no_of_parallel_jobs, give an integer not less than one.")
-    elif no_of_parallel_jobs == 1:
+    if no_of_jobs < 1:
+        raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
+    elif no_of_jobs == 1:
         print("Running a single Markov process.")
         run_single_simulation(executable, config_file)
     else:
-        no_of_cpus = mp.cpu_count()
-        if no_of_parallel_jobs < no_of_cpus:
-            print(f"Running {no_of_parallel_jobs} Markov processes in parallel on {no_of_parallel_jobs} CPUs, where",
-                  f"{no_of_cpus} CPUs are available.")
-            pool = mp.Pool(no_of_parallel_jobs)
+        no_of_available_cpus = mp.cpu_count()
+        if no_of_available_cpus > max_no_of_cpus:
+            no_of_cpus = max_no_of_cpus
         else:
-            print(f"Running {no_of_parallel_jobs} Markov processes in parallel on {no_of_cpus} CPUs, where "
-                  f"{no_of_cpus} CPUs are available.")
+            no_of_cpus = no_of_available_cpus
+        if no_of_jobs < no_of_cpus:
+            print(f"Running {no_of_jobs} Markov processes in parallel on {no_of_jobs} CPUs, where",
+                  f"{no_of_available_cpus} CPUs are available.")
+            pool = mp.Pool(no_of_jobs)
+        else:
+            print(f"Running {no_of_jobs} Markov processes in parallel on {no_of_cpus} CPUs, where "
+                  f"{no_of_available_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
         # create directory in which to store temporary copies of the parent config file
         os.system(f"mkdir -p {config_file.replace('.txt', '')}")
         config_file_copies = [config_file.replace(".txt", f"/job_{job_number + 1}.txt") for job_number in
-                              range(no_of_parallel_jobs)]
+                              range(no_of_jobs)]
         for job_number, config_file_copy in enumerate(config_file_copies):
             # create temporary copies of parent config file
             os.system(f"cp {config_file} {config_file_copy}")

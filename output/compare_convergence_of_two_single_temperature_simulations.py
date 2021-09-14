@@ -57,12 +57,12 @@ def main(config_file_1, config_file_2):
 
 def get_required_config_data_and_error_check(config_file_1, config_file_2):
     (algorithm_name_1, output_directory_1, no_of_sites_1, no_of_equilibration_sweeps_1, initial_temperature_1,
-     final_temperature_1, no_of_temperature_increments_1, no_of_jobs_1) = setup_scripts.get_config_data(
-        config_file_1)
+     final_temperature_1, no_of_temperature_increments_1, no_of_jobs_1,
+     max_no_of_cpus_1) = setup_scripts.get_config_data(config_file_1)
     temperature_1 = initial_temperature_1
     (algorithm_name_2, output_directory_2, no_of_sites_2, no_of_equilibration_sweeps_2, initial_temperature_2,
-     final_temperature_2, no_of_temperature_increments_2, no_of_jobs_2) = setup_scripts.get_config_data(
-        config_file_2)
+     final_temperature_2, no_of_temperature_increments_2, no_of_jobs_2,
+     max_no_of_cpus_2) = setup_scripts.get_config_data(config_file_2)
     temperature_2 = initial_temperature_2
     if no_of_temperature_increments_1 != 0:
         print("ConfigurationError: in the first configuration file, the value of the no_of_temperature_increments "
