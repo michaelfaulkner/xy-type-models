@@ -65,20 +65,24 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
-                        "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
-                        "may provide max_no_of_trispectrum_octaves (default value is 8) and "
-                        "trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
-                        "(respectively).")
+                        "the string of the observable whose power trispectrum you wish to estimate (in the first and "
+                        "second positions, respectively).  In addition, you may provide max_no_of_trispectrum_octaves "
+                        "(default value is 8) and trispectrum_base_period_shift (default value is 1) in the third and "
+                        "fourth positions, respectively.")
     if len(sys.argv) == 3:
-        print("Two positional arguments provided.  In addition, you may provide max_no_of_trispectrum_octaves (default "
-              "value is 8) and trispectrum_base_period_shift (default value is 1) in the third and fourth positions "
-              "(respectively).")
+        print("Two positional arguments provided.  The first / second must be the location of the configuration file / "
+              "the string of the observable whose power trispectrum you wish to estimate.  In addition, you may provide"
+              " max_no_of_trispectrum_octaves (default value is 8) and trispectrum_base_period_shift "
+              "(default value is 1) in the third and fourth positions, respectively.")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
-        print("Three positional arguments provided.  The third must be max_no_of_trispectrum_octaves.  In addition, you"
-              " may provide trispectrum_base_period_shift (default value is 1) in the fourth position.")
+        print("Three positional arguments provided.  The first / second / third must be the location of the "
+              "configuration file / the string of the observable whose power trispectrum you wish to estimate / "
+              "max_no_of_trispectrum_octaves.  In addition, you may provide trispectrum_base_period_shift (default "
+              "value is 1) in the fourth position.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
     elif len(sys.argv) == 5:
-        print("Four positional arguments provided.  The third / fourth must be max_no_of_trispectrum_octaves / "
-              "trispectrum_base_period_shift.")
+        print("Four positional arguments provided.  The first / second / third / fourth must be the location of the "
+              "configuration file / the string of the observable whose power trispectrum you wish to estimate / "
+              "max_no_of_trispectrum_octaves / trispectrum_base_period_shift.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))

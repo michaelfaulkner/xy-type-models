@@ -114,5 +114,8 @@ def run_single_simulation(executable, config_file):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise Exception("InterfaceError: One positional argument required - give the location of the configuration "
+                        "file.")
     print_start_message()
     main(sys.argv[1])

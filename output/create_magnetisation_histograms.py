@@ -92,9 +92,10 @@ if __name__ == "__main__":
                         "addition, you may provide number_of_histogram_bins (default value is 1000) in the second "
                         "position.")
     if len(sys.argv) == 2:
-        print("One positional argument provided.  In addition, you may provide number_of_histogram_bins (default value "
-              "is 1000) in the second position.")
+        print("One positional argument provided.  It must be the location of the configuration file.  In addition, you "
+              "may provide number_of_histogram_bins (default value is 1000) in the second position.")
         main(sys.argv[1])
     elif len(sys.argv) == 3:
-        print("Two positional arguments provided.  The second must be number_of_histogram_bins.")
+        print("Two positional arguments provided.  The first / second must be the location of the configuration file / "
+              "number_of_histogram_bins.")
         main(sys.argv[1], int(sys.argv[2]))

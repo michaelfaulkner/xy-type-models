@@ -77,19 +77,24 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 5:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
-                        "the string of the observable whose power trispectrum you wish to estimate.  In addition, you "
-                        "may provide max_physical_time (default value is 100.0) and number_of_histogram_bins (default "
-                        "value is 1000) in the third and fourth positions (respectively).")
+                        "the string of the observable whose trace plot and histogram you wish to estimate (in the first"
+                        " and second positions, respectively).  In addition, you may provide max_physical_time (default"
+                        " value is 100.0) and number_of_histogram_bins (default value is 1000) in the third and fourth "
+                        "positions, respectively.")
     if len(sys.argv) == 3:
-        print("Two positional arguments provided.  In addition, you may provide max_physical_time (default value is "
-              "100.0) and number_of_histogram_bins (default value is 1000) in the third and fourth positions "
-              "(respectively).")
+        print("Two positional arguments provided.  The first / second must be the location of the configuration file / "
+              "the string of the observable whose trace plot and histogram you wish to estimate.  In addition, you may "
+              "provide max_physical_time (default value is 100.0) and number_of_histogram_bins (default value is 1000) "
+              "in the third and fourth positions, respectively.")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
-        print("Three positional arguments provided.  The third must be max_physical_time.  In addition, you may "
-              "provide number_of_histogram_bins (default value is 1000) in the fourth position.")
+        print("Three positional arguments provided.  The first / second / third must be the location of the "
+              "configuration file / the string of the observable whose trace plot and histogram you wish to estimate / "
+              "max_physical_time.  In addition, you may provide number_of_histogram_bins (default value is 1000) in "
+              "the fourth position.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
     elif len(sys.argv) == 5:
-        print("Four positional arguments provided.  The third / fourth must be max_physical_time / "
-              "number_of_histogram_bins.")
+        print("Four positional arguments provided.  The first / second / third / fourth must be location of the "
+              "configuration file / the string of the observable whose trace plot and histogram you wish to estimate / "
+              "max_physical_time / number_of_histogram_bins.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))

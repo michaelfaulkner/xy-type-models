@@ -146,5 +146,6 @@ def check_for_observable_error(algorithm_name, observable_string):
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
-                        "the string of the observable whose summary statistics you wish to calculate.")
+                        "the string of the observable whose summary statistics you wish to calculate in the second and "
+                        "third positions, respectively.")
     main(sys.argv[1], sys.argv[2])
