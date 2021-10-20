@@ -1,5 +1,5 @@
 'hxy-ecmc'                          algorithm_name
-'output/steve_sims/32x32'           output_directory
+'output/steve_sims/128x128'         output_directory
 128                                 integer_lattice_length
 100                                 no_of_equilibration_sweeps
 10000                               no_of_observations
