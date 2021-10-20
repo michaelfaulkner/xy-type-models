@@ -12,35 +12,34 @@ run_script = importlib.import_module("run")
 
 
 def check_for_observable_error(algorithm_name, observable_string):
-    if (observable_string != "magnetisation_norm" and observable_string != "magnetisation_phase" and
-            observable_string != "cartesian_magnetisation" and observable_string != "helicity_modulus" and
-            observable_string != "inverse_vacuum_permittivity" and observable_string != "toroidal_vortex_polarisation"
-            and observable_string != "specific_heat" and observable_string != "inverse_permittivity" and
-            observable_string != "topological_sector_fluctuations" and
-            observable_string != "toroidal_vortex_polarisation"):
+    if (observable_string != "magnetisation_norm" and observable_string != "magnetisation_phase"
+            and observable_string != "cartesian_magnetisation" and observable_string != "magnetic_susceptibility"
+            and observable_string != "helicity_modulus" and observable_string != "inverse_vacuum_permittivity"
+            and observable_string != "toroidal_vortex_polarisation" and observable_string != "specific_heat"
+            and observable_string != "inverse_permittivity" and observable_string != "topological_sector_fluctuations"
+            and observable_string != "toroidal_vortex_polarisation"):
         print("ConfigurationError: Give one of magnetisation_norm, magnetisation_phase, cartesian_magnetisation, "
-              "helicity_modulus, inverse_vacuum_permittivity, toroidal_vortex_polarisation, specific_heat, "
-              "inverse_permittivity, topological_sector_fluctuations or toroidal_vortex_polarisation as the second "
-              "positional argument.")
+              "magnetic_susceptibility, helicity_modulus, inverse_vacuum_permittivity, toroidal_vortex_polarisation, "
+              "specific_heat, inverse_permittivity, topological_sector_fluctuations or toroidal_vortex_polarisation as "
+              "the second positional argument.")
         raise SystemExit
     check_for_observable_vs_algorithm_error(algorithm_name, observable_string)
 
 
 def check_for_observable_vs_algorithm_error(algorithm_name, observable_string):
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase" or
-             observable_string == "cartesian_magnetisation" or observable_string == "helicity_modulus" or
-             observable_string == "inverse_vacuum_permittivity" or
-             observable_string == "toroidal_vortex_polarisation")):
+            (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase"
+             or observable_string == "cartesian_magnetisation" or observable_string == "magnetic_susceptibility"
+             or observable_string == "helicity_modulus" or observable_string == "inverse_vacuum_permittivity"
+             or observable_string == "toroidal_vortex_polarisation")):
         print("ConfigurationError: This is a Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase, helicity_modulus, inverse_vacuum_permittivity or toroidal_vortex_polarisation as "
-              "the second positional argument.")
+              "magnetisation_phase, magnetic_susceptibility, helicity_modulus, inverse_vacuum_permittivity or "
+              "toroidal_vortex_polarisation as the second positional argument.")
         raise SystemExit
     if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
          algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
          algorithm_name == "hxy-gaussian-noise-metropolis") and (
-            observable_string == "inverse_permittivity" or
-            observable_string == "topological_sector_fluctuations" or
+            observable_string == "inverse_permittivity" or observable_string == "topological_sector_fluctuations" or
             observable_string == "toroidal_polarisation")):
         print("ConfigurationError: This is an XY or HXY model: do not give either inverse_permittivity, "
               "topological_sector_fluctuations or toroidal_polarisation as the second positional argument.")

@@ -75,6 +75,11 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature_dir
     return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
 
 
+def get_magnetic_susceptibility(output_directory, temperature_directory, beta, no_of_sites):
+    magnetisation_norm = get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites)
+    return beta * no_of_sites * (magnetisation_norm - np.mean(magnetisation_norm)) ** 2
+
+
 # Maggs-electrolyte models
 def get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites):
     return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
