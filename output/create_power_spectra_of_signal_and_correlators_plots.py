@@ -57,14 +57,14 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
     x = np.linspace(1.0e-3, 1.0, 10000)
     axis[0].loglog(x, 1.0e-3 * x ** (-1.0), color="red", label=r"$f^{-1}$")
     axis[0].loglog(x, 5.0e-5 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
-    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
+    axis[0].set_ylabel(r"$S_X \left( f \right)$", fontsize=10, labelpad=10)
     for index in range(no_of_power_2_correlators + no_of_power_10_correlators):
         if index < no_of_power_2_correlators:
-            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
-                                       fr"X(t + {2 ** (index + 1)} \Delta t)$", fontsize=7.5, labelpad=10)
+            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)} \Delta t)$",
+                                       fontsize=7.5, labelpad=10)
         else:
-            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
-                                       fr"X(t + {10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
+            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$, $Y(t) = X(t) X(t + "
+                                       fr"{10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
                                        fontsize=7.5, labelpad=10)
     figure.tight_layout()
     correlators_legend = [axis[index].legend(loc="lower left", fontsize=10) for index in range(2)]

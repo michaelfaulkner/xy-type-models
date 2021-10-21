@@ -18,9 +18,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     figure, axis = plt.subplots(2, figsize=(10, 10))
     axis[1].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
-    axis[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$ / $\left| S_X^3 \left( f_0, f' \right) \right|$",
-                       fontsize=10, labelpad=10)
+    axis[0].set_ylabel(r"$S_X \left( f \right)$", fontsize=10, labelpad=10)
+    axis[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()

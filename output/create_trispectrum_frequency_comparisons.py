@@ -32,8 +32,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
 
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
         [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
-        axis[0].set_ylabel(fr"$|S_X^3 \left( f, f' \right)|$ / $|S_X^3 \left( f_0, f' \right)|$", fontsize=10,
-                           labelpad=10)
+        axis[0].set_ylabel(fr"$|S_X^3 \left( f, f' \right)|$", fontsize=10, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
         colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 2)))
