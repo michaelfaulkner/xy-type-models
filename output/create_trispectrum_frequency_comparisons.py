@@ -21,11 +21,11 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         beta = 1.0 / temperature
         temperature_directory = f"temp_eq_{temperature:.2f}"
 
-        power_trispectrum = polyspectra.get_normalised_power_trispectrum(
+        power_trispectrum = polyspectra.get_power_trispectrum(
             algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
-        power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
+        power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
             algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)

@@ -29,7 +29,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves)))
         for no_of_trispectrum_octaves in range(1, max_no_of_trispectrum_octaves + 1):
             current_color = next(colors)
-            power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
+            power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
@@ -38,7 +38,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves))))
         for no_of_trispectrum_octaves in range(max_no_of_trispectrum_octaves, 0, -1):
             current_color = next(colors)
-            power_trispectrum_zero_mode = polyspectra.get_normalised_power_trispectrum_zero_mode(
+            power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
             axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
