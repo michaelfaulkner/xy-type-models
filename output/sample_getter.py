@@ -55,6 +55,12 @@ def get_toroidal_vortex_polarisation(output_directory, temperature_directory, be
     return get_entire_sample(output_directory, temperature_directory)[:, 3:5] / no_of_sites
 
 
+def get_hxy_topological_sector(output_directory, temperature_directory, beta, no_of_sites):
+    sum_of_1st_derivative_of_potential_sample = get_entire_sample(output_directory, temperature_directory)[:, 3:5]
+    return (sum_of_1st_derivative_of_potential_sample + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
+                                                                                          * no_of_sites ** 0.5)
+
+
 def get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites):
     return np.linalg.norm(get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
                                                                      no_of_sites), axis=1) / no_of_sites
