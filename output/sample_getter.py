@@ -40,6 +40,31 @@ def get_specific_heat(output_directory, temperature_directory, beta, no_of_sites
 
 
 # xy models
+def get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
+    return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
+
+
+def get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites):
+    return np.linalg.norm(get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
+                                                                     no_of_sites), axis=1) / no_of_sites
+
+
+def get_magnetisation_phase(output_directory, temperature_directory, beta, no_of_sites):
+    return np.array([math.atan(observation[1] / observation[0]) for observation in
+                     get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
+                                                                no_of_sites)])
+
+
+def get_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
+    return get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
+                                                      no_of_sites) / no_of_sites
+
+
+def get_magnetic_susceptibility(output_directory, temperature_directory, beta, no_of_sites):
+    magnetisation_norm = get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites)
+    return beta * no_of_sites * (magnetisation_norm - np.mean(magnetisation_norm)) ** 2
+
+
 def get_non_normalised_toroidal_vortex_polarisation(output_directory, temperature_directory, beta, no_of_sites):
     return get_entire_sample(output_directory, temperature_directory)[:, 3:5]
 
@@ -68,31 +93,6 @@ def get_hxy_topological_sector(output_directory, temperature_directory, beta, no
                                                                                                   beta, no_of_sites)
     return (non_normalised_toroidal_vortex_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
                                                                                             * no_of_sites ** 0.5)
-
-
-def get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
-    return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
-
-
-def get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites):
-    return np.linalg.norm(get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
-                                                                     no_of_sites), axis=1) / no_of_sites
-
-
-def get_magnetisation_phase(output_directory, temperature_directory, beta, no_of_sites):
-    return np.array([math.atan(observation[1] / observation[0]) for observation in
-                     get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
-                                                                no_of_sites)])
-
-
-def get_cartesian_magnetisation(output_directory, temperature_directory, beta, no_of_sites):
-    return get_non_normalised_cartesian_magnetisation(output_directory, temperature_directory, beta,
-                                                      no_of_sites) / no_of_sites
-
-
-def get_magnetic_susceptibility(output_directory, temperature_directory, beta, no_of_sites):
-    magnetisation_norm = get_magnetisation_norm(output_directory, temperature_directory, beta, no_of_sites)
-    return beta * no_of_sites * (magnetisation_norm - np.mean(magnetisation_norm)) ** 2
 
 
 # Maggs-electrolyte models
