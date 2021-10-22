@@ -18,8 +18,9 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
     figure, axis = plt.subplots(2, figsize=(10, 10))
     axis[1].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
-    axis[0].set_ylabel(r"$S_X \left( f \right)$", fontsize=10, labelpad=10)
-    axis[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$", fontsize=10, labelpad=10)
+    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
+    axis[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$ / $\left| S_X^3 \left( f_0, f' \right) \right|$",
+                       fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
@@ -37,6 +38,10 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
+        # normalise polyspectra with respect to their low-frequency values
+        power_spectrum[1] /= power_spectrum[1, 0]
+        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+
         # note frequency indices in order to discard spectrum (trispectrum) for all frequencies >= 0.1 (5.0e-3)  since
         # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
@@ -45,6 +50,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         axis[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color)
         axis[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
+                       10.0 ** (no_of_temperature_increments - temperature_index) *
                        power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
                        color=current_color, label=fr"temperature = {temperature:.2f}; "
                                                   fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")

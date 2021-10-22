@@ -22,7 +22,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
 
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
         [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
-        axis[0].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$", fontsize=10, labelpad=10)
+        axis[0].set_ylabel(fr"$S_X^3 \left( f, f' = 0 \right)$ / $S_X^3 \left( f_0, f' = 0 \right)$", fontsize=10,
+                           labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
         colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves)))
@@ -31,6 +32,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            # normalise power trispectrum with respect to its low-frequency values
+            power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                            label=f"no of octaves = {no_of_trispectrum_octaves}")
 
@@ -40,6 +43,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            # normalise power trispectrum with respect to its low-frequency values
+            power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                            label=f"no of octaves = {no_of_trispectrum_octaves}")
 

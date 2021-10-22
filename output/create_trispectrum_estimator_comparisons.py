@@ -26,6 +26,10 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
             algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
 
+        # normalise each estimator of power trispectrum with respect to their low-frequency values
+        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+        power_trispectrum_as_defined[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum_as_defined[2]]
+
         figure, axis = plt.subplots(2, 2, figsize=(10, 10))
         [axis[1, index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
@@ -42,8 +46,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
                 axis[index, 1].loglog(power_trispectrum_as_defined[1], power_trispectrum_as_defined[2][index],
                                       color='blue', label="estimator as defined")
 
-                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$, $f_0' = {power_trispectrum[0][0]:.2e}$",
-                                          fontsize=10, labelpad=10)
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, f_0' \right)|$ / $|S_X^3 \left( f_0, f_0' \right)|$, "
+                                          fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
             else:
                 axis[index, 0].loglog(power_trispectrum_as_defined[1],
                                       power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
@@ -59,7 +63,8 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
                                       power_trispectrum_as_defined[2][len(power_trispectrum_as_defined[2]) - 1],
                                       color='blue', label="estimator as defined")
 
-                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
+                axis[index, 0].set_ylabel(fr"$|S_X^3 \left( f, {2 ** no_of_trispectrum_octaves} f_0' \right)|$ / "
+                                          fr"$|S_X^3 \left(f_0, {2 ** no_of_trispectrum_octaves} f_0' \right)|$, "
                                           fr"$f_0' = {power_trispectrum[0][0]:.2e}$", fontsize=10, labelpad=10)
 
         figure.tight_layout()

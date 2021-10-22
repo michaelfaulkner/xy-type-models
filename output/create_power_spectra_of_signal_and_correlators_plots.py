@@ -28,19 +28,28 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature_directory, beta, no_of_sites,
                                                         no_of_equilibration_sweeps, no_of_jobs, pool)
-        power_spectrum_of_correlators = []
+        # normalise power spectrum with respect to its low-frequency values
+        power_spectrum[1] /= power_spectrum[1, 0]
+
+        power_spectra_of_correlators = []
         for index in range(no_of_power_2_correlators):
-            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+            power_spectrum_of_correlator = polyspectra.get_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                no_of_equilibration_sweeps, no_of_jobs, pool, 2 ** (index + 1)))
+                no_of_equilibration_sweeps, no_of_jobs, pool, 2 ** (index + 1))
+            # normalise power spectrum with respect to its low-frequency value
+            power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
+            power_spectra_of_correlators.append(power_spectrum_of_correlator)
         for index in range(no_of_power_10_correlators):
-            power_spectrum_of_correlators.append(polyspectra.get_power_spectrum_of_correlator(
+            power_spectrum_of_correlator = polyspectra.get_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                no_of_equilibration_sweeps, no_of_jobs, pool, 10 ** (index + 1)))
+                no_of_equilibration_sweeps, no_of_jobs, pool, 10 ** (index + 1))
+            # normalise power spectrum with respect to its low-frequency value
+            power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
+            power_spectra_of_correlators.append(power_spectrum_of_correlator)
 
         current_color = next(colors)
         axis[0].loglog(power_spectrum[0], power_spectrum[1], color=current_color)
-        for index, spectrum in enumerate(power_spectrum_of_correlators):
+        for index, spectrum in enumerate(power_spectra_of_correlators):
             if index == 0:
                 axis[index + 1].loglog(spectrum[0], spectrum[1], color=current_color,
                                        label=fr"temperature = {temperature:.2f}, $\Delta t = "
@@ -57,15 +66,16 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
     x = np.linspace(1.0e-3, 1.0, 10000)
     axis[0].loglog(x, 1.0e-3 * x ** (-1.0), color="red", label=r"$f^{-1}$")
     axis[0].loglog(x, 5.0e-5 * x ** (-1.4), color="black", label=r"$f^{-1.4}$")
-    axis[0].set_ylabel(r"$S_X \left( f \right)$", fontsize=10, labelpad=10)
+    axis[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
     for index in range(no_of_power_2_correlators + no_of_power_10_correlators):
         if index < no_of_power_2_correlators:
-            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$, $Y(t) = X(t) X(t + {2 ** (index + 1)} \Delta t)$",
-                                       fontsize=7.5, labelpad=10)
+            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
+                                       fr"X(t + {2 ** (index + 1)} \Delta t)$", fontsize=7.5, labelpad=10)
         else:
-            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$, $Y(t) = X(t) X(t + "
-                                       fr"{10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
+            axis[index + 1].set_ylabel(fr"$S_Y \left( f \right)$ / $S_Y \left( f_0 \right)$, $Y(t) = X(t) "
+                                       fr"X(t + {10 ** (index - no_of_power_2_correlators + 1)} \Delta t)$",
                                        fontsize=7.5, labelpad=10)
+
     figure.tight_layout()
     correlators_legend = [axis[index].legend(loc="lower left", fontsize=10) for index in range(2)]
     for legend in correlators_legend:

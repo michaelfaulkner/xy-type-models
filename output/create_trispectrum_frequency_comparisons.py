@@ -30,29 +30,34 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
             trispectrum_base_period_shift)
 
+        # normalise power trispectra with respect to their low-frequency values
+        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+        power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
+
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
         [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
-        axis[0].set_ylabel(fr"$|S_X^3 \left( f, f' \right)|$", fontsize=10, labelpad=10)
+        axis[0].set_ylabel(fr"$|S_X^3 \left( f, f' \right)|$ / $|S_X^3 \left( f_0, f' \right)|$", fontsize=10,
+                           labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
-        colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 2)))
-        for index in range(no_of_trispectrum_auxiliary_frequency_octaves + 2):
+        colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 1)))
+        for index in range(no_of_trispectrum_auxiliary_frequency_octaves + 1):
             current_color = next(colors)
             if index == 0:
                 axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                                label=r"f' = 0")
             else:
-                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][2 ** index - 1], color=current_color,
+                axis[0].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
                                label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
 
-        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 2))))
-        for index in range(no_of_trispectrum_auxiliary_frequency_octaves + 1, -1, -1):
+        colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, no_of_trispectrum_auxiliary_frequency_octaves + 1))))
+        for index in range(no_of_trispectrum_auxiliary_frequency_octaves, -1, -1):
             current_color = next(colors)
             if index == 0:
                 axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
                                label=r"f' = 0")
             else:
-                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][2 ** index - 1], color=current_color,
+                axis[1].loglog(power_trispectrum[1], power_trispectrum[2][index], color=current_color,
                                label=fr"f' = {2 ** index}" " x " fr"{power_trispectrum[0][0]:.2e}")
 
         figure.tight_layout()
