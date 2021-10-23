@@ -50,7 +50,6 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         axis[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color)
         axis[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
-                       10.0 ** (no_of_temperature_increments - temperature_index) *
                        power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
                        color=current_color, label=fr"temperature = {temperature:.2f}; "
                                                   fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
