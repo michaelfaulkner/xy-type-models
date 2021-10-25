@@ -91,8 +91,16 @@ def get_hxy_topological_sector(output_directory, temperature_directory, beta, no
     non_normalised_toroidal_vortex_polarisation = get_non_normalised_toroidal_vortex_polarisation(output_directory,
                                                                                                   temperature_directory,
                                                                                                   beta, no_of_sites)
-    return (non_normalised_toroidal_vortex_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
-                                                                                            * no_of_sites ** 0.5)
+    topological_sector = (non_normalised_toroidal_vortex_polarisation
+                          + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
+    # correct topological sector so that Ebar_{p, x / y} \in (-pi / L, pi / L] (rather than [-pi / L, pi / L])
+    length_independent_toroidal_vortex_polarisation = non_normalised_toroidal_vortex_polarisation / (no_of_sites ** 0.5)
+    for index, observation in enumerate(topological_sector):
+        for cartesian_index, component in enumerate(observation):
+            if component < 0 and (abs(abs(length_independent_toroidal_vortex_polarisation[index, cartesian_index])
+                                      + component * 3.141592653589793) < 1.0e-12):
+                topological_sector[index, cartesian_index] += 1
+    return topological_sector
 
 
 # Maggs-electrolyte models
