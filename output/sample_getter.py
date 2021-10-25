@@ -91,7 +91,8 @@ def get_hxy_topological_sector(output_directory, temperature_directory, beta, no
     non_normalised_total_vortex_polarisation = get_non_normalised_total_vortex_polarisation(output_directory,
                                                                                             temperature_directory,
                                                                                             beta, no_of_sites)
-    return compute_hxy_and_maggs_topological_sector(non_normalised_total_vortex_polarisation, no_of_sites)
+    return (non_normalised_total_vortex_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
+                                                                                         * no_of_sites ** 0.5)
 
 
 # Maggs-electrolyte models
@@ -111,7 +112,7 @@ def get_inverse_permittivity(output_directory, temperature_directory, beta, no_o
 
 def get_topological_sector(output_directory, temperature_directory, beta, no_of_sites):
     sum_of_electric_field = get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites)
-    return compute_hxy_and_maggs_topological_sector(sum_of_electric_field, no_of_sites)
+    return (sum_of_electric_field + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
 
 
 def get_topological_sector_fluctuations(output_directory, temperature_directory, beta, no_of_sites):
@@ -120,17 +121,3 @@ def get_topological_sector_fluctuations(output_directory, temperature_directory,
     topological_sector_sample = get_topological_sector(output_directory, temperature_directory, beta, no_of_sites)
     return 4.0 * beta * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0))
                                                ** 2, axis=1)
-
-
-def compute_hxy_and_maggs_topological_sector(non_normalised_total_polarisation, no_of_sites):
-    topological_sector = (non_normalised_total_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
-                                                                                                * no_of_sites ** 0.5)
-    # correct topological sector so that Ebar_{p, x / y} \in (-pi / L, pi / L] (rather than [-pi / L, pi / L]), where
-    # Ebar = Ebar_p + Ebar_w, with Ebar / Ebar_p the total / minimal polarisation on the torus
-    length_independent_total_polarisation = non_normalised_total_polarisation / (no_of_sites ** 0.5)
-    for index, observation in enumerate(topological_sector):
-        for cartesian_index, component in enumerate(observation):
-            if component < 0 and (abs(abs(length_independent_total_polarisation[index, cartesian_index])
-                                      + component * 3.141592653589793) < 1.0e-12):
-                topological_sector[index, cartesian_index] += 1
-    return topological_sector
