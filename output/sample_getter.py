@@ -65,7 +65,7 @@ def get_magnetic_susceptibility(output_directory, temperature_directory, beta, n
     return beta * no_of_sites * (magnetisation_norm - np.mean(magnetisation_norm)) ** 2
 
 
-def get_non_normalised_toroidal_vortex_polarisation(output_directory, temperature_directory, beta, no_of_sites):
+def get_non_normalised_total_vortex_polarisation(output_directory, temperature_directory, beta, no_of_sites):
     return get_entire_sample(output_directory, temperature_directory)[:, 3:5]
 
 
@@ -74,24 +74,24 @@ def get_inverse_vacuum_permittivity(output_directory, temperature_directory, bet
 
 
 def get_helicity_modulus(output_directory, temperature_directory, beta, no_of_sites):
-    non_normalised_toroidal_vortex_polarisation = get_non_normalised_toroidal_vortex_polarisation(output_directory,
-                                                                                                  temperature_directory,
-                                                                                                  beta, no_of_sites)
+    non_normalised_total_vortex_polarisation = get_non_normalised_total_vortex_polarisation(output_directory,
+                                                                                            temperature_directory,
+                                                                                            beta, no_of_sites)
     return (get_inverse_vacuum_permittivity(output_directory, temperature_directory, beta, no_of_sites) - beta
-            * np.mean((non_normalised_toroidal_vortex_polarisation -
-                       np.mean(non_normalised_toroidal_vortex_polarisation, axis=0)) ** 2, axis=1) / no_of_sites)
+            * np.mean((non_normalised_total_vortex_polarisation
+                       - np.mean(non_normalised_total_vortex_polarisation, axis=0)) ** 2, axis=1) / no_of_sites)
 
 
-def get_toroidal_vortex_polarisation(output_directory, temperature_directory, beta, no_of_sites):
-    return get_non_normalised_toroidal_vortex_polarisation(output_directory, temperature_directory, beta,
-                                                           no_of_sites) / no_of_sites
+def get_total_vortex_polarisation(output_directory, temperature_directory, beta, no_of_sites):
+    return get_non_normalised_total_vortex_polarisation(output_directory, temperature_directory, beta,
+                                                        no_of_sites) / no_of_sites
 
 
 def get_hxy_topological_sector(output_directory, temperature_directory, beta, no_of_sites):
-    non_normalised_toroidal_vortex_polarisation = get_non_normalised_toroidal_vortex_polarisation(output_directory,
-                                                                                                  temperature_directory,
-                                                                                                  beta, no_of_sites)
-    return compute_hxy_and_maggs_topological_sector(non_normalised_toroidal_vortex_polarisation, no_of_sites)
+    non_normalised_total_vortex_polarisation = get_non_normalised_total_vortex_polarisation(output_directory,
+                                                                                            temperature_directory,
+                                                                                            beta, no_of_sites)
+    return compute_hxy_and_maggs_topological_sector(non_normalised_total_vortex_polarisation, no_of_sites)
 
 
 # Maggs-electrolyte models
@@ -99,7 +99,7 @@ def get_sum_of_electric_field(output_directory, temperature_directory, beta, no_
     return get_entire_sample(output_directory, temperature_directory)[:, 1:3]
 
 
-def get_toroidal_polarisation(output_directory, temperature_directory, beta, no_of_sites):
+def get_total_polarisation(output_directory, temperature_directory, beta, no_of_sites):
     return get_sum_of_electric_field(output_directory, temperature_directory, beta, no_of_sites) / no_of_sites
 
 
@@ -122,15 +122,15 @@ def get_topological_sector_fluctuations(output_directory, temperature_directory,
                                                ** 2, axis=1)
 
 
-def compute_hxy_and_maggs_topological_sector(non_normalised_toroidal_polarisation, no_of_sites):
-    topological_sector = (non_normalised_toroidal_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
-                                                                                                   * no_of_sites ** 0.5)
+def compute_hxy_and_maggs_topological_sector(non_normalised_total_polarisation, no_of_sites):
+    topological_sector = (non_normalised_total_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
+                                                                                                * no_of_sites ** 0.5)
     # correct topological sector so that Ebar_{p, x / y} \in (-pi / L, pi / L] (rather than [-pi / L, pi / L]), where
-    # Ebar = Ebar_p + Ebar_w, with Ebar the total polarisation on the torus
-    length_independent_toroidal_polarisation = non_normalised_toroidal_polarisation / (no_of_sites ** 0.5)
+    # Ebar = Ebar_p + Ebar_w, with Ebar / Ebar_p the total / minimal polarisation on the torus
+    length_independent_total_polarisation = non_normalised_total_polarisation / (no_of_sites ** 0.5)
     for index, observation in enumerate(topological_sector):
         for cartesian_index, component in enumerate(observation):
-            if component < 0 and (abs(abs(length_independent_toroidal_polarisation[index, cartesian_index])
+            if component < 0 and (abs(abs(length_independent_total_polarisation[index, cartesian_index])
                                       + component * 3.141592653589793) < 1.0e-12):
                 topological_sector[index, cartesian_index] += 1
     return topological_sector
