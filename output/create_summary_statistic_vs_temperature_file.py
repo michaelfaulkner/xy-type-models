@@ -120,7 +120,7 @@ def main(config_file, observable_string):
             mean_and_errors.append(sample_mean)
         temperature -= magnitude_of_temperature_increments
 
-    plt.xlabel(r"temperature, $1 / \beta$", fontsize=15, labelpad=10)
+    plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
     plt.ylabel(f"{observable_string.replace('_', ' ')}", fontsize=15, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
     plt.savefig(f"{output_directory}/{observable_string}_vs_temperature_{int(no_of_sites ** 0.5)}x"
