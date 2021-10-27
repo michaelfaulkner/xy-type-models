@@ -1,3 +1,4 @@
+"""Executable script which runs the xy-type-models application based on an input configuration file."""
 from version import version
 import csv
 import fileinput

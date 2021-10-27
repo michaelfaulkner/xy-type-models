@@ -17,21 +17,19 @@ def main(config_file_1, config_file_2):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory_1, output_directory_2, no_of_sites, no_of_equilibration_sweeps_1,
      no_of_equilibration_sweeps_2, temperature) = get_required_config_data_and_error_check(config_file_1, config_file_2)
-    beta = 1.0 / temperature
-    temperature_directory = f"temp_eq_{temperature:.2f}"
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-        sample_1 = sample_getter.get_potential(output_directory_1, temperature_directory, beta, no_of_sites)[
+        sample_1 = sample_getter.get_potential(output_directory_1, temperature, no_of_sites)[
                    no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_potential(output_directory_2, temperature_directory, beta, no_of_sites)[
+        sample_2 = sample_getter.get_potential(output_directory_2, temperature, no_of_sites)[
                    no_of_equilibration_sweeps_2:]
     elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
           algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
-        sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature_directory, beta, no_of_sites)[
+        sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature, no_of_sites)[
                  no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature_directory, beta,
-                                                        no_of_sites)[no_of_equilibration_sweeps_2:]
+        sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature, no_of_sites)[
+                   no_of_equilibration_sweeps_2:]
 
     effective_sample_size_1 = markov_chain_diagnostics.get_effective_sample_size(sample_1)
     print(f"Effective sample size (first config file) = {effective_sample_size_1} (from a total sample size of "
@@ -65,20 +63,18 @@ def get_required_config_data_and_error_check(config_file_1, config_file_2):
         config_file_2)
     temperature_2 = initial_temperature_2
     if no_of_temperature_increments_1 != 0:
-        print("ConfigurationError: in the first configuration file, the value of the no_of_temperature_increments "
-              "does not equal 0. In order to compare to single-temperature simulations, this is required.")
+        print("ConfigurationError: In order to compare single-temperature simulations, set the value of "
+              "no_of_temperature_increments equal to 0 in both configuration files.")
         raise SystemExit
     if no_of_temperature_increments_2 != 0:
-        print("ConfigurationError: in the second configuration file, the value of the no_of_temperature_increments "
-              "does not equal 0. In order to compare to single-temperature simulations, this is required.")
+        print("ConfigurationError: In order to compare single-temperature simulations, set the value of "
+              "no_of_temperature_increments equal to 0 in both configuration files.")
         raise SystemExit
     if no_of_jobs_1 != 1:
-        print("ConfigurationError: In the first configuration file, the value of no_of_jobs is not equal to one. Give "
-              "configuration files whose value of no_of_jobs is equal to one.")
+        print("ConfigurationError: Set the value of no_of_jobs to 1 in both configuration files.")
         raise SystemExit
     if no_of_jobs_2 != 1:
-        print("ConfigurationError: In the second configuration file, the value of no_of_jobs is not equal to one. Give"
-              " configuration files whose value of no_of_jobs is equal to one.")
+        print("ConfigurationError: Set the value of no_of_jobs to 1 in both configuration files.")
         raise SystemExit
     if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or
           algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not

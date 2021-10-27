@@ -9,9 +9,8 @@ sample_getter = importlib.import_module("sample_getter")
 
 # main methods (see further down for a single-observation methods section and a basic methods section)
 
-def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                        no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
-    temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
                   "r") as data_file:
@@ -19,14 +18,13 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     except IOError:
         if no_of_jobs == 1:
             power_spectrum = get_single_observation_of_power_spectrum(algorithm_name, observable_string,
-                                                                      output_directory, temperature_directory, beta,
-                                                                      no_of_sites, no_of_equilibration_sweeps,
-                                                                      sampling_frequency)
+                                                                      output_directory, temperature, no_of_sites,
+                                                                      no_of_equilibration_sweeps, sampling_frequency)
         else:
             power_spectra = pool.starmap(get_single_observation_of_power_spectrum,
                                          [(algorithm_name, observable_string,
-                                           f"{output_directory}/job_{job_number + 1}", temperature_directory, beta,
-                                           no_of_sites, no_of_equilibration_sweeps)
+                                           f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
+                                           no_of_equilibration_sweeps)
                                           for job_number in range(no_of_jobs)])
             power_spectrum = np.mean(np.array(power_spectra), axis=0)
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}.csv",
@@ -35,10 +33,9 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         return power_spectrum
 
 
-def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature_directory,
-                                     beta, no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
-                                     time_period_shift=10, sampling_frequency=None):
-    temperature = 1.0 / beta
+def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                                     no_of_equilibration_sweeps, no_of_jobs, pool, time_period_shift=10,
+                                     sampling_frequency=None):
     try:
         with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
                   f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}.csv", "r") as data_file:
@@ -46,13 +43,13 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     except IOError:
         if no_of_jobs == 1:
             correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
-                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, time_period_shift, sampling_frequency)
         else:
             correlator_power_spectra = pool.starmap(
                 get_single_observation_of_power_spectrum_of_correlator,
-                [(algorithm_name, observable_string, f"{output_directory}/job_{job_number + 1}", temperature_directory,
-                  beta, no_of_sites, no_of_equilibration_sweeps, time_period_shift)
+                [(algorithm_name, observable_string, f"{output_directory}/job_{job_number + 1}", temperature,
+                  no_of_sites, no_of_equilibration_sweeps, time_period_shift)
                  for job_number in range(no_of_jobs)])
             correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
         with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
@@ -61,12 +58,11 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         return correlator_power_spectrum
 
 
-def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                           no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
                           base_time_period_shift=1, sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
-    temperature = 1.0 / beta
     try:
         power_trispectrum = []
         stored_spectra = []
@@ -86,18 +82,17 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     except IOError:
         if no_of_jobs == 1:
             power_trispectrum = get_single_observation_of_power_trispectrum(algorithm_name, observable_string,
-                                                                            output_directory, temperature_directory,
-                                                                            beta, no_of_sites,
+                                                                            output_directory, temperature, no_of_sites,
                                                                             no_of_equilibration_sweeps,
                                                                             no_of_auxiliary_frequency_octaves,
                                                                             base_time_period_shift, sampling_frequency)
         else:
             power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
                                             [(algorithm_name, observable_string,
-                                              f"{output_directory}/job_{job_number + 1}", temperature_directory, beta,
-                                              no_of_sites, no_of_equilibration_sweeps,
-                                              no_of_auxiliary_frequency_octaves, base_time_period_shift,
-                                              sampling_frequency) for job_number in range(no_of_jobs)])
+                                              f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
+                                              no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
+                                              base_time_period_shift, sampling_frequency)
+                                             for job_number in range(no_of_jobs)])
             power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -111,13 +106,11 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     return power_trispectrum
 
 
-def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature_directory, beta,
-                                    no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
-                                    no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
-                                    sampling_frequency=None):
+def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                                    no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
+                                    base_time_period_shift=1, sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
-    temperature = 1.0 / beta
     try:
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -126,16 +119,15 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     except IOError:
         if no_of_jobs == 1:
             power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
-                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
                 sampling_frequency)
         else:
             power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
                                                        [(algorithm_name, observable_string,
                                                          f"{output_directory}/job_{job_number + 1}",
-                                                         temperature_directory, beta, no_of_sites,
-                                                         no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
-                                                         base_time_period_shift,
+                                                         temperature, no_of_sites, no_of_equilibration_sweeps,
+                                                         no_of_auxiliary_frequency_octaves, base_time_period_shift,
                                                          sampling_frequency) for job_number in range(no_of_jobs)])
             power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
@@ -145,13 +137,11 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         return power_trispectrum_zero_mode
 
 
-def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature_directory, beta,
-                                     no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool,
-                                     no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
-                                     sampling_frequency=None):
+def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                                     no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
+                                     base_time_period_shift=1, sampling_frequency=None):
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
-    temperature = 1.0 / beta
     try:
         power_trispectrum = []
         stored_spectra = []
@@ -171,22 +161,21 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     except IOError:
         if no_of_jobs == 1:
             sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory,
-                                                                      sampling_frequency, temperature_directory)
+                                                                      sampling_frequency, temperature)
             power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
-                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves,
                 sampling_frequency)
         else:
             power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
                                                         [(algorithm_name, observable_string,
                                                           f"{output_directory}/job_{job_number + 1}",
-                                                          temperature_directory, beta, no_of_sites,
-                                                          no_of_equilibration_sweeps, base_time_period_shift,
-                                                          no_of_auxiliary_frequency_octaves, sampling_frequency)
-                                                         for job_number in range(no_of_jobs)])
+                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
+                                                          base_time_period_shift, no_of_auxiliary_frequency_octaves,
+                                                          sampling_frequency) for job_number in range(no_of_jobs)])
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
             sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, f"{output_directory}/job_1",
-                                                                      sampling_frequency, temperature_directory)
+                                                                      sampling_frequency, temperature)
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
         norm_of_spectra_in_auxiliary_frequency_space = [np.absolute(item) for index, item in
                                                         enumerate(np.fft.fft(transposed_power_spectra).transpose())
@@ -209,22 +198,21 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
 
 # single-observation methods
 
-def get_single_observation_of_power_spectrum(algorithm_name, observable_string, output_directory, temperature_directory,
-                                             beta, no_of_sites, no_of_equilibration_sweeps, sampling_frequency=None):
+def get_single_observation_of_power_spectrum(algorithm_name, observable_string, output_directory, temperature,
+                                             no_of_sites, no_of_equilibration_sweeps, sampling_frequency=None):
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_directory)
-    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                                              temperature)
+    time_series = get_time_series(observable_string, output_directory, temperature, no_of_sites,
                                   no_of_equilibration_sweeps)
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
 def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory,
-                                                           temperature_directory, beta, no_of_sites,
-                                                           no_of_equilibration_sweeps, time_period_shift=10,
-                                                           sampling_frequency=None):
+                                                           temperature, no_of_sites, no_of_equilibration_sweeps,
+                                                           time_period_shift=10, sampling_frequency=None):
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_directory)
-    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                                              temperature)
+    time_series = get_time_series(observable_string, output_directory, temperature, no_of_sites,
                                   no_of_equilibration_sweeps)
     if time_period_shift >= len(time_series[0]):
         raise Exception("time_period_shift must be an integer less than the sample size.")
@@ -232,16 +220,15 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
         get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
 
 
-def get_single_observation_of_power_trispectrum(algorithm_name, observable_string, output_directory,
-                                                temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
+def get_single_observation_of_power_trispectrum(algorithm_name, observable_string, output_directory, temperature,
+                                                no_of_sites, no_of_equilibration_sweeps,
                                                 no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                 sampling_frequency=None):
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_directory)
+                                                              temperature)
     power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string,
-                                                                                output_directory, temperature_directory,
-                                                                                beta, no_of_sites,
-                                                                                no_of_equilibration_sweeps,
+                                                                                output_directory, temperature,
+                                                                                no_of_sites, no_of_equilibration_sweeps,
                                                                                 base_time_period_shift,
                                                                                 no_of_auxiliary_frequency_octaves,
                                                                                 sampling_frequency)
@@ -255,23 +242,21 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
 
 
 def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory,
-                                                          temperature_directory, beta, no_of_sites,
-                                                          no_of_equilibration_sweeps,
+                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
                                                           no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
                                                           sampling_frequency=None):
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
-        algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
-        no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves, sampling_frequency)
+        algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
+        base_time_period_shift, no_of_auxiliary_frequency_octaves, sampling_frequency)
     return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
             np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
 
 
 # basic methods
 
-def get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
-                    no_of_equilibration_sweeps):
+def get_time_series(observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps):
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
-    sample = get_sample_method(output_directory, temperature_directory, beta, no_of_sites)[no_of_equilibration_sweeps:]
+    sample = get_sample_method(output_directory, temperature, no_of_sites)[no_of_equilibration_sweeps:]
     sample = np.atleast_2d(sample)
     if len(sample) > 1:
         sample = sample.transpose()
@@ -294,13 +279,12 @@ def get_two_point_correlator(time_series, time_period_shift):
     return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
-def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string, output_directory,
-                                                 temperature_directory, beta, no_of_sites, no_of_equilibration_sweeps,
-                                                 base_time_period_shift, no_of_auxiliary_frequency_octaves,
-                                                 sampling_frequency):
+def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string, output_directory, temperature,
+                                                 no_of_sites, no_of_equilibration_sweeps, base_time_period_shift,
+                                                 no_of_auxiliary_frequency_octaves, sampling_frequency):
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_directory)
-    time_series = get_time_series(observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                                                              temperature)
+    time_series = get_time_series(observable_string, output_directory, temperature, no_of_sites,
                                   no_of_equilibration_sweeps)
     if base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) >= len(time_series[0]):
         raise Exception("base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) must be less than the "

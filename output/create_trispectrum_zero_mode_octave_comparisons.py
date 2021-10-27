@@ -17,8 +17,6 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
     start_time = time.time()
     for i in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
-        beta = 1.0 / temperature
-        temperature_directory = f"temp_eq_{temperature:.2f}"
 
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
         [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
@@ -30,7 +28,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         for no_of_trispectrum_octaves in range(1, max_no_of_trispectrum_octaves + 1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
-                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
@@ -41,7 +39,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         for no_of_trispectrum_octaves in range(max_no_of_trispectrum_octaves, 0, -1):
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
-                algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]

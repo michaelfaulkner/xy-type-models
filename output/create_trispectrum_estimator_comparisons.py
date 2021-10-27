@@ -16,15 +16,13 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
     start_time = time.time()
     for _ in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
-        beta = 1.0 / temperature
-        temperature_directory = f"temp_eq_{temperature:.2f}"
 
         power_trispectrum = polyspectra.get_power_trispectrum(
-            algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
-            no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
+            no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
         power_trispectrum_as_defined = polyspectra.get_power_trispectrum_as_defined(
-            algorithm_name, observable_string, output_directory, temperature_directory, beta, no_of_sites,
-            no_of_equilibration_sweeps, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
+            no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
 
         # normalise each estimator of power trispectrum with respect to their low-frequency values
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
