@@ -272,8 +272,9 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                                               no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
                                               base_time_period_shift, sampling_frequency)
                                              for job_number in range(no_of_jobs)])
-            # ...average over the results
-            power_trispectrum = np.mean(np.array(power_trispectra, dtype=object), axis=0)
+            # ...average over the results, n.b., we rewrite np.mean(np.array(power_trispectra, dtype=object), axis=0)
+            # as a Python list in order to align with the type of get_single_observation_of_power_trispectrum()
+            power_trispectrum = [component for component in np.mean(np.array(power_trispectra, dtype=object), axis=0)]
         # finally, save the estimated trispectrum to file
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
