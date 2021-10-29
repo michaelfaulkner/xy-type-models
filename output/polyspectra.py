@@ -57,8 +57,8 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     Returns
     -------
     numpy.ndarray
-        The power spectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1) /
-        (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        The power spectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
+        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
         sub-array is the frequencies / values of the power spectrum.
     """
     try:
@@ -141,8 +141,8 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     Returns
     -------
     numpy.ndarray
-        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1) /
-        (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
+        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
         sub-array is the frequencies / values of the power spectrum of the correlator.
     """
     try:
@@ -237,11 +237,11 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         The power trispectrum.  A list of length 3.  The first component is the auxiliary frequencies and is a
         one-dimensional numpy (of floats) of length no_of_auxiliary_frequency_octaves + 1.  The second component is the
         frequencies and is a one-dimensional numpy array (of floats) of length
-        T / \Delta t / 2 - 1 / (T / \Delta t - 1) / 2 for T / \Delta t even / odd.  The third component is a
-        two-dimensional numpy array (of floats) of shape (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1) /
-        (no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  The nth sub-array
-        of the third component is the trispectrum at the auxiliary-frequency value given by the nth element of the
-        first component.
+        T / \Delta t / 2 - 1 [(T / \Delta t - 1) / 2] for T / \Delta t even [odd].  The third component is a
+        two-dimensional numpy array (of floats) of shape (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
+        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth
+        sub-array of the third component is the trispectrum at the auxiliary-frequency value given by the nth element
+        of the first component.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -357,7 +357,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     -------
     numpy.ndarray
         The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
-        / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
         sub-array is the frequencies / values of the zero mode of the power trispectrum.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
@@ -461,10 +461,10 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         component is the frequencies and is a one-dimensional numpy array (of floats) of length
         T / \Delta t / 2 - 1 / (T / \Delta t - 1) / 2 for T / \Delta t even / odd.  The third component is a
         two-dimensional numpy array (of floats) of shape
-        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1) /
-        (no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  The nth sub-array
-        of the third component is the trispectrum at the auxiliary-frequency value given by the nth element of the
-        first component.
+        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
+        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth
+        sub-array of the third component is the trispectrum at the auxiliary-frequency value given by the nth element
+        of the first component.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -576,7 +576,7 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
     -------
     numpy.ndarray
         The single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
         The first / second sub-array is the frequencies / values of the single observation of the power spectrum.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
@@ -636,7 +636,7 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
     -------
     numpy.ndarray
         The single observation of the power spectrum of the correlator.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
         The first / second sub-array is the frequencies / values of the single observation of the power spectrum of the
         correlator.
     """
@@ -710,8 +710,8 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
         The second component is the frequencies and is a one-dimensional numpy array (of floats) of length
         T / \Delta t / 2 - 1 / (T / \Delta t - 1) / 2 for T / \Delta t even / odd.  The third component is a
         two-dimensional numpy array (of floats) of shape
-        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1) /
-        (no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  The nth sub-array
+        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
+        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth sub-array
         of the third component is the (single observation of the shortcut estimator of the) trispectrum at the
         auxiliary-frequency value given by the nth element of the first component.
     """
@@ -786,7 +786,7 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
     -------
     numpy.ndarray
         The single observation of the zero mode of the power trispectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
         The first / second sub-array is the frequencies / values of the zero mode of the power trispectrum.
     """
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
@@ -863,7 +863,7 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     -------
     numpy.ndarray
         The component average of the single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
         The first / second sub-array is the frequencies / values of the component average of the single observation of
         the power spectrum.
     """
@@ -956,8 +956,8 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
     -------
     numpy.ndarray
         The (single observations of the) power spectra of the trispectrum correlators.  A two-dimensional numpy array
-        of shape (no_of_auxiliary_frequency_octaves + 1, m / 2 - 1) /
-        (no_of_auxiliary_frequency_octaves + 1, (m - 1) / 2) for m  even / odd, where
+        of shape (no_of_auxiliary_frequency_octaves + 1, m / 2 - 1)
+        [(no_of_auxiliary_frequency_octaves + 1, (m - 1) / 2)] for m  even [odd], where
         m = T / \Delta t - (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift.  The first /
         second sub-array is the frequencies / values of the (single observations of the) power spectra.
     """
