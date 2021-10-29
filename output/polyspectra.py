@@ -6,7 +6,7 @@ import numpy as np
 sample_getter = importlib.import_module("sample_getter")
 
 
-"""Main methods (see further down for a separate sections of single-observation methods and basic methods)"""
+"""Main methods (see further down for separate sections of single-observation methods and basic methods)"""
 
 
 def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
@@ -56,9 +56,9 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     Returns
     -------
     numpy.ndarray
-        The power spectrum.  A two-dimensional numpy array of shape (no_of_observations / 2 - 1, 2) /
-        ((no_of_observations - 1) / 2, 2) for no_of_observations even / odd.  Each element is a float.  The first /
-        second sub-array is the frequencies / values of the power spectrum.
+        The power spectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1) /
+        (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        sub-array is the frequencies / values of the power spectrum.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -140,9 +140,9 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     Returns
     -------
     numpy.ndarray
-        The power spectrum of the correlator.  A two-dimensional numpy array of shape (no_of_observations / 2 - 1, 2) /
-        ((no_of_observations - 1) / 2, 2) for no_of_observations even / odd.  Each element is a float.  The first /
-        second sub-array is the frequencies / values of the power spectrum of the correlator.
+        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1) /
+        (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        sub-array is the frequencies / values of the power spectrum of the correlator.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -342,9 +342,9 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     Returns
     -------
     numpy.ndarray
-        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (no_of_observations / 2 - 1, 2)
-        / ((no_of_observations - 1) / 2, 2) for no_of_observations even / odd.  Each element is a float.  The first /
-        second sub-array is the frequencies / values of the zero mode of the power trispectrum.
+        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
+        / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.  The first / second
+        sub-array is the frequencies / values of the zero mode of the power trispectrum.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -553,10 +553,9 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
     Returns
     -------
     numpy.ndarray
-        A single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (no_of_observations / 2 - 1, 2) / ((no_of_observations - 1) / 2, 2) for no_of_observations even / odd.  Each
-        element is a float.  The first / second sub-array is the frequencies / values of the single observation of the
-        power spectrum.
+        The single observation of the power spectrum.  A two-dimensional numpy array of shape
+        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        The first / second sub-array is the frequencies / values of the single observation of the power spectrum.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
@@ -568,6 +567,57 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
 def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory,
                                                            temperature, no_of_sites, no_of_equilibration_sweeps,
                                                            time_period_shift=10, sampling_frequency=None):
+    r"""
+    Returns an estimate of a single observation lim_{T -> inf} [| \Delta \tilde{Y}_T(f) | ** 2 / T] of the power
+    spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
+    of the correlator Y(t, s) := X(t) * X(t - s), where X(t) is the time series of observable_string,
+    s = time_period_shift * \Delta t, \Delta t is the physical sampling interval, T is the total simulation time,
+    \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
+    \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, f is frequency and E[.] is the
+    expected value of the argument.  X(t) is considered a single observation of the dynamical 'distribution'.
+
+    The discrete-time Fourier transform of the truncated mean-zero correlator is
+    \tilde{Y}_T(f_k, s) := sum_{n = 0}^{N − 1} \Delta Y(t_n, s) exp(- 2 * pi * i * f_k * t_n), so that the estimate of
+    its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * (\Delta t) ** 2 / T}
+    = lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * \Delta t / N}, where t_{n + 1} = t_n + \Delta t for all
+    n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the discrete frequency spectrum and
+    N = T / \Delta t is the sample size (of the correlator).  The factor of (\Delta t) ** 2 in the definition of the
+    discrete-time power spectrum retains the units of the continuum expression.
+
+    If observable_string is a Cartesian vector of dimension greater than 1, the single observation of the (correlator)
+    power spectrum of each Cartesian component is computed and the average of the resultant quantities are returned.
+
+    Parameters
+    ----------
+    algorithm_name : str
+        The name of the sampling algorithm used to generate the time series / sample.
+    observable_string : str
+        The name of the observable whose power spectrum is to be estimated.
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The number of lattice sites.
+    no_of_equilibration_sweeps : int
+        The number of discarded equilibration observations.
+    time_period_shift : int, optional
+        The number of multiples of the physical sampling interval by which the time series is shifted in order to form
+        the correlator.
+    sampling_frequency : float or None, optional
+        The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
+        which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
+        due to the diffusive Langevin dynamics that emerges from Metropolis dynamics.
+
+    Returns
+    -------
+    numpy.ndarray
+        The single observation of the power spectrum of the correlator.  A two-dimensional numpy array of shape
+        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
+        The first / second sub-array is the frequencies / values of the single observation of the power spectrum of the
+        correlator.
+    """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
     time_series = get_time_series(observable_string, output_directory, temperature, no_of_sites,
@@ -635,7 +685,8 @@ def get_time_series(observable_string, output_directory, temperature, no_of_site
     -------
     numpy.ndarray
         The time series / sample.  A two-dimensional numpy array of shape (n, T / \Delta t), where n >= 1 (an integer)
-        is the number of Cartesian components of observable_string.
+        is the number of Cartesian components of observable_string, T is the total simulation time and \Delta t is the
+        sampling interval.
     """
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
     sample = get_sample_method(output_directory, temperature, no_of_sites)[no_of_equilibration_sweeps:]
@@ -668,7 +719,7 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     time_series : numpy.ndarray
         The time series / sample whose component-averaged single-observation power spectrum is to be computed.  A
         two-dimensional numpy array of shape (n, T / \Delta t), where n >= 1 (an integer) is the number of components
-        of the time series.
+        of time_series.
     sampling_frequency : float
         The sampling frequency.
 
@@ -676,7 +727,7 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     -------
     numpy.ndarray
         The component average of the single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (T / \Delta t / 2 - 1, 2) / ((T / \Delta t - 1) / 2, 2) for T / \Delta t even / odd.  Each element is a float.
+        (2, T / \Delta t / 2 - 1) / (2, (T / \Delta t - 1) / 2) for T / \Delta t even / odd.  Each element is a float.
         The first / second sub-array is the frequencies / values of the component average of the single observation of
         the power spectrum.
     """
@@ -687,10 +738,30 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
 
 
 def get_two_point_correlator(time_series, time_period_shift):
-    """As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
-        time series (rather than using np.roll()).  Previously, we returned
-        np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
-        but have since removed the np.conj() operation as we only consider real-valued signals."""
+    r"""
+    Returns the two-point correlator Y(t, s) := X(t) * X(t - s) of time_series X(t), where
+    s = time_period_shift * \Delta t and \Delta t is the sampling interval.
+
+    As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
+    time series (rather than using np.roll()).  Previously, we returned
+    np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
+    but have since removed the np.conj() operation as we only consider real-valued signals.
+
+    Parameters
+    ----------
+    time_series : numpy.ndarray
+        The time series / sample whose two-point correlator is to be computed.  A two-dimensional numpy array of shape
+        (n, T / \Delta t), where n >= 1 (an integer) is the number of components of time_series.
+    time_period_shift : int, optional
+        The number of multiples of the physical sampling interval by which the time series is shifted in order to form
+        the correlator.
+
+    Returns
+    -------
+    numpy.ndarray
+        The two-point correlator.  A two-dimensional numpy array of shape (n, T / \Delta t - 2 * time_period_shift),
+        where n >= 1 (an integer) is the number of components of time_series and T is the total simulation time.
+    """
     return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
