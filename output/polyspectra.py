@@ -57,9 +57,12 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     Returns
     -------
     numpy.ndarray
-        The power spectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
-        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
-        sub-array is the frequencies / values of the power spectrum.
+        The power spectrum.  A two-dimensional numpy array of shape (2, N / 2 - 1) [(2, (N - 1) / 2)] for N even [odd].
+        Each element is a float.  The first / second sub-array is the frequencies / values of the power spectrum.  If N
+        is even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N
+        is odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This
+        is because the power spectrum is symmetric about f = 0 and its f = 0 value is invalid for a finite-time
+        stationary signal.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -141,9 +144,12 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     Returns
     -------
     numpy.ndarray
-        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
-        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
-        sub-array is the frequencies / values of the power spectrum of the correlator.
+        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, N / 2 - 1) [(2, (N - 1) / 2)]
+        for N even [odd].  Each element is a float.  The first / second sub-array is the frequencies / values of the
+        power spectrum of the correlator.  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric about
+        f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -236,12 +242,15 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     List[numpy.ndarray]
         The power trispectrum.  A list of length 3.  The first component is the auxiliary frequencies and is a
         one-dimensional numpy (of floats) of length no_of_auxiliary_frequency_octaves + 1.  The second component is the
-        frequencies and is a one-dimensional numpy array (of floats) of length
-        T / \Delta t / 2 - 1 [(T / \Delta t - 1) / 2] for T / \Delta t even [odd].  The third component is a
-        two-dimensional numpy array (of floats) of shape (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
-        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth
-        sub-array of the third component is the trispectrum at the auxiliary-frequency value given by the nth element
-        of the first component.
+        frequencies and is a one-dimensional numpy array (of floats) of length N / 2 - 1 [(N - 1) / 2] for N even
+        [odd].  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power spectra are
+        symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.  The third
+        component is a two-dimensional numpy array (of floats) of shape
+        (no_of_auxiliary_frequency_octaves + 1, N / 2 - 1) [(no_of_auxiliary_frequency_octaves + 1, (N - 1) / 2)] for N
+        even [odd].  The nth sub-array of the third component is the trispectrum at the auxiliary-frequency value given
+        by the nth element of the first component.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -356,9 +365,12 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     Returns
     -------
     numpy.ndarray
-        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (2, T / \Delta t / 2 - 1)
-        [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.  The first / second
-        sub-array is the frequencies / values of the zero mode of the power trispectrum.
+        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (2, N / 2 - 1)
+        [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is the frequencies
+        / values of the zero mode of the power trispectrum.  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power spectra are
+        symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -457,14 +469,16 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     -------
     List[numpy.ndarray]
         The power trispectrum (as defined).  A list of length 3.  The first component is the auxiliary frequencies and
-        is a one-dimensional numpy array (of floats) of length no_of_auxiliary_frequency_octaves + 1.  The second
-        component is the frequencies and is a one-dimensional numpy array (of floats) of length
-        T / \Delta t / 2 - 1 / (T / \Delta t - 1) / 2 for T / \Delta t even / odd.  The third component is a
-        two-dimensional numpy array (of floats) of shape
-        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
-        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth
-        sub-array of the third component is the trispectrum at the auxiliary-frequency value given by the nth element
-        of the first component.
+        is a one-dimensional numpy (of floats) of length no_of_auxiliary_frequency_octaves + 1.  The second component
+        is the frequencies and is a one-dimensional numpy array (of floats) of length N / 2 - 1 [(N - 1) / 2] for N
+        even [odd].  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power spectra are
+        symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.  The third
+        component is a two-dimensional numpy array (of floats) of shape
+        (no_of_auxiliary_frequency_octaves + 1, N / 2 - 1) [(no_of_auxiliary_frequency_octaves + 1, (N - 1) / 2)] for N
+        even [odd].  The nth sub-array of the third component is the trispectrum at the auxiliary-frequency value given
+        by the nth element of the first component.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -575,9 +589,12 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
     Returns
     -------
     numpy.ndarray
-        The single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
-        The first / second sub-array is the frequencies / values of the single observation of the power spectrum.
+        The single observation of the power spectrum.  A two-dimensional numpy array of shape (2, N / 2 - 1)
+        [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is the frequencies
+        / values of the power spectrum.  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric about
+        f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
@@ -636,9 +653,11 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
     -------
     numpy.ndarray
         The single observation of the power spectrum of the correlator.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
-        The first / second sub-array is the frequencies / values of the single observation of the power spectrum of the
-        correlator.
+        (2, N / 2 - 1) [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is
+        the frequencies / values of the single observation of the power spectrum of the correlator.  If N is even, the
+        frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the
+        frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because
+        the power spectrum is symmetric about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
@@ -707,13 +726,15 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
     List[numpy.ndarray]
         The single observation of the power trispectrum.  A list of length 3.  The first component is the auxiliary
         frequencies and is a one-dimensional numpy array (of floats) of length no_of_auxiliary_frequency_octaves + 1.
-        The second component is the frequencies and is a one-dimensional numpy array (of floats) of length
-        T / \Delta t / 2 - 1 / (T / \Delta t - 1) / 2 for T / \Delta t even / odd.  The third component is a
-        two-dimensional numpy array (of floats) of shape
-        (no_of_auxiliary_frequency_octaves + 1, T / \Delta t / 2 - 1)
-        [(no_of_auxiliary_frequency_octaves + 1, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  The nth sub-array
-        of the third component is the (single observation of the shortcut estimator of the) trispectrum at the
-        auxiliary-frequency value given by the nth element of the first component.
+        The second component is the frequencies and is a one-dimensional numpy array (of floats) of length N / 2 - 1
+        [(N - 1) / 2] for N even [odd].  If N is even, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
+        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power spectra are
+        symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.  The third
+        component is a two-dimensional numpy array (of floats) of shape
+        (no_of_auxiliary_frequency_octaves + 1, N / 2 - 1) [(no_of_auxiliary_frequency_octaves + 1, N / 2)] for N even
+        [odd].  The nth sub-array of the third component is the (single observation of the shortcut estimator of the)
+        trispectrum at the auxiliary-frequency value given by the nth element of the first component.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
@@ -786,8 +807,11 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
     -------
     numpy.ndarray
         The single observation of the zero mode of the power trispectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
-        The first / second sub-array is the frequencies / values of the zero mode of the power trispectrum.
+        (2, N / 2 - 1) [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is
+        the frequencies / values of the zero mode of the power trispectrum.  If N is even, the frequency spectrum is
+        reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is
+        reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power
+        spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.
     """
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
         algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
@@ -863,9 +887,12 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     -------
     numpy.ndarray
         The component average of the single observation of the power spectrum.  A two-dimensional numpy array of shape
-        (2, T / \Delta t / 2 - 1) [(2, (T / \Delta t - 1) / 2)] for T / \Delta t even [odd].  Each element is a float.
-        The first / second sub-array is the frequencies / values of the component average of the single observation of
-        the power spectrum.
+        (2, N / 2 - 1) [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is
+        the frequencies / values of the component average of the single observation of the power spectrum.  If N is
+        even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is
+        odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is
+        because the power spectrum is symmetric about f = 0 and its f = 0 values is invalid for a finite-time
+        stationary signal.
     """
     power_spectra = np.atleast_2d([signal.periodogram(component_2, fs=sampling_frequency) for component_2 in
                                    [component_1 - np.mean(component_1) for component_1 in time_series]])
@@ -887,7 +914,8 @@ def get_two_point_correlator(time_series, time_period_shift):
     ----------
     time_series : numpy.ndarray
         The time series / sample whose two-point correlator is to be computed.  A two-dimensional numpy array of shape
-        (n, T / \Delta t), where n >= 1 (an integer) is the number of components of time_series.
+        (n, T / \Delta t), where n >= 1 (an integer) is the number of components of time_series and T is the total
+        simulation time.
     time_period_shift : int, optional
         The number of multiples of the physical sampling interval by which the time series is shifted in order to form
         the correlator.
@@ -958,8 +986,12 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
         The (single observations of the) power spectra of the trispectrum correlators.  A two-dimensional numpy array
         of shape (no_of_auxiliary_frequency_octaves + 1, m / 2 - 1)
         [(no_of_auxiliary_frequency_octaves + 1, (m - 1) / 2)] for m  even [odd], where
-        m = T / \Delta t - (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift.  The first /
-        second sub-array is the frequencies / values of the (single observations of the) power spectra.
+        m = N - (2 ** (no_of_auxiliary_frequency_octaves + 1) - 1) * base_time_period_shift.  The first / second
+        sub-array is the frequencies / values of the (single observations of the) power spectra.  If m is even, the
+        frequency spectrum is reduced to f_k \in {1 / (m \Delta t), ..., (m / 2 - 1) / (m \Delta t)}; if m is odd, the
+        frequency spectrum is reduced to f_k \in {1 / (m \Delta t), ..., (m - 1) / 2 / (m \Delta t)}.  This is because
+        the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
+        stationary signal.
     """
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
