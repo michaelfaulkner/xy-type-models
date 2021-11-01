@@ -188,8 +188,8 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                           base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the shortcut estimator
-    E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds] of the power
-    trispectrum
+    E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
+    of the power trispectrum
     S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
     time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total simulation
     time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
@@ -199,7 +199,8 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
 
     In conjunction with output/create_trispectrum_estimator_comparisons.py, the configuration file
     config_files/polyspectra/trispectrum_estimator_comparisons.txt shows that this shortcut estimator (the current
-    method) is a low-noise equivalent of the direct definition encoded in get_power_trispectrum_as_defined().
+    method) is a low-noise equivalent of the direct definition (of the complex norm) encoded in
+    get_power_trispectrum_as_defined().
 
     The discrete-time Fourier transform of the truncated mean-zero correlator is
     \tilde{Y}_T(f_k, s) := sum_{n = 0}^{N − 1} \Delta Y(t_n, s) exp(- 2 * pi * i * f_k * t_n), so that the estimate of
@@ -316,19 +317,13 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                                     no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
                                     base_time_period_shift=1, sampling_frequency=None):
     r"""
-    Returns an estimate of the shortcut estimator E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f, s) | ** 2 / T} ds] of
-    the zero (auxiliary-frequency) mode
+    Returns an estimate of the zero (auxiliary-frequency) mode
     S_X^3(f, f' = 0) := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of the power trispectrum of
     the time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total
     simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
     \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, s is the auxiliary time, f is
     frequency, f' is the auxiliary frequency and E[.] is the expected value of the argument.  X(t) is considered a
     single observation of the dynamical 'distribution'.
-
-    In conjunction with output/create_trispectrum_estimator_comparisons.py, the configuration file
-    config_files/polyspectra/trispectrum_estimator_comparisons.txt shows that the full shortcut estimator encoded in
-    get_power_trispectrum() is a low-noise equivalent of the direct definition encoded in
-    get_power_trispectrum_as_defined().
 
     The discrete-time Fourier transform of the truncated mean-zero correlator is
     \tilde{Y}_T(f_k, s) := sum_{n = 0}^{N − 1} \Delta Y(t_n, s) exp(- 2 * pi * i * f_k * t_n), so that the estimate of
@@ -420,17 +415,17 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                                      no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
                                      base_time_period_shift=1, sampling_frequency=None):
     r"""
-    Returns an estimate of the power trispectrum
-    S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds (as
-    defined) of the time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the
-    total simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
+    Returns an estimate of the complex norm (as defined) of the power trispectrum
+    S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
+    time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total simulation
+    time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
     \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, s is the auxiliary time, f is
     frequency, f' is the auxiliary frequency and E[.] is the expected value of the argument.  X(t) is considered a
     single observation of the dynamical 'distribution'.
 
     get_power_trispectrum() encodes the shortcut estimator
-    E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds] of the trispectrum,
-    rather than the direct definition, which is encoded in the current method.  In conjunction with
+    E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
+    of the trispectrum, rather than the direct definition, which is encoded in the current method.  In conjunction with
     output/create_trispectrum_estimator_comparisons.py, the configuration file
     config_files/polyspectra/trispectrum_estimator_comparisons.txt shows that get_power_trispectrum() is a low-noise
     equivalent of the current method.
@@ -689,9 +684,9 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
                                                 sampling_frequency=None):
     r"""
     Returns an estimate of a single observation
-    int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds of the shortcut estimator
-    E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds] of the power
-    trispectrum
+    | int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) | ds of the shortcut
+    estimator E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the
+    complex norm of the power trispectrum
     S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
     time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total simulation
     time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
@@ -773,9 +768,8 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
                                                           sampling_frequency=None):
     r"""
     Returns an estimate of a single observation int lim_{T -> inf}[| \Delta \tilde{Y}_T(f, s) | ** 2 / T] ds of the
-    shortcut estimator E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f, s) | ** 2 / T} ds] of the zero
-    (auxiliary-frequency) mode S_X^3(f, f' = 0) := int lim_{T -> inf}{E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of
-    the power trispectrum of the time series X(t) of observable_string, where the correlator
+    zero (auxiliary-frequency) mode S_X^3(f, f' = 0) := int lim_{T -> inf}{E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds
+    of the power trispectrum of the time series X(t) of observable_string, where the correlator
     Y(t, s) := X(t) * X(t - s), T is the total simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of
     the truncated mean-zero correlator \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is
     time, s is the auxiliary time, f is frequency, f' is the auxiliary frequency and E[.] is the expected value of the
@@ -949,8 +943,8 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
     r"""
     Returns a numpy array of single observations of estimates of the quantity
     lim_{T -> inf}[\Delta \tilde{Y}_T(f; s) ∣ ** 2 / T] used to estimate the shortcut estimator
-    E[int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds] of the power
-    trispectrum
+    E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
+    of the power trispectrum
     S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
     time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total simulation
     time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
