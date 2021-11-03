@@ -1,12 +1,12 @@
+from scipy.optimize import curve_fit
 import importlib
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import time
-
-# import additional modules
-setup_scripts = importlib.import_module("setup_scripts")
 polyspectra = importlib.import_module("polyspectra")
+setup_scripts = importlib.import_module("setup_scripts")
 
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=3,
@@ -51,6 +51,57 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                        color=current_color, label=fr"temperature = {temperature:.2f}; "
                                                   fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
 
+        if observable_string == "cartesian_magnetisation":
+            """fit generalised-Lorentzian model to power spectrum"""
+            initial_frequency = power_spectrum[0, 0]  # 1.0e-6
+            final_frequency = 1.0e-2
+            max_model_exponent = 10.0
+            increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+            final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
+            optimal_parameter_values = curve_fit(generalised_lorentzian_model,
+                                                 power_spectrum[0, :final_frequency_index],
+                                                 power_spectrum[1, :final_frequency_index],
+                                                 bounds=(np.array([0.1, initial_frequency, 0.0]),
+                                                         np.array([10.0, final_frequency, max_model_exponent])))[0]
+            print(optimal_parameter_values)
+            model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+            model_spectrum_values = generalised_lorentzian_model(model_frequency_values, *optimal_parameter_values)
+            axis[0].loglog(model_frequency_values, model_spectrum_values, color='k')
+
+            """fit one-over-f model to power trispectrum"""
+            initial_frequency = 4.0e-4
+            final_frequency = 8.0e-4
+            max_model_exponent = 10.0
+            increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+            initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
+            final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
+            optimal_parameter_values = curve_fit(one_over_f_model,
+                                                 power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                                                 power_trispectrum[2][len(power_trispectrum[2]) - 1][
+                                                    initial_frequency_index:final_frequency_index],
+                                                 bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))[0]
+            print(optimal_parameter_values)
+            model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+            model_spectrum_values = one_over_f_model(model_frequency_values, *optimal_parameter_values)
+            axis[1].loglog(model_frequency_values, model_spectrum_values, color='k')
+
+            """fit one-over-f model to power trispectrum"""
+            initial_frequency = 8.0e-4
+            final_frequency = 1.5e-3
+            max_model_exponent = 10.0
+            increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+            initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
+            final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
+            optimal_parameter_values = curve_fit(one_over_f_model,
+                                                 power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                                                 power_trispectrum[2][len(power_trispectrum[2]) - 1][
+                                                 initial_frequency_index:final_frequency_index],
+                                                 bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))[0]
+            print(optimal_parameter_values)
+            model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+            model_spectrum_values = one_over_f_model(model_frequency_values, *optimal_parameter_values)
+            axis[1].loglog(model_frequency_values, model_spectrum_values, color='k', linestyle='dashed')
+
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
@@ -64,6 +115,14 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                    bbox_inches="tight")
     if no_of_jobs > 1:
         pool.close()
+
+
+def generalised_lorentzian_model(frequencies, zero_frequency_value, characteristic_frequency, exponent):
+    return zero_frequency_value / (1.0 + (frequencies / characteristic_frequency) ** exponent)
+
+
+def one_over_f_model(frequencies, scale_factor, exponent):
+    return scale_factor / frequencies ** exponent
 
 
 if __name__ == "__main__":
