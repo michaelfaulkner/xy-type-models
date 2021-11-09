@@ -15,35 +15,39 @@ def check_for_observable_error(algorithm_name, observable_string):
     """Check to ensure that a valid observable has been given as the second positional argument."""
     if (observable_string != "potential" and observable_string != "specific_heat"
             and observable_string != "magnetisation_norm" and observable_string != "magnetisation_phase"
-            and observable_string != "cartesian_magnetisation" and observable_string != "magnetic_susceptibility"
-            and observable_string != "inverse_vacuum_permittivity" and observable_string != "total_vortex_polarisation"
-            and observable_string != "helicity_modulus" and observable_string != "hxy_topological_sector"
-            and observable_string != "electric_field_zero_mode" and observable_string != "inverse_permittivity"
-            and observable_string != "topological_sector" and observable_string != "topological_susceptibility"):
+            and observable_string != "cartesian_magnetisation"
+            and observable_string != "absolute_cartesian_magnetisation"
+            and observable_string != "magnetic_susceptibility" and observable_string != "inverse_vacuum_permittivity"
+            and observable_string != "total_vortex_polarisation" and observable_string != "helicity_modulus"
+            and observable_string != "hxy_topological_sector" and observable_string != "electric_field_zero_mode"
+            and observable_string != "inverse_permittivity" and observable_string != "topological_sector"
+            and observable_string != "topological_susceptibility"):
         print("ConfigurationError: Give one of potential, specific_heat, magnetisation_norm, magnetisation_phase, "
-              "cartesian_magnetisation, magnetic_susceptibility, inverse_vacuum_permittivity, "
-              "total_vortex_polarisation, helicity_modulus, hxy_topological_sector, electric_field_zero_mode, "
-              "inverse_permittivity, topological_sector or topological_susceptibility as the second positional "
-              "argument.")
+              "cartesian_magnetisation, absolute_cartesian_magnetisation, magnetic_susceptibility, "
+              "inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus, hxy_topological_sector, "
+              "electric_field_zero_mode, inverse_permittivity, topological_sector or topological_susceptibility as the "
+              "second positional argument.")
         raise SystemExit
     check_for_observable_vs_model_error(algorithm_name, observable_string)
 
 
 def check_for_observable_vs_model_error(algorithm_name, observable_string):
-    # Raise an error if an XY or HXY observable has been given as the second positional argument for a
-    # Maggs-electrolyte model
+    """Raise an error if an XY or HXY observable has been given as the second positional argument for a
+        Maggs-electrolyte model."""
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
             (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase"
-             or observable_string == "cartesian_magnetisation" or observable_string == "magnetic_susceptibility"
-             or observable_string == "inverse_vacuum_permittivity" or observable_string == "total_vortex_polarisation"
-             or observable_string == "helicity_modulus" or observable_string == "hxy_topological_sector")):
+             or observable_string == "cartesian_magnetisation"
+             or observable_string != "absolute_cartesian_magnetisation"
+             or observable_string == "magnetic_susceptibility" or observable_string == "inverse_vacuum_permittivity"
+             or observable_string == "total_vortex_polarisation" or observable_string == "helicity_modulus"
+             or observable_string == "hxy_topological_sector")):
         print("ConfigurationError: This is a Maggs-electrolyte model: do not give either magnetisation_norm, "
-              "magnetisation_phase, cartesian_magnetisation, magnetic_susceptibility, inverse_vacuum_permittivity, "
-              "total_vortex_polarisation, helicity_modulus or hxy_topological_sector as the second positional "
-              "argument.")
+              "magnetisation_phase, cartesian_magnetisation, absolute_cartesian_magnetisation, magnetic_susceptibility,"
+              " inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus or hxy_topological_sector as "
+              "the second positional argument.")
         raise SystemExit
-    # Raise an error if a Maggs-electrolyte observable has been given as the second positional argument for an XY or
-    # HXY model
+    """Raise an error if a Maggs-electrolyte observable has been given as the second positional argument for an XY or 
+        HXY model."""
     if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
          algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
          algorithm_name == "hxy-gaussian-noise-metropolis") and (
@@ -53,7 +57,7 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
               "inverse_permittivity, topological_sector or topological_susceptibility as the second positional "
               "argument.")
         raise SystemExit
-    # Raise an error if hxy_topological_sector has been given as the second positional argument for a non-HXY model
+    """Raise an error if hxy_topological_sector has been given as the second positional argument for a non-HXY model."""
     if (observable_string == "hxy_topological_sector"
             and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis")):
         print("ConfigurationError: This is not the HXY model: do not give hxy_topological_sector as the second "

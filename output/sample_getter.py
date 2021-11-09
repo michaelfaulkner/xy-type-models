@@ -300,6 +300,34 @@ def get_cartesian_magnetisation(output_directory, temperature, no_of_sites):
     return get_non_normalised_cartesian_magnetisation(output_directory, temperature, no_of_sites) / no_of_sites
 
 
+def get_absolute_cartesian_magnetisation(output_directory, temperature, no_of_sites):
+    """
+    Returns the sample of the vector formed from the absolute value of each Cartesian component of the magnetisation
+    vector m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites, where x_i the position of
+    particle i at the time of observation.  Each observation is therefore the vector
+    [|m_1(x; temperature, no_of_sites)|, |m_2(x; temperature, no_of_sites)|].
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the absolute Cartesian magnetisation vector.  A two-dimensional numpy array of shape
+        (no_of_observations, 2).  The nth sub-array is the absolute Cartesian magnetisation vector measured at
+        observation n; its first / second element is a float corresponding to the absolute value of the x / y component
+        of the Cartesian magnetisation vector measured at observation n.
+    """
+    return abs(get_cartesian_magnetisation(output_directory, temperature, no_of_sites))
+
+
 def get_magnetic_susceptibility(output_directory, temperature, no_of_sites):
     """
     Returns the sample of the magnetic susceptibility chi_m(x; temperature, no_of_sites) =
