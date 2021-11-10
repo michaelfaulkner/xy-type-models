@@ -1,6 +1,6 @@
 'hxy-metropolis'                                    algorithm_name
-'output/polyspectra/near_transition/64x64'          output_directory
-64                                                  integer_lattice_length
+'output/polyspectra/near_transition/32x32'          output_directory
+32                                                  integer_lattice_length
 10000                                               no_of_equilibration_sweeps
 1000000                                             no_of_observations
 1.3d0                                               initial_temperature
