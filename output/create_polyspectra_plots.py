@@ -44,50 +44,41 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
         max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 5.0e-3) - 1
 
-        if observable_string == "cartesian_magnetisation":
-            """fit Lorentzian model to power spectrum"""
-            initial_frequency = power_spectrum[0, 0]
-            final_frequency = 1.0e-2
-            increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
-            final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
-            optimal_parameter_values = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                                 power_spectrum[1, :final_frequency_index],
-                                                 bounds=(np.array([0.1, initial_frequency]),
-                                                         np.array([10.0, final_frequency])))[0]
-            model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
-            model_spectrum_values = lorentzian_model(model_frequency_values, *optimal_parameter_values)
-            axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
-                           color=current_color, label=fr"temperature = {temperature:.2f}; "
-                                                      fr"$f_c$ = {optimal_parameter_values[1]:.2e}; "
-                                                      fr"$S_0$ = {optimal_parameter_values[0]:.2f}")
-            axes[0].loglog(model_frequency_values, model_spectrum_values, color='k')
+        """fit Lorentzian model to power spectrum"""
+        initial_frequency = power_spectrum[0, 0]
+        final_frequency = 1.0e-2
+        increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+        final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
+        optimal_parameter_values = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
+                                             power_spectrum[1, :final_frequency_index],
+                                             bounds=(np.array([0.1, initial_frequency]),
+                                                     np.array([10.0, final_frequency])))[0]
+        model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+        model_spectrum_values = lorentzian_model(model_frequency_values, *optimal_parameter_values)
+        axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
+                       color=current_color, label=fr"temperature = {temperature:.2f}; "
+                                                  fr"$f_c$ = {optimal_parameter_values[1]:.2e}; "
+                                                  fr"$S_0$ = {optimal_parameter_values[0]:.2f}")
+        axes[0].loglog(model_frequency_values, model_spectrum_values, color='k')
 
-            """lower frequency range of trispectrum fitting"""
-            (one_over_f_model_lower_parameters, one_over_f_model_lower_frequency_values,
-             one_over_f_model_lower_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "lower",
-                                                                                           10.0, no_of_sites)
-            """upper frequency range of trispectrum fitting"""
-            (one_over_f_model_upper_parameters, one_over_f_model_upper_frequency_values,
-             one_over_f_model_upper_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper",
-                                                                                           10.0, no_of_sites)
-            axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
-                           power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
-                           color=current_color,
-                           label=fr"temperature = {temperature:.2f}; "
-                                 fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}; "
-                                 fr"$\alpha_L$ = {one_over_f_model_lower_parameters[1]:.2e}; "
-                                 fr"$\alpha_U$ = {one_over_f_model_upper_parameters[1]:.2e}")
-            axes[1].loglog(one_over_f_model_lower_frequency_values, one_over_f_model_lower_spectrum_values, color='k')
-            axes[1].loglog(one_over_f_model_upper_frequency_values, one_over_f_model_upper_spectrum_values, color='k',
-                           linestyle='dashed')
-        else:
-            axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
-                           color=current_color, label=fr"temperature = {temperature:.2f}")
-            axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
-                           power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
-                           color=current_color,
-                           label=fr"temperature = {temperature:.2f}; "
-                           fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}")
+        """lower frequency range of trispectrum fitting"""
+        (one_over_f_model_lower_parameters, one_over_f_model_lower_frequency_values,
+         one_over_f_model_lower_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "lower", 10.0,
+                                                                                       no_of_sites)
+        """upper frequency range of trispectrum fitting"""
+        (one_over_f_model_upper_parameters, one_over_f_model_upper_frequency_values,
+         one_over_f_model_upper_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper", 10.0,
+                                                                                       no_of_sites)
+        axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
+                       power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
+                       color=current_color,
+                       label=fr"temperature = {temperature:.2f}; "
+                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}; "
+                             fr"$\alpha_L$ = {one_over_f_model_lower_parameters[1]:.2e}; "
+                             fr"$\alpha_U$ = {one_over_f_model_upper_parameters[1]:.2e}")
+        axes[1].loglog(one_over_f_model_lower_frequency_values, one_over_f_model_lower_spectrum_values, color='k')
+        axes[1].loglog(one_over_f_model_upper_frequency_values, one_over_f_model_upper_spectrum_values, color='k',
+                       linestyle='dashed')
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
