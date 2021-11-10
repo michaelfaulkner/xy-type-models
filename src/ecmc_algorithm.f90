@@ -10,7 +10,7 @@ call cpu_time(start_time)
 do i = 0, no_of_temperature_increments
     write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
-    spin_space_distance_between_observations = two_pi * dfloat(no_of_sites) * temperature
+    spin_space_distance_between_observations = dfloat(no_of_sites) * temperature  ! optimised based on sim. time and ESS
     call create_sample_file
 
     do j = 1, no_of_equilibration_sweeps
