@@ -184,7 +184,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
 
 
 def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                          no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
+                          no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
                           base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the shortcut estimator
@@ -314,7 +314,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
 
 
 def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                    no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
+                                    no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
                                     base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the zero (auxiliary-frequency) mode
@@ -412,7 +412,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
 
 
 def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                     no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=2,
+                                     no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
                                      base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the complex norm (as defined) of the power trispectrum
@@ -680,7 +680,7 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
 
 def get_single_observation_of_power_trispectrum(algorithm_name, observable_string, output_directory, temperature,
                                                 no_of_sites, no_of_equilibration_sweeps,
-                                                no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
+                                                no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                                 sampling_frequency=None):
     r"""
     Returns an estimate of a single observation
@@ -764,7 +764,7 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
 
 def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory,
                                                           temperature, no_of_sites, no_of_equilibration_sweeps,
-                                                          no_of_auxiliary_frequency_octaves=2, base_time_period_shift=1,
+                                                          no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                                           sampling_frequency=None):
     r"""
     Returns an estimate of a single observation int lim_{T -> inf}[| \Delta \tilde{Y}_T(f, s) | ** 2 / T] ds of the
