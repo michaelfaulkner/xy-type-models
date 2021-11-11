@@ -2,7 +2,7 @@ program ecmc_algorithm
 use variables
 implicit none
 integer :: i, j
-double precision :: start_time, end_time
+double precision :: start_time, end_time, no_of_events_per_sweep
 
 call pre_simulation_processes
 call cpu_time(start_time)
@@ -10,11 +10,20 @@ call cpu_time(start_time)
 do i = 0, no_of_temperature_increments
     write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
-    spin_space_distance_between_observations = dfloat(no_of_sites) * temperature  ! optimised based on sim. time and ESS
+    spin_space_distance_between_observations = dfloat(no_of_sites)
     call create_sample_file
 
     do j = 1, no_of_equilibration_sweeps
         call single_event_chain
+        ! spin_space_distance_between_observations adaptor
+        if (mod(j, no_of_equilibration_sweeps / 10) == 0) then
+            no_of_events_per_sweep = 1.0d-2 * dfloat(no_of_events)
+            if (no_of_events_per_sweep > 1.1d0 * dfloat(no_of_sites)) then
+                spin_space_distance_between_observations = 9.99000999000999d-1 * spin_space_distance_between_observations
+            else if (no_of_events_per_sweep < 9.09090909090909d-1 * dfloat(no_of_sites)) then
+                spin_space_distance_between_observations = 1.001d0 * spin_space_distance_between_observations
+            end if
+        end if
         if (use_external_global_moves) then
             call attempt_external_global_move
         end if
