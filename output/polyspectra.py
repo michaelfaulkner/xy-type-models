@@ -13,9 +13,9 @@ sample_getter = importlib.import_module("sample_getter")
 def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                        no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
     r"""
-    Returns an estimate of the power spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} of the
-    time series X(t) of observable_string, where T is the total simulation time, \Delta \tilde{X}_T(f) is the Fourier
-    transform of the truncated signal mean-zero time series
+    Returns an estimate of the power spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} (with a
+    standard error at each f) of the time series X(t) of observable_string, where T is the total simulation time,
+    \Delta \tilde{X}_T(f) is the Fourier transform of the truncated signal mean-zero time series
     \Delta X_T(t) := {X(t) - E[X] for all |t| <= T / 2, 0 otherwise}, t is time, f is frequency and E[.] is the
     expected value of the argument.  X(t) is considered a single observation of the dynamical 'distribution'.
 
@@ -57,12 +57,13 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     Returns
     -------
     numpy.ndarray
-        The power spectrum.  A two-dimensional numpy array of shape (2, N / 2 - 1) [(2, (N - 1) / 2)] for N even [odd].
-        Each element is a float.  The first / second sub-array is the frequencies / values of the power spectrum.  If N
-        is even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N
-        is odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This
-        is because the power spectrum is symmetric about f = 0 and its f = 0 value is invalid for a finite-time
-        stationary signal.
+        The power spectrum.  A three-dimensional numpy array of shape (3, N / 2 - 1) [(3, (N - 1) / 2)] for N even
+        [odd].  Each element is a float.  The first / second / third sub-array is the frequencies / values / standard
+        errors of the power spectrum.  If N is even, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -76,6 +77,9 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
             power_spectrum = get_single_observation_of_power_spectrum(algorithm_name, observable_string,
                                                                       output_directory, temperature, no_of_sites,
                                                                       no_of_equilibration_sweeps, sampling_frequency)
+            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            power_spectrum = np.concatenate(
+                [power_spectrum.flatten(), np.ones(len(power_spectrum[0]))]).reshape((3, len(power_spectrum[0])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation, then...
@@ -84,8 +88,11 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
                                            f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
                                            no_of_equilibration_sweeps)
                                           for job_number in range(no_of_jobs)])
-            # ...average over the results
-            power_spectrum = np.mean(np.array(power_spectra), axis=0)
+            # ...average over results and estimate the standard error (of the spectrum) wrt repeated simulations
+            power_spectra = np.array(power_spectra)
+            power_spectrum = np.concatenate(
+                [np.mean(power_spectra, axis=0).flatten(),
+                 np.std(power_spectra, axis=0)[1] / np.sqrt(len(power_spectra))]).reshape((3, len(power_spectra[0, 0])))
         # finally, save the estimated spectrum to file
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv",
