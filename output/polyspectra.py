@@ -57,9 +57,9 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     Returns
     -------
     numpy.ndarray
-        The power spectrum.  A three-dimensional numpy array of shape (3, N / 2 - 1) [(3, (N - 1) / 2)] for N even
-        [odd].  Each element is a float.  The first / second / third sub-array is the frequencies / values / standard
-        errors of the power spectrum.  If N is even, the frequency spectrum is reduced to
+        The power spectrum.  A two-dimensional numpy array of shape (3, N / 2 - 1) [(3, (N - 1) / 2)] for N even [odd].
+        Each element is a float.  The first / second / third sub-array is the frequencies / values / standard errors of
+        the power spectrum.  If N is even, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
         about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
@@ -88,11 +88,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
                                            f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
                                            no_of_equilibration_sweeps)
                                           for job_number in range(no_of_jobs)])
-            # ...average over results and estimate the standard error (of the spectrum) wrt repeated simulations
-            power_spectra = np.array(power_spectra)
-            power_spectrum = np.concatenate(
-                [np.mean(power_spectra, axis=0).flatten(),
-                 np.std(power_spectra, axis=0)[1] / np.sqrt(len(power_spectra))]).reshape((3, len(power_spectra[0, 0])))
+            power_spectrum = get_spectrum_mean_and_std_error(power_spectra)
         # finally, save the estimated spectrum to file
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv",
@@ -106,9 +102,9 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
                                      sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
-    of the correlator Y(t, s) := X(t) * X(t - s), where X(t) is the time series of observable_string,
-    s = time_period_shift * \Delta t, \Delta t is the physical sampling interval, T is the total simulation time,
-    \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
+    (with a standard error at each f) of the correlator Y(t, s) := X(t) * X(t - s), where X(t) is the time series of
+    observable_string, s = time_period_shift * \Delta t, \Delta t is the physical sampling interval, T is the total
+    simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
     \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, f is frequency and E[.] is the
     expected value of the argument.  X(t) is considered a single observation of the dynamical 'distribution'.
 
@@ -153,12 +149,13 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     Returns
     -------
     numpy.ndarray
-        The power spectrum of the correlator.  A two-dimensional numpy array of shape (2, N / 2 - 1) [(2, (N - 1) / 2)]
-        for N even [odd].  Each element is a float.  The first / second sub-array is the frequencies / values of the
-        power spectrum of the correlator.  If N is even, the frequency spectrum is reduced to f_k \in
-        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
-        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric about
-        f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
+        The power spectrum of the correlator.  A two-dimensional numpy array of shape (3, N / 2 - 1) [(3, (N - 1) / 2)]
+        for N even [odd].  Each element is a float.  The first / second / third sub-array is the frequencies / values /
+        standard errors of the power spectrum of the correlator.  If N is even, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum, then...
@@ -172,6 +169,10 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
             correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, time_period_shift, sampling_frequency)
+            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            correlator_power_spectrum = np.concatenate(
+                [correlator_power_spectrum.flatten(),
+                 np.ones(len(correlator_power_spectrum[0]))]).reshape((3, len(correlator_power_spectrum[0])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation, then...
@@ -180,8 +181,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
                 [(algorithm_name, observable_string, f"{output_directory}/job_{job_number + 1}", temperature,
                   no_of_sites, no_of_equilibration_sweeps, time_period_shift)
                  for job_number in range(no_of_jobs)])
-            # ...average over the results
-            correlator_power_spectrum = np.mean(np.array(correlator_power_spectra), axis=0)
+            correlator_power_spectrum = get_spectrum_mean_and_std_error(correlator_power_spectra)
         # finally, save the estimated spectrum to file
         with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
                   f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
@@ -871,6 +871,35 @@ def get_time_series(observable_string, output_directory, temperature, no_of_site
     return sample
 
 
+def get_two_point_correlator(time_series, time_period_shift):
+    r"""
+    Returns the two-point correlator Y(t, s) := X(t) * X(t - s) of time_series X(t), where
+    s = time_period_shift * \Delta t and \Delta t is the sampling interval.
+
+    As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
+    time series (rather than using np.roll()).  Previously, we returned
+    np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
+    but have since removed the np.conj() operation as we only consider real-valued signals.
+
+    Parameters
+    ----------
+    time_series : numpy.ndarray
+        The time series / sample whose two-point correlator is to be computed.  A two-dimensional numpy array of shape
+        (n, T / \Delta t), where n >= 1 (an integer) is the number of components of time_series and T is the total
+        simulation time.
+    time_period_shift : int, optional
+        The number of multiples of the physical sampling interval by which the time series is shifted in order to form
+        the correlator.
+
+    Returns
+    -------
+    numpy.ndarray
+        The two-point correlator.  A two-dimensional numpy array of shape (n, T / \Delta t - 2 * time_period_shift),
+        where n >= 1 (an integer) is the number of components of time_series and T is the total simulation time.
+    """
+    return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
+
+
 def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     r"""
     Returns an estimate of the (Cartesian-)component average of a single observation
@@ -913,35 +942,6 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
                                    [component_1 - np.mean(component_1) for component_1 in time_series]])
     # the `[:, 1:]' below removes the f = 0 value as this value is invalid for a finite-time stationary signal
     return np.mean(power_spectra, axis=0)[:, 1:]
-
-
-def get_two_point_correlator(time_series, time_period_shift):
-    r"""
-    Returns the two-point correlator Y(t, s) := X(t) * X(t - s) of time_series X(t), where
-    s = time_period_shift * \Delta t and \Delta t is the sampling interval.
-
-    As the time series is not periodic, we chop off the first / last time_period_shift elements of each copy of the
-    time series (rather than using np.roll()).  Previously, we returned
-    np.conj(time_series[:, time_period_shift:]) * time_series[:, :len(time_series[0]) - time_period_shift],
-    but have since removed the np.conj() operation as we only consider real-valued signals.
-
-    Parameters
-    ----------
-    time_series : numpy.ndarray
-        The time series / sample whose two-point correlator is to be computed.  A two-dimensional numpy array of shape
-        (n, T / \Delta t), where n >= 1 (an integer) is the number of components of time_series and T is the total
-        simulation time.
-    time_period_shift : int, optional
-        The number of multiples of the physical sampling interval by which the time series is shifted in order to form
-        the correlator.
-
-    Returns
-    -------
-    numpy.ndarray
-        The two-point correlator.  A two-dimensional numpy array of shape (n, T / \Delta t - 2 * time_period_shift),
-        where n >= 1 (an integer) is the number of components of time_series and T is the total simulation time.
-    """
-    return time_series[:, time_period_shift:] * time_series[:, :len(time_series[0]) - time_period_shift]
 
 
 def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string, output_directory, temperature,
@@ -1025,3 +1025,31 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
         for i in range(2 ** (no_of_auxiliary_frequency_octaves + 1))]
     return np.array(
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
+
+
+def get_spectrum_mean_and_std_error(power_spectra):
+    r"""
+    Returns both 1) the mean of the power spectra estimated from M repeated simulations, and 2) an estimate the
+    standard error (of the spectrum) with respect to the repeated simulations.
+
+    Parameters
+    ----------
+    power_spectra : List[numpy.ndarray]
+        The power spectra estimated from M repeated simulations.  A list of length M.  Component i is the power
+        spectrum estimated from simulation i and is a numpy array (of floats) of length N / 2 - 1 [(N - 1) / 2] for N
+        even [odd], where N is the number of observations within each simulation.  If N is even, the frequency spectrum
+        is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum
+        is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because each power spectrum
+        is symmetric about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
+
+    Returns
+    -------
+    numpy.ndarray
+        The spectrum frequencies, means and standard errors.  A two-dimensional numpy array of shape (3, N).  The
+        standard error is the square root of the ratio of the sample variance to M, where the sample is the dynamical
+        sample whose observations are the repeated simulations.
+    """
+    power_spectra = np.array(power_spectra)
+    return np.concatenate(
+        [np.mean(power_spectra, axis=0).flatten(),
+         np.std(power_spectra, axis=0)[1] / np.sqrt(len(power_spectra))]).reshape((3, len(power_spectra[0, 0])))
