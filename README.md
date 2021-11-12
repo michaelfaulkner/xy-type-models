@@ -34,16 +34,17 @@ To install xy-type-models, clone this repository, navigate to the top xy-type-mo
 Fortran executables simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) 
 directory.
 
-The code that analyses the resultant samples (i.e., that contained in the [`output`](output) directory) was written in 
-Python and depends on [`numpy`](https://numpy.org). Some of it also depends on [`matplotlib`](https://matplotlib.org), 
-[`rpy2`](https://rpy2.github.io) or [`scipy`](https://www.scipy.org). To manage external Python packages, we use 
-[conda](https://docs.conda.io/projects/conda/en/latest/) environments via the [miniconda distribution](
-https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](https://rpy2.github.io) to be buggy when 
-installed via conda. Instead, we `pip install rpy2` from within the project's conda environment (after having `conda 
-install`ed [`numpy`](https://numpy.org), [`matplotlib`](https://matplotlib.org) and [`scipy`](https://www.scipy.org)).
+The code that analyses the resultant samples (i.e., that contained in the [`sample_analysis`](sample_analysis) 
+directory) was written in Python and depends on [`numpy`](https://numpy.org). Some of it also depends on 
+[`matplotlib`](https://matplotlib.org), [`rpy2`](https://rpy2.github.io) or [`scipy`](https://www.scipy.org). To manage 
+external Python packages, we use [conda](https://docs.conda.io/projects/conda/en/latest/) environments via the 
+[miniconda distribution](https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](
+https://rpy2.github.io) to be buggy when installed via conda. Instead, we `pip install rpy2` from within the project's 
+conda environment (after having `conda install`ed [`numpy`](https://numpy.org), [`matplotlib`](https://matplotlib.org) 
+and [`scipy`](https://www.scipy.org)).
 
-[`markov_chain_diagnostics.py`](output/markov_chain_diagnostics.py) depends on the R packages [`LaplacesDemon`](
-https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
+[`markov_chain_diagnostics.py`](sample_analysis/markov_chain_diagnostics.py) depends on the R packages 
+[`LaplacesDemon`](https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
 https://cran.r-project.org/web/packages/mcmcse/). To install these R packages: download the binaries [here](
 https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) 
 and then run `R CMD INSTALL <binary location>` in your terminal.
@@ -59,9 +60,9 @@ run.py) script expects the path to the configuration file as the first positiona
 be located in the [`config_files`](config_files) directory. 
 
 To run xy-type-models, open your terminal, navigate to the top directory and enter `python run.py 
-<configuration file>`. The generated sample data will appear in the [`output`](output) directory (at a location given 
-in the configuration file). Sample analysis can then be performed via the Python scripts in the [`output`](output) 
-directory.
+<configuration file>`. The generated sample data will appear in the location corresponding to the value of 
+`output_directory` in the configuration file. Sample analysis can then be performed via the Python scripts contained in 
+the [`sample_analysis`](sample_analysis) directory.
 
 
 ## Configuration files
@@ -69,15 +70,15 @@ directory.
 Configuration files are located in the [`config_files`](config_files) directory. Their contents must follow the 
 strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form to 
 14 significant figures and with the suffix `d0`. All strings must be enclosed between two apostrophes, e.g., 
-`'string'`. The value of `output_directory` must start with `'output/`, i.e., the entire value must be of the form 
-`'output/rest_of_string'`. For the value of `output_directory`, i) refrain from giving long strings, as this can lead 
-to Fortran runtime errors, and ii) ensure 10 spaces between the value of `output_directory` and the word 
-`output_directory` itself, as this avoids Fortran errors when performing multiple runs of the same simulation (the 
-number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and  `max_no_of_cpus` must be positive 
-integers. For the value of `max_no_of_cpus`, we recommend giving half the number of CPUs available on your personal 
-machine, e.g., for a four-core machine with two threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, 
-xy-type-models will perform two sets of four parallel runs of the same simulation, and similarly for certain 
-sample-analysis processes.
+`'string'`. Typically, the value of `output_directory` starts with `'output/`, i.e., the entire value is of the form 
+`'output/rest_of_string'`, but this is not a requirement. For the value of `output_directory`, i) refrain from giving 
+long strings, as this can lead to Fortran runtime errors, and ii) ensure 10 spaces between the value of 
+`output_directory` and the word `output_directory` itself, as this avoids Fortran errors when performing multiple runs 
+of the same simulation (the number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and  
+`max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, we recommend giving half the number of 
+CPUs available on your personal machine, e.g., for a four-core machine with two threads per core, we set 
+`max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four parallel runs of the same 
+simulation, and similarly for certain sample-analysis processes.
 
 ### hxy-ecmc configuration file (an example)
 
@@ -238,8 +239,8 @@ sample-analysis processes.
 
 In order to test the convergence of our code, we run (for example) 
 `python run.py config_files/convergence_tests/xy/ecmc.txt` followed by 
-`python output/convergence_tests/test_convergence.py config_files/convergence_tests/xy/ecmc.txt` (and similarly for the 
-other seven algorithms). 
+`python sample_analysis/test_convergence.py config_files/convergence_tests/xy/ecmc.txt` (and similarly for the other 
+seven algorithms). 
 
 This computes the effective sample size of the sample generated by the Markov process and produces a plot of the 
 cumulative distribution functions of both a reference sample and the generated sample. If the two cumulative 

@@ -8,9 +8,7 @@ import sys
 # import additional modules; have to add the directories that contain sample_getter.py, markov_chain_diagnostics.py
 # and run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_most_modules = os.path.abspath(this_directory + "/../")
-sys.path.insert(0, directory_containing_most_modules)
-directory_containing_run_script = os.path.abspath(this_directory + "/../../")
+directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
 sample_getter = importlib.import_module("sample_getter")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
