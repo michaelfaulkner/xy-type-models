@@ -78,8 +78,8 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
                                                                       output_directory, temperature, no_of_sites,
                                                                       no_of_equilibration_sweeps, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
-            power_spectrum = np.concatenate(
-                [power_spectrum.flatten(), np.ones(len(power_spectrum[0]))]).reshape((3, len(power_spectrum[0])))
+            power_spectrum = np.concatenate([power_spectrum.flatten(),
+                                             np.ones(len(power_spectrum[0]))]).reshape((3, -1))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation...
@@ -171,9 +171,8 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, time_period_shift, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
-            correlator_power_spectrum = np.concatenate(
-                [correlator_power_spectrum.flatten(),
-                 np.ones(len(correlator_power_spectrum[0]))]).reshape((3, len(correlator_power_spectrum[0])))
+            correlator_power_spectrum = np.concatenate([correlator_power_spectrum.flatten(),
+                                                        np.ones(len(correlator_power_spectrum[0]))]).reshape((3, -1))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation...
@@ -296,7 +295,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                                                                             no_of_equilibration_sweeps,
                                                                             no_of_auxiliary_frequency_octaves,
                                                                             base_time_period_shift, sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
             power_trispectrum.append(np.ones(np.shape(power_trispectrum[2])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
@@ -336,12 +335,12 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                                     base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the zero (auxiliary-frequency) mode
-    S_X^3(f, f' = 0) := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of the power trispectrum of
-    the time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total
-    simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
-    \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, s is the auxiliary time, f is
-    frequency, f' is the auxiliary frequency and E[.] is the expected value of the argument.  X(t) is considered a
-    single observation of the dynamical 'distribution'.
+    S_X^3(f, f' = 0) := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of the power trispectrum (with
+    standard errors at each f) of the time series X(t) of observable_string, where the correlator
+    Y(t, s) := X(t) * X(t - s), T is the total simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of
+    the truncated mean-zero correlator \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is
+    time, s is the auxiliary time, f is frequency, f' is the auxiliary frequency and E[.] is the expected value of the
+    argument.  X(t) is considered a single observation of the dynamical 'distribution'.
 
     The discrete-time Fourier transform of the truncated mean-zero correlator is
     \tilde{Y}_T(f_k, s) := sum_{n = 0}^{N − 1} \Delta Y(t_n, s) exp(- 2 * pi * i * f_k * t_n), so that the estimate of
@@ -386,12 +385,14 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     Returns
     -------
     numpy.ndarray
-        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (2, N / 2 - 1)
-        [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second sub-array is the frequencies
-        / values of the zero mode of the power trispectrum.  If N is even, the frequency spectrum is reduced to f_k \in
-        {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in
-        {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the correlator power spectra are
-        symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.
+        The zero mode of the power trispectrum.  A two-dimensional numpy array of shape (3, N / 2 - 1)
+        [(2, (N - 1) / 2)] for N even [odd].  Each element is a float.  The first / second / third sub-array is the
+        frequencies / values / standard errors of the zero mode of the power trispectrum.  If N is even, the frequency
+        spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency
+        spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the
+        correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
+        stationary signal.  If no_of_jobs is 1, a numpy array of 1.0 floats is returned (as padding) for the standard
+        errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
@@ -409,6 +410,9 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
                 sampling_frequency)
+            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            power_trispectrum_zero_mode = np.concatenate(
+                [power_trispectrum_zero_mode.flatten(), np.ones(len(power_trispectrum_zero_mode[0]))]).reshape((3, -1))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum zero mode
             # corresponding to each repeated simulation...
@@ -418,8 +422,13 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
                                                          no_of_auxiliary_frequency_octaves, base_time_period_shift,
                                                          sampling_frequency) for job_number in range(no_of_jobs)])
-            # ...then average over the results
-            power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
+            # ...then extract the frequencies and spectra...
+            frequencies = np.mean(np.array([simulation[0] for simulation in power_trispectra_zero_modes]), axis=0)
+            trispectra_sans_frequencies = np.array([simulation[1] for simulation in power_trispectra_zero_modes])
+            # ...then average over results and estimate standard errors
+            power_trispectrum_zero_mode = np.array(
+                [frequencies, np.mean(trispectra_sans_frequencies, axis=0),
+                 np.std(trispectra_sans_frequencies, axis=0) / len(power_trispectra_zero_modes) ** 0.5])
         # finally, save the estimated trispectrum zero mode to file
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -534,6 +543,8 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                 no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves,
                 sampling_frequency)
         else:
+            sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, f"{output_directory}/job_1",
+                                                                      sampling_frequency, temperature)
             # no_of_jobs > 1, so use the multiprocessing pool to compute the set of estimates of the spectra of the
             # correlators corresponding to each repeated simulation...
             power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
@@ -544,8 +555,6 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                                                           sampling_frequency) for job_number in range(no_of_jobs)])
             # ...then average over the set
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
-            sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, f"{output_directory}/job_1",
-                                                                      sampling_frequency, temperature)
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
         norm_of_spectra_in_auxiliary_frequency_space = [np.absolute(item) for index, item in
                                                         enumerate(np.fft.fft(transposed_power_spectra).transpose())
@@ -842,8 +851,8 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
         algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
         base_time_period_shift, no_of_auxiliary_frequency_octaves, sampling_frequency)
-    return [np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
-            np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]
+    return np.concatenate([np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
+                           np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]).reshape((2, -1))
 
 
 """Base methods"""
@@ -1061,6 +1070,5 @@ def get_power_spectrum_means_and_std_errors(power_spectra):
         the dynamical sample (at f) whose observations are the repeated simulations.
     """
     power_spectra = np.array(power_spectra)
-    return np.concatenate(
-        [np.mean(power_spectra, axis=0).flatten(),
-         np.std(power_spectra, axis=0)[1] / len(power_spectra) ** 0.5]).reshape((3, len(power_spectra[0, 0])))
+    return np.concatenate([np.mean(power_spectra, axis=0).flatten(),
+                           np.std(power_spectra, axis=0)[1] / len(power_spectra) ** 0.5]).reshape((3, -1))
