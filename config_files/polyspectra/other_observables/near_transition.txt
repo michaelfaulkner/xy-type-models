@@ -1,5 +1,5 @@
 'hxy-metropolis'                                                algorithm_name
-'output/polyspectra/other_observables/near_transition/'         output_directory
+'output/polyspectra/other_observables/near_transition'          output_directory
 64                                                              integer_lattice_length
 10000                                                           no_of_equilibration_sweeps
 1000000                                                         no_of_observations
