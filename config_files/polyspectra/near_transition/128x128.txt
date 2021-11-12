@@ -1,16 +1,16 @@
-'hxy-metropolis'                                        algorithm_name
-'output/polyspectra/near_transition/128x128'            output_directory
-128                                                     integer_lattice_length
-10000                                                   no_of_equilibration_sweeps
-1000000                                                 no_of_observations
-1.2d0                                                   initial_temperature
-2.0d0                                                   final_temperature
-16                                                      no_of_temperature_increments
-1.0d0   	                                            width_of_proposal_interval (initial)
-0.6d0		                                            target_acceptance_rate_of_field_rotations
-0                                                       vacuum_permittivity_sum_cutoff
-.false.                                                 randomise_initial_field_configuration
-.false.                                                 use_external_global_moves
-.false.                                                 calculate_external_minimising_twist_field
-224                                                     no_of_jobs
-28                                                      max_no_of_cpus
+'hxy-metropolis'                                            algorithm_name
+'../scratch/polyspectra/near_transition/128x128'            output_directory
+128                                                         integer_lattice_length
+10000                                                       no_of_equilibration_sweeps
+1000000                                                     no_of_observations
+1.2d0                                                       initial_temperature
+2.0d0                                                       final_temperature
+16                                                          no_of_temperature_increments
+1.0d0   	                                                width_of_proposal_interval (initial)
+0.6d0		                                                target_acceptance_rate_of_field_rotations
+0                                                           vacuum_permittivity_sum_cutoff
+.false.                                                     randomise_initial_field_configuration
+.false.                                                     use_external_global_moves
+.false.                                                     calculate_external_minimising_twist_field
+224                                                         no_of_jobs
+28                                                          max_no_of_cpus
