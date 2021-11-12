@@ -270,13 +270,13 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the trispectrum...
-        power_trispectrum = []
-        stored_spectra = []
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
-            power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+            auxiliary_frequencies = np.loadtxt(data_file, dtype=float, delimiter=",")
+        stored_spectra = []
+        stored_errors = []
         for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                       f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -284,9 +284,10 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv", "r") as data_file:
                 data = np.loadtxt(data_file, dtype=float, delimiter=",")
                 if index == 0:
-                    power_trispectrum.append(data[0])
-                [stored_spectra.append(data[i + 1]) for i in range(2)]
-        power_trispectrum.append(np.array(stored_spectra))
+                    frequencies = data[0]
+                stored_spectra.append(data[1])
+                stored_errors.append(data[2])
+        return [auxiliary_frequencies, frequencies, np.array(stored_spectra), np.array(stored_errors)]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
@@ -327,7 +328,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                 np.savetxt(data_file,
                            np.array([power_trispectrum[1], power_trispectrum[2][index], power_trispectrum[3][index]]),
                            delimiter=",")
-    return power_trispectrum
+        return power_trispectrum
 
 
 def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
@@ -516,13 +517,12 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the trispectrum...
-        power_trispectrum = []
-        stored_spectra = []
         with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
-            power_trispectrum.append(np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=",")))
+            auxiliary_frequencies = np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=","))
+        stored_spectra = []
         for index in range(no_of_auxiliary_frequency_octaves + 1):
             with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
                       f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -530,9 +530,9 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv", "r") as data_file:
                 data = np.loadtxt(data_file, dtype=float, delimiter=",")
                 if index == 0:
-                    power_trispectrum.append(data[0])
+                    frequencies = data[0]
                 stored_spectra.append(data[1])
-        power_trispectrum.append(np.array(stored_spectra))
+        return [auxiliary_frequencies, frequencies, np.array(stored_spectra)]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
@@ -575,7 +575,7 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                       f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv", "w") as data_file:
                 np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
-    return power_trispectrum
+        return power_trispectrum
 
 
 """Single-observation methods"""
