@@ -5,7 +5,7 @@
 100000                                                  no_of_observations
 1.0d0                                                   initial_temperature
 2.0d0                                                   final_temperature
-50                                                      no_of_temperature_increments
+100                                                     no_of_temperature_increments
 0                                                       vacuum_permittivity_sum_cutoff
 .false.                                                 randomise_initial_field_configuration
 .false.                                                 use_external_global_moves
