@@ -49,33 +49,45 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         final_frequency = 1.0e-2
         increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
         final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
-        optimal_parameter_values = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                             power_spectrum[1, :final_frequency_index],
-                                             bounds=(np.array([0.1, initial_frequency]),
-                                                     np.array([10.0, final_frequency])))[0]
+        if no_of_jobs > 1:
+            parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
+                                                    power_spectrum[1, :final_frequency_index],
+                                                    sigma=power_spectrum[2, :final_frequency_index],
+                                                    bounds=(np.array([0.1, initial_frequency]),
+                                                            np.array([10.0, final_frequency])))
+        else:
+            parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
+                                                    power_spectrum[1, :final_frequency_index],
+                                                    bounds=(np.array([0.1, initial_frequency]),
+                                                            np.array([10.0, final_frequency])))
+        parameter_values = parameter_values_and_errors[0]
+        parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
         model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
-        model_spectrum_values = lorentzian_model(model_frequency_values, *optimal_parameter_values)
+        model_spectrum_values = lorentzian_model(model_frequency_values, *parameter_values)
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
-                       color=current_color, label=fr"temperature = {temperature:.2f}; "
-                                                  fr"$f_c$ = {optimal_parameter_values[1]:.2e}; "
-                                                  fr"$S_0$ = {optimal_parameter_values[0]:.2f}")
+                       color=current_color,
+                       label=fr"temperature = {temperature:.2f}; $f_c$ = {parameter_values[1]:.2e} $\pm$ "
+                             fr"{parameter_errors[1]:.2e}; $S_0$ = {parameter_values[0]:.2f} $\pm$ "
+                             fr"{parameter_errors[0]:.2e}")
         axes[0].loglog(model_frequency_values, model_spectrum_values, color='k')
 
         """lower frequency range of trispectrum fitting"""
-        (one_over_f_model_lower_parameters, one_over_f_model_lower_frequency_values,
+        (one_over_f_model_lower_parameters, one_over_f_model_lower_errors, one_over_f_model_lower_frequency_values,
          one_over_f_model_lower_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "lower", 10.0,
-                                                                                       no_of_sites)
+                                                                                       no_of_sites, no_of_jobs)
         """upper frequency range of trispectrum fitting"""
-        (one_over_f_model_upper_parameters, one_over_f_model_upper_frequency_values,
+        (one_over_f_model_upper_parameters, one_over_f_model_upper_errors, one_over_f_model_upper_frequency_values,
          one_over_f_model_upper_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper", 10.0,
-                                                                                       no_of_sites)
+                                                                                       no_of_sites, no_of_jobs)
         axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
                        power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
                        color=current_color,
                        label=fr"temperature = {temperature:.2f}; "
                              fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}; "
-                             fr"$\alpha_L$ = {one_over_f_model_lower_parameters[1]:.2e}; "
-                             fr"$\alpha_U$ = {one_over_f_model_upper_parameters[1]:.2e}")
+                             fr"$\alpha_L$ = {one_over_f_model_lower_parameters[1]:.2e} $\pm$ "
+                             fr"{one_over_f_model_lower_errors[1]:.2e}; "
+                             fr"$\alpha_U$ = {one_over_f_model_upper_parameters[1]:.2e} $\pm$ "
+                             fr"{one_over_f_model_upper_errors[1]:.2e}")
         axes[1].loglog(one_over_f_model_lower_frequency_values, one_over_f_model_lower_spectrum_values, color='k')
         axes[1].loglog(one_over_f_model_upper_frequency_values, one_over_f_model_upper_spectrum_values, color='k',
                        linestyle='dashed')
@@ -101,7 +113,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         pool.close()
 
 
-def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_model_exponent, no_of_sites):
+def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_model_exponent, no_of_sites,
+                                        no_of_jobs):
     """fit one-over-f model to power trispectrum"""
     if frequency_range == "lower":
         if no_of_sites >= 64 ** 2:
@@ -123,14 +136,28 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
     initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
-    optimal_parameter_values = curve_fit(one_over_f_model,
-                                         power_trispectrum[1][initial_frequency_index:final_frequency_index],
-                                         power_trispectrum[2][len(power_trispectrum[2]) - 1][
-                                            initial_frequency_index:final_frequency_index],
-                                         bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))[0]
+    # the following commented-out code may be useful for no_of_jobs very large; we found worse results using the
+    # trispectrum error bars for no_of_jobs = 8
+    """if no_of_jobs > 1:
+        parameter_values_and_errors = curve_fit(
+            one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+            power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
+            sigma=power_trispectrum[3][len(power_trispectrum[3]) - 1][initial_frequency_index:final_frequency_index],
+            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+    else:
+        parameter_values_and_errors = curve_fit(
+            one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+            power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
+            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))"""
+    parameter_values_and_errors = curve_fit(
+        one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+        power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
+        bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+    parameter_values = parameter_values_and_errors[0]
+    parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
-    model_spectrum_values = one_over_f_model(model_frequency_values, *optimal_parameter_values)
-    return optimal_parameter_values, model_frequency_values, model_spectrum_values
+    model_spectrum_values = one_over_f_model(model_frequency_values, *parameter_values)
+    return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
 
 
 def lorentzian_model(frequencies, zero_frequency_value, characteristic_frequency):
