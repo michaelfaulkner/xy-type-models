@@ -66,13 +66,13 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
-        # first, attempt to open a previously computed estimate of the spectrum, then...
+        # first, attempt to open a previously computed estimate of the spectrum...
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv",
                   "r") as data_file:
             return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
-        # ...if the file does not exists, compute the estimate of the spectrum
+        # ...then if the file does not exists, compute the estimate of the spectrum
         if no_of_jobs == 1:
             power_spectrum = get_single_observation_of_power_spectrum(algorithm_name, observable_string,
                                                                       output_directory, temperature, no_of_sites,
@@ -82,13 +82,14 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
                 [power_spectrum.flatten(), np.ones(len(power_spectrum[0]))]).reshape((3, len(power_spectrum[0])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
-            # each repeated simulation, then...
+            # each repeated simulation...
             power_spectra = pool.starmap(get_single_observation_of_power_spectrum,
                                          [(algorithm_name, observable_string,
                                            f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
                                            no_of_equilibration_sweeps)
                                           for job_number in range(no_of_jobs)])
-            power_spectrum = get_spectrum_mean_and_std_error(power_spectra)
+            # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
+            power_spectrum = get_power_spectrum_means_and_std_errors(power_spectra)
         # finally, save the estimated spectrum to file
         with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
                   f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv",
@@ -158,13 +159,13 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
-        # first, attempt to open a previously computed estimate of the spectrum, then...
+        # first, attempt to open a previously computed estimate of the spectrum...
         with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
                   f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
                   f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv", "r") as data_file:
             return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
-        # ...if the file does not exists, compute the estimate of the spectrum
+        # ...then if the file does not exists, compute the estimate of the spectrum
         if no_of_jobs == 1:
             correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
@@ -175,13 +176,14 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
                  np.ones(len(correlator_power_spectrum[0]))]).reshape((3, len(correlator_power_spectrum[0])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
-            # each repeated simulation, then...
+            # each repeated simulation...
             correlator_power_spectra = pool.starmap(
                 get_single_observation_of_power_spectrum_of_correlator,
                 [(algorithm_name, observable_string, f"{output_directory}/job_{job_number + 1}", temperature,
                   no_of_sites, no_of_equilibration_sweeps, time_period_shift)
                  for job_number in range(no_of_jobs)])
-            correlator_power_spectrum = get_spectrum_mean_and_std_error(correlator_power_spectra)
+            # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
+            correlator_power_spectrum = get_power_spectrum_means_and_std_errors(correlator_power_spectra)
         # finally, save the estimated spectrum to file
         with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
                   f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
@@ -197,12 +199,12 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     Returns an estimate of the shortcut estimator
     E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
     of the power trispectrum
-    S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
-    time series X(t) of observable_string, where the correlator Y(t, s) := X(t) * X(t - s), T is the total simulation
-    time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of the truncated mean-zero correlator
-    \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, s is the auxiliary time, f is
-    frequency, f' is the auxiliary frequency and E[.] is the expected value of the argument.  X(t) is considered a
-    single observation of the dynamical 'distribution'.
+    S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds (with
+    standard errors at each f) of the time series X(t) of observable_string, where the correlator
+    Y(t, s) := X(t) * X(t - s), T is the total simulation time, \Delta \tilde{Y}_T(f, s) is the Fourier transform of
+    the truncated mean-zero correlator \Delta Y_T(t, s) := {Y(t, s) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is
+    time, s is the auxiliary time, f is frequency, f' is the auxiliary frequency and E[.] is the expected value of the
+    argument.  X(t) is considered a single observation of the dynamical 'distribution'.
 
     In conjunction with output/create_trispectrum_estimator_comparisons.py, the configuration file
     config_files/polyspectra/trispectrum_estimator_comparisons.txt shows that this shortcut estimator (the current
@@ -252,7 +254,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     Returns
     -------
     List[numpy.ndarray]
-        The power trispectrum.  A list of length 3.  The first component is the auxiliary frequencies and is a
+        The power trispectrum.  A list of length 4.  The first component is the auxiliary frequencies and is a
         one-dimensional numpy (of floats) of length no_of_auxiliary_frequency_octaves + 1.  The second component is the
         frequencies and is a one-dimensional numpy array (of floats) of length N / 2 - 1 [(N - 1) / 2] for N even
         [odd].  If N is even, the frequency spectrum is reduced to f_k \in
@@ -261,13 +263,14 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         symmetric about f = 0 and their f = 0 values are invalid for a finite-time stationary signal.  The third
         component is a two-dimensional numpy array (of floats) of shape
         (no_of_auxiliary_frequency_octaves + 1, N / 2 - 1) [(no_of_auxiliary_frequency_octaves + 1, (N - 1) / 2)] for N
-        even [odd].  The nth sub-array of the third component is the trispectrum at the auxiliary-frequency value given
-        by the nth element of the first component.
+        even [odd].  The nth sub-array of the third / fourth component is the trispectrum / trispectrum standard errors
+        at the auxiliary-frequency value given by the nth element of the first component.  If no_of_jobs is 1, a numpy
+        array of 1.0 floats is returned (as padding) for the standard errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
-        # first, attempt to open a previously computed estimate of the trispectrum, then...
+        # first, attempt to open a previously computed estimate of the trispectrum...
         power_trispectrum = []
         stored_spectra = []
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
@@ -283,28 +286,34 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                 data = np.loadtxt(data_file, dtype=float, delimiter=",")
                 if index == 0:
                     power_trispectrum.append(data[0])
-                stored_spectra.append(data[1])
+                [stored_spectra.append(data[i + 1]) for i in range(2)]
         power_trispectrum.append(np.array(stored_spectra))
     except IOError:
-        # ...if the file does not exists, compute the estimate of the trispectrum
+        # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
             power_trispectrum = get_single_observation_of_power_trispectrum(algorithm_name, observable_string,
                                                                             output_directory, temperature, no_of_sites,
                                                                             no_of_equilibration_sweeps,
                                                                             no_of_auxiliary_frequency_octaves,
                                                                             base_time_period_shift, sampling_frequency)
+            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            power_trispectrum.append(np.ones(np.shape(power_trispectrum[2])))
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
-            # to each repeated simulation, then...
+            # to each repeated simulation...
             power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
                                             [(algorithm_name, observable_string,
                                               f"{output_directory}/job_{job_number + 1}", temperature, no_of_sites,
                                               no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
                                               base_time_period_shift, sampling_frequency)
                                              for job_number in range(no_of_jobs)])
-            # ...average over the results, n.b., we rewrite np.mean(np.array(power_trispectra, dtype=object), axis=0)
-            # as a Python list in order to align with the type of get_single_observation_of_power_trispectrum()
-            power_trispectrum = [component for component in np.mean(np.array(power_trispectra, dtype=object), axis=0)]
+            # ...then extract the frequencies and spectra...
+            auxiliary_frequencies = power_trispectra[0][0]
+            frequencies = np.mean(np.array([simulation[1] for simulation in power_trispectra]), axis=0)
+            trispectra_sans_any_frequencies = np.array([simulation[2] for simulation in power_trispectra])
+            # ...then average over results and estimate standard errors
+            power_trispectrum = [auxiliary_frequencies, frequencies, np.mean(trispectra_sans_any_frequencies, axis=0),
+                                 np.std(trispectra_sans_any_frequencies, axis=0) / len(power_trispectra) ** 0.5]
         # finally, save the estimated trispectrum to file
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
@@ -316,7 +325,9 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                       f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
                       f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.csv", "w") as data_file:
-                np.savetxt(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]), delimiter=",")
+                np.savetxt(data_file,
+                           np.array([power_trispectrum[1], power_trispectrum[2][index], power_trispectrum[3][index]]),
+                           delimiter=",")
     return power_trispectrum
 
 
@@ -385,14 +396,14 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
-        # first, attempt to open a previously computed estimate of the trispectrum zero mode, then...
+        # first, attempt to open a previously computed estimate of the trispectrum zero mode...
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
                   f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
                   f"{temperature:.2f}_f_prime_eq_zero_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}.csv", "r") as data_file:
             return np.loadtxt(data_file, dtype=float, delimiter=",")
     except IOError:
-        # ...if the file does not exists, compute the estimate of the trispectrum zero mode
+        # ...then if the file does not exists, compute the estimate of the trispectrum zero mode
         if no_of_jobs == 1:
             power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
@@ -400,14 +411,14 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                 sampling_frequency)
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum zero mode
-            # corresponding to each repeated simulation, then...
+            # corresponding to each repeated simulation...
             power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
                                                        [(algorithm_name, observable_string,
                                                          f"{output_directory}/job_{job_number + 1}",
                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
                                                          no_of_auxiliary_frequency_octaves, base_time_period_shift,
                                                          sampling_frequency) for job_number in range(no_of_jobs)])
-            # ...average over the results
+            # ...then average over the results
             power_trispectrum_zero_mode = np.mean(np.array(power_trispectra_zero_modes, dtype=object), axis=0)
         # finally, save the estimated trispectrum zero mode to file
         with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
@@ -495,7 +506,7 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
-        # first, attempt to open a previously computed estimate of the trispectrum, then...
+        # first, attempt to open a previously computed estimate of the trispectrum...
         power_trispectrum = []
         stored_spectra = []
         with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
@@ -514,7 +525,7 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                 stored_spectra.append(data[1])
         power_trispectrum.append(np.array(stored_spectra))
     except IOError:
-        # ...if the file does not exists, compute the estimate of the trispectrum
+        # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
             sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory,
                                                                       sampling_frequency, temperature)
@@ -524,14 +535,14 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                 sampling_frequency)
         else:
             # no_of_jobs > 1, so use the multiprocessing pool to compute the set of estimates of the spectra of the
-            # correlators corresponding to each repeated simulation, then...
+            # correlators corresponding to each repeated simulation...
             power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
                                                         [(algorithm_name, observable_string,
                                                           f"{output_directory}/job_{job_number + 1}",
                                                           temperature, no_of_sites, no_of_equilibration_sweeps,
                                                           base_time_period_shift, no_of_auxiliary_frequency_octaves,
                                                           sampling_frequency) for job_number in range(no_of_jobs)])
-            # ...average over the set
+            # ...then average over the set
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
             sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, f"{output_directory}/job_1",
                                                                       sampling_frequency, temperature)
@@ -1027,7 +1038,7 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
         [get_component_averaged_power_spectrum(correlator, sampling_frequency) for correlator in correlators])
 
 
-def get_spectrum_mean_and_std_error(power_spectra):
+def get_power_spectrum_means_and_std_errors(power_spectra):
     r"""
     Returns both 1) the mean of the power spectra estimated from M repeated simulations, and 2) an estimate the
     standard error (of the spectrum) with respect to the repeated simulations.
@@ -1045,11 +1056,11 @@ def get_spectrum_mean_and_std_error(power_spectra):
     Returns
     -------
     numpy.ndarray
-        The spectrum frequencies, means and standard errors.  A two-dimensional numpy array of shape (3, N).  The
-        standard error is the square root of the ratio of the sample variance to M, where the sample is the dynamical
-        sample whose observations are the repeated simulations.
+        The power spectrum frequencies, means and standard errors.  A two-dimensional numpy array of shape (3, N).  The
+        standard error at frequency f is the square root of the ratio of the sample variance to M, where the sample is
+        the dynamical sample (at f) whose observations are the repeated simulations.
     """
     power_spectra = np.array(power_spectra)
     return np.concatenate(
         [np.mean(power_spectra, axis=0).flatten(),
-         np.std(power_spectra, axis=0)[1] / np.sqrt(len(power_spectra))]).reshape((3, len(power_spectra[0, 0])))
+         np.std(power_spectra, axis=0)[1] / len(power_spectra) ** 0.5]).reshape((3, len(power_spectra[0, 0])))
