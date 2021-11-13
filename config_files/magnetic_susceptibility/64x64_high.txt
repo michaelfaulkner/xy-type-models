@@ -1,0 +1,14 @@
+'hxy-ecmc'                                          algorithm_name
+'../scratch/magnetic_susceptibility/64x64'          output_directory
+64                                                  integer_lattice_length
+1000                                                no_of_equilibration_sweeps
+100000                                              no_of_observations
+2.05d0                                              initial_temperature
+3.0d0                                               final_temperature
+19                                                  no_of_temperature_increments
+0                                                   vacuum_permittivity_sum_cutoff
+.false.                                             randomise_initial_field_configuration
+.false.                                             use_external_global_moves
+.false.                                             calculate_external_minimising_twist_field
+1                                                   no_of_jobs
+1                                                   max_no_of_cpus
