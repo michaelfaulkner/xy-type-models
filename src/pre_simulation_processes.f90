@@ -4,6 +4,7 @@ implicit none
 character(100) :: config_file
 integer :: seed_size
 integer, allocatable :: seed(:)
+integer, dimension(1:8) :: date_and_time_seed
 
 ! verify that the something has been passed to the exectuable
 if (command_argument_count() /= 1) then
@@ -16,6 +17,9 @@ seed_size = 123456
 call random_seed(size=seed_size)
 allocate(seed(seed_size))
 call random_seed(get=seed)
+call date_and_time(values=date_and_time_seed)
+seed(seed_size) = date_and_time_seed(8); seed(1) = date_and_time_seed(8) * date_and_time_seed(7) * date_and_time_seed(6)
+call random_seed(put=seed)
 call randinit(abs(seed(1)))
 write(6, '(A, F16.14)') 'Initial random number = ', rand(abs(seed(1)))
 
