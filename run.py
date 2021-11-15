@@ -4,6 +4,7 @@ import csv
 import fileinput
 import multiprocessing as mp
 import os
+import random
 import sys
 
 
@@ -34,7 +35,8 @@ def main(config_file_location):
         raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
     elif no_of_jobs == 1:
         print("Running a single Markov process.")
-        run_single_simulation(executable_location, config_file_location)
+        random_seed = random.randint(100000000, 999999999)
+        run_single_simulation(executable_location, random_seed, config_file_location)
     else:
         no_of_available_cpus = mp.cpu_count()
         if no_of_available_cpus > max_no_of_cpus:
@@ -51,6 +53,7 @@ def main(config_file_location):
             pool = mp.Pool(no_of_cpus)
         # create directory in which to store temporary copies of the parent config file
         os.system(f"mkdir -p {config_file_location.replace('.txt', '')}")
+        random_seeds = [random.randint(100000000, 999999999) for _ in range(no_of_jobs)]
         config_file_copies = [config_file_location.replace(".txt", f"/job_{job_number + 1}.txt") for job_number in
                               range(no_of_jobs)]
         for job_number, config_file_copy in enumerate(config_file_copies):
@@ -61,8 +64,8 @@ def main(config_file_location):
                     print(line.replace("' ", f"/job_{job_number + 1}'"), end="")
                 else:
                     print(line, end="")
-        pool.starmap(run_single_simulation, [(executable_location, config_file_copy) for config_file_copy in
-                                             config_file_copies])
+        pool.starmap(run_single_simulation, [(executable_location, random_seeds[job_number], config_file_copy)
+                                             for job_number, config_file_copy in enumerate(config_file_copies)])
         pool.close()
         # delete temporary copies of parent config file
         os.system(f"rm -r {config_file_location.replace('.txt', '')}")
@@ -149,7 +152,7 @@ def get_executable(algorithm_name):
     return executable_location
 
 
-def run_single_simulation(executable_location, config_file_location):
+def run_single_simulation(executable_location, random_seed, config_file_location):
     """
     Runs a single simulation using the (Fortran) sampling algorithm.
 
@@ -157,6 +160,8 @@ def run_single_simulation(executable_location, config_file_location):
     ----------
     executable_location : str
         The location of the Fortran sampling-algorithm executable.
+    random_seed : int
+        The random seed for the random-number generator in the Fortran executable.  A nine-digit integer.
     config_file_location : str
         The location of the configuration file.
 
@@ -164,7 +169,7 @@ def run_single_simulation(executable_location, config_file_location):
     -------
     None
     """
-    os.system(f"./{executable_location} {config_file_location}")
+    os.system(f"./{executable_location} {random_seed} {config_file_location}")
 
 
 if __name__ == "__main__":
