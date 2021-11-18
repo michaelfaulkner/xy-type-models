@@ -118,7 +118,7 @@ def main(config_file, observable_string):
                 sample_error = np.linalg.norm(sample_means_and_errors[1])
             output_file.write(f"{temperature:.2f}".ljust(15) + f"{sample_mean:.14e}".ljust(35) + f"{sample_error:.14e}"
                               + "\n")
-            plt.errorbar(temperature, sample_mean, sample_error, marker=".", markersize=10, color="k")
+            plt.errorbar(temperature, sample_mean, sample_error, marker=".", markersize=5, color="k")
             temperatures.append(temperature)
             mean_and_errors.append(sample_mean)
         temperature -= magnitude_of_temperature_increments
