@@ -133,7 +133,7 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     else:
         raise SystemExit("Give 'lower' or 'upper' as the value for frequency_range in the "
                          "fit_one_over_f_model_to_trispectrum() method.")
-    increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+    increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
     initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
     # the following commented-out code may be useful for no_of_jobs very large; we found worse results using the
