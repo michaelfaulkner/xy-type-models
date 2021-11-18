@@ -100,12 +100,20 @@ def main(config_file, observable_string):
                 sample = get_sample_method(output_directory, temperature, no_of_sites)[
                          no_of_equilibration_sweeps:]
                 sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
+                """use the following line in place of the preceding one if rpy2 does not work"""
+                # sample_mean, sample_error = get_1d_sample_mean_and_standard_error_estimate(sample)
             else:
                 sample_means_and_errors = np.transpose(
                     np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error,
                                           [[get_sample_method(output_directory + "/job_" + str(job_number + 1),
                                                               temperature, no_of_sites)[
                                             no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
+                """use the following line in place of the preceding one if rpy2 does not work"""
+                """sample_means_and_errors = np.transpose(
+                    np.array(pool.starmap(get_1d_sample_mean_and_standard_error_estimate,
+                                          [[get_sample_method(output_directory + "/job_" + str(job_number + 1),
+                                                              temperature, no_of_sites)[
+                                            no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))"""
                 sample_mean = np.mean(sample_means_and_errors[0])
                 sample_error = np.linalg.norm(sample_means_and_errors[1])
             output_file.write(f"{temperature:.2f}".ljust(15) + f"{sample_mean:.14e}".ljust(35) + f"{sample_error:.14e}"
@@ -157,6 +165,10 @@ def check_for_observable_error(algorithm_name, observable_string):
               "no_of_events, give acceptance_rates as the second positional argument.")
         raise SystemExit
     setup_scripts.check_for_observable_vs_model_error(algorithm_name, observable_string)
+
+
+def get_1d_sample_mean_and_standard_error_estimate(sample):
+    return np.mean(sample), np.std(sample) / len(sample) ** 0.5
 
 
 if __name__ == "__main__":
