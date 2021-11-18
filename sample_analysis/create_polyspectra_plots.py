@@ -100,7 +100,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         legends = [axes[0].legend(title=r"black lines: fits to $S_X(f)$ / $S_X(f_0) = S_0 / (1 + (f / f_c)^2)$",
                                   loc="lower left", fontsize=10),
                    axes[1].legend(title=r"black lines: fits to $S_X^3(f, f') \sim f^{-\alpha}$; $\alpha = \alpha_L$ "
-                                        r"(solid), $\alpha = \alpha_U$ (dashed)", loc="lower left", fontsize=10)]
+                                        r"(solid), $\alpha = \alpha_U$ (dashed)", loc="lower left", fontsize=8)]
     else:
         legends = [axis.legend(loc="lower left", fontsize=10) for axis in axes]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
