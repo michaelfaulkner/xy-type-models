@@ -31,13 +31,13 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, no_of_sites, no_of_equilibration_sweeps,
                                                         no_of_jobs, pool)
-        power_trispectrum = polyspectra.get_power_trispectrum(
+        power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
             no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
 
         # normalise polyspectra with respect to their low-frequency values
         power_spectrum[1] /= power_spectrum[1, 0]
-        power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
+        power_trispectrum[2] /= power_trispectrum[2][0]
 
         # note frequency indices in order to discard spectrum (trispectrum) for all frequencies >= 0.1 (5.0e-3)  since
         # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
@@ -77,10 +77,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
          one_over_f_model_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper", 10.0,
                                                                                  no_of_sites, no_of_jobs)
         axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
-                       power_trispectrum[2][len(power_trispectrum[2]) - 1][:max_power_trispectrum_index],
-                       color=current_color,
-                       label=fr"temperature = {temperature:.2f}; "
-                             fr"f' = {power_trispectrum[0][len(power_trispectrum[0]) - 1]:.2e}; "
+                       power_trispectrum[2][:max_power_trispectrum_index], color=current_color,
+                       label=fr"temperature = {temperature:.2f}; f' = {power_trispectrum[0]:.2e}; "
                              fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
                              fr"{one_over_f_model_errors[1]:.2e}")
         axes[1].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
@@ -144,7 +142,7 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
             bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))"""
     parameter_values_and_errors = curve_fit(
         one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-        power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
+        power_trispectrum[2][initial_frequency_index:final_frequency_index],
         bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
     parameter_values = parameter_values_and_errors[0]
     parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
