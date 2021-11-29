@@ -53,13 +53,13 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
                                                     power_spectrum[1, :final_frequency_index],
                                                     sigma=power_spectrum[2, :final_frequency_index],
-                                                    bounds=(np.array([0.1, initial_frequency]),
-                                                            np.array([10.0, final_frequency])))
+                                                    bounds=(np.array([0.9, initial_frequency]),
+                                                            np.array([1.1, final_frequency])))
         else:
             parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
                                                     power_spectrum[1, :final_frequency_index],
-                                                    bounds=(np.array([0.1, initial_frequency]),
-                                                            np.array([10.0, final_frequency])))
+                                                    bounds=(np.array([0.9, initial_frequency]),
+                                                            np.array([1.1, final_frequency])))
         lorentzian_model_parameters = parameter_values_and_errors[0]
         lorentzian_model_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
         lorentzian_model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
@@ -118,7 +118,7 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
         if no_of_sites >= 64 ** 2:
             initial_frequency, final_frequency = 1.5e-4, 4.0e-4
         elif no_of_sites == 32 ** 2:
-            initial_frequency, final_frequency = 2.0e-4, 6.0e-4
+            initial_frequency, final_frequency = 2.0e-4, 4.0e-4
         elif no_of_sites <= 16 ** 2:
             initial_frequency, final_frequency = 8.0e-4, 1.5e-3
     else:
@@ -129,21 +129,21 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
     # the following commented-out code may be useful for no_of_jobs very large; we found worse results using the
     # trispectrum error bars for no_of_jobs = 8
-    """if no_of_jobs > 1:
+    if no_of_jobs > 1:
         parameter_values_and_errors = curve_fit(
             one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-            power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
-            sigma=power_trispectrum[3][len(power_trispectrum[3]) - 1][initial_frequency_index:final_frequency_index],
+            power_trispectrum[2][initial_frequency_index:final_frequency_index],
+            sigma=power_trispectrum[3][initial_frequency_index:final_frequency_index],
             bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
     else:
         parameter_values_and_errors = curve_fit(
             one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-            power_trispectrum[2][len(power_trispectrum[2]) - 1][initial_frequency_index:final_frequency_index],
-            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))"""
-    parameter_values_and_errors = curve_fit(
+            power_trispectrum[2][initial_frequency_index:final_frequency_index],
+            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+    '''parameter_values_and_errors = curve_fit(
         one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
         power_trispectrum[2][initial_frequency_index:final_frequency_index],
-        bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+        bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))'''
     parameter_values = parameter_values_and_errors[0]
     parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
