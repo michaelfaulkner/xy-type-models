@@ -10,7 +10,7 @@ setup_scripts = importlib.import_module("setup_scripts")
 
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=6,
-         trispectrum_base_period_shift=1):
+         trispectrum_base_period_shift=1, target_auxiliary_frequency=None):
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
      no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = setup_scripts.set_up_polyspectra_script(
         config_file, observable_string)
@@ -33,7 +33,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                                                         no_of_jobs, pool)
         power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
+            no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift,
+            target_auxiliary_frequency)
 
         # normalise polyspectra with respect to their low-frequency values
         power_spectrum[1] /= power_spectrum[1, 0]
@@ -58,8 +59,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         else:
             parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
                                                     power_spectrum[1, :final_frequency_index],
-                                                    bounds=(np.array([0.9, initial_frequency]),
-                                                            np.array([1.1, final_frequency])))
+                                                    bounds=(np.array([1.0, initial_frequency]),
+                                                            np.array([10.0, final_frequency])))
         lorentzian_model_parameters = parameter_values_and_errors[0]
         lorentzian_model_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
         lorentzian_model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
@@ -83,6 +84,8 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                              fr"{one_over_f_model_errors[1]:.2e}")
         axes[1].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
+        if temperature_index == 0:
+            target_auxiliary_frequency = power_trispectrum[0]
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
@@ -127,9 +130,8 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
     initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
-    # the following commented-out code may be useful for no_of_jobs very large; we found worse results using the
-    # trispectrum error bars for no_of_jobs = 8
-    if no_of_jobs > 1:
+    if no_of_jobs > 32:
+        """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
         parameter_values_and_errors = curve_fit(
             one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
             power_trispectrum[2][initial_frequency_index:final_frequency_index],
@@ -140,10 +142,6 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
             one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
             power_trispectrum[2][initial_frequency_index:final_frequency_index],
             bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
-    '''parameter_values_and_errors = curve_fit(
-        one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-        power_trispectrum[2][initial_frequency_index:final_frequency_index],
-        bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))'''
     parameter_values = parameter_values_and_errors[0]
     parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
@@ -160,27 +158,37 @@ def one_over_f_model(frequencies, scale_factor, exponent):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3 or len(sys.argv) > 5:
-        raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location and "
-                        "the string of the observable whose power trispectrum you wish to estimate (in the first and "
-                        "second positions, respectively).  In addition, you may provide "
-                        "no_of_trispectrum_auxiliary_frequency_octaves (default value is 6) and "
-                        "trispectrum_base_period_shift (default value is 1) in the third and fourth positions, "
-                        "respectively.")
+    if len(sys.argv) < 3 or len(sys.argv) > 6:
+        raise Exception("InterfaceError: Two positional arguments required - give the configuration-file location "
+                        "(str) and the observable whose power trispectrum you wish to estimate (str) in the first and "
+                        "second positions, respectively.  In addition, you may provide "
+                        "no_of_trispectrum_auxiliary_frequency_octaves (default value is 6), "
+                        "trispectrum_base_period_shift (default value is 1) and target_auxiliary_frequency (a float "
+                        "with default value None) in the third, fourth and fifth positions, respectively.")
     if len(sys.argv) == 3:
-        print("Two positional arguments provided.  The first / second must be the location of the configuration file / "
-              "the string of the observable whose power trispectrum you wish to estimate.  In addition, you may provide"
-              " no_of_trispectrum_auxiliary_frequency_octaves (default value is 6) and trispectrum_base_period_shift "
-              "(default value is 1) in the third and fourth positions (respectively).")
+        print("Two positional arguments provided.  The first / second must be the location of the configuration file "
+              "(str) / the observable whose power trispectrum you wish to estimate (str).  In addition, you may provide"
+              " no_of_trispectrum_auxiliary_frequency_octaves (default value is 6), trispectrum_base_period_shift "
+              "(default value is 1) and target_auxiliary_frequency (a float with default value None) in the third, "
+              "fourth and fifth positions (respectively).")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
         print("Three positional arguments provided.  The first / second / third must be the location of the "
-              "configuration file / the string of the observable whose power trispectrum you wish to estimate / "
-              "no_of_trispectrum_auxiliary_frequency_octaves.  In addition, you may provide "
-              "trispectrum_base_period_shift (default value is 1) in the fourth position.")
+              "configuration file (str) / the observable whose power trispectrum you wish to estimate (str) / "
+              "no_of_trispectrum_auxiliary_frequency_octaves (int).  In addition, you may provide "
+              "trispectrum_base_period_shift (default value is 1) and target_auxiliary_frequency (a float with default "
+              "value None) in the fourth and fifth positions, respectively.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]))
     elif len(sys.argv) == 5:
         print("Four positional arguments provided.  The first / second / third / fourth must be the location of the "
-              "configuration file / the string of the observable whose power trispectrum you wish to estimate / "
-              "no_of_trispectrum_auxiliary_frequency_octaves / trispectrum_base_period_shift.")
+              "configuration file (str) / the observable whose power trispectrum you wish to estimate (str) / "
+              "no_of_trispectrum_auxiliary_frequency_octaves (int) / trispectrum_base_period_shift (int).  In "
+              "addition, you may provide target_auxiliary_frequency (a float with default value None) in the fifth "
+              "position.")
         main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
+    elif len(sys.argv) == 6:
+        print("Five positional arguments provided.  The first / second / third / fourth / fifth must be the location "
+              "of the configuration file (str) / the observable whose power trispectrum you wish to estimate (str) / "
+              "no_of_trispectrum_auxiliary_frequency_octaves (int) / trispectrum_base_period_shift (int) / "
+              "target_auxiliary_frequency (float or None).")
+        main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), float(sys.argv[5]))

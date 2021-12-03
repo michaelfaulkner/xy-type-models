@@ -5,8 +5,8 @@ import importlib
 import math
 import numpy as np
 import statistics
-sample_getter = importlib.import_module("sample_getter")
 
+sample_getter = importlib.import_module("sample_getter")
 
 """Main methods (see further down for separate sections of single-observation methods and base methods)"""
 
@@ -276,19 +276,13 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
             auxiliary_frequencies = np.loadtxt(data_file, dtype=float, delimiter=",")
-        stored_spectra = []
-        stored_errors = []
-        for index in range(no_of_auxiliary_frequency_octaves + 1):
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                      f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                      f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
-                      f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "rb") as data_file:
-                data = np.load(data_file)
-                if index == 0:
-                    frequencies = data[0]
-                stored_spectra.append(data[1])
-                stored_errors.append(data[2])
-        return [auxiliary_frequencies, frequencies, np.array(stored_spectra), np.array(stored_errors)]
+        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
+                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+            data = np.load(data_file)
+        return [auxiliary_frequencies, data[0][0], np.array([spectrum for spectrum in data[:][1]]),
+                np.array([errors for errors in data[:][2]])]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
@@ -321,13 +315,13 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        for index in range(no_of_auxiliary_frequency_octaves + 1):
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                      f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                      f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
-                      f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "wb") as data_file:
-                np.save(data_file,
-                        np.array([power_trispectrum[1], power_trispectrum[2][index], power_trispectrum[3][index]]))
+        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
+                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+            np.savez(data_file,
+                     [np.array([power_trispectrum[1], power_trispectrum[2][index], power_trispectrum[3][index]])
+                      for index in range(no_of_auxiliary_frequency_octaves + 1)])
         return power_trispectrum
 
 
@@ -442,7 +436,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
 def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                                        no_of_equilibration_sweeps, no_of_jobs, pool,
                                        no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
-                                       auxiliary_frequency_mode=None, sampling_frequency=None):
+                                       target_auxiliary_frequency=None, sampling_frequency=None):
     r"""
     Returns an estimate of a single auxiliary-frequency mode of the shortcut estimator
     E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
@@ -494,9 +488,10 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
-    auxiliary_frequency_mode : int or None, optional
-        The index of the nonzero auxiliary-frequency mode.  If None is given, auxiliary_frequency_mode =
-        2 ** no_of_auxiliary_frequency_octaves, which is the maximum index.
+    target_auxiliary_frequency : float or None, optional
+        The target auxiliary frequency.  Within each repeated simulation, the auxiliary-frequency mode (of the
+        trispectrum) whose auxiliary-frequency value is closest to target_auxiliary_frequency is chosen.  If None is
+        given, the largest auxiliary frequency is chosen.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -505,23 +500,18 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
     Returns
     -------
     List[numpy.ndarray]
-        Index auxiliary_frequency_mode of the power trispectrum.  A list of length 4.  The first component is the
-        auxiliary frequency and is float.  The second, third and fourth components are one-dimensional numpy arrays (of
-        floats) of length N / 2 - 1 [(N - 1) / 2] for N even [odd].  The second component is the frequencies.  If N is
-        even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is
-        odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is
-        because the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a
-        finite-time stationary signal.  The third / fourth component is the trispectrum / trispectrum standard errors
-        at the auxiliary-frequency value given by the first component.  If no_of_jobs is 1, a numpy array of 1.0 floats
-        is returned (as padding) for the standard errors.
+        Single mode of the power trispectrum.  A list of length 4.  The first component is the auxiliary frequency and
+        is a float.  The second, third and fourth components are one-dimensional numpy arrays (of floats) of length
+        N / 2 - 1 [(N - 1) / 2] for N even [odd].  The second component is the frequencies.  If N is even, the
+        frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the
+        frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because
+        the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
+        stationary signal.  The third / fourth component is the trispectrum / trispectrum standard errors at the
+        auxiliary-frequency value given by the first component.  If no_of_jobs is 1, a numpy array of 1.0 floats is
+        returned (as padding) for the standard errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
-    if auxiliary_frequency_mode is None:
-        auxiliary_frequency_mode = 2 ** no_of_auxiliary_frequency_octaves
-    elif auxiliary_frequency_mode > 2 ** no_of_auxiliary_frequency_octaves or auxiliary_frequency_mode <= 0:
-        raise Exception("auxiliary_frequency_mode must be less than 2 ** no_of_auxiliary_frequency_octaves and greater "
-                        "than 0.")
     try:
         # first, attempt to open a previously computed estimate of the chosen mode of the trispectrum...
         with open(f"{output_directory}/{observable_string}_power_trispectrum_nonzero_mode_max_shift_eq_"
@@ -541,7 +531,7 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
             power_trispectrum_nonzero_mode = get_single_observation_of_power_trispectrum_nonzero_mode(
                 algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                 no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
-                auxiliary_frequency_mode, sampling_frequency)
+                target_auxiliary_frequency, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
             power_trispectrum_nonzero_mode.append(np.ones(np.shape(power_trispectrum_nonzero_mode[2])))
         else:
@@ -551,7 +541,7 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
                 get_single_observation_of_power_trispectrum_nonzero_mode,
                 [(algorithm_name, observable_string, f"{output_directory}/job_{job_number + 1}", temperature,
                   no_of_sites, no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
-                  auxiliary_frequency_mode, sampling_frequency) for job_number in range(no_of_jobs)])
+                  target_auxiliary_frequency, sampling_frequency) for job_number in range(no_of_jobs)])
             # ...then extract the frequencies and spectra...
             auxiliary_frequency = statistics.mean([simulation[0] for simulation in power_trispectra_nonzero_mode])
             frequencies = np.mean(np.array([simulation[1] for simulation in power_trispectra_nonzero_mode]), axis=0)
@@ -658,17 +648,12 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
             auxiliary_frequencies = np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=","))
-        stored_spectra = []
-        for index in range(no_of_auxiliary_frequency_octaves + 1):
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                      f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                      f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
-                      f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "rb") as data_file:
-                data = np.load(data_file)
-                if index == 0:
-                    frequencies = data[0]
-                stored_spectra.append(data[1])
-        return [auxiliary_frequencies, frequencies, np.array(stored_spectra)]
+        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
+                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+            data = np.load(data_file)
+        return [auxiliary_frequencies, data[0][0], np.array([spectrum for spectrum in data[:][1]])]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
@@ -705,12 +690,12 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                   f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                   f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        for index in range(no_of_auxiliary_frequency_octaves + 1):
-            with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                      f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                      f"{temperature:.2f}_f_prime_eq_{2 ** index}_x_delta_f_prime_{int(no_of_sites ** 0.5)}x"
-                      f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "wb") as data_file:
-                np.save(data_file, np.array([power_trispectrum[1], power_trispectrum[2][index]]))
+        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
+                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+            np.savez(data_file, [np.array([power_trispectrum[1], power_trispectrum[2][index]])
+                                 for index in range(no_of_auxiliary_frequency_octaves + 1)])
         return power_trispectrum
 
 
@@ -994,7 +979,7 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
 def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory,
                                                              temperature, no_of_sites, no_of_equilibration_sweeps,
                                                              no_of_auxiliary_frequency_octaves=6,
-                                                             base_time_period_shift=1, auxiliary_frequency_mode=None,
+                                                             base_time_period_shift=1, target_auxiliary_frequency=None,
                                                              sampling_frequency=None):
     r"""
     Returns an estimate of a single observation
@@ -1040,9 +1025,10 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
-    auxiliary_frequency_mode : int or None, optional
-        The index of the nonzero auxiliary-frequency mode.  If None is given, auxiliary_frequency_mode =
-        2 ** no_of_auxiliary_frequency_octaves, which is the maximum index.
+    target_auxiliary_frequency : float or None, optional
+        The target auxiliary frequency.  The auxiliary-frequency mode (of the trispectrum) whose auxiliary-frequency
+        value is closest to target_auxiliary_frequency is chosen.  If None is given, the largest auxiliary frequency is
+        chosen.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -1051,21 +1037,27 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
     Returns
     -------
     List[numpy.ndarray]
-        The single observation of index auxiliary_frequency_mode of the power trispectrum.  A list of length 3.  The
-        first component is the auxiliary frequency and is float.  The second and third components are one-dimensional
-        numpy arrays (of floats) of length N / 2 - 1 [(N - 1) / 2] for N even [odd].  The second component is the
-        frequencies.  If N is even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) /
-        (N \Delta t)}; if N is odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 /
-        (N \Delta t)}.  This is because the correlator power spectra are symmetric about f = 0 and their f = 0 values
-        are invalid for a finite-time stationary signal.  The third component is the trispectrum at the
-        auxiliary-frequency value given by the first component.
+        The single observation of the single mode of the power trispectrum.  A list of length 3.  The first component
+        is the auxiliary frequency and is float.  The second and third components are one-dimensional numpy arrays (of
+        floats) of length N / 2 - 1 [(N - 1) / 2] for N even [odd].  The second component is the frequencies.  If N is
+        even, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is
+        odd, the frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is
+        because the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a
+        finite-time stationary signal.  The third component is the trispectrum at the auxiliary-frequency value given
+        by the first component.
     """
-    if auxiliary_frequency_mode is None:
-        auxiliary_frequency_mode = 2 ** no_of_auxiliary_frequency_octaves
     sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                               temperature)
-    auxiliary_frequency = auxiliary_frequency_mode * sampling_frequency / base_time_period_shift / 2 ** (
-            no_of_auxiliary_frequency_octaves + 1)
+    auxiliary_frequencies = (np.array([index for index in range(1, 2 ** (no_of_auxiliary_frequency_octaves + 1))])
+                             * sampling_frequency / base_time_period_shift
+                             / 2 ** (no_of_auxiliary_frequency_octaves + 1))
+    if target_auxiliary_frequency is None:
+        auxiliary_frequency_mode = 2 ** no_of_auxiliary_frequency_octaves
+    else:
+        auxiliary_frequency_mode = np.abs(auxiliary_frequencies - target_auxiliary_frequency).argmin()
+    auxiliary_frequency = auxiliary_frequencies[auxiliary_frequency_mode]
+    '''auxiliary_frequency = auxiliary_frequency_mode * sampling_frequency / base_time_period_shift / 2 ** (
+            no_of_auxiliary_frequency_octaves + 1)'''
     power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string,
                                                                                 output_directory, temperature,
                                                                                 no_of_sites, no_of_equilibration_sweeps,
