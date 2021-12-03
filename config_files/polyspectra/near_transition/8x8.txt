@@ -12,5 +12,5 @@
 .false.                                                 randomise_initial_field_configuration
 .false.                                                 use_external_global_moves
 .false.                                                 calculate_external_minimising_twist_field
-256                                                     no_of_jobs
+512                                                     no_of_jobs
 16                                                      max_no_of_cpus
