@@ -3,6 +3,7 @@
 !*_reference_sample.dat
 *.csv
 *.npy
+*.npz
 
 # Prerequisites
 *.d
