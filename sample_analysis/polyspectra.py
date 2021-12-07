@@ -889,8 +889,9 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
                                   no_of_equilibration_sweeps)
     if time_period_shift >= len(time_series[0]):
         raise Exception("time_period_shift must be an integer less than the sample size.")
-    return get_component_averaged_power_spectrum(
-        get_two_point_correlator(time_series - np.mean(time_series, axis=1), time_period_shift), sampling_frequency)
+    return get_component_averaged_power_spectrum(get_two_point_correlator(
+        np.atleast_2d([component - np.mean(component) for component in time_series]), time_period_shift),
+        sampling_frequency)
 
 
 def get_single_observation_of_power_trispectrum(algorithm_name, observable_string, output_directory, temperature,
