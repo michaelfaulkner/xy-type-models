@@ -25,7 +25,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     its power spectrum is S_X(f_k) := lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the time series).  The factor of
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series.  The factor of
     (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the power
@@ -99,6 +99,69 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         return power_spectrum
 
 
+def get_second_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                        no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
+    r"""
+    Returns an estimate of the second spectrum (minus its Gaussian contribution)
+    S_Y(f, s = 0) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s = 0) | ** 2] / T} (with a standard error at each f) of
+    the time series X(t) of observable_string, where Y(t, s = 0) := X(t) * X(t) is the square of the signal or the
+    s = 0 correlator, T is the total simulation time, \Delta \tilde{Y}_T(f, s = 0) is the Fourier transform of the
+    truncated mean-zero square of the signal
+    \Delta Y_T(t, s = 0) := {Y(t, s = 0) - E[Y] for all |t| <= T / 2, 0 otherwise}, t is time, f is frequency and E[.]
+    is the expected value of the argument.  X(t) is considered a single observation of the dynamical 'distribution'.
+
+    The discrete-time Fourier transform of the truncated mean-zero square of the signal is
+    \tilde{Y}_T(f_k, s = 0) := sum_{n = 0}^{N − 1} \Delta Y(t_n, s = 0) exp(- 2 * pi * i * f_k * t_n), so that the
+    estimate of the second spectrum is
+    S_Y(f_k, s = 0) := lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s = 0) ∣ ** 2] * (\Delta t) ** 2 / T}
+    = lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s = 0) ∣ ** 2] * \Delta t / N}, where t_{n + 1} = t_n + \Delta t for
+    all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the discrete frequency spectrum and
+    N = T / \Delta t is the number of observations of the time series (of the second spectrum).  The factor of
+    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+
+    If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the second
+    spectrum of each Cartesian component is computed and the average of the resultant quantities are returned.
+
+    Parameters
+    ----------
+    algorithm_name : str
+        The name of the sampling algorithm used to generate the time series / sample.
+    observable_string : str
+        The name of the observable whose power spectrum is to be estimated.
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The number of lattice sites.
+    no_of_equilibration_sweeps : int
+        The number of discarded equilibration observations.
+    no_of_jobs : int
+        The number of repeated simulations.
+    pool : multiprocessing.Pool() or None
+        The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
+    sampling_frequency : float or None, optional
+        The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
+        which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
+        due to the diffusive Langevin dynamics that emerges from Metropolis dynamics.
+
+    Returns
+    -------
+    numpy.ndarray
+        The second spectrum.  A two-dimensional numpy array of shape (3, N / 2 - 1) [(3, (N - 1) / 2)] for N even
+        [odd].  Each element is a float.  The first / second / third sub-array is the frequencies / values /
+        standard errors of the second spectrum.  If N is even, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
+        f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        array of 1.0 floats is returned (as padding) for the standard errors.
+    """
+    return get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
+                                            no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool, 0,
+                                            sampling_frequency)
+
+
 def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
                                      no_of_equilibration_sweeps, no_of_jobs, pool, time_period_shift=10,
                                      sampling_frequency=None):
@@ -115,8 +178,8 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * \Delta t / N}, where t_{n + 1} = t_n + \Delta t for all
     n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the discrete frequency spectrum and
-    N = T / \Delta t is the sample size (of the correlator).  The factor of (\Delta t) ** 2 in the definition of the
-    discrete-time power spectrum retains the units of the continuum expression.
+    N = T / \Delta t is the number of observations of the time series (of the correlator).  The factor of
+    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectrum of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -216,8 +279,9 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -342,8 +406,9 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -458,8 +523,9 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -589,8 +655,9 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -717,7 +784,7 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
     its power spectrum is S_X(f_k) := lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the time series).  The factor of
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series.  The factor of
     (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, the single observation of the power
@@ -777,8 +844,8 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣ \Delta \tilde{Y}_T(f_k, s) ∣ ** 2] * \Delta t / N}, where t_{n + 1} = t_n + \Delta t for all
     n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the discrete frequency spectrum and
-    N = T / \Delta t is the sample size (of the correlator).  The factor of (\Delta t) ** 2 in the definition of the
-    discrete-time power spectrum retains the units of the continuum expression.
+    N = T / \Delta t is the number of observations of the time series (of the correlator).  The factor of
+    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, the single observation of the (correlator)
     power spectrum of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -847,8 +914,9 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -928,8 +996,9 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -999,8 +1068,9 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of(\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the (correlator)
     power spectra of each Cartesian component is computed and the average of the resultant quantities are returned.
@@ -1149,7 +1219,7 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
     its power spectrum is S_X(f_k) := lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣ \Delta \tilde{X}_T(f_k) ∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the time series).  The factor of
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series.  The factor of
     (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
 
     Parameters
@@ -1198,8 +1268,9 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
     its power spectrum is S_Y(f_k, s) := lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * (\Delta t) ** 2 / T}
     = lim_{T -> inf} {E[∣∣ \Delta \tilde{Y}_T(f_k, s) ∣∣ ** 2] * \Delta t / N}, where \Delta t is the physical sampling
     interval, t_{n + 1} = t_n + \Delta t for all n, f_k \in {0, 1 / (N \Delta t), ..., (N - 1) / (N \Delta t)} is the
-    discrete frequency spectrum and N = T / \Delta t is the sample size (of the correlator).  The factor of
-    (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units of the continuum expression.
+    discrete frequency spectrum and N = T / \Delta t is the number of observations of the time series (of the
+    correlator).  The factor of (\Delta t) ** 2 in the definition of the discrete-time power spectrum retains the units
+    of the continuum expression.
 
     If observable_string is a Cartesian vector of dimension greater than 1, each single observation of the quantity is
     computed for each Cartesian component and the average of the resultant quantities are returned.
