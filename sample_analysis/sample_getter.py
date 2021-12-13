@@ -251,9 +251,9 @@ def get_magnetisation_norm(output_directory, temperature, no_of_sites):
 def get_magnetisation_phase(output_directory, temperature, no_of_sites):
     """
     Returns the sample of the magnetisation phase phi(x; temperature, no_of_sites), where
-    m(x; temperature, no_of_sites) = || m(x; temperature, no_of_sites) || e^{i phi(x; temperature, no_of_sites)} and
-    m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation, with
-    x_i the position of particle i at the time of observation.
+    m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
+    radial coordinates and m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian
+    magnetisation, with x_i the position of particle i at the time of observation.
 
     Parameters
     ----------
@@ -273,6 +273,40 @@ def get_magnetisation_phase(output_directory, temperature, no_of_sites):
     """
     return np.array([math.atan(observation[1] / observation[0]) for observation in
                      get_non_normalised_cartesian_magnetisation(output_directory, temperature, no_of_sites)])
+
+
+def get_rotated_magnetisation_phase(output_directory, temperature, no_of_sites):
+    """
+    Returns the sample of the rotated magnetisation phase, where the magnetisation phase
+    phi(x; temperature, no_of_sites) is defined by writing the magnetisation vector
+    m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites in radial coordinates,
+    m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t.  Here,
+    x_i the position of particle i at the time of observation.
+
+    Each observation of the phase is rotated by the mean of the absolute values of the observations.  We then apply
+    modular arithmetic to transform the resultant values onto (-pi, pi].  We then subtract the mean of the resultant
+    sample.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the rotated magnetisation phase.  A one-dimensional numpy array of length no_of_observations.
+        The nth element is a float corresponding to the rotated magnetisation phase measured at observation n.
+    """
+    non_rotated_mag_phase = get_non_normalised_cartesian_magnetisation(output_directory, temperature, no_of_sites)
+    partially_rotated_mag_phase = (non_rotated_mag_phase - np.sign(np.mean(non_rotated_mag_phase))
+                                   * np.mean(abs(non_rotated_mag_phase)) + math.pi) % (2.0 * math.pi) - math.pi
+    return partially_rotated_mag_phase - np.mean(partially_rotated_mag_phase)
 
 
 def get_cartesian_magnetisation(output_directory, temperature, no_of_sites):
