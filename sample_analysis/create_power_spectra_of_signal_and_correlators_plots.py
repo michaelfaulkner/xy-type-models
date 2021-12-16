@@ -1,4 +1,6 @@
+from scipy.optimize import curve_fit
 import importlib
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -52,18 +54,36 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
             power_spectra_of_correlators.append(power_spectrum_of_correlator)
 
         current_color = next(colors)
+
+        (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
+         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(power_spectrum, 10.0, no_of_jobs)
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
-                       color=current_color, label=f"temperature = {temperature:.2f}")
+                       color=current_color,
+                       label=fr"temperature = {temperature:.2f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
+                             fr"$\pm$ {one_over_f_model_errors[1]:.2e}")
+        axes[0].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
+
+        (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
+         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(second_spectrum, 10.0, no_of_jobs)
         max_second_spectrum_index = np.argmax(second_spectrum[0] > 1.0e-1) - 1
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
-                       color=current_color, label=f"temperature = {temperature:.2f}")
+                       color=current_color,
+                       label=fr"temperature = {temperature:.2f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
+                             fr"$\pm$ {one_over_f_model_errors[1]:.2e}")
+        axes[1].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
+
         for index, spectrum in enumerate(power_spectra_of_correlators):
+            (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
+             one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(spectrum, 10.0, no_of_jobs)
             max_spectrum_index = np.argmax(spectrum[0] > 1.0e-1) - 1
             axes[index + 2].loglog(spectrum[0, :max_spectrum_index], spectrum[1, :max_spectrum_index],
                                    color=current_color,
                                    label=fr"temperature = {temperature:.2f}, $\Delta t = "
-                                         fr"{0.5 / power_spectrum[0, 0] / len(power_spectrum[0]):.2e}$")
+                                         fr"{0.5 / power_spectrum[0, 0] / len(power_spectrum[0]):.2e}$; "
+                                         fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
+                                         fr"{one_over_f_model_errors[1]:.2e}")
+            axes[index + 2].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
@@ -83,13 +103,42 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
                                        fontsize=7.5, labelpad=10)
 
     figure.tight_layout()
-    correlators_legend = [axis.legend(loc="lower left", fontsize=10) for axis in axes]
+    correlators_legend = [axis.legend(loc="lower left", fontsize=7.5) for axis in axes]
     for legend in correlators_legend:
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(1.5)
     figure.savefig(f"{output_directory}/{observable_string}_power_spectra_of_signal_and_correlators_"
                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
                    bbox_inches="tight")
+
+
+def fit_one_over_f_model_to_spectrum(spectrum, max_model_exponent, no_of_jobs):
+    """fit one-over-f model to power spectrum"""
+    initial_frequency, final_frequency = 5.0e-4, 3.0e-3
+    increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
+    initial_frequency_index = np.argmax(spectrum[0] > initial_frequency) - 1
+    final_frequency_index = np.argmax(spectrum[0] > final_frequency) - 1
+    if no_of_jobs > 32:
+        """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
+        parameter_values_and_errors = curve_fit(
+            one_over_f_model, spectrum[0, initial_frequency_index:final_frequency_index],
+            spectrum[1, initial_frequency_index:final_frequency_index],
+            sigma=spectrum[2, initial_frequency_index:final_frequency_index],
+            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+    else:
+        parameter_values_and_errors = curve_fit(
+            one_over_f_model, spectrum[0, initial_frequency_index:final_frequency_index],
+            spectrum[1, initial_frequency_index:final_frequency_index],
+            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+    parameter_values = parameter_values_and_errors[0]
+    parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+    model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+    model_spectrum_values = one_over_f_model(model_frequency_values, *parameter_values)
+    return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
+
+
+def one_over_f_model(frequencies, scale_factor, exponent):
+    return scale_factor / frequencies ** exponent
 
 
 if __name__ == "__main__":
