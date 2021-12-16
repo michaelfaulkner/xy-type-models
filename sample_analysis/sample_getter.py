@@ -303,10 +303,9 @@ def get_rotated_magnetisation_phase(output_directory, temperature, no_of_sites):
         The sample of the rotated magnetisation phase.  A one-dimensional numpy array of length no_of_observations.
         The nth element is a float corresponding to the rotated magnetisation phase measured at observation n.
     """
-    non_rotated_mag_phase = get_non_normalised_cartesian_magnetisation(output_directory, temperature, no_of_sites)
-    partially_rotated_mag_phase = (non_rotated_mag_phase - np.sign(np.mean(non_rotated_mag_phase))
-                                   * np.mean(abs(non_rotated_mag_phase)) + math.pi) % (2.0 * math.pi) - math.pi
-    return partially_rotated_mag_phase - np.mean(partially_rotated_mag_phase)
+    non_rotated_mag_phase = get_magnetisation_phase(output_directory, temperature, no_of_sites)
+    return (non_rotated_mag_phase - np.sign(np.mean(non_rotated_mag_phase)) * np.mean(abs(non_rotated_mag_phase))
+            + 0.5 * math.pi) % math.pi - 0.5 * math.pi
 
 
 def get_cartesian_magnetisation(output_directory, temperature, no_of_sites):
