@@ -60,7 +60,8 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
         raise SystemExit
     """Raise an error if hxy_topological_sector has been given as the second positional argument for a non-HXY model."""
     if (observable_string == "hxy_topological_sector"
-            and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis")):
+            and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis"
+                     or algorithm_name == "hxy-gaussian-noise-metropolis")):
         print("ConfigurationError: This is not the HXY model: do not give hxy_topological_sector as the second "
               "positional argument.")
         raise SystemExit
