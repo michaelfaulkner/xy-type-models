@@ -37,8 +37,14 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             target_auxiliary_frequency)
 
         # normalise polyspectra with respect to their low-frequency values
-        power_spectrum[1] /= power_spectrum[1, 0]
-        power_trispectrum[2] /= power_trispectrum[2][0]
+        if power_spectrum[1, 0] == 0.0:
+            power_spectrum[1] = np.zeros(len(power_spectrum[1]))
+        else:
+            power_spectrum[1] /= power_spectrum[1, 0]
+        if power_trispectrum[2][0] == 0.0:
+            power_trispectrum[2] = np.zeros(len(power_trispectrum[2]))
+        else:
+            power_trispectrum[2] /= power_trispectrum[2][0]
 
         # note frequency indices in order to discard spectrum (trispectrum) for all frequencies >= 0.1 (5.0e-3)  since
         # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
