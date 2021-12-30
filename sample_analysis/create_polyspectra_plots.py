@@ -31,6 +31,9 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, no_of_sites, no_of_equilibration_sweeps,
                                                         no_of_jobs, pool)
+        second_spectrum = polyspectra.get_second_spectrum(algorithm_name, observable_string, output_directory,
+                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
+                                                          no_of_jobs, pool)
         power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
             no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift,
