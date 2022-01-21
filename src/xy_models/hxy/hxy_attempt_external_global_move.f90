@@ -6,10 +6,10 @@ double precision :: potential_difference, sign_of_twist, get_spin_difference
 double precision, dimension(no_of_sites) :: candidate_spin_field, candidate_emergent_field_components
 
 potential_difference = 0.0d0
-lattice_site = int(dfloat(no_of_sites) * rand()) + 1
 sign_of_twist = 2.0d0 * int(floor(2.0d0 * rand())) - 1.0d0
 ! choose a twist in x direction with 0.5 probability
 if (floor(2.0d0 * rand()) == 0) then
+    lattice_site = int(dfloat(no_of_sites) * rand()) + 1
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
@@ -32,6 +32,7 @@ if (floor(2.0d0 * rand()) == 0) then
     end if
 ! else: attempt a twist in y direction
 else
+    lattice_site = floor(dfloat(no_of_sites) * rand() / real(integer_lattice_length)) * integer_lattice_length + 1
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) &
