@@ -65,19 +65,25 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         final_frequency = 1.0e-2
         increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
         final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
-        if no_of_jobs > 1:
-            parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                                    power_spectrum[1, :final_frequency_index],
-                                                    sigma=power_spectrum[2, :final_frequency_index],
-                                                    bounds=(np.array([0.9, initial_frequency]),
-                                                            np.array([1.1, final_frequency])))
-        else:
-            parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                                    power_spectrum[1, :final_frequency_index],
-                                                    bounds=(np.array([1.0, initial_frequency]),
-                                                            np.array([10.0, final_frequency])))
-        lorentzian_model_parameters = parameter_values_and_errors[0]
-        lorentzian_model_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+        try:
+            # attempt to fit a Lorentzian to the power spectrum...
+            if no_of_jobs > 1:
+                parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
+                                                        power_spectrum[1, :final_frequency_index],
+                                                        sigma=power_spectrum[2, :final_frequency_index],
+                                                        bounds=(np.array([0.9, initial_frequency]),
+                                                                np.array([1.1, final_frequency])))
+            else:
+                parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
+                                                        power_spectrum[1, :final_frequency_index],
+                                                        bounds=(np.array([1.0, initial_frequency]),
+                                                                np.array([10.0, final_frequency])))
+            lorentzian_model_parameters = parameter_values_and_errors[0]
+            lorentzian_model_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+        except IOError:
+            # ...but set all model parameters to zero if it fails
+            lorentzian_model_parameters = np.array([1.0, 1.0e-2])
+            lorentzian_model_errors = np.array([0.0, 0.0])
         lorentzian_model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
         lorentzian_model_spectrum_values = lorentzian_model(lorentzian_model_frequency_values,
                                                             *lorentzian_model_parameters)
@@ -148,20 +154,25 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
     initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
-    if no_of_jobs > 32:
-        """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
-        parameter_values_and_errors = curve_fit(
-            one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-            power_trispectrum[2][initial_frequency_index:final_frequency_index],
-            sigma=power_trispectrum[3][initial_frequency_index:final_frequency_index],
-            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
-    else:
-        parameter_values_and_errors = curve_fit(
-            one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-            power_trispectrum[2][initial_frequency_index:final_frequency_index],
-            bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
-    parameter_values = parameter_values_and_errors[0]
-    parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+    try:
+        if no_of_jobs > 32:
+            """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
+            parameter_values_and_errors = curve_fit(
+                one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                power_trispectrum[2][initial_frequency_index:final_frequency_index],
+                sigma=power_trispectrum[3][initial_frequency_index:final_frequency_index],
+                bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+        else:
+            parameter_values_and_errors = curve_fit(
+                one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                power_trispectrum[2][initial_frequency_index:final_frequency_index],
+                bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+        parameter_values = parameter_values_and_errors[0]
+        parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+    except IOError:
+        # ...but set all model parameters to zero if it fails
+        parameter_values = np.array([1.0, 0.0])
+        parameter_errors = np.array([0.0, 0.0])
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
     model_spectrum_values = one_over_f_model(model_frequency_values, *parameter_values)
     return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
