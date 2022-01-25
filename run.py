@@ -10,7 +10,7 @@ import sys
 
 def print_start_message():
     """Print the start message."""
-    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a hybrid "
+    print(f"xy-type-models (version {version}) - https://github.com/michaelfaulkner/xy-type-models/ - a "
           f"Fortran-Python application for event-chain/Metropolis Monte Carlo simulation of two-dimensional XY-type "
           f"models in statistical physics.")
 
