@@ -1,5 +1,4 @@
-'hxy-gaussian-noise-metropolis'
-algorithm_name
+'hxy-gaussian-noise-metropolis'                         algorithm_name
 '../scratch/polyspectra/near_transition/64x64'          output_directory
 64                                                      integer_lattice_length
 10000                                                   no_of_equilibration_sweeps
