@@ -16,10 +16,11 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         config_file, observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
-    figure, axes = plt.subplots(2, figsize=(10, 10))
-    axes[1].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
+    figure, axes = plt.subplots(3, figsize=(10, 10))
+    axes[2].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     axes[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
-    axes[1].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$ / $\left| S_X^3 \left( f_0, f' \right) \right|$",
+    axes[1].set_ylabel(r"$S_X^2 \left( f \right)$ / $S_X^2 \left( f_0 \right)$", fontsize=10, labelpad=10)
+    axes[2].set_ylabel(r"$\left| S_X^3 \left( f, f' \right) \right|$ / $\left| S_X^3 \left( f_0, f' \right) \right|$",
                        fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
@@ -44,6 +45,10 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
             power_spectrum[1] = np.zeros(len(power_spectrum[1]))
         else:
             power_spectrum[1] /= power_spectrum[1, 0]
+        if second_spectrum[1, 0] == 0.0:
+            second_spectrum[1] = np.zeros(len(second_spectrum[1]))
+        else:
+            second_spectrum[1] /= second_spectrum[1, 0]
         if power_trispectrum[2][0] == 0.0:
             power_trispectrum[2] = np.zeros(len(power_trispectrum[2]))
         else:
@@ -52,6 +57,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         # note frequency indices in order to discard spectrum (trispectrum) for all frequencies >= 0.1 (5.0e-3)  since
         # i) interesting physics at long timescales, and ii) emergent Langevin diffusion breaks down at short timescales
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
+        max_second_spectrum_index = np.argmax(second_spectrum[0] > 1.0e-1) - 1
         max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 5.0e-3) - 1
 
         """fit Lorentzian model to power spectrum"""
@@ -82,16 +88,19 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                              fr"{lorentzian_model_errors[0]:.2e}")
         axes[0].loglog(lorentzian_model_frequency_values, lorentzian_model_spectrum_values, color='k')
 
+        axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
+                       color=current_color, label=fr"temperature = {temperature:.2f}")
+
         """fit 1/f model to trispectrum"""
         (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
          one_over_f_model_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper", 10.0,
                                                                                  no_of_sites, no_of_jobs)
-        axes[1].loglog(power_trispectrum[1][:max_power_trispectrum_index],
+        axes[2].loglog(power_trispectrum[1][:max_power_trispectrum_index],
                        power_trispectrum[2][:max_power_trispectrum_index], color=current_color,
                        label=fr"temperature = {temperature:.2f}; f' = {power_trispectrum[0]:.2e}; "
                              fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
                              fr"{one_over_f_model_errors[1]:.2e}")
-        axes[1].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
+        axes[2].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
         if temperature_index == 0:
             target_auxiliary_frequency = power_trispectrum[0]
@@ -102,7 +111,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     if observable_string == "cartesian_magnetisation":
         legends = [axes[0].legend(title=r"black lines: fits to $S_X(f)$ / $S_X(f_0) = S_0 / (1 + (f / f_c)^2)$",
                                   loc="lower left", fontsize=10),
-                   axes[1].legend(title=r"black lines: fits to $S_X^3(f, f') \sim f^{-\alpha}$", loc="lower left",
+                   axes[2].legend(title=r"black lines: fits to $S_X^3(f, f') \sim f^{-\alpha}$", loc="lower left",
                                   fontsize=8)]
     else:
         legends = [axis.legend(loc="lower left", fontsize=10) for axis in axes]
