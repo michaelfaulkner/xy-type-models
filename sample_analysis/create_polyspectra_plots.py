@@ -61,32 +61,10 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         max_power_trispectrum_index = np.argmax(power_trispectrum[1] > 5.0e-3) - 1
 
         """fit Lorentzian model to power spectrum"""
-        initial_frequency = power_spectrum[0, 0]
         final_frequency = 1.0e-2
-        increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
-        final_frequency_index = np.argmax(power_spectrum[0] > final_frequency) - 1
-        try:
-            # attempt to fit a Lorentzian to the power spectrum...
-            if no_of_jobs > 1:
-                parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                                        power_spectrum[1, :final_frequency_index],
-                                                        sigma=power_spectrum[2, :final_frequency_index],
-                                                        bounds=(np.array([0.9, initial_frequency]),
-                                                                np.array([1.1, final_frequency])))
-            else:
-                parameter_values_and_errors = curve_fit(lorentzian_model, power_spectrum[0, :final_frequency_index],
-                                                        power_spectrum[1, :final_frequency_index],
-                                                        bounds=(np.array([1.0, initial_frequency]),
-                                                                np.array([10.0, final_frequency])))
-            lorentzian_model_parameters = parameter_values_and_errors[0]
-            lorentzian_model_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
-        except IOError:
-            # ...but set all model parameters to zero if it fails
-            lorentzian_model_parameters = np.array([1.0, 1.0e-2])
-            lorentzian_model_errors = np.array([0.0, 0.0])
-        lorentzian_model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
-        lorentzian_model_spectrum_values = lorentzian_model(lorentzian_model_frequency_values,
-                                                            *lorentzian_model_parameters)
+        (lorentzian_model_parameters, lorentzian_model_errors, lorentzian_model_frequency_values,
+         lorentzian_model_spectrum_values) = fit_lorentzian_model_to_spectrum(power_spectrum, final_frequency,
+                                                                              no_of_jobs)
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color,
                        label=fr"temperature = {temperature:.2f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
@@ -94,8 +72,17 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                              fr"{lorentzian_model_errors[0]:.2e}")
         axes[0].loglog(lorentzian_model_frequency_values, lorentzian_model_spectrum_values, color='k')
 
+        """fit Lorentzian model to second spectrum"""
+        final_frequency = 1.0e-2
+        (lorentzian_model_parameters, lorentzian_model_errors, lorentzian_model_frequency_values,
+         lorentzian_model_spectrum_values) = fit_lorentzian_model_to_spectrum(second_spectrum, final_frequency,
+                                                                              no_of_jobs)
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
-                       color=current_color, label=fr"temperature = {temperature:.2f}")
+                       color=current_color,
+                       label=fr"temperature = {temperature:.2f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
+                             fr"{lorentzian_model_errors[1]:.2e}; $S_0$ = {lorentzian_model_parameters[0]:.2f} $\pm$ "
+                             fr"{lorentzian_model_errors[0]:.2e}")
+        axes[1].loglog(lorentzian_model_frequency_values, lorentzian_model_spectrum_values, color='k')
 
         """fit 1/f model to trispectrum"""
         (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
@@ -116,7 +103,9 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     figure.tight_layout()
     if observable_string == "cartesian_magnetisation":
         legends = [axes[0].legend(title=r"black lines: fits to $S_X(f)$ / $S_X(f_0) = S_0 / (1 + (f / f_c)^2)$",
-                                  loc="lower left", fontsize=10),
+                                  loc="lower left", fontsize=8),
+                   axes[1].legend(title=r"black lines: fits to $S_X^2(f)$ / $S_X^2(f_0) = S_0 / (1 + (f / f_c)^2)$",
+                                  loc="lower left", fontsize=8),
                    axes[2].legend(title=r"black lines: fits to $S_X^3(f, f') \sim f^{-\alpha}$", loc="lower left",
                                   fontsize=8)]
     else:
@@ -129,6 +118,38 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                    bbox_inches="tight")
     if no_of_jobs > 1:
         pool.close()
+
+
+def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_jobs):
+    initial_frequency = spectrum[0, 0]
+    increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
+    final_frequency_index = np.argmax(spectrum[0] > final_frequency) - 1
+    try:
+        # attempt to fit a Lorentzian to the power spectrum...
+        if no_of_jobs > 1:
+            parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
+                                                    spectrum[1, :final_frequency_index],
+                                                    sigma=spectrum[2, :final_frequency_index],
+                                                    bounds=(np.array([0.9, initial_frequency]),
+                                                            np.array([1.1, final_frequency])))
+        else:
+            parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
+                                                    spectrum[1, :final_frequency_index],
+                                                    bounds=(np.array([1.0, initial_frequency]),
+                                                            np.array([10.0, final_frequency])))
+        parameter_values = parameter_values_and_errors[0]
+        parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+    except IOError:
+        # ...but set all model parameters to zero if it fails
+        parameter_values = np.array([1.0, 1.0e-2])
+        parameter_errors = np.array([0.0, 0.0])
+    model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
+    model_spectrum_values = lorentzian_model(model_frequency_values, *parameter_values)
+    return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
+
+
+def lorentzian_model(frequencies, zero_frequency_value, characteristic_frequency):
+    return zero_frequency_value / (1.0 + (frequencies / characteristic_frequency) ** 2.0)
 
 
 def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_model_exponent, no_of_sites,
@@ -176,10 +197,6 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
     model_spectrum_values = one_over_f_model(model_frequency_values, *parameter_values)
     return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
-
-
-def lorentzian_model(frequencies, zero_frequency_value, characteristic_frequency):
-    return zero_frequency_value / (1.0 + (frequencies / characteristic_frequency) ** 2.0)
 
 
 def one_over_f_model(frequencies, scale_factor, exponent):
