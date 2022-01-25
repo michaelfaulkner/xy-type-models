@@ -1,10 +1,12 @@
 from scipy.optimize import curve_fit
+from scipy.optimize import OptimizeWarning
 import importlib
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import time
+import warnings
 polyspectra = importlib.import_module("polyspectra")
 setup_scripts = importlib.import_module("setup_scripts")
 
@@ -124,25 +126,27 @@ def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_jobs):
     initial_frequency = spectrum[0, 0]
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
     final_frequency_index = np.argmax(spectrum[0] > final_frequency) - 1
-    try:
-        # attempt to fit a Lorentzian to the power spectrum...
-        if no_of_jobs > 1:
-            parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
-                                                    spectrum[1, :final_frequency_index],
-                                                    sigma=spectrum[2, :final_frequency_index],
-                                                    bounds=(np.array([0.9, initial_frequency]),
-                                                            np.array([1.1, final_frequency])))
-        else:
-            parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
-                                                    spectrum[1, :final_frequency_index],
-                                                    bounds=(np.array([1.0, initial_frequency]),
-                                                            np.array([10.0, final_frequency])))
-        parameter_values = parameter_values_and_errors[0]
-        parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
-    except IOError:
-        # ...but set all model parameters to zero if it fails
-        parameter_values = np.array([1.0, 1.0e-2])
-        parameter_errors = np.array([0.0, 0.0])
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", OptimizeWarning)
+        try:
+            # attempt to fit a Lorentzian to the spectrum...
+            if no_of_jobs > 1:
+                parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
+                                                        spectrum[1, :final_frequency_index],
+                                                        sigma=spectrum[2, :final_frequency_index],
+                                                        bounds=(np.array([0.9, initial_frequency]),
+                                                                np.array([1.1, final_frequency])))
+            else:
+                parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
+                                                        spectrum[1, :final_frequency_index],
+                                                        bounds=(np.array([1.0, initial_frequency]),
+                                                                np.array([10.0, final_frequency])))
+            parameter_values = parameter_values_and_errors[0]
+            parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+        except (OptimizeWarning, ValueError) as _:
+            # ...but set model parameters to defaults if it fails
+            parameter_values = np.array([1.0, 1.0e-2])
+            parameter_errors = np.array([0.0, 0.0])
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
     model_spectrum_values = lorentzian_model(model_frequency_values, *parameter_values)
     return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
@@ -175,25 +179,28 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
     initial_frequency_index = np.argmax(power_trispectrum[1] > initial_frequency) - 1
     final_frequency_index = np.argmax(power_trispectrum[1] > final_frequency) - 1
-    try:
-        if no_of_jobs > 32:
-            """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
-            parameter_values_and_errors = curve_fit(
-                one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-                power_trispectrum[2][initial_frequency_index:final_frequency_index],
-                sigma=power_trispectrum[3][initial_frequency_index:final_frequency_index],
-                bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
-        else:
-            parameter_values_and_errors = curve_fit(
-                one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
-                power_trispectrum[2][initial_frequency_index:final_frequency_index],
-                bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
-        parameter_values = parameter_values_and_errors[0]
-        parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
-    except IOError:
-        # ...but set all model parameters to zero if it fails
-        parameter_values = np.array([1.0, 0.0])
-        parameter_errors = np.array([0.0, 0.0])
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", OptimizeWarning)
+        try:
+            # attempt to fit a f^{-alpha} model to the trispectrum...
+            if no_of_jobs > 32:
+                """n.b., no_of_jobs > 32 as we found worse results using trispectrum error bars for no_of_jobs = 8."""
+                parameter_values_and_errors = curve_fit(
+                    one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                    power_trispectrum[2][initial_frequency_index:final_frequency_index],
+                    sigma=power_trispectrum[3][initial_frequency_index:final_frequency_index],
+                    bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+            else:
+                parameter_values_and_errors = curve_fit(
+                    one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
+                    power_trispectrum[2][initial_frequency_index:final_frequency_index],
+                    bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
+            parameter_values = parameter_values_and_errors[0]
+            parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
+        except (OptimizeWarning, ValueError) as _:
+            # ...but set model parameters to defaults if it fails
+            parameter_values = np.array([1.0, 0.0])
+            parameter_errors = np.array([0.0, 0.0])
     model_frequency_values = np.arange(initial_frequency, final_frequency, increment)
     model_spectrum_values = one_over_f_model(model_frequency_values, *parameter_values)
     return parameter_values, parameter_errors, model_frequency_values, model_spectrum_values
