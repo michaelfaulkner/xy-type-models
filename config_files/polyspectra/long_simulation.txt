@@ -1,7 +1,7 @@
 'hxy-gaussian-noise-metropolis'                     algorithm_name
-'../scratch/polyspectra/long_simulation'            output_directory
+'../bc4-output/polyspectra/long_simulation'         output_directory
 32                                                  integer_lattice_length
-10000                                               no_of_equilibration_sweeps
+100000                                              no_of_equilibration_sweeps
 4000000                                             no_of_observations
 0.5d0                                               initial_temperature
 2.2d0                                               final_temperature

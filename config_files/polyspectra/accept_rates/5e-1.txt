@@ -1,5 +1,5 @@
 'hxy-metropolis'                                        algorithm_name
-'../scratch/polyspectra/accept_rates/0_point_5'         output_directory
+'../bc4-output/polyspectra/accept_rates/5e-1'           output_directory
 32                                                      integer_lattice_length
 10000                                                   no_of_equilibration_sweeps
 1000000                                                 no_of_observations
