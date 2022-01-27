@@ -9,4 +9,4 @@
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 1                                       no_of_jobs
-4                                       max_no_of_cpus
+1                                       max_no_of_cpus
