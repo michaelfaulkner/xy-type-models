@@ -34,14 +34,11 @@ candidate_electric_field_component(3) = electric_field(get_north_neighbour(latti
 candidate_electric_field_component(4) = electric_field(get_east_neighbour(lattice_site), 2) + field_rotation_value
 
 potential_difference = 0.5d0 &
-        * (candidate_electric_field_component(1) * candidate_electric_field_component(1) &
-        + candidate_electric_field_component(2) * candidate_electric_field_component(2) &
-        + candidate_electric_field_component(3) * candidate_electric_field_component(3) &
-        + candidate_electric_field_component(4) * candidate_electric_field_component(4) &
-        - electric_field(lattice_site, 1) * electric_field(lattice_site, 1) &
-        - electric_field(lattice_site, 2) * electric_field(lattice_site, 2) &
-        - electric_field(get_north_neighbour(lattice_site), 1) * electric_field(get_north_neighbour(lattice_site), 1) &
-        - electric_field(get_east_neighbour(lattice_site), 2) * electric_field(get_east_neighbour(lattice_site), 2))
+                        * (candidate_electric_field_component(1) ** 2 + candidate_electric_field_component(2) ** 2 &
+                         + candidate_electric_field_component(3) ** 2 + candidate_electric_field_component(4) ** 2 &
+                         - electric_field(lattice_site, 1) ** 2 - electric_field(lattice_site, 2) ** 2 &
+                         - electric_field(get_north_neighbour(lattice_site), 1) ** 2 &
+                         - electric_field(get_east_neighbour(lattice_site), 2) ** 2)
 
 if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
     electric_field(lattice_site, 1) = candidate_electric_field_component(1)

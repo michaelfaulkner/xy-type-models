@@ -9,15 +9,13 @@ cartesian_component = 2 * floor(2.0d0 * rand()) - 1
 sign_of_topological_sector_change = 2 * floor(2.0d0 * rand()) - 1
 candidate_net_charge_displacement = net_charge_displacement(cartesian_component) - sign_of_topological_sector_change &
                                         * integer_lattice_length
-potential_difference = 0.5d0 * two_pi * two_pi &
-                        * (candidate_net_charge_displacement * candidate_net_charge_displacement &
-                        - net_charge_displacement(cartesian_component) * net_charge_displacement(cartesian_component)) &
-                        / dfloat(no_of_sites)
+potential_difference = 0.5d0 * two_pi * two_pi * (dfloat(candidate_net_charge_displacement) ** 2 &
+                        - dfloat(net_charge_displacement(cartesian_component)) ** 2) / dfloat(no_of_sites)
 
 if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
     do i = 1, no_of_sites
         electric_field(i, cartesian_component) = electric_field(i, cartesian_component) &
-                + sign_of_topological_sector_change * two_pi / dfloat(integer_lattice_length)
+                + dfloat(sign_of_topological_sector_change) * two_pi / dfloat(integer_lattice_length)
     end do
     net_charge_displacement(cartesian_component) = candidate_net_charge_displacement
     no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
