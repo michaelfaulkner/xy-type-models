@@ -36,16 +36,17 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
         Maggs-electrolyte model."""
     if ((algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
             (observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase"
-             or observable_string != "rotated_magnetisation_phase" or observable_string == "cartesian_magnetisation"
-             or observable_string != "absolute_cartesian_magnetisation"
+             or observable_string == "rotated_magnetisation_phase" or observable_string == "cartesian_magnetisation"
+             or observable_string == "absolute_cartesian_magnetisation"
              or observable_string == "magnetic_susceptibility" or observable_string == "inverse_vacuum_permittivity"
              or observable_string == "total_vortex_polarisation" or observable_string == "helicity_modulus"
-             or observable_string == "hxy_topological_sector")):
+             or observable_string == "hxy_topological_sector"
+             or observable_string == "hxy_topological_susceptibility")):
         print("ConfigurationError: This is a Maggs-electrolyte model: do not give either magnetisation_norm, "
               "magnetisation_phase, rotated_magnetisation_phase, cartesian_magnetisation, "
               "absolute_cartesian_magnetisation, magnetic_susceptibility, inverse_vacuum_permittivity, "
-              "total_vortex_polarisation, helicity_modulus or hxy_topological_sector as the second positional "
-              "argument.")
+              "total_vortex_polarisation, helicity_modulus, hxy_topological_sector or hxy_topological_susceptibility "
+              "as the second positional argument.")
         raise SystemExit
     """Raise an error if a Maggs-electrolyte observable has been given as the second positional argument for an XY or 
         HXY model."""
