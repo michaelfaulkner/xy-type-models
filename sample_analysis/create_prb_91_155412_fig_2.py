@@ -17,13 +17,17 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
-def main():
-    config_file_local_moves = "config_files/prb_91_155412_fig_2/local_moves_only.txt"
-    config_file_all_moves = "config_files/prb_91_155412_fig_2/all_moves.txt"
-    output_directory = "output/prb_91_155412_fig_2"
+def main(electrolyte_version):
+    if electrolyte_version:
+        config_file_local_moves = "config_files/prb_91_155412_fig_2/local_moves_only.txt"
+        config_file_all_moves = "config_files/prb_91_155412_fig_2/all_moves.txt"
+    else:
+        config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves_only.txt"
+        config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
      final_temperature, no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
         config_file_local_moves)
+    output_directory = output_directory_local_moves.replace("/local_moves_only", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
@@ -40,7 +44,7 @@ def main():
                            f"{algorithm_name.replace('-', '_')}.tsv", "w")
 
         if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-            output_file.write("# temperature".ljust(15) + "chi_w ratio".ljust(15) + "chi_w ratio error".ljust(20) +
+            output_file.write("# temperature".ljust(15) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
                               "final width of proposal interval (local only)".ljust(50) +
                               "rotational acceptance rate (local only)".ljust(50) +
                               "charge-hop acceptance rate (local only)".ljust(50) +
@@ -49,7 +53,7 @@ def main():
                               "charge-hop acceptance rate (all moves)".ljust(50) +
                               "acceptance rate (external global moves)" + "\n")
         else:
-            output_file.write("# temperature".ljust(15) + "chi_w ratio".ljust(15) + "chi_w ratio error".ljust(20) +
+            output_file.write("# temperature".ljust(15) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
                               "final width of proposal interval (local only)".ljust(50) +
                               "rotational acceptance rate (local only)".ljust(50) +
                               "final width of proposal interval (all moves)".ljust(50) +
@@ -74,25 +78,14 @@ def main():
 
             sample_means_and_errors_local_moves = np.transpose(
                 np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
-                    sample_getter.get_topological_susceptibility(output_directory_local_moves + "/job_" +
-                                                                 str(job_number + 1), temperature, no_of_sites)[
+                    sample_getter.get_topological_susceptibility(
+                        output_directory_local_moves + "/job_" + str(job_number + 1), temperature, no_of_sites)[
                         no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
             sample_means_and_errors_all_moves = np.transpose(
                 np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
-                    sample_getter.get_topological_susceptibility(output_directory_all_moves + "/job_" +
-                                                                 str(job_number + 1), temperature, no_of_sites)[
+                    sample_getter.get_topological_susceptibility(
+                        output_directory_all_moves + "/job_" + str(job_number + 1), temperature, no_of_sites)[
                         no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
-            """use the following lines in place of the preceding ones if rpy2 does not work"""
-            """sample_means_and_errors_local_moves = np.transpose(
-                np.array(pool.starmap(get_1d_sample_mean_and_standard_error_estimate,[[
-                    sample_getter.get_topological_susceptibility(output_directory_local_moves + "/job_" + 
-                                                                 str(job_number + 1), temperature, no_of_sites)[
-                        no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
-            sample_means_and_errors_all_moves = np.transpose(
-                np.array(pool.starmap(get_1d_sample_mean_and_standard_error_estimate, [[
-                    sample_getter.get_topological_susceptibility(output_directory_all_moves + "/job_" +
-                                                                 str(job_number + 1), temperature, no_of_sites)[
-                        no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))"""
 
             sample_mean_local_moves = np.mean(sample_means_and_errors_local_moves[0])
             sample_error_local_moves = np.linalg.norm(sample_means_and_errors_local_moves[1])
@@ -104,8 +97,8 @@ def main():
                                            sample_mean_all_moves ** 2) ** 2)
 
             if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-                output_file.write(f"{temperature:.2f}".ljust(15) + f"{chi_w_ratio:.2f}".ljust(15) +
-                                  f"{chi_w_ratio_error:.2f}".ljust(20) +
+                output_file.write(f"{temperature:.2f}".ljust(15) + f"{chi_w_ratio:.14e}".ljust(30) +
+                                  f"{chi_w_ratio_error:.14e}".ljust(30) +
                                   f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
                                   f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
                                   f"{acceptance_rates_local_moves[2]:.14e}".ljust(50) +
@@ -114,8 +107,8 @@ def main():
                                   f"{acceptance_rates_all_moves[2]:.14e}".ljust(50) +
                                   f"{acceptance_rates_all_moves[3]:.14e}" + "\n")
             else:
-                output_file.write(f"{temperature:.2f}".ljust(15) + f"{chi_w_ratio:.2f}".ljust(15) +
-                                  f"{chi_w_ratio_error:.2f}".ljust(20) +
+                output_file.write(f"{temperature:.2f}".ljust(15) + f"{chi_w_ratio:.14e}".ljust(30) +
+                                  f"{chi_w_ratio_error:.14e}".ljust(30) +
                                   f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
                                   f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
                                   f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
@@ -138,12 +131,18 @@ def main():
                 f"{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
 
 
-def get_1d_sample_mean_and_standard_error_estimate(sample):
-    return np.mean(sample), np.std(sample) / len(sample) ** 0.5
-
-
 if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        raise Exception("InterfaceError: do not provide positional arguments.")
+    if len(sys.argv) > 2 or len(sys.argv) < 1:
+        raise Exception("InterfaceError: provide at most one positional argument.  This is not required, but you may "
+                        "provide the value False in order to choose the HXY version of the script (default value is "
+                        "True, which chooses the elementary electrolyte).")
+    if len(sys.argv) == 2:
+        print("One positional argument provided.  This must be True / False to choose the elementary-electrolyte / HXY "
+              "version of the script.")
+        if not (sys.argv[1] == "True" or sys.argv[1] == "False"):
+            raise Exception("InterfaceError: If provided, the single positional argument must be True or False.")
+        main(eval(sys.argv[1]))
     else:
-        main()
+        print("Positional argument not provided.  The default value is True, which chooses the elementary-electrolyte "
+              "version of the script.")
+        main(True)
