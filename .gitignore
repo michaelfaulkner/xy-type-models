@@ -2,6 +2,7 @@
 *.dat
 !*_reference_sample.dat
 *.csv
+*.tsv
 *.npy
 *.npz
 
