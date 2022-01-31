@@ -505,9 +505,9 @@ def get_helicity_modulus(output_directory, temperature, no_of_sites):
 
 def get_hxy_topological_sector(output_directory, temperature, no_of_sites):
     r"""
-    Returns the sample of the topological sector w \in Z^2, an integer-valued vector field whose components are fixed
-    such that the minimal toroidal vortex polarisation vector \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where
-    \overline{E} = \overline{E}_p + 2 \pi w / L is the zero mode of the emergent electric field, as defined in
+    Returns the sample of the HXY topological sector w \in Z^2, an integer-valued vector field whose components are
+    fixed such that the minimal toroidal vortex polarisation vector \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L],
+    where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero mode of the emergent electric field, as defined in
     J. Phys. Condens. Matter 29, 085402 (2017).  This method is only valid for the HXY model.
 
     Parameters
@@ -531,6 +531,41 @@ def get_hxy_topological_sector(output_directory, temperature, no_of_sites):
                                                                                             temperature, no_of_sites)
     return (non_normalised_total_vortex_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi
                                                                                          * no_of_sites ** 0.5)
+
+
+def get_hxy_topological_susceptibility(output_directory, temperature, no_of_sites):
+    r"""
+    Returns the sample of the HXY topological susceptibility chi_w^H(x; temperature, no_of_sites) =
+    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    argument and \overline{E}_w = 2 \pi w / L is the topological sector w \in Z^2, an integer-valued vector field whose
+    components are fixed such that the minimal toroidal vortex polarisation vector
+    \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero
+    mode of the emergent electric field, as defined in J. Phys. Condens. Matter 29, 085402 (2017).  This method is only
+    valid for the HXY model.
+
+    In Phys. Rev. B 91, 155412 (2015), the HXY topological susceptibility was called the HXY winding-field
+    susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of the system; in
+    the return line below, this corresponds to the first np.mean() -> np.sum().
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the topological susceptibility.  A one-dimensional numpy array of length no_of_observations.  The
+        nth element is a float corresponding to the topological susceptibility measured at observation n.
+    """
+    topological_sector_sample = get_hxy_topological_sector(output_directory, temperature, no_of_sites)
+    return 4.0 * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0)) ** 2,
+                                        axis=1) / temperature
 
 
 """Maggs-electrolyte methods"""
