@@ -6,9 +6,6 @@
 *.npy
 *.npz
 
-# Configuration files
-*.txt
-
 # Prerequisites
 *.d
 
