@@ -60,7 +60,7 @@ def main(config_file, no_of_histogram_bins=100):
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}_first_1e4_steps.pdf", bbox_inches="tight")
             else:
-                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                figure.savefig(f"{output_directory}/magnetisation_revolution_sans_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}_first_1e4_steps.pdf", bbox_inches="tight")
             [axis.cla() for axis in axes]
@@ -97,7 +97,7 @@ def main(config_file, no_of_histogram_bins=100):
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
             else:
-                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                figure.savefig(f"{output_directory}/magnetisation_revolution_sans_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
             [axis.cla() for axis in axes]
@@ -119,7 +119,7 @@ def main(config_file, no_of_histogram_bins=100):
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             else:
-                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                figure.savefig(f"{output_directory}/magnetisation_revolution_sans_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             figure.clear()
@@ -156,7 +156,7 @@ def main(config_file, no_of_histogram_bins=100):
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             else:
-                figure.savefig(f"{output_directory}/magnetisation_histograms_w_out_twists_temp_eq_{temperature:.2f}_"
+                figure.savefig(f"{output_directory}/magnetisation_histograms_sans_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             plt.close()
