@@ -49,7 +49,7 @@ def main(config_file, no_of_histogram_bins=100):
             cartesian_magnetisation = cartesian_magnetisation.transpose()
             figure, axes = plt.subplots(1, 2, figsize=(20, 10))
 
-            set_axes(axes)
+            set_magnetisation_revolution_axes(axes)
             axes[0].plot(cartesian_magnetisation[0, :10000], cartesian_magnetisation[1, :10000], linestyle="solid",
                          color="black")
             axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red",
@@ -65,7 +65,7 @@ def main(config_file, no_of_histogram_bins=100):
 
             if (np.mean(magnetisation_norm) > (2.0 * no_of_sites) ** (- 1.0 / 16.0) and
                     [element > 0.25 for element in magnetisation_norm].__contains__(False)):
-                set_axes(axes)
+                set_magnetisation_revolution_axes(axes)
                 plotting_index = np.argmax(magnetisation_norm < 0.5)
                 axes[0].plot(cartesian_magnetisation[0,
                              max(0, plotting_index - 10000):min(len(magnetisation_norm) - 1, plotting_index + 10000)],
@@ -80,7 +80,7 @@ def main(config_file, no_of_histogram_bins=100):
                                f"_job_{job_index + 1}_around_global_twist.pdf", bbox_inches="tight")
                 [axis.cla() for axis in axes]
 
-            set_axes(axes)
+            set_magnetisation_revolution_axes(axes)
             axes[0].plot(cartesian_magnetisation[0, :int(len(magnetisation_phase) / 10)],
                          cartesian_magnetisation[1, :int(len(magnetisation_phase) / 10)], linestyle="solid",
                          linewidth=1, color="black")
@@ -91,7 +91,7 @@ def main(config_file, no_of_histogram_bins=100):
                            f"job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
             [axis.cla() for axis in axes]
 
-            set_axes(axes)
+            set_magnetisation_revolution_axes(axes)
             axes[1].tick_params(axis='y', colors='red')
             axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4, color="red")
             axes[0].plot(cartesian_magnetisation[0], cartesian_magnetisation[1], linestyle="solid", linewidth=1,
@@ -106,13 +106,45 @@ def main(config_file, no_of_histogram_bins=100):
             figure.savefig(f"{output_directory}/magnetisation_revolution_temp_eq_{temperature:.2f}_"
                            f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
                            f"job_{job_index + 1}.pdf", bbox_inches="tight")
+            figure.clear()
+
+            figure, axes = plt.subplots(3, 2, figsize=(10, 10))
+            axes[2, 0].set_xlabel(r"$x$", fontsize=15, labelpad=10)
+            axes[2, 1].set_xlabel(r"$x$", fontsize=15, labelpad=10)
+            axes[0, 0].set_ylabel(r"$\pi \left( m_x = x \right)$", fontsize=15, labelpad=10)
+            axes[0, 1].yaxis.set_label_position("right")
+            axes[0, 1].yaxis.tick_right()
+            axes[0, 1].set_ylabel(r"$\pi \left( m_y = x \right)$", fontsize=15, labelpad=10)
+            axes[1, 0].set_ylabel(r"$\pi \left( |m_x| = x \right)$", fontsize=15, labelpad=10)
+            axes[1, 1].yaxis.set_label_position("right")
+            axes[1, 1].yaxis.tick_right()
+            axes[1, 1].set_ylabel(r"$\pi \left( |m_y| = x \right)$", fontsize=15, labelpad=10)
+            axes[2, 0].set_ylabel(r"$\pi \left( || m \|| = x \right)$", fontsize=15, labelpad=10)
+            axes[2, 1].yaxis.set_label_position("right")
+            axes[2, 1].yaxis.tick_right()
+            axes[2, 1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=15, labelpad=10)
+            plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+
+            axes[0, 0].hist(cartesian_magnetisation[0], bins=no_of_histogram_bins, density=True, color="red",
+                            edgecolor="black")
+            axes[0, 1].hist(cartesian_magnetisation[1], bins=no_of_histogram_bins, density=True, color="red",
+                            edgecolor="black")
+            axes[1, 0].hist(np.abs(cartesian_magnetisation[0]), bins=no_of_histogram_bins, density=True, color="red",
+                            edgecolor="black")
+            axes[1, 1].hist(np.abs(cartesian_magnetisation[1]), bins=no_of_histogram_bins, density=True, color="red",
+                            edgecolor="black")
+            axes[2, 0].hist(magnetisation_norm, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
+            axes[2, 1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
+            plt.savefig(f"{output_directory}/magnetisation_histograms_temp_eq_{temperature:.2f}_"
+                        f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
+                        f"job_{job_index + 1}.pdf", bbox_inches="tight")
             plt.close()
 
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
-def set_axes(axes):
+def set_magnetisation_revolution_axes(axes):
     [axis.tick_params(which='both', width=2) for axis in axes]
     [axis.tick_params(which='major', length=7, labelsize=18, pad=10) for axis in axes]
     [axis.tick_params(which='minor', length=4) for axis in axes]
