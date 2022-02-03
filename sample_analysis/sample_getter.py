@@ -271,7 +271,7 @@ def get_magnetisation_phase(output_directory, temperature, no_of_sites):
         The sample of the magnetisation phase.  A one-dimensional numpy array of length no_of_observations.  The nth
         element is a float corresponding to magnetisation phase measured at observation n.
     """
-    return np.array([math.atan(observation[1] / observation[0]) for observation in
+    return np.array([get_phase_in_polar_coordinates(observation) for observation in
                      get_non_normalised_cartesian_magnetisation(output_directory, temperature, no_of_sites)])
 
 
@@ -706,3 +706,29 @@ def get_topological_susceptibility(output_directory, temperature, no_of_sites):
     topological_sector_sample = get_topological_sector(output_directory, temperature, no_of_sites)
     return 4.0 * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0)) ** 2,
                                         axis=1) / temperature
+
+
+"""helper methods"""
+
+
+def get_phase_in_polar_coordinates(two_dimensional_cartesian_vector):
+    """
+    Returns the phase phi of the transformation of two_dimensional_cartesian_vector into polar coordinates.
+
+    Parameters
+    ----------
+    two_dimensional_cartesian_vector : numpy.ndarray
+        A two-dimensional vector in Cartesian coordinates.  A one-dimensional numpy array of length 2.  The 1st / 2nd
+        element is a float corresponding to the x / y component of the Cartesian vector.
+
+    Returns
+    -------
+    float
+        The phase phi of the transformation of two_dimensional_cartesian_vector into polar coordinates.
+    """
+    if two_dimensional_cartesian_vector[0] > 0.0:
+        return math.atan(two_dimensional_cartesian_vector[1] / two_dimensional_cartesian_vector[0])
+    elif two_dimensional_cartesian_vector[1] > 0.0:
+        return math.atan(two_dimensional_cartesian_vector[1] / two_dimensional_cartesian_vector[0]) + math.pi
+    else:
+        return math.atan(two_dimensional_cartesian_vector[1] / two_dimensional_cartesian_vector[0]) - math.pi
