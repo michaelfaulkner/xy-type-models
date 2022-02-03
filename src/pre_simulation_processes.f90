@@ -31,7 +31,7 @@ else
     magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
 end if
 call setup_periodic_boundaries
-call initialise_field_configuration
+call initialise_field_configuration(.true.)
 
 ! message informing the start of the Markov process
 write(6, '(A, A, A, I4.4, A, I4.4, A)') 'Starting the ', trim(algorithm_name), ' simulation on ', &
