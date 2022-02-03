@@ -43,6 +43,11 @@ do i = 0, no_of_temperature_increments
 
     call output_no_of_events
     temperature = temperature + magnitude_of_temperature_increments
+    if (randomise_initial_field_configuration) then
+        do i = 1, no_of_sites
+            spin_field(i) = two_pi * rand()
+        end do
+    end if
 end do
 
 call cpu_time(end_time)
