@@ -111,9 +111,11 @@ def main(config_file, no_of_histogram_bins=100):
             cdf_axis = axes[1].twinx()
             cdf_axis.set_ylim(0.0, 1.0)
             cdf_axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
-            cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=8)
+            cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
             cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
                           linewidth=2, linestyle="-")
+            cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
+            cdf_axis.yaxis.set_major_formatter('{x:.1f}')
             if use_external_global_moves:
                 figure.savefig(f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
@@ -205,8 +207,7 @@ def set_magnetisation_revolution_axes(axes):
     axes[1].set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
     axes[1].set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
     axes[1].set_xlabel(r"$x$", fontsize=20, labelpad=8)
-    axes[1].yaxis.set_major_locator(ticker.MultipleLocator(base=0.1))
-    axes[1].yaxis.set_major_formatter('{x:.1f}')
+    axes[1].yaxis.set_major_formatter('{x:.2f}')
     axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4)
     [axes[1].spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
