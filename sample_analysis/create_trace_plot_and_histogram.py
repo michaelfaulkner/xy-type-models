@@ -18,7 +18,7 @@ run_script = importlib.import_module("run")
 def main(config_file, observable_string, max_physical_time=100.0, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+     no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)

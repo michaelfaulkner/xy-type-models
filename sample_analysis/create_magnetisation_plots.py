@@ -21,7 +21,8 @@ run_script = importlib.import_module("run")
 def main(config_file, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+     no_of_temperature_increments, use_external_global_moves, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
+        config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
@@ -54,16 +55,21 @@ def main(config_file, no_of_histogram_bins=100):
                          color="black")
             axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red",
                          edgecolor="black")
-            figure.savefig(f"{output_directory}/magnetisation_revolution_temp_eq_{temperature:.2f}_"
-                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                           f"job_{job_index + 1}_first_1e4_steps.pdf", bbox_inches="tight")
+            if use_external_global_moves:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}_first_1e4_steps.pdf", bbox_inches="tight")
+            else:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}_first_1e4_steps.pdf", bbox_inches="tight")
             [axis.cla() for axis in axes]
 
             cartesian_magnetisation = cartesian_magnetisation[:, no_of_equilibration_sweeps:]
             magnetisation_norm = magnetisation_norm[no_of_equilibration_sweeps:]
             magnetisation_phase = magnetisation_phase[no_of_equilibration_sweeps:]
 
-            if (np.mean(magnetisation_norm) > (2.0 * no_of_sites) ** (- 1.0 / 16.0) and
+            if (use_external_global_moves and np.mean(magnetisation_norm) > (2.0 * no_of_sites) ** (- 1.0 / 16.0) and
                     [element > 0.25 for element in magnetisation_norm].__contains__(False)):
                 set_magnetisation_revolution_axes(axes)
                 plotting_index = np.argmax(magnetisation_norm < 0.5)
@@ -75,7 +81,7 @@ def main(config_file, no_of_histogram_bins=100):
                 axes[1].hist(magnetisation_phase[
                              max(0, plotting_index - 10000):min(len(magnetisation_norm) - 1, plotting_index + 10000)],
                              bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
-                figure.savefig(f"{output_directory}/magnetisation_revolution_temp_eq_{temperature:.2f}_"
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
                                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
                                f"_job_{job_index + 1}_around_global_twist.pdf", bbox_inches="tight")
                 [axis.cla() for axis in axes]
@@ -86,9 +92,14 @@ def main(config_file, no_of_histogram_bins=100):
                          linewidth=1, color="black")
             axes[1].hist(magnetisation_phase[:int(len(magnetisation_phase) / 10)], bins=no_of_histogram_bins,
                          density=True, color="red", edgecolor="black")
-            figure.savefig(f"{output_directory}/magnetisation_revolution_temp_eq_{temperature:.2f}_"
-                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                           f"job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
+            if use_external_global_moves:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
+            else:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}_1e5_observations.pdf", bbox_inches="tight")
             [axis.cla() for axis in axes]
 
             set_magnetisation_revolution_axes(axes)
@@ -103,9 +114,14 @@ def main(config_file, no_of_histogram_bins=100):
             cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=8)
             cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
                           linewidth=2, linestyle="-")
-            figure.savefig(f"{output_directory}/magnetisation_revolution_temp_eq_{temperature:.2f}_"
-                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                           f"job_{job_index + 1}.pdf", bbox_inches="tight")
+            if use_external_global_moves:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}.pdf", bbox_inches="tight")
+            else:
+                figure.savefig(f"{output_directory}/magnetisation_revolution_w_out_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             figure.clear()
 
             figure, axes = plt.subplots(3, 2, figsize=(10, 10))
@@ -135,9 +151,14 @@ def main(config_file, no_of_histogram_bins=100):
                             edgecolor="black")
             axes[2, 0].hist(magnetisation_norm, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
             axes[2, 1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
-            plt.savefig(f"{output_directory}/magnetisation_histograms_temp_eq_{temperature:.2f}_"
-                        f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                        f"job_{job_index + 1}.pdf", bbox_inches="tight")
+            if use_external_global_moves:
+                figure.savefig(f"{output_directory}/magnetisation_histograms_w_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}.pdf", bbox_inches="tight")
+            else:
+                figure.savefig(f"{output_directory}/magnetisation_histograms_w_out_twists_temp_eq_{temperature:.2f}_"
+                               f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
+                               f"_job_{job_index + 1}.pdf", bbox_inches="tight")
             plt.close()
 
         temperature -= magnitude_of_temperature_increments

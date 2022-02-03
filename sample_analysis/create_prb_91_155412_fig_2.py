@@ -25,7 +25,7 @@ def main(electrolyte_version):
         config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves_only.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
+     final_temperature, no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
         config_file_local_moves)
     output_directory = output_directory_local_moves.replace("/local_moves_only", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]

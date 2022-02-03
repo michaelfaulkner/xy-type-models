@@ -29,7 +29,7 @@ def main(config_file_location):
     None
     """
     config_data = get_config_data(config_file_location)
-    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[7], config_data[8]
+    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[8], config_data[9]
     executable_location = get_executable(algorithm_name)
     if no_of_jobs < 1:
         raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
@@ -104,12 +104,17 @@ def get_config_data(config_file_location):
                 final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
             if 'no_of_temperature_increments' in row[0]:
                 no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
+            if 'use_external_global_moves' in row[0]:
+                if '.true.' in row[0]:
+                    use_external_global_moves = True
+                else:
+                    use_external_global_moves = False
             if 'no_of_jobs' in row[0]:
                 no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
             if 'max_no_of_cpus' in row[0]:
                 max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
     return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-            final_temperature, no_of_temperature_increments, no_of_jobs, max_no_of_cpus)
+            final_temperature, no_of_temperature_increments, use_external_global_moves, no_of_jobs, max_no_of_cpus)
 
 
 def get_executable(algorithm_name):
