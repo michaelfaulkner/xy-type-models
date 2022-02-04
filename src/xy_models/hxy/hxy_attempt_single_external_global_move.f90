@@ -1,19 +1,19 @@
-subroutine attempt_external_global_move
+subroutine attempt_single_external_global_move(cartesian_component)
 use variables
 implicit none
-integer :: i, lattice_site
-double precision :: potential_difference, sign_of_twist, get_spin_difference
+integer :: cartesian_component, i, lattice_site, sign_of_twist
+double precision :: potential_difference, get_spin_difference
 double precision, dimension(no_of_sites) :: candidate_spin_field, candidate_emergent_field_components
 
 potential_difference = 0.0d0
-sign_of_twist = 2.0d0 * dfloat(floor(2.0d0 * rand())) - 1.0d0
-! choose a twist in x direction with 0.5 probability
-if (floor(2.0d0 * rand()) == 0) then
+sign_of_twist = 2 * floor(2.0d0 * rand()) - 1
+if (cartesian_component == 1) then
+    ! attempt a global twist along x direction
     lattice_site = int(dfloat(no_of_sites) * rand()) + 1
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) + dfloat(mod(i, integer_lattice_length)) &
-                                                            * sign_of_twist * two_pi / dfloat(integer_lattice_length)
+                                                    * dfloat(sign_of_twist) * two_pi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute and store candidate emergent-field components and potential difference
@@ -29,15 +29,18 @@ if (floor(2.0d0 * rand()) == 0) then
             emergent_field(i, 2) = candidate_emergent_field_components(i)
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
+        external_global_move(1) = sign_of_twist
+    else
+        external_global_move(1) = 0
     end if
-! else: attempt a twist in y direction
-else
+else if (cartesian_component == 2) then
+    ! attempt a global twist along y direction
     lattice_site = floor(dfloat(no_of_sites) * rand() / dfloat(integer_lattice_length)) * integer_lattice_length + 1
     ! compute and store candidate spin field (with twist applied)
     do i = 1, no_of_sites
         candidate_spin_field(lattice_site) = spin_field(lattice_site) &
                                     + dfloat(mod(int((i - 1) / integer_lattice_length) + 1, integer_lattice_length)) &
-                                            * sign_of_twist * two_pi / dfloat(integer_lattice_length)
+                                            * dfloat(sign_of_twist) * two_pi / dfloat(integer_lattice_length)
         lattice_site = lattice_site + mod(lattice_site, no_of_sites) - mod(lattice_site - 1, no_of_sites)
     end do
     ! compute and store candidate emergent-field components and potential difference
@@ -53,8 +56,11 @@ else
             emergent_field(i, 1) = candidate_emergent_field_components(i)
         end do
         no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
+        external_global_move(2) = sign_of_twist
+    else
+        external_global_move(2) = 0
     end if
 end if
 
 return
-end subroutine attempt_external_global_move
+end subroutine attempt_single_external_global_move

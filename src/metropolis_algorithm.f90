@@ -16,7 +16,7 @@ do i = 0, no_of_temperature_increments
     do j = 1, no_of_equilibration_sweeps
         call metropolis_sweep
         if (use_external_global_moves) then
-            call attempt_external_global_move
+            call attempt_external_global_moves
         end if
         ! step-size adaptor
         if (mod(j, 100) == 0) then
@@ -36,7 +36,7 @@ do i = 0, no_of_temperature_increments
     do j = 1, no_of_observations
         call metropolis_sweep
         if (use_external_global_moves) then
-            call attempt_external_global_move
+            call attempt_external_global_moves
         end if
         call get_and_print_observation
     end do

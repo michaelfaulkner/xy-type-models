@@ -25,7 +25,7 @@ do i = 0, no_of_temperature_increments
             end if
         end if
         if (use_external_global_moves) then
-            call attempt_external_global_move
+            call attempt_external_global_moves
         end if
         call get_and_print_observation
     end do
@@ -36,7 +36,7 @@ do i = 0, no_of_temperature_increments
     do j = 1, no_of_observations
         call single_event_chain
         if (use_external_global_moves) then
-            call attempt_external_global_move
+            call attempt_external_global_moves
         end if
         call get_and_print_observation
     end do
@@ -64,8 +64,7 @@ open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events
 else
-    write(300, 200) no_of_events, dfloat(no_of_accepted_external_global_moves) / dfloat(no_of_observations) &
-                                    / dfloat(no_of_sites)
+    write(300, 200) no_of_events, 0.5d0 * dfloat(no_of_accepted_external_global_moves) / dfloat(no_of_observations)
 end if
 close(300)
 

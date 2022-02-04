@@ -15,9 +15,10 @@ open(unit=20, file=filename)
 
 write(20, '(A1, A23, "; ", I0.4, " x ", I0.4, " lattice no_of_sites; temperature = ", ES8.2)') "#", &
                                         algorithm_name, integer_lattice_length, integer_lattice_length, temperature
-write(20, '(A1, A29, 8A30)') "#", "potential", "non-normalised magnetisation_x", "non-normalised magnetisation_y", &
+write(20, '(A1, A29, 10A30)') "#", "potential", "nonnormalised magnetisation_x", "nonnormalised magnetisation_y", &
                                 "1st_deriv_of_potential_x", "1st_deriv_of_potential_y", &
                                 "2nd_deriv_of_potential_x", "2nd_deriv_of_potential_y", &
+                                "external_global_move_x", "external_global_move_y", &
                                 "minimising_twist_field_x", "minimising_twist_field_y"
 
 return

@@ -8,10 +8,12 @@ if (randomise_initial_field_configuration) then
     do i = 1, no_of_sites
         spin_field(i) = two_pi * rand()
     end do
+    external_global_move = (/ 0, 0 /)
 else if (pre_simulation) then
     do i = 1, no_of_sites
         spin_field(i) = 0.0d0
     end do
+    external_global_move = (/ 0, 0 /)
 end if
 
 return
