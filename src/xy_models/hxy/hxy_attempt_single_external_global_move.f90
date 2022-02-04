@@ -23,16 +23,6 @@ if (cartesian_component == 1) then
         potential_difference = potential_difference + 0.5d0 * &
                                             (candidate_emergent_field_components(i) ** 2 - emergent_field(i, 2) ** 2)
     end do
-    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
-        do i = 1, no_of_sites
-            spin_field(i) = candidate_spin_field(i)
-            emergent_field(i, 2) = candidate_emergent_field_components(i)
-        end do
-        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-        external_global_move(1) = sign_of_twist
-    else
-        external_global_move(1) = 0
-    end if
 else if (cartesian_component == 2) then
     ! attempt a global twist along y direction
     lattice_site = floor(dfloat(no_of_sites) * rand() / dfloat(integer_lattice_length)) * integer_lattice_length + 1
@@ -50,16 +40,17 @@ else if (cartesian_component == 2) then
         potential_difference = potential_difference + 0.5d0 * &
                                             (candidate_emergent_field_components(i) ** 2 - emergent_field(i, 1) ** 2)
     end do
-    if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
-        do i = 1, no_of_sites
-            spin_field(i) = candidate_spin_field(i)
-            emergent_field(i, 1) = candidate_emergent_field_components(i)
-        end do
-        no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-        external_global_move(2) = sign_of_twist
-    else
-        external_global_move(2) = 0
-    end if
+end if
+
+if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference))) then
+    do i = 1, no_of_sites
+        spin_field(i) = candidate_spin_field(i)
+        emergent_field(i, 3 - cartesian_component) = candidate_emergent_field_components(i)
+    end do
+    no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
+    external_global_move(cartesian_component) = sign_of_twist
+else
+    external_global_move(cartesian_component) = 0
 end if
 
 return
