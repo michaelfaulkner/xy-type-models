@@ -2,7 +2,7 @@
 '../bc4-output/polyspectra/long_simulation'         output_directory
 32                                                  integer_lattice_length
 100000                                              no_of_equilibration_sweeps
-16000000                                            no_of_observations
+8000000                                             no_of_observations
 0.5d0                                               initial_temperature
 2.2d0                                               final_temperature
 4                                                   no_of_temperature_increments
@@ -12,5 +12,5 @@
 .false.                                             randomise_initial_field_configuration
 .false.                                             use_external_global_moves
 .false.                                             calculate_external_minimising_twist_field
-32                                                  no_of_jobs
+64                                                  no_of_jobs
 16                                                  max_no_of_cpus
