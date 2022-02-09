@@ -84,6 +84,11 @@ def set_up_polyspectra_script(config_file, observable_string):
     check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
+    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
+            no_of_jobs, temperature, magnitude_of_temperature_increments, setup_pool(no_of_jobs, max_no_of_cpus))
+
+
+def setup_pool(no_of_jobs, max_no_of_cpus):
     if no_of_jobs < 1:
         raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
     elif no_of_jobs == 1:
@@ -103,5 +108,4 @@ def set_up_polyspectra_script(config_file, observable_string):
             print(f"Running {no_of_jobs} sample-analysis processes in parallel on {no_of_cpus} CPUs, where "
                   f"{no_of_available_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
-    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-            no_of_jobs, temperature, magnitude_of_temperature_increments, pool)
+    return pool
