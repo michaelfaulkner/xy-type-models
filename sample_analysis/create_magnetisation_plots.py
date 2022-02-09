@@ -121,57 +121,57 @@ def main(config_file, no_of_histogram_bins=100):
                         appended_string="_1e5_observations")
             [axis.cla() for axis in axes]
 
-        set_magnetisation_revolution_axes(axes)
-        axes[1].tick_params(axis='y', colors='red')
-        axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4, color="red")
-        axes[0].plot(cartesian_magnetisation[0], cartesian_magnetisation[1], linestyle="solid", linewidth=1,
-                     color="black")
-        axes[1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
-        cdf_axis = axes[1].twinx()
-        cdf_axis.set_ylim(0.0, 1.0)
-        cdf_axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
-        cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
-        cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
-                      linewidth=2, linestyle="-")
-        cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
-        cdf_axis.yaxis.set_major_formatter('{x:.1f}')
-        save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                    use_external_global_moves, prepended_string="magnetisation_revolution")
-        figure.clear()
-
-        if job_index == 0:
-            figure, axes = plt.subplots(3, 2, figsize=(10, 10))
-            axes[2, 0].set_xlabel(r"$x$", fontsize=15, labelpad=10)
-            axes[2, 1].set_xlabel(r"$x$", fontsize=15, labelpad=10)
-            axes[0, 0].set_ylabel(r"$\pi \left( m_x = x \right)$", fontsize=15, labelpad=10)
-            axes[0, 1].yaxis.set_label_position("right")
-            axes[0, 1].yaxis.tick_right()
-            axes[0, 1].set_ylabel(r"$\pi \left( m_y = x \right)$", fontsize=15, labelpad=10)
-            axes[1, 0].set_ylabel(r"$\pi \left( |m_x| = x \right)$", fontsize=15, labelpad=10)
-            axes[1, 1].yaxis.set_label_position("right")
-            axes[1, 1].yaxis.tick_right()
-            axes[1, 1].set_ylabel(r"$\pi \left( |m_y| = x \right)$", fontsize=15, labelpad=10)
-            axes[2, 0].set_ylabel(r"$\pi \left( || m \|| = x \right)$", fontsize=15, labelpad=10)
-            axes[2, 1].yaxis.set_label_position("right")
-            axes[2, 1].yaxis.tick_right()
-            axes[2, 1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=15, labelpad=10)
-            plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-
-            axes[0, 0].hist(cartesian_magnetisation[0], bins=no_of_histogram_bins, density=True, color="red",
-                            edgecolor="black")
-            axes[0, 1].hist(cartesian_magnetisation[1], bins=no_of_histogram_bins, density=True, color="red",
-                            edgecolor="black")
-            axes[1, 0].hist(np.abs(cartesian_magnetisation[0]), bins=no_of_histogram_bins, density=True, color="red",
-                            edgecolor="black")
-            axes[1, 1].hist(np.abs(cartesian_magnetisation[1]), bins=no_of_histogram_bins, density=True, color="red",
-                            edgecolor="black")
-            axes[2, 0].hist(magnetisation_norm, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
-            axes[2, 1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
-
+            set_magnetisation_revolution_axes(axes)
+            axes[1].tick_params(axis='y', colors='red')
+            axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4, color="red")
+            axes[0].plot(cartesian_magnetisation[0], cartesian_magnetisation[1], linestyle="solid", linewidth=1,
+                         color="black")
+            axes[1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
+            cdf_axis = axes[1].twinx()
+            cdf_axis.set_ylim(0.0, 1.0)
+            cdf_axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
+            cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
+            cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
+                          linewidth=2, linestyle="-")
+            cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
+            cdf_axis.yaxis.set_major_formatter('{x:.1f}')
             save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                        use_external_global_moves, prepended_string="magnetisation_histograms")
+                        use_external_global_moves, prepended_string="magnetisation_revolution")
+            figure.clear()
 
-        plt.close()
+            if job_index == 0:
+                figure, axes = plt.subplots(3, 2, figsize=(10, 10))
+                axes[2, 0].set_xlabel(r"$x$", fontsize=15, labelpad=10)
+                axes[2, 1].set_xlabel(r"$x$", fontsize=15, labelpad=10)
+                axes[0, 0].set_ylabel(r"$\pi \left( m_x = x \right)$", fontsize=15, labelpad=10)
+                axes[0, 1].yaxis.set_label_position("right")
+                axes[0, 1].yaxis.tick_right()
+                axes[0, 1].set_ylabel(r"$\pi \left( m_y = x \right)$", fontsize=15, labelpad=10)
+                axes[1, 0].set_ylabel(r"$\pi \left( |m_x| = x \right)$", fontsize=15, labelpad=10)
+                axes[1, 1].yaxis.set_label_position("right")
+                axes[1, 1].yaxis.tick_right()
+                axes[1, 1].set_ylabel(r"$\pi \left( |m_y| = x \right)$", fontsize=15, labelpad=10)
+                axes[2, 0].set_ylabel(r"$\pi \left( || m \|| = x \right)$", fontsize=15, labelpad=10)
+                axes[2, 1].yaxis.set_label_position("right")
+                axes[2, 1].yaxis.tick_right()
+                axes[2, 1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=15, labelpad=10)
+                plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
+
+                axes[0, 0].hist(cartesian_magnetisation[0], bins=no_of_histogram_bins, density=True, color="r",
+                                edgecolor="k")
+                axes[0, 1].hist(cartesian_magnetisation[1], bins=no_of_histogram_bins, density=True, color="r",
+                                edgecolor="k")
+                axes[1, 0].hist(np.abs(cartesian_magnetisation[0]), bins=no_of_histogram_bins, density=True, color="r",
+                                edgecolor="k")
+                axes[1, 1].hist(np.abs(cartesian_magnetisation[1]), bins=no_of_histogram_bins, density=True, color="r",
+                                edgecolor="k")
+                axes[2, 0].hist(magnetisation_norm, bins=no_of_histogram_bins, density=True, color="r", edgecolor="k")
+                axes[2, 1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="r", edgecolor="k")
+
+                save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
+                            use_external_global_moves, prepended_string="magnetisation_histograms")
+            plt.close()
+
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
