@@ -192,6 +192,34 @@ def get_specific_heat(output_directory, temperature, no_of_sites):
     return (potential_sample - np.mean(potential_sample)) ** 2 / no_of_sites / temperature ** 2
 
 
+def get_external_global_move(output_directory, temperature, no_of_sites):
+    """
+    Returns the sample of the external global move vector, which is an integer-valued two-dimensional Cartesian vector
+        whose x / y component is 0 if the x / y component of the external global move was not accepted, 1 if a positive
+        external global move was accepted and -1 if a negative external global move was accepted.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The external global move sample.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
+        sub-array is an integer-valued two-dimensional Cartesian vector, as measured at observation n; the first /
+        second element (of the sub-array) is an int corresponding to the x / y Cartesian component, where the value is
+        0 if the x / y component of the external global move was not accepted, 1 if a positive external global move was
+        accepted and -1 if a negative external global move was accepted.
+    """
+    return get_entire_sample(output_directory, temperature)[:, 1:3].astype(int)
+
+
 """XY and HXY magnetisation methods"""
 
 
@@ -219,7 +247,7 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, no
         element is a float corresponding to the x / y component of the non-normalised magnetisation vector measured at
         observation n.
     """
-    return get_entire_sample(output_directory, temperature)[:, 1:3]
+    return get_entire_sample(output_directory, temperature)[:, 3:5]
 
 
 def get_magnetisation_norm(output_directory, temperature, no_of_sites):
@@ -415,7 +443,7 @@ def get_non_normalised_total_vortex_polarisation(output_directory, temperature, 
         observation n; its first / second element is a float corresponding to the x / y component of the non-normalised
         total vortex polarisation measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature)[:, 3:5]
+    return get_entire_sample(output_directory, temperature)[:, 5:7]
 
 
 def get_inverse_vacuum_permittivity(output_directory, temperature, no_of_sites):
@@ -440,7 +468,7 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, no_of_sites):
         The sample of the inverse vacuum permittivity.  A one-dimensional numpy array of length no_of_observations.
         The nth  element is a float corresponding to the inverse vacuum permittivity measured at observation n.
     """
-    return np.mean(get_entire_sample(output_directory, temperature)[:, 5:7], axis=1) / no_of_sites
+    return np.mean(get_entire_sample(output_directory, temperature)[:, 7:9], axis=1) / no_of_sites
 
 
 def get_total_vortex_polarisation(output_directory, temperature, no_of_sites):
@@ -592,7 +620,7 @@ def get_sum_of_electric_field(output_directory, temperature, no_of_sites):
         The nth sub-array is the sum of the electric field measured at observation n; its first / second element is a
         float corresponding to the x / y component of the sum of the electric field measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature)[:, 1:3]
+    return get_entire_sample(output_directory, temperature)[:, 3:5]
 
 
 def get_electric_field_zero_mode(output_directory, temperature, no_of_sites):
