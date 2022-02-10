@@ -1,0 +1,14 @@
+'xy-gaussian-noise-metropolis'                                      algorithm_name
+'output/mag_distributions/xy_metrop/high_temp_sans_twists'          output_directory
+64                                                                  integer_lattice_length
+100000                                                              no_of_equilibration_sweeps
+1000000                                                             no_of_observations
+1.1d0                                                               initial_temperature
+1.4d0                                                               final_temperature
+1                                                                   no_of_temperature_increments
+1.0d0    	                                                        width_of_proposal_interval (initial)
+0.6d0 		                                                        target_acceptance_rate_of_field_rotations
+.true.                                                              randomise_initial_field_configuration
+.false.                                                             use_external_global_moves
+4                                                                   no_of_jobs
+4                                                                   max_no_of_cpus
