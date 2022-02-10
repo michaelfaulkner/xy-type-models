@@ -45,7 +45,7 @@ def main(config_file, no_of_histogram_bins=100):
     axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     axis.yaxis.set_major_formatter('{x:.1f}')
     colors = ["black", "red"]
-    linestyles = ["solid", "dotted", "dashed", "dashdot"]
+    linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
     inset_axis = plt.axes([0.15, 0.6125, 0.25, 0.25])
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
@@ -68,10 +68,10 @@ def main(config_file, no_of_histogram_bins=100):
                 for job_index in range(no_of_jobs)]), dtype=object).transpose()
             cdfs_of_magnetisation_phase, cvm_value = cdf_and_cvm_outputs[0], np.mean(cdf_and_cvm_outputs[1])
             if temperature_index == 0 or temperature_index == no_of_temperature_increments:
-                for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 4)]):
+                for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 8)]):
                     if job_index == 0:
-                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index],
-                                  label=f"temperature = {temperature:.2f}")
+                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
+                                  label=fr"1 / (\beta J) = {temperature:.2f}")
                     else:
                         axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
         temps.append(temperature)
