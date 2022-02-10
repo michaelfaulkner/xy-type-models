@@ -44,6 +44,7 @@ def main(config_file, no_of_histogram_bins=100):
     axis.set_ylabel(r"$\mathbb{P}_n \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
     axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     axis.yaxis.set_major_formatter('{x:.1f}')
+    [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
     colors = ["black", "red"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
     inset_axis = plt.axes([0.15, 0.6125, 0.25, 0.25])
@@ -51,6 +52,7 @@ def main(config_file, no_of_histogram_bins=100):
     inset_axis.yaxis.tick_right()
     inset_axis.set_xlabel(r"$1 / (\beta J)$")
     inset_axis.set_ylabel(r"$\omega_{C-vM}^2$")
+    [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
     temps, cvms = [], []
     start_time = time.time()
