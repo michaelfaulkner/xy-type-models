@@ -91,7 +91,7 @@ def main(config_file, no_of_histogram_bins=100):
         figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_{int(no_of_sites ** 0.5)}x"
                        f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
     else:
-        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_{int(no_of_sites ** 0.5)}x"
+        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_sans_twists_{int(no_of_sites ** 0.5)}x"
                        f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
