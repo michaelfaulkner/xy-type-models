@@ -1,4 +1,6 @@
+from scipy import stats
 import importlib
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -33,44 +35,73 @@ def main(config_file, no_of_histogram_bins=100):
     axis.tick_params(which='both', width=2)
     axis.tick_params(which='major', length=7, labelsize=18, pad=10)
     axis.tick_params(which='minor', length=4)
+    axis.set_xlim([-math.pi, math.pi])
+    axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
+    axis.set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
+    axis.set_xlabel(r"$x$", fontsize=20, labelpad=8)
     axis.set_ylim(0.0, 1.0)
     axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
-    axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
+    axis.set_ylabel(r"$\mathbb{P}_n \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
     axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     axis.yaxis.set_major_formatter('{x:.1f}')
-    colors = plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1))
-    linestyles = ["-", "--", "-.", ":"]
+    colors = ["black", "red"]
+    linestyles = ["solid", "dotted", "dashed", "dashdot"]
+    inset_axis = plt.axes([0.15, 0.6125, 0.25, 0.25])
+    inset_axis.yaxis.set_label_position("right")
+    inset_axis.yaxis.tick_right()
+    inset_axis.set_xlabel(r"$1 / (\beta J)$")
+    inset_axis.set_ylabel(r"$\omega_{C-vM}^2$")
 
+    temps, cvms = [], []
     start_time = time.time()
-    for temperature_index in range(no_of_temperature_increments):
+    for temperature_index in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         if no_of_jobs == 1:
-            cdfs_of_magnetisation_phase = np.atleast_2d(
-                get_cdf_of_magnetisation_phase(output_directory, temperature, no_of_sites, no_of_equilibration_sweeps))
+            cdf_of_magnetisation_phase, cvm_value = get_cdf_and_cramervonmises_of_magnetisation_phase(
+                output_directory, temperature, no_of_sites, no_of_equilibration_sweeps)
+            if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
+                          label=f"temperature = {temperature:.2f}")
         else:
-            cdfs_of_magnetisation_phase = np.array(pool.starmap(get_cdf_of_magnetisation_phase, [
+            cdf_and_cvm_outputs = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
                 (f"{output_directory}/job_{job_index + 1}", temperature, no_of_sites, no_of_equilibration_sweeps)
-                for job_index in range(no_of_jobs)]))
-        if temperature_index == 0 or temperature_index == no_of_temperature_increments - 1:
-            for index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 4)]):
-                axis.plot(*cdf, color=colors[temperature_index], linestyle=linestyles[index])
-        temperature += magnitude_of_temperature_increments
-    pool.close()
+                for job_index in range(no_of_jobs)]), dtype=object).transpose()
+            cdfs_of_magnetisation_phase, cvm_value = cdf_and_cvm_outputs[0], np.mean(cdf_and_cvm_outputs[1])
+            if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 4)]):
+                    if job_index == 0:
+                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index],
+                                  label=f"temperature = {temperature:.2f}")
+                    else:
+                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
+        temps.append(temperature)
+        cvms.append(cvm_value)
+        temperature -= magnitude_of_temperature_increments
+
+    if no_of_jobs > 1:
+        pool.close()
+
+    inset_axis.plot(temps, cvms, marker=".", markersize=10, color="k", linestyle="None")
+
+    legend = axis.legend(loc="lower right", fontsize=10)
+    legend.get_frame().set_edgecolor("k")
+    legend.get_frame().set_lw(1.5)
 
     if use_external_global_moves:
-        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_temp_eq_{temperature:.2f}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
-                       f".pdf", bbox_inches="tight")
+        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_{int(no_of_sites ** 0.5)}x"
+                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
     else:
-        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_temp_eq_{temperature:.2f}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
-                       f".pdf", bbox_inches="tight")
+        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_{int(no_of_sites ** 0.5)}x"
+                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
-def get_cdf_of_magnetisation_phase(sample_directory, temperature, no_of_sites, no_of_equilibration_sweeps):
-    return markov_chain_diagnostics.get_cumulative_distribution(
-        sample_getter.get_magnetisation_phase(sample_directory, temperature, no_of_sites)[no_of_equilibration_sweeps:])
+def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperature, no_of_sites,
+                                                      no_of_equilibration_sweeps):
+    magnetisation_phase = sample_getter.get_magnetisation_phase(sample_directory, temperature,
+                                                                no_of_sites)[no_of_equilibration_sweeps:]
+    return [np.array(markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase)),
+            stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic]
 
 
 if __name__ == "__main__":
