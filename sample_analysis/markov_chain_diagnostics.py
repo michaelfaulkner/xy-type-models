@@ -46,4 +46,4 @@ def get_cumulative_distribution(one_dimensional_sample):
                         "one (Cartesian) dimensional.")
     bin_values = np.arange(1, len(one_dimensional_sample) + 1) / float(len(one_dimensional_sample))
     ordered_sample = np.sort(one_dimensional_sample)
-    return ordered_sample, bin_values
+    return [ordered_sample, bin_values]
