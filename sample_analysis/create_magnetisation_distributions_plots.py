@@ -139,7 +139,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         cdf_axis = axes[1].twinx()
         cdf_axis.set_ylim(0.0, 1.0)
         cdf_axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
-        cdf_axis.set_ylabel(r"$\mathbb{P} \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
+        cdf_axis.set_ylabel(r"$\mathbb{P}_n \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
         cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
                       linewidth=2, linestyle="-")
         cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
