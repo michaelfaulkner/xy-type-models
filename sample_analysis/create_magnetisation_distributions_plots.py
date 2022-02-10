@@ -29,7 +29,6 @@ def main(config_file, no_of_histogram_bins=100):
         raise SystemExit
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
-    pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
 
     start_time = time.time()
     if no_of_jobs == 1:
@@ -37,10 +36,12 @@ def main(config_file, no_of_histogram_bins=100):
                    magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
                    no_of_histogram_bins, job_index=None)
     else:
+        pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
         pool.starmap(make_plots, [
             (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
              magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
              no_of_histogram_bins, job_index) for job_index in range(no_of_jobs)])
+        pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
@@ -51,6 +52,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         sample_directory = output_directory
     else:
         sample_directory = f"{output_directory}/job_{job_index + 1}"
+
     for i in range(no_of_temperature_increments + 1):
         print(f"Temperature = {temperature:.2f}")
         cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature, no_of_sites)
