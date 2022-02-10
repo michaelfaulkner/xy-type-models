@@ -80,7 +80,6 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                                                                           no_of_sites)[no_of_equilibration_sweeps:]
             if np.any(external_global_move != 0):
                 global_move_event_times = np.where(np.linalg.norm(external_global_move, axis=1).astype(int) != 0)[0]
-                print("Normalised times of external global-move events = ", global_move_event_times)
                 time_window = 1000
                 for index in global_move_event_times:
                     set_magnetisation_revolution_axes(axes)
@@ -94,9 +93,6 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                     """plot magnetisation at time of global-move event with a red dot"""
                     axes[0].plot(cartesian_magnetisation[0, index:index + 1],
                                  cartesian_magnetisation[1, index:index + 1], "ro", markersize=2)
-                    """axes[0].annotate("global-twist event",
-                                     xy=(cartesian_magnetisation[0, index], cartesian_magnetisation[1, index]),
-                                     textcoords="offset points", xytext=(5, 5), color="red", fontsize=10)"""
                     """estimate CDF of magnetisation phase at normalised time of global-move event +- time_window"""
                     axes[1].hist(magnetisation_phase[max(0, index - time_window):min(len(magnetisation_norm) - 1,
                                                                                      index + time_window + 1)],
