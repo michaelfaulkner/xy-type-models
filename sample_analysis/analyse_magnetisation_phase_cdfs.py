@@ -71,7 +71,7 @@ def main(config_file, no_of_histogram_bins=100):
                 for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 8)]):
                     if job_index == 0:
                         axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
-                                  label=fr"1 / (\beta J) = {temperature:.2f}")
+                                  label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                     else:
                         axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
         temps.append(temperature)
