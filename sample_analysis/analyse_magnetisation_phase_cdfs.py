@@ -149,6 +149,7 @@ def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperat
                                                       no_of_equilibration_sweeps):
     magnetisation_phase = sample_getter.get_magnetisation_phase(sample_directory, temperature,
                                                                 no_of_sites)[no_of_equilibration_sweeps:]
+    # stats.kstest(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic
     return [np.array(markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase)),
             stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic]
 
