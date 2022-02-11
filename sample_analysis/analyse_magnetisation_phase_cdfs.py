@@ -19,7 +19,7 @@ sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
-def main(config_file, no_of_histogram_bins=100):
+def main(config_file, no_of_plotted_cdfs=8):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
      no_of_temperature_increments, use_external_global_moves, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
@@ -31,6 +31,7 @@ def main(config_file, no_of_histogram_bins=100):
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
     pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
+
     figure, axis = plt.subplots(1)
     axis.tick_params(which='both', width=2)
     axis.tick_params(which='major', length=7, labelsize=18, pad=10)
@@ -54,36 +55,83 @@ def main(config_file, no_of_histogram_bins=100):
     inset_axis.set_ylabel(r"$\omega_{C-vM}^2$")
     [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
-    temps, cvms = [], []
-    start_time = time.time()
-    for temperature_index in range(no_of_temperature_increments + 1):
-        print(f"Temperature = {temperature:.2f}")
-        if no_of_jobs == 1:
-            cdf_of_magnetisation_phase, cvm_value = get_cdf_and_cramervonmises_of_magnetisation_phase(
-                output_directory, temperature, no_of_sites, no_of_equilibration_sweeps)
-            if temperature_index == 0 or temperature_index == no_of_temperature_increments:
-                axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
-                          label=f"temperature = {temperature:.2f}")
-        else:
-            cdf_and_cvm_outputs = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
-                (f"{output_directory}/job_{job_index + 1}", temperature, no_of_sites, no_of_equilibration_sweeps)
-                for job_index in range(no_of_jobs)]), dtype=object).transpose()
-            cdfs_of_magnetisation_phase, cvm_value = cdf_and_cvm_outputs[0], np.mean(cdf_and_cvm_outputs[1])
-            if temperature_index == 0 or temperature_index == no_of_temperature_increments:
-                for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, 8)]):
-                    if job_index == 0:
-                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
-                                  label=fr"$1 / (\beta J)$ = {temperature:.2f}")
-                    else:
-                        axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
-        temps.append(temperature)
-        cvms.append(cvm_value)
-        temperature -= magnitude_of_temperature_increments
+    try:
+        with open(f"{output_directory}/cramervonmises_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                  f"{algorithm_name.replace('-', '_')}.tsv", "r") as output_file:
+            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                if not line.startswith('#')]).transpose()
+            temperatures, cvms, cvm_errors = (output_file_sans_header[0], output_file_sans_header[1],
+                                              output_file_sans_header[2])
+        for temperature_index in range(min(no_of_temperature_increments + 1, 2)):
+            if no_of_jobs == 1:
+                with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
+                          f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                          f"{algorithm_name.replace('-', '_')}.npy", "rb") as output_file:
+                    axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
+                              label=f"temperature = {temperature:.2f}")
+            else:
+                for job_index in range(min(no_of_jobs, no_of_plotted_cdfs)):
+                    with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
+                              f"job_{job_index + 1}.npy", "rb") as output_file:
+                        if job_index == 0:
+                            axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
+                                      linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                        else:
+                            axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
+                                      linestyle=linestyles[job_index])
+            temperature = initial_temperature
+    except IOError:
+        cvm_file = open(f"{output_directory}/cramervonmises_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                        f"{algorithm_name.replace('-', '_')}.tsv", "w")
+        cvm_file.write("# temperature".ljust(30) + "Cramer-von Mises value".ljust(30) + "Cramer-von Mises error" + "\n")
+        temperatures, cvms, cvm_errors = [], [], []
+        start_time = time.time()
+        for temperature_index in range(no_of_temperature_increments + 1):
+            print(f"Temperature = {temperature:.2f}")
+            if no_of_jobs == 1:
+                cdf_of_magnetisation_phase, cvm_value = get_cdf_and_cramervonmises_of_magnetisation_phase(
+                    output_directory, temperature, no_of_sites, no_of_equilibration_sweeps)
+                cvm_error = 1.0  # dummy error
+                if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                    axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
+                              label=f"temperature = {temperature:.2f}")
+                    with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                              f"{algorithm_name.replace('-', '_')}.npy", "wb") as output_file:
+                        np.save(output_file, cdf_of_magnetisation_phase)
+            else:
+                cdf_and_cvm_outputs = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
+                    (f"{output_directory}/job_{job_index + 1}", temperature, no_of_sites, no_of_equilibration_sweeps)
+                    for job_index in range(no_of_jobs)]), dtype=object).transpose()
+                cdfs_of_magnetisation_phase, cvm_value, cvm_error = cdf_and_cvm_outputs[0], np.mean(
+                    cdf_and_cvm_outputs[1]), np.std(cdf_and_cvm_outputs[1]) / len(cdf_and_cvm_outputs[1]) ** 0.5
+                if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                    for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, no_of_plotted_cdfs)]):
+                        if job_index == 0:
+                            axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
+                                      label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                        else:
+                            axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
+                        with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
+                                  f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                                  f"{algorithm_name.replace('-', '_')}_job_{job_index + 1}.npy", "wb") as output_file:
+                            np.save(output_file, cdf)
+            temperatures.append(temperature)
+            cvms.append(cvm_value)
+            cvm_errors.append(cvm_error)
+            cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_value:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
+            temperature -= magnitude_of_temperature_increments
 
-    if no_of_jobs > 1:
-        pool.close()
+        cvm_file.close()
+        if no_of_jobs > 1:
+            pool.close()
+        print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
-    inset_axis.plot(temps, cvms, marker=".", markersize=10, color="k", linestyle="None")
+    if no_of_jobs == 1:
+        inset_axis.plot(temperatures, cvms, marker=".", markersize=10, color="k", linestyle="None")
+    else:
+        inset_axis.errorbar(temperatures, cvms, cvm_errors, marker=".", markersize=10, color="k", linestyle="None")
 
     legend = axis.legend(loc="lower right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
@@ -95,7 +143,6 @@ def main(config_file, no_of_histogram_bins=100):
     else:
         figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_sans_twists_{int(no_of_sites ** 0.5)}x"
                        f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
-    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperature, no_of_sites,
