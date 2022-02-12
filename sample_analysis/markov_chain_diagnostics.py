@@ -44,6 +44,9 @@ def get_cumulative_distribution(one_dimensional_sample):
     if len(np.atleast_2d(one_dimensional_sample)) > 1:
         raise Exception("Error: the sample passed to markov_chain_diagnostics.get_cumulative_distribution() must be "
                         "one (Cartesian) dimensional.")
+    """alternative calculation commented out, nb, factor of 1 / 10 (in bins) may not be optimal"""
+    """count, bins_count = np.histogram(magnetisation_phase, bins=int(len(one_dimensional_sample) / 10))
+    cdf = np.array([bins_count[1:], np.cumsum(count / sum(count))])"""
     bin_values = np.arange(1, len(one_dimensional_sample) + 1) / float(len(one_dimensional_sample))
     ordered_sample = np.sort(one_dimensional_sample)
     return [ordered_sample, bin_values]
