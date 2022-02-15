@@ -1,6 +1,6 @@
 'xy-ecmc'                                   algorithm_name
 'output/mag_distributions/xy_ecmc'          output_directory
-64                                          integer_lattice_length
+32                                          integer_lattice_length
 10000                                       no_of_equilibration_sweeps
 100000                                      no_of_observations
 0.5d0                                       initial_temperature
