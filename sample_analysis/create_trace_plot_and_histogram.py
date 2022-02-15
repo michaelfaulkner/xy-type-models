@@ -17,8 +17,9 @@ run_script = importlib.import_module("run")
 
 def main(config_file, observable_string, max_physical_time=100.0, number_of_histogram_bins=1000):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
+     final_temperature, no_of_temperature_increments, _, external_global_moves_string, no_of_jobs,
+     max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
@@ -48,9 +49,9 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
                  - np.mean(sample[0, no_of_equilibration_sweeps:no_of_equilibration_sweeps + length_of_trace_plot]),
                  color="k", linewidth=1, linestyle="-")
         plt.tight_layout()
-        plt.savefig(f"{output_directory}/{observable_string}_vs_time_temp_eq_{temperature:.2f}_"
-                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
-                    bbox_inches="tight")
+        plt.savefig(f"{output_directory}/{observable_string}_vs_time_{algorithm_name.replace('-', '_')}_"
+                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                    f"{temperature:.2f}.pdf", bbox_inches="tight")
         plt.clf()
 
         if len(sample) > 1:
@@ -62,9 +63,9 @@ def main(config_file, observable_string, max_physical_time=100.0, number_of_hist
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.hist(sample[0, no_of_equilibration_sweeps:] - np.mean(sample[0, no_of_equilibration_sweeps:]),
                  bins=number_of_histogram_bins, density=True)
-        plt.savefig(f"{output_directory}/{observable_string}_histogram_temp_eq_{temperature:.2f}_"
-                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf",
-                    bbox_inches="tight")
+        plt.savefig(f"{output_directory}/{observable_string}_histogram_{algorithm_name.replace('-', '_')}_"
+                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                    f"{temperature:.2f}.pdf", bbox_inches="tight")
         plt.clf()
 
         temperature -= magnitude_of_temperature_increments

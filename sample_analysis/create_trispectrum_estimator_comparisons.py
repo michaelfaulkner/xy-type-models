@@ -10,8 +10,8 @@ polyspectra = importlib.import_module("polyspectra")
 
 def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-     no_of_jobs, temperature, magnitude_of_temperature_increments, pool) = setup_scripts.set_up_polyspectra_script(
-        config_file, observable_string)
+     external_global_moves_string, no_of_jobs, temperature, magnitude_of_temperature_increments,
+     pool) = setup_scripts.set_up_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
     for _ in range(no_of_temperature_increments + 1):
@@ -19,10 +19,10 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
 
         power_trispectrum = polyspectra.get_power_trispectrum(
             algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
         power_trispectrum_as_defined = polyspectra.get_power_trispectrum_as_defined(
             algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves, trispectrum_base_period_shift)
 
         # normalise each estimator of power trispectrum with respect to their low-frequency values
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
@@ -71,10 +71,11 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
         for legend in trispectrum_legend:
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
-        figure.savefig(f"{output_directory}/{observable_string}_compare_power_trispectrum_estimators_"
-                       f"max_shift_eq_{2 ** no_of_trispectrum_octaves}_x_{trispectrum_base_period_shift}_delta_t_"
-                       f"temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                       f"{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
+        figure.savefig(f"{output_directory}/{observable_string}_compare_trispectrum_estimators_"
+                       f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                       f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                       f"{2 ** no_of_trispectrum_octaves}_x_{trispectrum_base_period_shift}_delta_t.pdf",
+                       bbox_inches="tight")
         figure.clf()
         temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")

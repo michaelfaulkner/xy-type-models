@@ -17,8 +17,9 @@ run_script = importlib.import_module("run")
 
 def main(config_file):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
+     final_temperature, no_of_temperature_increments, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
+        config_file)
     if no_of_jobs != 1:
         print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one.")
         raise SystemExit

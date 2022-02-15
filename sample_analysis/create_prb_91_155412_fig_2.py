@@ -24,8 +24,8 @@ def main(electrolyte_version):
     else:
         config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves_only.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
-    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, initial_temperature,
-     final_temperature, no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
+    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
+     final_temperature, no_of_temperature_increments, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
         config_file_local_moves)
     output_directory = output_directory_local_moves.replace("/local_moves_only", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
@@ -33,16 +33,15 @@ def main(electrolyte_version):
         initial_temperature, final_temperature, no_of_temperature_increments)
 
     try:
-        with open(f"{output_directory}/prb_91_155412_fig_2_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.tsv", "r") as output_file:
+        with open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_{int(no_of_sites ** 0.5)}"
+                  f"x{int(no_of_sites ** 0.5)}_sites.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             temperatures = output_file_sans_header[0]
             chi_w_ratios = output_file_sans_header[1]
     except IOError:
-        output_file = open(f"{output_directory}/prb_91_155412_fig_2_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                           f"{algorithm_name.replace('-', '_')}.tsv", "w")
-
+        output_file = open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
+                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv", "w")
         if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
             output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
                               "final width of proposal interval (local only)".ljust(50) +
@@ -127,8 +126,8 @@ def main(electrolyte_version):
     plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
     plt.ylabel(r"$\chi_{\rm w, local}$ / $\chi_{\rm w, all}$", fontsize=15, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-    plt.savefig(f"{output_directory}/prb_91_155412_fig_2_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                f"{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
+    plt.savefig(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
+                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf", bbox_inches="tight")
 
 
 if __name__ == "__main__":

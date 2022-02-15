@@ -20,9 +20,9 @@ run_script = importlib.import_module("run")
 
 def main(config_file, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, use_external_global_moves, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
-        config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, initial_temperature,
+     final_temperature, no_of_temperature_increments, use_external_global_moves, external_global_moves_string,
+     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
@@ -34,20 +34,21 @@ def main(config_file, no_of_histogram_bins=100):
     if no_of_jobs == 1:
         make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
                    magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-                   no_of_histogram_bins, job_index=None)
+                   external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index=None)
     else:
         pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
         pool.starmap(make_plots, [
             (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
              magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-             no_of_histogram_bins, job_index) for job_index in range(no_of_jobs)])
+             external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index) for job_index in
+            range(no_of_jobs)])
         pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
                magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-               no_of_histogram_bins, job_index):
+               external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index):
     if job_index is None:
         sample_directory = output_directory
     else:
@@ -66,9 +67,10 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         axes[0].plot(cartesian_magnetisation[0, :10000], cartesian_magnetisation[1, :10000], linestyle="solid",
                      color="black")
         axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
-        save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                    use_external_global_moves, prepended_string="magnetisation_revolution",
-                    appended_string="_first_1e4_steps")
+        figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
+                       f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
+                       f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_first_1e4_steps"
+                       f".pdf", bbox_inches="tight")
         [axis.cla() for axis in axes]
 
         cartesian_magnetisation = cartesian_magnetisation[:, no_of_equilibration_sweeps:]
@@ -97,11 +99,11 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                     axes[1].hist(magnetisation_phase[max(0, index - time_window):min(len(magnetisation_norm) - 1,
                                                                                      index + time_window + 1)],
                                  bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
-                    figure.savefig(
-                        f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
-                        f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                        f"job_{job_index + 1}_around_global_twist_at_time_step_{index}.pdf",
-                        bbox_inches="tight")
+                    figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
+                                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_"
+                                   f"around_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
+
                     [axis.cla() for axis in axes]
 
                     set_magnetisation_revolution_axes(axes)
@@ -114,21 +116,11 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                     """estimate CDF of magnetisation phase up to time of global-move event"""
                     axes[1].hist(magnetisation_phase[0:index], bins=no_of_histogram_bins, density=True,
                                  color="red", edgecolor="black")
-                    figure.savefig(
-                        f"{output_directory}/magnetisation_revolution_w_twists_temp_eq_{temperature:.2f}_"
-                        f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                        f"job_{job_index + 1}_up_to_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
+                    figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
+                                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_up_"
+                                   f"to_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
                     [axis.cla() for axis in axes]
-
-        set_magnetisation_revolution_axes(axes)
-        axes[0].plot(cartesian_magnetisation[0, :100000], cartesian_magnetisation[1, :100000], linestyle="solid",
-                     linewidth=1, color="black")
-        axes[1].hist(magnetisation_phase[:100000], bins=no_of_histogram_bins, density=True, color="red",
-                     edgecolor="black")
-        save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                    use_external_global_moves, prepended_string="magnetisation_revolution",
-                    appended_string="_1e5_observations")
-        [axis.cla() for axis in axes]
 
         set_magnetisation_revolution_axes(axes)
         axes[1].tick_params(axis='y', colors='red')
@@ -144,8 +136,10 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                       linewidth=2, linestyle="-")
         cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
         cdf_axis.yaxis.set_major_formatter('{x:.1f}')
-        save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                    use_external_global_moves, prepended_string="magnetisation_revolution")
+        figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
+                       f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                       f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}.pdf",
+                       bbox_inches="tight")
         figure.clear()
 
         if job_index == 0:
@@ -177,8 +171,10 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
             axes[2, 0].hist(magnetisation_norm, bins=no_of_histogram_bins, density=True, color="r", edgecolor="k")
             axes[2, 1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="r", edgecolor="k")
 
-            save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                        use_external_global_moves, prepended_string="magnetisation_histograms")
+            figure.savefig(f"{output_directory}/magnetisation_histograms_{algorithm_name.replace('-', '_')}_"
+                           f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                           f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}.pdf",
+                           bbox_inches="tight")
 
         plt.close()
         temperature -= magnitude_of_temperature_increments
@@ -227,18 +223,6 @@ def set_magnetisation_revolution_axes(axes):
     axes[1].yaxis.set_major_formatter('{x:.2f}')
     axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4)
     [axes[1].spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
-
-
-def save_figure(algorithm_name, figure, job_index, no_of_sites, output_directory, temperature,
-                use_external_global_moves, prepended_string, appended_string=""):
-    if use_external_global_moves:
-        figure.savefig(f"{output_directory}/{prepended_string}_w_twists_temp_eq_{temperature:.2f}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
-                       f"_job_{job_index + 1}{appended_string}.pdf", bbox_inches="tight")
-    else:
-        figure.savefig(f"{output_directory}/{prepended_string}_sans_twists_temp_eq_{temperature:.2f}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}"
-                       f"_job_{job_index + 1}{appended_string}.pdf", bbox_inches="tight")
 
 
 if __name__ == "__main__":

@@ -79,13 +79,15 @@ def get_temperature_and_magnitude_of_increments(initial_temperature, final_tempe
 
 def set_up_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
+     final_temperature, no_of_temperature_increments, _, external_global_moves_string, no_of_jobs,
+     max_no_of_cpus) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
     (temperature, magnitude_of_temperature_increments) = get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
     return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-            no_of_jobs, temperature, magnitude_of_temperature_increments, setup_pool(no_of_jobs, max_no_of_cpus))
+            external_global_moves_string, no_of_jobs, temperature, magnitude_of_temperature_increments,
+            setup_pool(no_of_jobs, max_no_of_cpus))
 
 
 def setup_pool(no_of_jobs, max_no_of_cpus):

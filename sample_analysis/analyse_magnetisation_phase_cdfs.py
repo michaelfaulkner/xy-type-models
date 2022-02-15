@@ -21,9 +21,9 @@ run_script = importlib.import_module("run")
 
 def main(config_file, no_of_plotted_cdfs=8):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, initial_temperature, final_temperature,
-     no_of_temperature_increments, use_external_global_moves, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
-        config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, initial_temperature,
+     final_temperature, no_of_temperature_increments, use_external_global_moves, external_global_moves_string,
+     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
@@ -57,24 +57,26 @@ def main(config_file, no_of_plotted_cdfs=8):
     [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
     try:
-        with open(f"{output_directory}/cramervonmises_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.tsv", "r") as output_file:
+        with open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                  f"{no_of_observations}_obs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             temperatures, cvms, cvm_errors = (output_file_sans_header[0], output_file_sans_header[1],
                                               output_file_sans_header[2])
         for temperature_index in range(min(no_of_temperature_increments + 1, 2)):
             if no_of_jobs == 1:
-                with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
-                          f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                          f"{algorithm_name.replace('-', '_')}.npy", "rb") as output_file:
+                with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                          f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                          f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}.npy", "rb") as output_file:
                     axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
                               label=f"temperature = {temperature:.2f}")
             else:
                 for job_index in range(min(no_of_jobs, no_of_plotted_cdfs)):
-                    with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}_"
-                              f"job_{job_index + 1}.npy", "rb") as output_file:
+                    with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                              f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}.npy",
+                              "rb") as output_file:
                         if job_index == 0:
                             axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
                                       linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
@@ -88,8 +90,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                                       linestyle=linestyles[job_index])
             temperature = initial_temperature
     except IOError:
-        cvm_file = open(f"{output_directory}/cramervonmises_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                        f"{algorithm_name.replace('-', '_')}.tsv", "w")
+        cvm_file = open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
+                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                        f"{no_of_observations}_obs.tsv", "w")
         cvm_file.write("# temperature".ljust(30) + "omega_n^2".ljust(30) + "omega_n^2 error" + "\n")
         temperatures, cvms, cvm_errors = [], [], []
         start_time = time.time()
@@ -102,9 +105,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                 if temperature_index == 0 or temperature_index == no_of_temperature_increments:
                     axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
                               label=f"temperature = {temperature:.2f}")
-                    with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                              f"{algorithm_name.replace('-', '_')}.npy", "wb") as output_file:
+                    with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                              f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}.npy", "wb") as output_file:
                         np.save(output_file, cdf_of_magnetisation_phase)
             else:
                 cdf_and_cvm = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
@@ -119,9 +122,10 @@ def main(config_file, no_of_plotted_cdfs=8):
                                       label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                         else:
                             axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
-                        with open(f"{output_directory}/magnetisation_phase_cdf_temp_eq_{temperature:.2f}_"
-                                  f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                                  f"{algorithm_name.replace('-', '_')}_job_{job_index + 1}.npy", "wb") as output_file:
+                        with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                                  f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_"
+                                  f"job_{job_index + 1}.npy", "wb") as output_file:
                             np.save(output_file, cdf)
             temperatures.append(temperature)
             cvms.append(cvm)
@@ -143,13 +147,9 @@ def main(config_file, no_of_plotted_cdfs=8):
     legend = axis.legend(reversed(handles), reversed(labels), title='colour code', loc="lower right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
-
-    if use_external_global_moves:
-        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_twists_{int(no_of_sites ** 0.5)}x"
-                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
-    else:
-        figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_sans_twists_{int(no_of_sites ** 0.5)}x"
-                       f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
+    figure.savefig(f"{output_directory}/magnetisation_phase_CDFs_w_cramervonmises_{algorithm_name.replace('-', '_')}_"
+                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                   f"{no_of_observations}_obs.pdf", bbox_inches="tight")
 
 
 def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperature, no_of_sites,
@@ -163,6 +163,10 @@ def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperat
     m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
     radial coordinates and m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian
     magnetisation, with x_i the position of particle i at the time of observation.
+
+    NB, RuntimeWarnings are often thrown by lines 175, 178, 179 and 188 of scipy/stats/_hypotests.py when calculating
+    the p-value of scipy.stats.cramervonmises() for highly nonergodic magnetisation-phase samples.  They do not affect
+    the calculation of the Cramér-von Mises integral itself.
 
     Parameters
     ----------

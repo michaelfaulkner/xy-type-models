@@ -12,7 +12,8 @@ sample_getter = importlib.import_module("sample_getter")
 
 
 def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                       no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
+                       no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                       sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} (with a
     standard error at each f) of the time series X(t) of observable_string, where T is the total simulation time,
@@ -46,6 +47,8 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -68,9 +71,9 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum...
-        with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
-                  f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy",
-                  "rb") as data_file:
+        with open(f"{output_directory}/{observable_string}_power_spectrum_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}.npy", "rb") as data_file:
             return np.load(data_file)
     except IOError:
         # ...then if the file does not exists, compute the estimate of the spectrum
@@ -92,15 +95,16 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             power_spectrum = get_power_spectrum_means_and_std_errors(power_spectra)
         # finally, save the estimated spectrum to file
-        with open(f"{output_directory}/{observable_string}_power_spectrum_temp_eq_{temperature:.2f}_"
-                  f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy",
-                  "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_power_spectrum_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}.npy", "wb") as data_file:
             np.save(data_file, power_spectrum)
         return power_spectrum
 
 
 def get_second_spectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                        no_of_equilibration_sweeps, no_of_jobs, pool, sampling_frequency=None):
+                        no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                        sampling_frequency=None):
     r"""
     Returns an estimate of the second spectrum (minus its Gaussian contribution)
     S_Y(f, s = 0) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s = 0) | ** 2] / T} (with a standard error at each f) of
@@ -137,6 +141,8 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -158,13 +164,13 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     return get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
-                                            no_of_sites, no_of_equilibration_sweeps, no_of_jobs, pool, 0,
-                                            sampling_frequency)
+                                            no_of_sites, no_of_equilibration_sweeps, external_global_moves_string,
+                                            no_of_jobs, pool, 0, sampling_frequency)
 
 
 def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                     no_of_equilibration_sweeps, no_of_jobs, pool, time_period_shift=10,
-                                     sampling_frequency=None):
+                                     no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                                     time_period_shift=10, sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
     (with a standard error at each f) of the correlator Y(t, s) := X(t) * X(t - s), where X(t) is the time series of
@@ -199,6 +205,8 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -224,9 +232,10 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     """
     try:
         # first, attempt to open a previously computed estimate of the spectrum...
-        with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
-                  f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
-                  f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "rb") as data_file:
+        with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_time_shift_eq_{time_period_shift}_delta_t"
+                  f".npy", "rb") as data_file:
             return np.load(data_file)
     except IOError:
         # ...then if the file does not exists, compute the estimate of the spectrum
@@ -248,16 +257,17 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             correlator_power_spectrum = get_power_spectrum_means_and_std_errors(correlator_power_spectra)
         # finally, save the estimated spectrum to file
-        with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_time_shift_eq_"
-                  f"{time_period_shift}_delta_t_temp_eq_{temperature:.2f}_{int(no_of_sites ** 0.5)}x"
-                  f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.npy", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_power_spectrum_of_correlator_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_time_shift_eq_{time_period_shift}_delta_t"
+                  f".npy", "wb") as data_file:
             np.save(data_file, correlator_power_spectrum)
         return correlator_power_spectrum
 
 
 def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                          no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
-                          base_time_period_shift=1, sampling_frequency=None):
+                          no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                          no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1, sampling_frequency=None):
     r"""
     Returns an estimate of the shortcut estimator
     E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
@@ -301,6 +311,8 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -335,15 +347,15 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the trispectrum...
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_auxiliary_frequencies_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "r") as data_file:
             auxiliary_frequencies = np.loadtxt(data_file, dtype=float, delimiter=",")
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npz", "rb") as data_file:
             data = np.load(data_file)
         return [auxiliary_frequencies, data[0][0], np.array([spectrum for spectrum in data[:][1]]),
                 np.array([errors for errors in data[:][2]])]
@@ -374,15 +386,15 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
             power_trispectrum = [auxiliary_frequencies, frequencies, np.mean(trispectra_sans_any_frequencies, axis=0),
                                  np.std(trispectra_sans_any_frequencies, axis=0) / len(power_trispectra) ** 0.5]
         # finally, save the estimated trispectrum to file
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "w") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_auxiliary_frequencies_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npz", "wb") as data_file:
             np.savez(data_file,
                      [np.array([power_trispectrum[1], power_trispectrum[2][index], power_trispectrum[3][index]])
                       for index in range(no_of_auxiliary_frequency_octaves + 1)])
@@ -390,8 +402,9 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
 
 
 def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                    no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
-                                    base_time_period_shift=1, sampling_frequency=None):
+                                    no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                                    no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                    sampling_frequency=None):
     r"""
     Returns an estimate of the zero (auxiliary-frequency) mode
     S_X^3(f, f' = 0) := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of the power trispectrum (with
@@ -428,6 +441,8 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -458,10 +473,10 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the trispectrum zero mode...
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_f_prime_eq_zero_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npy", "rb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_zero_mode_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npy", "rb") as data_file:
             return np.load(data_file)
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum zero mode
@@ -490,16 +505,16 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                 [frequencies, np.mean(trispectra_sans_frequencies, axis=0),
                  np.std(trispectra_sans_frequencies, axis=0) / len(power_trispectra_zero_modes) ** 0.5])
         # finally, save the estimated trispectrum zero mode to file
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_f_prime_eq_zero_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npy", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_zero_mode_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npy", "wb") as data_file:
             np.save(data_file, power_trispectrum_zero_mode)
         return power_trispectrum_zero_mode
 
 
 def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                       no_of_equilibration_sweeps, no_of_jobs, pool,
+                                       no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
                                        no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                        target_auxiliary_frequency=None, sampling_frequency=None):
     r"""
@@ -545,6 +560,8 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -580,15 +597,15 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the chosen mode of the trispectrum...
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_nonzero_mode_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequency.csv", "r") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_nonzero_mode_auxiliary_frequency_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "r") as data_file:
             auxiliary_frequency = np.loadtxt(data_file, dtype=float, delimiter=",")
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_nonzero_mode_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npy", "rb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_nonzero_mode_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npy", "rb") as data_file:
             frequencies, spectrum, errors = np.load(data_file)
         return [auxiliary_frequency, frequencies, spectrum, errors]
     except IOError:
@@ -617,23 +634,24 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
                 auxiliary_frequency, frequencies, np.mean(trispectra_sans_any_frequencies, axis=0),
                 np.std(trispectra_sans_any_frequencies, axis=0) / len(power_trispectra_nonzero_mode) ** 0.5]
         # finally, save the estimated nonzero mode of trispectrum to file
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_nonzero_mode_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequency.csv", "w") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_nonzero_mode_auxiliary_frequency_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "w") as data_file:
             np.savetxt(data_file, np.atleast_1d(power_trispectrum_nonzero_mode[0]), delimiter=",")
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_nonzero_mode_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npy", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_nonzero_mode_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npy", "wb") as data_file:
             np.save(data_file, np.array([power_trispectrum_nonzero_mode[1], power_trispectrum_nonzero_mode[2],
                                          power_trispectrum_nonzero_mode[3]]))
         return power_trispectrum_nonzero_mode
 
 
 def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature, no_of_sites,
-                                     no_of_equilibration_sweeps, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
-                                     base_time_period_shift=1, sampling_frequency=None):
+                                     no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                                     no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                     sampling_frequency=None):
     r"""
     Returns an estimate of the complex norm (as defined) of the power trispectrum
     S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
@@ -677,6 +695,8 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         The number of lattice sites.
     no_of_equilibration_sweeps : int
         The number of discarded equilibration observations.
+    external_global_moves_string : str
+        A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
@@ -710,15 +730,15 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         raise Exception("no_of_auxiliary_frequency_octaves must be a positive integer.")
     try:
         # first, attempt to open a previously computed estimate of the trispectrum...
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "r") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_as_defined_auxiliary_frequencies_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "r") as data_file:
             auxiliary_frequencies = np.atleast_1d(np.loadtxt(data_file, dtype=float, delimiter=","))
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_as_defined_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npz", "rb") as data_file:
             data = np.load(data_file)
         return [auxiliary_frequencies, data[0][0], np.array([spectrum for spectrum in data[:][1]])]
     except IOError:
@@ -752,15 +772,15 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                              / 2 ** (no_of_auxiliary_frequency_octaves + 1), power_spectra_of_correlators[0, 0],
                              norm_of_spectra_in_auxiliary_frequency_space]
         # finally, save the estimated trispectrum to file
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}_auxiliary_frequencies.csv", "w") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_as_defined_auxiliary_frequencies_"
+                  f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                  f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t.csv", "w") as data_file:
             np.savetxt(data_file, power_trispectrum[0], delimiter=",")
-        with open(f"{output_directory}/{observable_string}_power_trispectrum_as_defined_max_shift_eq_"
-                  f"{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_delta_t_temp_eq_"
-                  f"{temperature:.2f}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                  f"{algorithm_name.replace('-', '_')}.npz", "wb") as data_file:
+        with open(f"{output_directory}/{observable_string}_trispectrum_as_defined_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
+                  f"{temperature:.2f}_max_shift_eq_{2 ** no_of_auxiliary_frequency_octaves}_x_{base_time_period_shift}_"
+                  f"delta_t.npz", "wb") as data_file:
             np.savez(data_file, [np.array([power_trispectrum[1], power_trispectrum[2][index]])
                                  for index in range(no_of_auxiliary_frequency_octaves + 1)])
         return power_trispectrum
