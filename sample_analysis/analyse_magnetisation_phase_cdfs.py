@@ -48,11 +48,12 @@ def main(config_file, no_of_plotted_cdfs=8):
     [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
     colors = ["black", "red"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
-    inset_axis = plt.axes([0.15, 0.6125, 0.25, 0.25])
+    inset_axis = plt.axes([0.135, 0.665, 0.2, 0.2])
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
-    inset_axis.set_xlabel(r"$1 / (\beta J)$")
-    inset_axis.set_ylabel(r"$\omega_{\rm{CvM}}$")
+    inset_axis.tick_params(which='major', width=2, labelsize=7.5)
+    inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=7.5)
+    inset_axis.set_ylabel(r"$\omega_n^2$", fontsize=7.5)
     [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
     try:
@@ -89,15 +90,15 @@ def main(config_file, no_of_plotted_cdfs=8):
     except IOError:
         cvm_file = open(f"{output_directory}/cramervonmises_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                         f"{algorithm_name.replace('-', '_')}.tsv", "w")
-        cvm_file.write("# temperature".ljust(30) + "Cramer-von Mises value".ljust(30) + "Cramer-von Mises error" + "\n")
+        cvm_file.write("# temperature".ljust(30) + "omega_n^2".ljust(30) + "omega_n^2 error" + "\n")
         temperatures, cvms, cvm_errors = [], [], []
         start_time = time.time()
         for temperature_index in range(no_of_temperature_increments + 1):
             print(f"Temperature = {temperature:.2f}")
             if no_of_jobs == 1:
-                cdf_of_magnetisation_phase, cvm_squared = get_cdf_and_cramervonmises_sq_of_magnetisation_phase(
+                cdf_of_magnetisation_phase, cvm = get_cdf_and_cramervonmises_of_magnetisation_phase(
                     output_directory, temperature, no_of_sites, no_of_equilibration_sweeps)
-                cvm, cvm_error = cvm_squared ** 0.5, 1.0  # dummy error
+                cvm_error = 1.0  # dummy error
                 if temperature_index == 0 or temperature_index == no_of_temperature_increments:
                     axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
                               label=f"temperature = {temperature:.2f}")
@@ -106,11 +107,11 @@ def main(config_file, no_of_plotted_cdfs=8):
                               f"{algorithm_name.replace('-', '_')}.npy", "wb") as output_file:
                         np.save(output_file, cdf_of_magnetisation_phase)
             else:
-                cdf_and_cvm_sq = np.array(pool.starmap(get_cdf_and_cramervonmises_sq_of_magnetisation_phase, [
+                cdf_and_cvm = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
                     (f"{output_directory}/job_{job_index + 1}", temperature, no_of_sites, no_of_equilibration_sweeps)
                     for job_index in range(no_of_jobs)]), dtype=object).transpose()
-                cdfs_of_magnetisation_phase, cvm, cvm_error = cdf_and_cvm_sq[0], np.mean(cdf_and_cvm_sq[1]) ** 0.5, (
-                        np.std(cdf_and_cvm_sq[1]) / len(cdf_and_cvm_sq[1]) ** 0.5) ** 0.5
+                cdfs_of_magnetisation_phase, cvm, cvm_error = cdf_and_cvm[0], np.mean(cdf_and_cvm[1]), (
+                        np.std(cdf_and_cvm[1]) / len(cdf_and_cvm[1]) ** 0.5)
                 if temperature_index == 0 or temperature_index == no_of_temperature_increments:
                     for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, no_of_plotted_cdfs)]):
                         if job_index == 0:
@@ -134,12 +135,12 @@ def main(config_file, no_of_plotted_cdfs=8):
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs == 1:
-        inset_axis.plot(temperatures, cvms, marker=".", markersize=10, color="k", linestyle="None")
+        inset_axis.errorbar(temperatures, cvms, marker=".", markersize=10, color="k", linestyle="None")
     else:
         inset_axis.errorbar(temperatures, cvms, cvm_errors, marker=".", markersize=10, color="k", linestyle="None")
 
     handles, labels = axis.get_legend_handles_labels()
-    legend = axis.legend(reversed(handles), reversed(labels), title='Colour code', loc="lower right", fontsize=10)
+    legend = axis.legend(reversed(handles), reversed(labels), title='colour code', loc="lower right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
 
@@ -151,12 +152,41 @@ def main(config_file, no_of_plotted_cdfs=8):
                        f"{int(no_of_sites ** 0.5)}_{algorithm_name.replace('-', '_')}.pdf", bbox_inches="tight")
 
 
-def get_cdf_and_cramervonmises_sq_of_magnetisation_phase(sample_directory, temperature, no_of_sites,
-                                                         no_of_equilibration_sweeps):
+def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperature, no_of_sites,
+                                                      no_of_equilibration_sweeps):
+    r"""
+    Returns (for the sample of the magnetisation phase) the empirical CDF F_n(x) and normalised Cramér-von Mises
+    integral \omega_n^2 := \int (F_n(x) - F(x))^2 dF(x) / n, where n is the sample size and F(x) is the CDF of the
+    continuous uniform distribution Uniform(-pi, pi).
+
+    The magnetisation phase phi(x; temperature, no_of_sites), where
+    m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
+    radial coordinates and m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian
+    magnetisation, with x_i the position of particle i at the time of observation.
+
+    Parameters
+    ----------
+    sample_directory : str
+
+    temperature : float
+        The sampling temperature.
+    no_of_sites : int
+        The number of lattice sites.
+    no_of_equilibration_sweeps : int
+        The number of discarded equilibration observations.
+
+    Returns
+    -------
+    numpy.ndarray
+        the empirical CDF and normalised Cramér-von Mises integral.  A one-dimensional Python list of length 2.  The
+        first element is a two-dimensional numpy array (of floats) of size (2, n) representing the empirical CDF.  The
+        second element is a float estimating the normalised Cramér-von Mises integral.
+    """
     magnetisation_phase = sample_getter.get_magnetisation_phase(sample_directory, temperature,
                                                                 no_of_sites)[no_of_equilibration_sweeps:]
     return [np.array(markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase)),
-            stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic]
+            stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic /
+            len(magnetisation_phase)]
 
 
 if __name__ == "__main__":
