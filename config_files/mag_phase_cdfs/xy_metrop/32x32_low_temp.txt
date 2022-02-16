@@ -1,5 +1,5 @@
 'xy-gaussian-noise-metropolis'                              algorithm_name
-'output/mag_phase_cdfs/xy_metrop/16x16_low_temp'            output_directory
+'output/mag_phase_cdfs/xy_metrop/32x32_low_temp'            output_directory
 32                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
 1000000                                                     no_of_observations
