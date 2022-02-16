@@ -2,15 +2,15 @@
 
 # xy-type-models
 
-xy-type-models is an open-source, hybrid Fortran-Python application that implements the event-chain and 
-Metropolis-Hastings Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
+xy-type-models is an open-source, hybrid Fortran-Python application that implements the event-chain and Metropolis 
+Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
 
-Event-chain and Metropolis-Hastings simulation is available for the XY and harmonic XY (HXY) spin models. 
-Metropolis-Hastings simulation is available for the Maggs lattice-field electrolyte model in the grand canonical 
-ensemble (for particles). Each model is defined on a two-dimensional square lattice. 
+Event-chain and Metropolis simulation is available for the XY and harmonic XY (HXY) spin models.  Metropolis simulation 
+is available for the Maggs lattice-field electrolyte model in the grand canonical ensemble (for particles). Each model 
+is defined on a two-dimensional square lattice. 
 
-We provide uniform- and Gaussian-noise versions of the Metropolis-Hastings algorithm for the XY and HXY models. The 
-latter are labelled appropriately.
+We provide uniform- and Gaussian-noise versions of the Metropolis algorithm for the XY and HXY models. The latter are 
+labelled appropriately.
 
 We provide multivalued and elementary versions of the lattice-field electrolyte. In the former, the charge value at 
 each lattice site can be any integer multiple of the elementary charge, q; in the latter, the charge values are zero or 
@@ -62,7 +62,8 @@ be located in the [`config_files`](config_files) directory.
 To run xy-type-models, open your terminal, navigate to the top directory and enter `python run.py 
 <configuration file>`. The generated sample data will appear in the location corresponding to the value of 
 `output_directory` in the configuration file. Sample analysis can then be performed via the Python scripts contained in 
-the [`sample_analysis`](sample_analysis) directory.
+the [`sample_analysis`](sample_analysis) directory. Most sample-analysis scripts expect the path to the configuration 
+file as the first positional argument, but there are some exceptions.
 
 
 ## Configuration files
@@ -71,14 +72,16 @@ Configuration files are located in the [`config_files`](config_files) directory.
 strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form to 
 14 significant figures and with the suffix `d0`. All strings must be enclosed between two apostrophes, e.g., 
 `'string'`. Typically, the value of `output_directory` starts with `'output/`, i.e., the entire value is of the form 
-`'output/rest_of_string'`, but this is not a requirement. For the value of `output_directory`, i) refrain from giving 
-long strings, as this can lead to Fortran runtime errors, and ii) ensure 10 spaces between the value of 
-`output_directory` and the word `output_directory` itself, as this avoids Fortran errors when performing multiple runs 
-of the same simulation (the number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and  
-`max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, we recommend giving half the number of 
-CPUs available on your personal machine, e.g., for a four-core machine with two threads per core, we set 
-`max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four parallel runs of the same 
-simulation, and similarly for certain sample-analysis processes.
+`'output/rest_of_string'`, but this is not a requirement ([`output`](output) is the xy-type-models output 
+directory, but we often replace this with `../bc4-output` – the relative location of the output directory on our 
+cluster machine). For the value of `output_directory`, i) refrain from giving long strings, as this can lead to Fortran 
+runtime errors, and ii) ensure three tabbed spaces between the value of `output_directory` and the word 
+`output_directory` itself, as this avoids Fortran errors when performing multiple runs of the same simulation (the 
+number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and `max_no_of_cpus` must be positive 
+integers. For the value of `max_no_of_cpus`, we recommend giving half the number of CPUs available on your personal 
+machine, e.g., for a four-core machine with two threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, 
+xy-type-models will perform two sets of four parallel runs of the same simulation, and similarly for certain 
+sample-analysis processes.
 
 ### hxy-ecmc configuration file (an example)
 
@@ -266,11 +269,11 @@ In the future, we would like to integrate these XY-type models into [super-aLby]
 https://github.com/michaelfaulkner/super-aLby), our object-oriented Python application for super-relativistic Monte 
 Carlo simulation. super-aLby uses the [mediator-design pattern](https://en.wikipedia.org/wiki/Mediator_pattern) and is 
 therefore highly modular and beautiful. This would require additional super-aLby functionality for both the models and 
-Metropolis-Hastings/event-chain simulation. The slow functions would then be rewritten using the Fortran (or perhaps 
-equivalent C) code of xy-type-models. We would then benchmark super-aLby against xy-type-models; if the total CPU times 
-prove to be similar, this would provide evidence for Fortran/C code contained within a mediator-based, object-oriented 
-Python structure being the optimal approach to coding in statistical physics (since Python is relatively easy to read 
-and write and contains a lot of functionality).
+Metropolis/event-chain simulation. The slow functions would then be rewritten using the Fortran (or perhaps equivalent 
+C) code of xy-type-models. We would then benchmark super-aLby against xy-type-models; if the total CPU times prove to 
+be similar, this would provide evidence for Fortran/C code contained within a mediator-based, object-oriented Python 
+structure being the optimal approach to coding in statistical physics (since Python is relatively easy to read and 
+write and contains a lot of functionality).
 
 
 ## Makefiles
