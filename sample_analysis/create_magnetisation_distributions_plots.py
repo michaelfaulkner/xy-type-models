@@ -50,6 +50,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
                external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index):
     if job_index is None:
+        job_index = 0
         sample_directory = output_directory
     else:
         sample_directory = f"{output_directory}/job_{job_index + 1}"
