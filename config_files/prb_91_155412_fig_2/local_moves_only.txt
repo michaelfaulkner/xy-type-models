@@ -1,6 +1,6 @@
 'elementary-electrolyte'                                        algorithm_name
 '../bc4-output/prb_91_155412_fig_2/local_moves_only'            output_directory
-8                                                               integer_lattice_length
+64                                                              integer_lattice_length
 100000                                                          no_of_equilibration_sweeps
 1000000                                                         no_of_observations
 1.1d0                                                           initial_temperature
@@ -10,5 +10,5 @@
 0.44d0                                                          target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                              charge_hop_proportion
 .false.                                                         use_external_global_moves
-512                                                             no_of_jobs
-16                                                               max_no_of_cpus
+256                                                             no_of_jobs
+16                                                              max_no_of_cpus
