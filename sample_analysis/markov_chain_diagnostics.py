@@ -22,7 +22,7 @@ try:
         sample_mean_and_error = np.array(mcmcse_r_package.mcse(one_dimensional_sample))
         return sample_mean_and_error[0, 0], sample_mean_and_error[1, 0]
 
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ValueError) as _:
     def get_effective_sample_size(_):
         print("rpy2 not available: get_effective_sample_size() returns None.")
         return None
