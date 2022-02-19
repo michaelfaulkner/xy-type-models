@@ -333,7 +333,7 @@ def get_rotated_magnetisation_phase(output_directory, temperature, no_of_sites):
     """
     non_rotated_mag_phase = get_magnetisation_phase(output_directory, temperature, no_of_sites)
     return (non_rotated_mag_phase - np.sign(np.mean(non_rotated_mag_phase)) * np.mean(abs(non_rotated_mag_phase))
-            + 0.5 * math.pi) % math.pi - 0.5 * math.pi
+            + math.pi) % (2.0 * math.pi) - math.pi
 
 
 def get_cartesian_magnetisation(output_directory, temperature, no_of_sites):
