@@ -39,25 +39,31 @@ def main(electrolyte_version):
                                                 if not line.startswith('#')]).transpose()
             temperatures = output_file_sans_header[0]
             chi_w_ratios = output_file_sans_header[1]
-    except IOError:
+    except (IOError, IndexError) as _:
         output_file = open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
                            f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv", "w")
+        accept_rates_file = open(f"{output_directory}/acceptance_rates_{algorithm_name.replace('-', '_')}_"
+                                 f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv", "w")
+        output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
+                          "chi_w (local only)".ljust(30) + "chi_w error (local only)".ljust(30) +
+                          "chi_w (all moves)".ljust(30) + "chi_w error (all moves)".ljust(30) + "\n")
         if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-            output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
-                              "final width of proposal interval (local only)".ljust(50) +
-                              "rotational acceptance rate (local only)".ljust(50) +
-                              "charge-hop acceptance rate (local only)".ljust(50) +
-                              "final width of proposal interval (all moves)".ljust(50) +
-                              "rotational acceptance rate (all moves)".ljust(50) +
-                              "charge-hop acceptance rate (all moves)".ljust(50) +
-                              "acceptance rate (external global moves)" + "\n")
+            accept_rates_file.write("# temperature".ljust(30) +
+                                    "final width of proposal interval (local only)".ljust(50) +
+                                    "rotational acceptance rate (local only)".ljust(50) +
+                                    "charge-hop acceptance rate (local only)".ljust(50) +
+                                    "final width of proposal interval (all moves)".ljust(50) +
+                                    "rotational acceptance rate (all moves)".ljust(50) +
+                                    "charge-hop acceptance rate (all moves)".ljust(50) +
+                                    "acceptance rate (external global moves)" + "\n")
         else:
-            output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
-                              "final width of proposal interval (local only)".ljust(50) +
-                              "rotational acceptance rate (local only)".ljust(50) +
-                              "final width of proposal interval (all moves)".ljust(50) +
-                              "rotational acceptance rate (all moves)".ljust(50) +
-                              "acceptance rate (external global moves)" + "\n")
+
+            accept_rates_file.write("# temperature".ljust(30) +
+                                    "final width of proposal interval (local only)".ljust(50) +
+                                    "rotational acceptance rate (local only)".ljust(50) +
+                                    "final width of proposal interval (all moves)".ljust(50) +
+                                    "rotational acceptance rate (all moves)".ljust(50) +
+                                    "acceptance rate (external global moves)" + "\n")
 
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
@@ -95,24 +101,27 @@ def main(electrolyte_version):
                                           (sample_mean_local_moves * sample_error_all_moves /
                                            sample_mean_all_moves ** 2) ** 2)
 
+            output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_w_ratio:.14e}".ljust(30) +
+                              f"{chi_w_ratio_error:.14e}".ljust(30) + f"{sample_mean_local_moves:.14e}".ljust(30) +
+                              f"{sample_error_local_moves:.14e}".ljust(30) +
+                              f"{sample_mean_all_moves:.14e}".ljust(30) +
+                              f"{sample_error_all_moves:.14e}".ljust(30) + "\n")
             if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-                output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_w_ratio:.14e}".ljust(30) +
-                                  f"{chi_w_ratio_error:.14e}".ljust(30) +
-                                  f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_local_moves[2]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[2]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[3]:.14e}" + "\n")
+                accept_rates_file.write(f"{temperature:.14e}".ljust(30) +
+                                        f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_local_moves[2]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[2]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[3]:.14e}" + "\n")
             else:
-                output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_w_ratio:.14e}".ljust(30) +
-                                  f"{chi_w_ratio_error:.14e}".ljust(30) +
-                                  f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
-                                  f"{acceptance_rates_all_moves[2]:.14e}" + "\n")
+                accept_rates_file.write(f"{temperature:.14e}".ljust(30) +
+                                        f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_local_moves[1]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
+                                        f"{acceptance_rates_all_moves[2]:.14e}" + "\n")
             temperatures.append(temperature)
             chi_w_ratios.append(chi_w_ratio)
 
