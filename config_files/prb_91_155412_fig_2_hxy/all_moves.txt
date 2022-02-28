@@ -1,16 +1,16 @@
-'hxy-metropolis'                                            algorithm_name
-'../bc4-output/prb_91_155412_fig_2_hxy/all_moves'           output_directory
-64                                                          integer_lattice_length
-100000                                                      no_of_equilibration_sweeps
-1000000                                                     no_of_observations
-1.0d0                                                       initial_temperature
-1.8d0                                                       final_temperature
-4                                                           no_of_temperature_increments
-1.0d0                                                       width_of_proposal_interval (initial)
-0.44d0                                                      target_acceptance_rate_of_field_rotations
-0                                                           vacuum_permittivity_sum_cutoff
-.false.                                                     randomise_initial_field_configuration
-.true.                                                      use_external_global_moves
-.false.                                                     calculate_external_minimising_twist_field
-256                                                         no_of_jobs
-16                                                          max_no_of_cpus
+'hxy-metropolis'                                                    algorithm_name
+'../bc4-output/prb_91_155412_fig_2_hxy_literal/all_moves'           output_directory
+64                                                                  integer_lattice_length
+100000                                                              no_of_equilibration_sweeps
+1000000                                                             no_of_observations
+1.0d0                                                               initial_temperature
+1.8d0                                                               final_temperature
+4                                                                   no_of_temperature_increments
+1.0d0                                                               width_of_proposal_interval (initial)
+0.44d0                                                              target_acceptance_rate_of_field_rotations
+0                                                                   vacuum_permittivity_sum_cutoff
+.false.                                                             randomise_initial_field_configuration
+.true.                                                              use_external_global_moves
+.false.                                                             calculate_external_minimising_twist_field
+128                                                                 no_of_jobs
+16                                                                  max_no_of_cpus

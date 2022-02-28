@@ -1,5 +1,5 @@
 'hxy-metropolis'                                                    algorithm_name
-'../bc4-output/prb_91_155412_fig_2_hxy/local_moves_only'            output_directory
+'../bc4-output/prb_91_155412_fig_2_hxy_literal/local_moves'         output_directory
 64                                                                  integer_lattice_length
 100000                                                              no_of_equilibration_sweeps
 1000000                                                             no_of_observations
@@ -12,5 +12,5 @@
 .false.                                                             randomise_initial_field_configuration
 .false.                                                             use_external_global_moves
 .false.                                                             calculate_external_minimising_twist_field
-256                                                                 no_of_jobs
+128                                                                 no_of_jobs
 16                                                                  max_no_of_cpus
