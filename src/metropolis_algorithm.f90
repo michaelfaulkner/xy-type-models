@@ -1,25 +1,25 @@
 program metropolis_algorithm
 use variables
 implicit none
-integer :: i, j
+integer :: temperature_index, observation_index
 double precision :: start_time, end_time, acceptance_rate_of_field_rotations
 
 call pre_simulation_processes
 call cpu_time(start_time)
 
-do i = 0, no_of_temperature_increments
+do temperature_index = 1, no_of_temperature_increments + 1
     write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
-    call create_sample_file
+    call create_sample_file(temperature_index)
 
     call reset_metropolis_acceptance_counters
-    do j = 1, no_of_equilibration_sweeps
+    do observation_index = 1, no_of_equilibration_sweeps
         call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_moves
         end if
         ! step-size adaptor
-        if (mod(j, 100) == 0) then
+        if (mod(observation_index, 100) == 0) then
             acceptance_rate_of_field_rotations = 1.0d-2 * dfloat(no_of_accepted_field_rotations) / dfloat(no_of_sites) &
                                                     / (1.0d0 - charge_hop_proportion)
             if (acceptance_rate_of_field_rotations > target_acceptance_rate_of_field_rotations + 5.0d-2) then
@@ -33,7 +33,7 @@ do i = 0, no_of_temperature_increments
     end do
 
     call reset_metropolis_acceptance_counters
-    do j = 1, no_of_observations
+    do observation_index = 1, no_of_observations
         call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_moves
@@ -41,7 +41,7 @@ do i = 0, no_of_temperature_increments
         call get_and_print_observation
     end do
 
-    call output_metropolis_acceptance_rates
+    call output_metropolis_acceptance_rates(temperature_index)
     temperature = temperature + magnitude_of_temperature_increments
     call initialise_field_configuration(.false.)
 end do

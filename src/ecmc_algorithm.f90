@@ -1,22 +1,22 @@
 program ecmc_algorithm
 use variables
 implicit none
-integer :: i, j
+integer :: temperature_index, observation_index
 double precision :: start_time, end_time, no_of_events_per_sweep
 
 call pre_simulation_processes
 call cpu_time(start_time)
 
-do i = 0, no_of_temperature_increments
+do temperature_index = 1, no_of_temperature_increments + 1
     write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
     spin_space_distance_between_observations = dfloat(no_of_sites)
-    call create_sample_file
+    call create_sample_file(temperature_index)
 
-    do j = 1, no_of_equilibration_sweeps
+    do observation_index = 1, no_of_equilibration_sweeps
         call single_event_chain
         ! spin_space_distance_between_observations adaptor
-        if (mod(j, no_of_equilibration_sweeps / 10) == 0) then
+        if (mod(observation_index, no_of_equilibration_sweeps / 10) == 0) then
             no_of_events_per_sweep = 1.0d-2 * dfloat(no_of_events)
             if (no_of_events_per_sweep > 1.1d0 * dfloat(no_of_sites)) then
                 spin_space_distance_between_observations = 9.99000999000999d-1 * spin_space_distance_between_observations
@@ -33,7 +33,7 @@ do i = 0, no_of_temperature_increments
     no_of_events = 0
     no_of_accepted_external_global_moves = 0
 
-    do j = 1, no_of_observations
+    do observation_index = 1, no_of_observations
         call single_event_chain
         if (use_external_global_moves) then
             call attempt_external_global_moves
@@ -41,7 +41,7 @@ do i = 0, no_of_temperature_increments
         call get_and_print_observation
     end do
 
-    call output_no_of_events
+    call output_no_of_events(temperature_index)
     temperature = temperature + magnitude_of_temperature_increments
     call initialise_field_configuration(.false.)
 end do
@@ -53,13 +53,14 @@ write(6, '(A, ES9.3, A)') 'Markov process complete.  Total runtime of the simula
 end program ecmc_algorithm
 
 
-subroutine output_no_of_events
+subroutine output_no_of_events(temperature_index)
 use variables
 implicit none
-character(100), parameter :: temperature_string="/temp_eq_"
+character(100), parameter :: temperature_string="/temp_"
 character(100) :: filename
+integer :: temperature_index
 
-write (filename, '(A, F4.2, "//no_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature
+write (filename, '(A, I2.2, "//no_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature_index
 open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events
