@@ -97,7 +97,7 @@ sample-analysis processes.
 0                                       vacuum_permittivity_sum_cutoff
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
-.false.                                 calculate_external_minimising_twist_field
+.false.                                 calculate_potential_minimising_twists
 1                                       no_of_jobs
 4                                       max_no_of_cpus
 ```
@@ -118,7 +118,7 @@ sample-analysis processes.
 0                                               vacuum_permittivity_sum_cutoff
 .false.                                         randomise_initial_field_configuration
 .false.                                         use_external_global_moves
-.false.                                         calculate_external_minimising_twist_field
+.false.                                         calculate_potential_minimising_twists
 1                                               no_of_jobs
 4                                               max_no_of_cpus
 ```
@@ -139,7 +139,7 @@ sample-analysis processes.
 0                                                           vacuum_permittivity_sum_cutoff
 .false.                                                     randomise_initial_field_configuration
 .false.                                                     use_external_global_moves
-.false.                                                     calculate_external_minimising_twist_field
+.false.                                                     calculate_potential_minimising_twists
 1                                                           no_of_jobs
 4                                                           max_no_of_cpus
 ```
