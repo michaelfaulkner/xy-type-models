@@ -39,9 +39,9 @@ def main(config_file, observable_string):
                            "w")
         if observable_string == "acceptance_rates":
             if no_of_jobs == 1:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory, temperature)
+                acceptance_rates = sample_getter.get_acceptance_rates(output_directory, 1)
             else:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory + "/job_1", temperature)
+                acceptance_rates = sample_getter.get_acceptance_rates(output_directory + "/job_1", 1)
             if len(acceptance_rates) == 2:
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "rotational acceptance rate" + "\n")
@@ -60,9 +60,9 @@ def main(config_file, observable_string):
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
         elif observable_string == "no_of_events":
             if no_of_jobs == 1:
-                no_of_events = sample_getter.get_no_of_events(output_directory, temperature)
+                no_of_events = sample_getter.get_no_of_events(output_directory, 1)
             else:
-                no_of_events = sample_getter.get_no_of_events(output_directory + "/job_1", temperature)
+                no_of_events = sample_getter.get_no_of_events(output_directory + "/job_1", 1)
             if len(no_of_events) == 1:
                 output_file.write("# temperature".ljust(30) + "number of events (field rotations)" + "\n")
             else:
@@ -80,15 +80,15 @@ def main(config_file, observable_string):
         means = []
         errors = []
         start_time = time.time()
-        for i in range(no_of_temperature_increments + 1):
+        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
             print(f"Temperature = {temperature:.2f}")
             if observable_string == "acceptance_rates" or observable_string == "no_of_events":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
-                    acceptance_rates_or_no_of_events = get_sample_method(output_directory, temperature)
+                    acceptance_rates_or_no_of_events = get_sample_method(output_directory, temperature_index)
                 else:
                     acceptance_rates_or_no_of_events = np.mean([
-                        get_sample_method(output_directory + "/job_" + str(job_number + 1), temperature)
+                        get_sample_method(output_directory + "/job_" + str(job_number), temperature_index)
                         for job_number in range(no_of_jobs)], axis=0)
                 if len(acceptance_rates_or_no_of_events) == 1:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
@@ -111,13 +111,13 @@ def main(config_file, observable_string):
             else:
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
-                    sample = get_sample_method(output_directory, temperature, no_of_sites)[
+                    sample = get_sample_method(output_directory, temperature, temperature_index, no_of_sites)[
                              no_of_equilibration_sweeps:]
                     sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
                 else:
                     sample_means_and_errors = np.transpose(
                         np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
-                            output_directory + "/job_" + str(job_number + 1), temperature,
+                            output_directory + "/job_" + str(job_number), temperature, temperature_index,
                             no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
                     sample_mean = np.mean(sample_means_and_errors[0])
                     sample_error = np.linalg.norm(sample_means_and_errors[1])

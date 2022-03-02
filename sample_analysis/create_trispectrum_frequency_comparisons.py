@@ -16,17 +16,17 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
      pool) = setup_scripts.set_up_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
-    for _ in range(no_of_temperature_increments + 1):
+    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
         print(f"Temperature = {temperature:.2f}")
 
         power_trispectrum = polyspectra.get_power_trispectrum(
-            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
-            trispectrum_base_period_shift)
+            algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
         power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
-            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
-            trispectrum_base_period_shift)
+            algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
 
         # normalise power trispectra with respect to their low-frequency values
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]

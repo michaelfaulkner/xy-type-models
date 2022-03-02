@@ -7,7 +7,7 @@ double precision :: start_time, end_time, no_of_events_per_sweep
 call pre_simulation_processes
 call cpu_time(start_time)
 
-do temperature_index = 1, no_of_temperature_increments + 1
+do temperature_index = 0, no_of_temperature_increments
     write(6, '(A, F4.2)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
     spin_space_distance_between_observations = dfloat(no_of_sites)

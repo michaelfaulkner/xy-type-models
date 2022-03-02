@@ -19,15 +19,15 @@ run_script = importlib.import_module("run")
 
 def main(electrolyte_version):
     if electrolyte_version:
-        config_file_local_moves = "config_files/prb_91_155412_fig_2/local_moves_only.txt"
+        config_file_local_moves = "config_files/prb_91_155412_fig_2/local_moves.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2/all_moves.txt"
     else:
-        config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves_only.txt"
+        config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
      final_temperature, no_of_temperature_increments, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
         config_file_local_moves)
-    output_directory = output_directory_local_moves.replace("/local_moves_only", "")
+    output_directory = output_directory_local_moves.replace("/local_moves", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
     (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
         initial_temperature, final_temperature, no_of_temperature_increments)
@@ -71,26 +71,26 @@ def main(electrolyte_version):
         chi_w_ratios = []
         start_time = time.time()
 
-        for i in range(no_of_temperature_increments + 1):
+        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
             print(f"Temperature = {temperature:.2f}")
 
             acceptance_rates_local_moves = np.mean(
-                [sample_getter.get_acceptance_rates(output_directory_local_moves + "/job_" + str(job_number + 1),
-                                                    temperature) for job_number in range(no_of_jobs)], axis=0)
+                [sample_getter.get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}",
+                                                    temperature_index) for job_number in range(no_of_jobs)], axis=0)
             acceptance_rates_all_moves = np.mean(
-                [sample_getter.get_acceptance_rates(output_directory_all_moves + "/job_" + str(job_number + 1),
-                                                    temperature) for job_number in range(no_of_jobs)], axis=0)
+                [sample_getter.get_acceptance_rates(output_directory_all_moves + f"/job_{job_number}",
+                                                    temperature_index) for job_number in range(no_of_jobs)], axis=0)
 
             sample_means_and_errors_local_moves = np.transpose(
                 np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
                     sample_getter.get_topological_susceptibility(
-                        output_directory_local_moves + "/job_" + str(job_number + 1), temperature, no_of_sites)[
-                        no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
+                        output_directory_local_moves + f"/job_{job_number}", temperature, temperature_index,
+                        no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
             sample_means_and_errors_all_moves = np.transpose(
                 np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
                     sample_getter.get_topological_susceptibility(
-                        output_directory_all_moves + "/job_" + str(job_number + 1), temperature, no_of_sites)[
-                        no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
+                        output_directory_all_moves + f"/job_{job_number}", temperature, temperature_index,
+                        no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
 
             sample_mean_local_moves = np.mean(sample_means_and_errors_local_moves[0])
             sample_error_local_moves = np.linalg.norm(sample_means_and_errors_local_moves[1])

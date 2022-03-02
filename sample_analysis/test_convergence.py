@@ -25,12 +25,12 @@ def main(config_file):
         raise SystemExit
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-        sample = sample_getter.get_potential(output_directory, initial_temperature, no_of_sites)[
+        sample = sample_getter.get_potential(output_directory, initial_temperature, 0, no_of_sites)[
                  no_of_equilibration_sweeps:]
     elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
           algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
-        sample = sample_getter.get_magnetisation_norm(output_directory, initial_temperature, no_of_sites)[
+        sample = sample_getter.get_magnetisation_norm(output_directory, initial_temperature, 0, no_of_sites)[
                  no_of_equilibration_sweeps:]
 
     if algorithm_name == "elementary-electrolyte":

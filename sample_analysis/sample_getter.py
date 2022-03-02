@@ -25,7 +25,7 @@ def get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
         The emergent physical sampling frequency.  If None is given, a float is computed via get_physical_time_step();
         if a float is given, the float is returned.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
 
     Returns
     -------
@@ -50,7 +50,7 @@ def get_physical_time_step(algorithm_name, output_directory, temperature_index):
         The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
         option of multiple repeated simulations).
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
 
     Returns
     -------
@@ -73,7 +73,7 @@ def get_acceptance_rates(output_directory, temperature_index):
         The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
         option of multiple repeated simulations).
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
 
     Returns
     -------
@@ -102,7 +102,7 @@ def get_no_of_events(output_directory, temperature_index):
         The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
         option of multiple repeated simulations).
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
 
     Returns
     -------
@@ -126,7 +126,7 @@ def get_entire_sample(output_directory, temperature_index):
         The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
         option of multiple repeated simulations).
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
 
     Returns
     -------
@@ -154,7 +154,7 @@ def get_potential(output_directory, temperature, temperature_index, no_of_sites)
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -182,7 +182,7 @@ def get_specific_heat(output_directory, temperature, temperature_index, no_of_si
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -210,7 +210,7 @@ def get_external_global_move(output_directory, temperature, temperature_index, n
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -243,7 +243,7 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, te
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -272,7 +272,7 @@ def get_magnetisation_norm(output_directory, temperature, temperature_index, no_
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -301,7 +301,7 @@ def get_magnetisation_phase(output_directory, temperature, temperature_index, no
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -336,7 +336,7 @@ def get_rotated_magnetisation_phase(output_directory, temperature, temperature_i
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -364,7 +364,7 @@ def get_cartesian_magnetisation(output_directory, temperature, temperature_index
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -394,7 +394,7 @@ def get_absolute_cartesian_magnetisation(output_directory, temperature, temperat
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -424,7 +424,7 @@ def get_magnetic_susceptibility(output_directory, temperature, temperature_index
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -455,7 +455,7 @@ def get_non_normalised_total_vortex_polarisation(output_directory, temperature, 
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -484,7 +484,7 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_i
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -511,7 +511,7 @@ def get_total_vortex_polarisation(output_directory, temperature, temperature_ind
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -544,7 +544,7 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -577,7 +577,7 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -616,7 +616,7 @@ def get_hxy_topological_susceptibility(output_directory, temperature, temperatur
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -647,7 +647,7 @@ def get_sum_of_electric_field(output_directory, temperature, temperature_index, 
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -675,7 +675,7 @@ def get_electric_field_zero_mode(output_directory, temperature, temperature_inde
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -704,7 +704,7 @@ def get_inverse_permittivity(output_directory, temperature, temperature_index, n
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -736,7 +736,7 @@ def get_topological_sector(output_directory, temperature, temperature_index, no_
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 
@@ -768,7 +768,7 @@ def get_topological_susceptibility(output_directory, temperature, temperature_in
     temperature : float
         The sampling temperature.
     temperature_index : int
-        The index of the current sampling temperature.
+        The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The total number of lattice sites.
 

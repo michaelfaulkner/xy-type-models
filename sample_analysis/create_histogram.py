@@ -39,9 +39,9 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
             plt.ylabel(r"$\pi \left( x_1 \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         if no_of_jobs != 1:
-            sample = get_sample_method(f"{output_directory}/job_1", temperature, no_of_sites)
+            sample = get_sample_method(f"{output_directory}/job_1", temperature, temp_index, no_of_sites)
         else:
-            sample = get_sample_method(output_directory, temperature, no_of_sites)
+            sample = get_sample_method(output_directory, temperature, temp_index, no_of_sites)
         plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
                  bins=no_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_{algorithm_name.replace('-', '_')}_"

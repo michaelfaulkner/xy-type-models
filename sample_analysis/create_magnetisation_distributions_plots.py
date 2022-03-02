@@ -53,11 +53,12 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         job_index = 0
         sample_directory = output_directory
     else:
-        sample_directory = f"{output_directory}/job_{job_index + 1}"
+        sample_directory = f"{output_directory}/job_{job_index}"
 
-    for i in range(no_of_temperature_increments + 1):
+    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
         print(f"Temperature = {temperature:.2f}")
-        cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature, no_of_sites)
+        cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature,
+                                                                            temperature_index, no_of_sites)
         magnetisation_norm = np.linalg.norm(cartesian_magnetisation, axis=1)
         magnetisation_phase = np.array([sample_getter.get_phase_in_polar_coordinates(observation)
                                         for observation in cartesian_magnetisation])
@@ -70,7 +71,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
         figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                       f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_first_1e4_steps"
+                       f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_first_1e4_steps"
                        f".pdf", bbox_inches="tight")
         [axis.cla() for axis in axes]
 
@@ -79,8 +80,8 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         magnetisation_phase = magnetisation_phase[no_of_equilibration_sweeps:]
 
         if use_external_global_moves and np.mean(magnetisation_norm) > (2.0 * no_of_sites) ** (-1.0 / 16.0):
-            external_global_move = sample_getter.get_external_global_move(sample_directory, temperature,
-                                                                          no_of_sites)[no_of_equilibration_sweeps:]
+            external_global_move = sample_getter.get_external_global_move(
+                sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:]
             if np.any(external_global_move != 0):
                 global_move_event_times = np.where(np.linalg.norm(external_global_move, axis=1).astype(int) != 0)[0]
                 time_window = 1000
@@ -102,7 +103,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                                  bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_"
                                    f"around_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
 
                     [axis.cla() for axis in axes]
@@ -119,7 +120,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                                  color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}_up_"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_up_"
                                    f"to_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
                     [axis.cla() for axis in axes]
 
@@ -139,7 +140,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         cdf_axis.yaxis.set_major_formatter('{x:.1f}')
         figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                       f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}.pdf",
+                       f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}.pdf",
                        bbox_inches="tight")
         figure.clear()
 
@@ -174,7 +175,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
 
             figure.savefig(f"{output_directory}/magnetisation_histograms_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                           f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index + 1}.pdf",
+                           f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}.pdf",
                            bbox_inches="tight")
 
         plt.close()

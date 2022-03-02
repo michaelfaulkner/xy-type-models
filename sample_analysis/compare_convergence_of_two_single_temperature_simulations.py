@@ -19,16 +19,16 @@ def main(config_file_1, config_file_2):
      no_of_equilibration_sweeps_2, temperature) = get_required_config_data_and_error_check(config_file_1, config_file_2)
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-        sample_1 = sample_getter.get_potential(output_directory_1, temperature, no_of_sites)[
+        sample_1 = sample_getter.get_potential(output_directory_1, temperature, 0, no_of_sites)[
                    no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_potential(output_directory_2, temperature, no_of_sites)[
+        sample_2 = sample_getter.get_potential(output_directory_2, temperature, 0, no_of_sites)[
                    no_of_equilibration_sweeps_2:]
     elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
           algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
-        sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature, no_of_sites)[
+        sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature, 0, no_of_sites)[
                  no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature, no_of_sites)[
+        sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature, 0, no_of_sites)[
                    no_of_equilibration_sweeps_2:]
 
     effective_sample_size_1 = markov_chain_diagnostics.get_effective_sample_size(sample_1)

@@ -27,20 +27,22 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
-    for temperature_index in range(no_of_temperature_increments + 1):
+    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
         print(f"Temperature = {temperature:.2f}")
         current_color = next(colors)
 
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
-                                                        temperature, no_of_sites, no_of_equilibration_sweeps,
-                                                        external_global_moves_string, no_of_jobs, pool)
+                                                        temperature, temperature_index, no_of_sites,
+                                                        no_of_equilibration_sweeps, external_global_moves_string,
+                                                        no_of_jobs, pool)
         second_spectrum = polyspectra.get_second_spectrum(algorithm_name, observable_string, output_directory,
-                                                          temperature, no_of_sites, no_of_equilibration_sweeps,
-                                                          external_global_moves_string, no_of_jobs, pool)
+                                                          temperature, temperature_index, no_of_sites,
+                                                          no_of_equilibration_sweeps, external_global_moves_string,
+                                                          no_of_jobs, pool)
         power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
-            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_auxiliary_frequency_octaves,
-            trispectrum_base_period_shift, target_auxiliary_frequency)
+            algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, target_auxiliary_frequency)
 
         # normalise polyspectra with respect to their low-frequency values
         if power_spectrum[1, 0] == 0.0:

@@ -54,14 +54,14 @@ def main(config_file_location):
         # create directory in which to store temporary copies of the parent config file
         os.system(f"mkdir -p {config_file_location.replace('.txt', '')}")
         random_seeds = [random.randint(100000000, 999999999) for _ in range(no_of_jobs)]
-        config_file_copies = [config_file_location.replace(".txt", f"/job_{job_number + 1}.txt") for job_number in
+        config_file_copies = [config_file_location.replace(".txt", f"/job_{job_number}.txt") for job_number in
                               range(no_of_jobs)]
         for job_number, config_file_copy in enumerate(config_file_copies):
             # create temporary copies of parent config file
             os.system(f"cp {config_file_location} {config_file_copy}")
             for line in fileinput.input(config_file_copy, inplace=True):
                 if "output_directory" in line:
-                    print(line.replace("' ", f"/job_{job_number + 1}'"), end="")
+                    print(line.replace("' ", f"/job_{job_number}'"), end="")
                 else:
                     print(line, end="")
         pool.starmap(run_single_simulation, [(executable_location, random_seeds[job_number], config_file_copy)

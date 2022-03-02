@@ -22,32 +22,33 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
 
     start_time = time.time()
-    for i in range(no_of_temperature_increments + 1):
+    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
         print(f"Temperature = {temperature:.2f}")
 
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
-                                                        temperature, no_of_sites, no_of_equilibration_sweeps,
-                                                        external_global_moves_string, no_of_jobs, pool)
+                                                        temperature, temperature_index, no_of_sites,
+                                                        no_of_equilibration_sweeps, external_global_moves_string,
+                                                        no_of_jobs, pool)
         # normalise power spectrum with respect to its low-frequency values
         power_spectrum[1] /= power_spectrum[1, 0]
 
         second_spectrum = polyspectra.get_second_spectrum(
-            algorithm_name, observable_string, output_directory, temperature, no_of_sites, no_of_equilibration_sweeps,
-            external_global_moves_string, no_of_jobs, pool)
+            algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool)
         # normalise second spectrum spectrum with respect to its low-frequency value
         second_spectrum[1] /= second_spectrum[1, 0]
 
         power_spectra_of_correlators = []
         for index in range(no_of_power_2_correlators):
             power_spectrum_of_correlator = polyspectra.get_power_spectrum_of_correlator(
-                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool, 2 ** index)
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
             power_spectra_of_correlators.append(power_spectrum_of_correlator)
         for index in range(no_of_power_10_correlators):
             power_spectrum_of_correlator = polyspectra.get_power_spectrum_of_correlator(
-                algorithm_name, observable_string, output_directory, temperature, no_of_sites,
+                algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool, 10 ** (index + 1))
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
