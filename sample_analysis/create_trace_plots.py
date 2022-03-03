@@ -33,8 +33,8 @@ def main(config_file, observable_string, max_physical_time=100.0):
         print(f"Temperature = {temperature:.2f}")
 
         physical_time_step = sum([
-            sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}/job_{job_index + 1}", temperature)
-            for job_index in range(no_of_jobs)]) / no_of_jobs
+            sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}/job_{job_index}",
+                                                 temp_index) for job_index in range(no_of_jobs)]) / no_of_jobs
         plt.figure(0)
         plt.xlabel(r"total simulation time, $t_{\rm{tot}}$ ($s$)", fontsize=15, labelpad=10)
         plt.ylabel(r"$\bar{x}(t_{\rm{tot}})$ (red) / $\sigma_x^2(t_{\rm{tot}})$ (blue)", fontsize=10, labelpad=10)
@@ -46,15 +46,17 @@ def main(config_file, observable_string, max_physical_time=100.0):
                 with open(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                           f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_job_"
-                          f"{job_index + 1}.npy", "rb") as data_file:
+                          f"{job_index}.npy", "rb") as data_file:
                     sample, running_mean, running_variance = np.load(data_file)
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 if no_of_jobs > 1:
-                    sample_directory = f"{output_directory}/job_{job_index + 1}"
-                    sample = get_sample_method(sample_directory, temperature, no_of_sites)[no_of_equilibration_sweeps:]
+                    sample_directory = f"{output_directory}/job_{job_index}"
+                    sample = get_sample_method(sample_directory, temperature, temp_index, no_of_sites)[
+                             no_of_equilibration_sweeps:]
                 else:
-                    sample = get_sample_method(output_directory, temperature, no_of_sites)[no_of_equilibration_sweeps:]
+                    sample = get_sample_method(output_directory, temperature, temp_index, no_of_sites)[
+                             no_of_equilibration_sweeps:]
                 if not sample_is_one_dimensional:
                     sample = sample.transpose()[0]
                 running_mean = np.array([np.mean(sample[:index + 1]) for index in range(len(sample))])
@@ -62,7 +64,7 @@ def main(config_file, observable_string, max_physical_time=100.0):
                 with open(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                           f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_job_"
-                          f"{job_index + 1}.npy", "wb") as data_file:
+                          f"{job_index}.npy", "wb") as data_file:
                     np.save(data_file, np.array([sample, running_mean, running_variance]))
 
             if temp_index == 0 and job_index == 0:
@@ -102,7 +104,7 @@ def main(config_file, observable_string, max_physical_time=100.0):
             plt.tight_layout()
             plt.savefig(f"{output_directory}/{observable_string}_vs_time_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                        f"temp_eq_{temperature:.2f}_job_{job_index + 1}.pdf", bbox_inches="tight")
+                        f"temp_eq_{temperature:.2f}_job_{job_index}.pdf", bbox_inches="tight")
             # plt.clf()
 
         plt.figure(0)
