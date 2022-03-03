@@ -22,7 +22,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
 
     start_time = time.time()
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, temperature_index, no_of_sites,
                                                         no_of_equilibration_sweeps, external_global_moves_string,
@@ -59,7 +59,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color,
-                       label=fr"temperature = {temperature:.2f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
+                       label=fr"temperature = {temperature:.4f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
                              fr"$\pm$ {one_over_f_model_errors[1]:.2e}")
         axes[0].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
@@ -68,7 +68,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         max_second_spectrum_index = np.argmax(second_spectrum[0] > 1.0e-1) - 1
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
                        color=current_color,
-                       label=fr"temperature = {temperature:.2f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
+                       label=fr"temperature = {temperature:.4f}; "fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} "
                              fr"$\pm$ {one_over_f_model_errors[1]:.2e}")
         axes[1].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
@@ -78,7 +78,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
             max_spectrum_index = np.argmax(spectrum[0] > 1.0e-1) - 1
             axes[index + 2].loglog(spectrum[0, :max_spectrum_index], spectrum[1, :max_spectrum_index],
                                    color=current_color,
-                                   label=fr"temperature = {temperature:.2f}, $\Delta t = "
+                                   label=fr"temperature = {temperature:.4f}, $\Delta t = "
                                          fr"{0.5 / power_spectrum[0, 0] / len(power_spectrum[0]):.2e}$; "
                                          fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
                                          fr"{one_over_f_model_errors[1]:.2e}")

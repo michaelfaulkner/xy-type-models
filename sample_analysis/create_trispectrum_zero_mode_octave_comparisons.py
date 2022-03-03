@@ -16,7 +16,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
 
     start_time = time.time()
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
 
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
         [axis[index].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10) for index in range(2)]
@@ -56,7 +56,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_convergence_of_trispectrum_zero_auxiliary_frequency_"
                        f"mode_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}.pdf",
+                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}.pdf",
                        bbox_inches="tight")
         figure.clf()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")

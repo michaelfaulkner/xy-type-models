@@ -66,18 +66,18 @@ def main(config_file, no_of_plotted_cdfs=8):
                 if no_of_jobs == 1:
                     with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
                               f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}.npy", "rb") as output_file:
+                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", "rb") as output_file:
                         axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
-                                  label=f"temperature = {temperature:.2f}")
+                                  label=f"temperature = {temperature:.4f}")
                 else:
                     for job_index in range(min(no_of_jobs, no_of_plotted_cdfs)):
                         with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
                                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                                  f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}.npy",
+                                  f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                                   "rb") as output_file:
                             if job_index == 0:
                                 axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
-                                          linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                                          linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.4f}")
                                 """use alternative CDF calculation in 
                                     markov_chain_diagnostics.get_cumulative_distribution() to use fill_between() in the 
                                     following line"""
@@ -95,17 +95,17 @@ def main(config_file, no_of_plotted_cdfs=8):
         cvms, cvm_errors = [], []
         start_time = time.time()
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
-            print(f"Temperature = {temperature:.2f}")
+            print(f"Temperature = {temperature:.4f}")
             if no_of_jobs == 1:
                 cdf_of_magnetisation_phase, cvm = get_cdf_and_cramervonmises_of_magnetisation_phase(
                     output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps)
                 cvm_error = 1.0  # dummy error
                 if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                     axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
-                              label=f"temperature = {temperature:.2f}")
+                              label=f"temperature = {temperature:.4f}")
                     with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
                               f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}.npy", "wb") as output_file:
+                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", "wb") as output_file:
                         np.save(output_file, cdf_of_magnetisation_phase)
             else:
                 cdf_and_cvm = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
@@ -117,12 +117,12 @@ def main(config_file, no_of_plotted_cdfs=8):
                     for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, no_of_plotted_cdfs)]):
                         if job_index == 0:
                             axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
-                                      label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                                      label=fr"$1 / (\beta J)$ = {temperature:.4f}")
                         else:
                             axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
                         with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
                                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                                  f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_"
+                                  f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_"
                                   f"job_{job_index}.npy", "wb") as output_file:
                             np.save(output_file, cdf)
             cvms.append(cvm)

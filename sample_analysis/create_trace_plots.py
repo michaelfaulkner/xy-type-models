@@ -26,7 +26,7 @@ def main(config_file, observable_string, max_physical_time=100.0):
 
     start_time = time.time()
     for temperature_index, temperature in enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
         if no_of_jobs == 1:
             physical_time_step = sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}",
                                                                       temperature_index)
@@ -45,7 +45,7 @@ def main(config_file, observable_string, max_physical_time=100.0):
                 sample, running_mean, running_variance = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                     f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                    f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_job_{job_index}.npy")
+                    f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}_job_{job_index}.npy")
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 if no_of_jobs > 1:
@@ -61,7 +61,7 @@ def main(config_file, observable_string, max_physical_time=100.0):
                 running_variance = np.array([np.var(sample[:index + 1]) for index in range(len(sample))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                        f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_job_{job_index}.npy",
+                        f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                         np.array([sample, running_mean, running_variance]))
 
             if temperature_index == 0 and job_index == 0:
@@ -101,14 +101,14 @@ def main(config_file, observable_string, max_physical_time=100.0):
             plt.tight_layout()
             plt.savefig(f"{output_directory}/{observable_string}_vs_time_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                        f"temp_eq_{temperature:.2f}_job_{job_index}.pdf", bbox_inches="tight")
+                        f"temp_eq_{temperature:.4f}_job_{job_index}.pdf", bbox_inches="tight")
             # plt.clf()
 
         plt.figure(0)
         plt.tight_layout()
         plt.savefig(f"{output_directory}/{observable_string}_running_mean_and_variance_vs_time_"
                     f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                    f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}.pdf", bbox_inches="tight")
+                    f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}.pdf", bbox_inches="tight")
         plt.clf()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 

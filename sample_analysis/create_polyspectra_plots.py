@@ -28,7 +28,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
 
     start_time = time.time()
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
         current_color = next(colors)
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, temperature_index, no_of_sites,
@@ -70,7 +70,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                                                                               no_of_jobs)
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color,
-                       label=fr"temperature = {temperature:.2f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
+                       label=fr"temperature = {temperature:.4f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
                              fr"{lorentzian_model_errors[1]:.2e}; $S_0$ = {lorentzian_model_parameters[0]:.2f} $\pm$ "
                              fr"{lorentzian_model_errors[0]:.2e}")
         axes[0].loglog(lorentzian_model_frequency_values, lorentzian_model_spectrum_values, color='k')
@@ -82,7 +82,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                                                                               no_of_jobs)
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
                        color=current_color,
-                       label=fr"temperature = {temperature:.2f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
+                       label=fr"temperature = {temperature:.4f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
                              fr"{lorentzian_model_errors[1]:.2e}; $S_0$ = {lorentzian_model_parameters[0]:.2f} $\pm$ "
                              fr"{lorentzian_model_errors[0]:.2e}")
         axes[1].loglog(lorentzian_model_frequency_values, lorentzian_model_spectrum_values, color='k')
@@ -93,7 +93,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                                                                                  no_of_sites, no_of_jobs)
         axes[2].loglog(power_trispectrum[1][:max_power_trispectrum_index],
                        power_trispectrum[2][:max_power_trispectrum_index], color=current_color,
-                       label=fr"temperature = {temperature:.2f}; f' = {power_trispectrum[0]:.2e}; "
+                       label=fr"temperature = {temperature:.4f}; f' = {power_trispectrum[0]:.2e}; "
                              fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
                              fr"{one_over_f_model_errors[1]:.2e}")
         axes[2].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')

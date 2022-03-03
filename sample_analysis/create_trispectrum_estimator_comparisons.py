@@ -15,7 +15,7 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
 
     start_time = time.time()
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
 
         power_trispectrum = polyspectra.get_power_trispectrum(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
@@ -75,7 +75,7 @@ def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectru
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_compare_trispectrum_estimators_"
                        f"{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                       f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.2f}_max_shift_eq_"
+                       f"{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}_max_shift_eq_"
                        f"{2 ** no_of_trispectrum_octaves}_x_{trispectrum_base_period_shift}_delta_t.pdf",
                        bbox_inches="tight")
         figure.clf()

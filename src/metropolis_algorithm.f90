@@ -8,7 +8,7 @@ call pre_simulation_processes
 call cpu_time(start_time)
 
 do temperature_index = 0, no_of_temperature_increments
-    write(6, '(A, F4.2)') 'Temperature = ', temperature
+    write(6, '(A, F6.4)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
     call create_sample_file(temperature_index)
 

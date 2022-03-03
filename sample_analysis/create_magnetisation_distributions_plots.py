@@ -53,7 +53,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         sample_directory = f"{output_directory}/job_{job_index}"
 
     for temperature_index, temperature in enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
         cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature,
                                                                             temperature_index, no_of_sites)
         magnetisation_norm = np.linalg.norm(cartesian_magnetisation, axis=1)
@@ -68,7 +68,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
         figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                       f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_first_1e4_steps"
+                       f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}_first_1e4_steps"
                        f".pdf", bbox_inches="tight")
         [axis.cla() for axis in axes]
 
@@ -100,7 +100,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                                  bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}_"
                                    f"around_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
 
                     [axis.cla() for axis in axes]
@@ -117,7 +117,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                                  color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}"
-                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}_up_"
+                                   f"_sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}_up_"
                                    f"to_global_twist_at_time_step_{index}.pdf", bbox_inches="tight")
                     [axis.cla() for axis in axes]
 
@@ -137,7 +137,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
         cdf_axis.yaxis.set_major_formatter('{x:.1f}')
         figure.savefig(f"{output_directory}/magnetisation_revolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                       f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}.pdf",
+                       f"{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.pdf",
                        bbox_inches="tight")
         figure.clear()
 
@@ -172,7 +172,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
 
             figure.savefig(f"{output_directory}/magnetisation_histograms_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                           f"{no_of_observations}_obs_temp_eq_{temperature:.2f}_job_{job_index}.pdf",
+                           f"{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.pdf",
                            bbox_inches="tight")
 
         plt.close()

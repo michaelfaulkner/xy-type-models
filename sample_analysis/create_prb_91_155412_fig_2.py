@@ -67,7 +67,7 @@ def main(electrolyte_version):
         start_time = time.time()
 
         for temperature_index, temperature in enumerate(temperatures):
-            print(f"Temperature = {temperature:.2f}")
+            print(f"Temperature = {temperature:.4f}")
             acceptance_rates_local_moves = np.mean(
                 [sample_getter.get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}",
                                                     temperature_index) for job_number in range(no_of_jobs)], axis=0)

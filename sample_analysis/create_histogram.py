@@ -25,7 +25,7 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
 
     start_time = time.time()
     for temperature_index, temperature in enumerate(temperatures):
-        print(f"Temperature = {temperature:.2f}")
+        print(f"Temperature = {temperature:.4f}")
         if sample_is_one_dimensional:
             plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
             plt.ylabel(r"$\pi \left( x \right)$", fontsize=15, labelpad=10)
@@ -41,7 +41,7 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
                  bins=no_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_{algorithm_name.replace('-', '_')}_"
                     f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
-                    f"{temperature:.2f}.pdf", bbox_inches="tight")
+                    f"{temperature:.4f}.pdf", bbox_inches="tight")
         plt.clf()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 

@@ -75,7 +75,7 @@ def main(config_file, observable_string):
         errors = []
         start_time = time.time()
         for temperature_index, temperature in enumerate(temperatures):
-            print(f"Temperature = {temperature:.2f}")
+            print(f"Temperature = {temperature:.4f}")
             if observable_string == "acceptance_rates" or observable_string == "no_of_events":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
