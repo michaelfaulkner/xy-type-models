@@ -2,8 +2,8 @@
 
 # xy-type-models
 
-xy-type-models is an open-source, hybrid Fortran-Python application that implements the event-chain and Metropolis 
-Monte Carlo algorithms for the simulation of two-dimensional XY-type models in statistical physics. 
+xy-type-models is an open-source Fortran-Python application that implements the event-chain and Metropolis Monte Carlo 
+algorithms for the simulation of two-dimensional XY-type models in statistical physics.
 
 Event-chain and Metropolis simulation is available for the XY and harmonic XY (HXY) spin models.  Metropolis simulation 
 is available for the Maggs lattice-field electrolyte model in the grand canonical ensemble (for particles). Each model 
@@ -25,6 +25,9 @@ https://doi.org/10.1051/jphys:01975003606058100)), see [\[Faulkner2015\]](https:
 characterising the nonergodic phase of the Berezinskii-Kosterlitz-Thouless transition). For an analysis of the 
 similarities between the HXY model and two-dimensional lattice-field electrolyte, see [\[Faulkner2017\]](
 https://doi.org/10.1088/1361-648X/aa523f).
+
+If you use xy-type-models in published work, please cite "Phys. Rev. B 91, 155412 (2015)" [\[Faulkner2015\]](
+https://doi.org/10.1103/PhysRevB.91.155412).
 
 
 ## Installation
@@ -291,3 +294,9 @@ directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-nois
 `make hxy-metropolis`, `make hxy-gaussian-noise-metropolis`, `make elementary-electrolyte` or 
 `make multivalued-electrolyte`. This will create the corresponding executable and store it in the `executables` 
 directory.
+
+
+## Citation
+
+If you use xy-type-models in published work, please cite "Phys. Rev. B 91, 155412 (2015)" [\[Faulkner2015\]](
+https://doi.org/10.1103/PhysRevB.91.155412).
