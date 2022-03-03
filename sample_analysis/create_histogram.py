@@ -17,20 +17,15 @@ run_script = importlib.import_module("run")
 
 def main(config_file, observable_string, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
-     final_temperature, no_of_temperature_increments, _, external_global_moves_string, no_of_jobs,
-     max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
+     external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
-    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
-    temperature = initial_temperature
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
 
     start_time = time.time()
-    for temp_index in range(no_of_temperature_increments + 1):
+    for temperature_index, temperature in enumerate(temperatures):
         print(f"Temperature = {temperature:.2f}")
-
         if sample_is_one_dimensional:
             plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
             plt.ylabel(r"$\pi \left( x \right)$", fontsize=15, labelpad=10)
@@ -39,16 +34,15 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
             plt.ylabel(r"$\pi \left( x_1 \right)$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         if no_of_jobs != 1:
-            sample = get_sample_method(f"{output_directory}/job_1", temperature, temp_index, no_of_sites)
+            sample = get_sample_method(f"{output_directory}/job_1", temperature, temperature_index, no_of_sites)
         else:
-            sample = get_sample_method(output_directory, temperature, temp_index, no_of_sites)
+            sample = get_sample_method(output_directory, temperature, temperature_index, no_of_sites)
         plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
                  bins=no_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_{algorithm_name.replace('-', '_')}_"
                     f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
                     f"{temperature:.2f}.pdf", bbox_inches="tight")
         plt.clf()
-        temperature += magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 

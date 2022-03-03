@@ -24,20 +24,16 @@ def main(electrolyte_version):
     else:
         config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
-    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
-     final_temperature, no_of_temperature_increments, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(
-        config_file_local_moves)
+    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _, _,
+     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory = output_directory_local_moves.replace("/local_moves", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
-    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
 
     try:
         with open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_{int(no_of_sites ** 0.5)}"
                   f"x{int(no_of_sites ** 0.5)}_sites.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            temperatures = output_file_sans_header[0]
             chi_w_ratios = output_file_sans_header[1]
     except (IOError, IndexError) as _:
         output_file = open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
@@ -67,13 +63,11 @@ def main(electrolyte_version):
 
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
-        temperatures = []
         chi_w_ratios = []
         start_time = time.time()
 
-        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+        for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.2f}")
-
             acceptance_rates_local_moves = np.mean(
                 [sample_getter.get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}",
                                                     temperature_index) for job_number in range(no_of_jobs)], axis=0)
@@ -122,11 +116,7 @@ def main(electrolyte_version):
                                         f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
                                         f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
                                         f"{acceptance_rates_all_moves[2]:.14e}" + "\n")
-            temperatures.append(temperature)
             chi_w_ratios.append(chi_w_ratio)
-
-            temperature -= magnitude_of_temperature_increments
-
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
         pool.close()
         output_file.close()

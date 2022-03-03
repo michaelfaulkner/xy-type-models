@@ -12,19 +12,17 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_power_10_correlators=4):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-     external_global_moves_string, no_of_jobs, temperature, magnitude_of_temperature_increments,
-     pool) = setup_scripts.set_up_polyspectra_script(config_file, observable_string)
-
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+     external_global_moves_string, no_of_jobs, pool) = setup_scripts.set_up_polyspectra_script(config_file,
+                                                                                               observable_string)
     figure, axes = plt.subplots(2 + no_of_power_2_correlators + no_of_power_10_correlators, figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(temperatures) + 1)))
 
     start_time = time.time()
-    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.2f}")
-
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, temperature_index, no_of_sites,
                                                         no_of_equilibration_sweeps, external_global_moves_string,
@@ -85,8 +83,6 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
                                          fr"$\alpha$ = {one_over_f_model_parameters[1]:.2e} $\pm$ "
                                          fr"{one_over_f_model_errors[1]:.2e}")
             axes[index + 2].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
-
-        temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs > 1:

@@ -20,42 +20,39 @@ run_script = importlib.import_module("run")
 
 def main(config_file, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, initial_temperature,
-     final_temperature, no_of_temperature_increments, use_external_global_moves, external_global_moves_string,
-     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, temperatures,
+     use_external_global_moves, external_global_moves_string, no_of_jobs,
+     max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
         raise SystemExit
-    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
 
     start_time = time.time()
     if no_of_jobs == 1:
-        make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
-                   magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-                   external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index=None)
+        make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+                   use_external_global_moves, external_global_moves_string, no_of_observations, no_of_histogram_bins,
+                   job_index=None)
     else:
         pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
         pool.starmap(make_plots, [
-            (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
-             magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-             external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index) for job_index in
-            range(no_of_jobs)])
+            (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+             use_external_global_moves, external_global_moves_string, no_of_observations, no_of_histogram_bins,
+             job_index) for job_index in range(no_of_jobs)])
         pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
-def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperature,
-               magnitude_of_temperature_increments, no_of_temperature_increments, use_external_global_moves,
-               external_global_moves_string, no_of_observations, no_of_histogram_bins, job_index):
+def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+               use_external_global_moves, external_global_moves_string, no_of_observations, no_of_histogram_bins,
+               job_index):
     if job_index is None:
         job_index = 0
         sample_directory = output_directory
     else:
         sample_directory = f"{output_directory}/job_{job_index}"
 
-    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+    for temperature_index, temperature in enumerate(temperatures):
         print(f"Temperature = {temperature:.2f}")
         cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature,
                                                                             temperature_index, no_of_sites)
@@ -179,7 +176,6 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_equilibratio
                            bbox_inches="tight")
 
         plt.close()
-        temperature -= magnitude_of_temperature_increments
 
 
 def set_magnetisation_revolution_axes(axes):

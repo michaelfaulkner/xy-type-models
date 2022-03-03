@@ -17,12 +17,9 @@ run_script = importlib.import_module("run")
 
 
 def main(config_file, observable_string):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, initial_temperature,
-     final_temperature, no_of_temperature_increments, _, external_global_moves_string, no_of_jobs,
-     max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
+     external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
-    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
 
     try:
         with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
@@ -30,18 +27,16 @@ def main(config_file, observable_string):
                   "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            temperatures = output_file_sans_header[0]
-            means = output_file_sans_header[1]
-            errors = output_file_sans_header[2]
+            means, errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
         output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}.tsv",
                            "w")
         if observable_string == "acceptance_rates":
             if no_of_jobs == 1:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory, 1)
+                acceptance_rates = sample_getter.get_acceptance_rates(output_directory, 0)
             else:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory + "/job_1", 1)
+                acceptance_rates = sample_getter.get_acceptance_rates(output_directory + "/job_1", 0)
             if len(acceptance_rates) == 2:
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "rotational acceptance rate" + "\n")
@@ -60,9 +55,9 @@ def main(config_file, observable_string):
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
         elif observable_string == "no_of_events":
             if no_of_jobs == 1:
-                no_of_events = sample_getter.get_no_of_events(output_directory, 1)
+                no_of_events = sample_getter.get_no_of_events(output_directory, 0)
             else:
-                no_of_events = sample_getter.get_no_of_events(output_directory + "/job_1", 1)
+                no_of_events = sample_getter.get_no_of_events(output_directory + "/job_1", 0)
             if len(no_of_events) == 1:
                 output_file.write("# temperature".ljust(30) + "number of events (field rotations)" + "\n")
             else:
@@ -76,11 +71,10 @@ def main(config_file, observable_string):
             no_of_cpus = mp.cpu_count()
             pool = mp.Pool(no_of_cpus)
 
-        temperatures = []
         means = []
         errors = []
         start_time = time.time()
-        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+        for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.2f}")
             if observable_string == "acceptance_rates" or observable_string == "no_of_events":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
@@ -123,10 +117,8 @@ def main(config_file, observable_string):
                     sample_error = np.linalg.norm(sample_means_and_errors[1])
                 output_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_mean:.14e}".ljust(35) +
                                   f"{sample_error:.14e}" + "\n")
-                temperatures.append(temperature)
                 means.append(sample_mean)
                 errors.append(sample_error)
-            temperature -= magnitude_of_temperature_increments
 
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
         if no_of_jobs > 1:

@@ -21,15 +21,13 @@ run_script = importlib.import_module("run")
 
 def main(config_file, no_of_plotted_cdfs=8):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, initial_temperature,
-     final_temperature, no_of_temperature_increments, use_external_global_moves, external_global_moves_string,
-     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations, temperatures,
+     use_external_global_moves, external_global_moves_string, no_of_jobs,
+     max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
         raise SystemExit
-    (temperature, magnitude_of_temperature_increments) = setup_scripts.get_temperature_and_magnitude_of_increments(
-        initial_temperature, final_temperature, no_of_temperature_increments)
     pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
 
     figure, axis = plt.subplots(1)
@@ -62,10 +60,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                   f"{no_of_observations}_obs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            temperatures, cvms, cvm_errors = (output_file_sans_header[0], output_file_sans_header[1],
-                                              output_file_sans_header[2])
-        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
-            if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+            cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
+        for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+            if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                 if no_of_jobs == 1:
                     with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
                               f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
@@ -90,21 +87,20 @@ def main(config_file, no_of_plotted_cdfs=8):
                             else:
                                 axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
                                           linestyle=linestyles[job_index])
-            temperature -= magnitude_of_temperature_increments
     except IOError:
         cvm_file = open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                         f"{no_of_observations}_obs.tsv", "w")
         cvm_file.write("# temperature".ljust(30) + "omega_n^2".ljust(30) + "omega_n^2 error" + "\n")
-        temperatures, cvms, cvm_errors = [], [], []
+        cvms, cvm_errors = [], []
         start_time = time.time()
-        for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+        for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
             print(f"Temperature = {temperature:.2f}")
             if no_of_jobs == 1:
                 cdf_of_magnetisation_phase, cvm = get_cdf_and_cramervonmises_of_magnetisation_phase(
                     output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps)
                 cvm_error = 1.0  # dummy error
-                if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                     axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
                               label=f"temperature = {temperature:.2f}")
                     with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
@@ -117,7 +113,7 @@ def main(config_file, no_of_plotted_cdfs=8):
                      no_of_equilibration_sweeps) for job_index in range(no_of_jobs)]), dtype=object).transpose()
                 cdfs_of_magnetisation_phase, cvm, cvm_error = cdf_and_cvm[0], np.mean(cdf_and_cvm[1]), (
                         np.std(cdf_and_cvm[1]) / len(cdf_and_cvm[1]) ** 0.5)
-                if temperature_index == 0 or temperature_index == no_of_temperature_increments:
+                if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                     for job_index, cdf in enumerate(cdfs_of_magnetisation_phase[:min(no_of_jobs, no_of_plotted_cdfs)]):
                         if job_index == 0:
                             axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[0],
@@ -129,11 +125,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                                   f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_{temperature:.2f}_"
                                   f"job_{job_index}.npy", "wb") as output_file:
                             np.save(output_file, cdf)
-            temperatures.append(temperature)
             cvms.append(cvm)
             cvm_errors.append(cvm_error)
             cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
-            temperature -= magnitude_of_temperature_increments
 
         cvm_file.close()
         if no_of_jobs > 1:
@@ -141,9 +135,10 @@ def main(config_file, no_of_plotted_cdfs=8):
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs == 1:
-        inset_axis.errorbar(temperatures, cvms, marker=".", markersize=10, color="k", linestyle="None")
+        inset_axis.errorbar(list(reversed(temperatures)), cvms, marker=".", markersize=10, color="k", linestyle="None")
     else:
-        inset_axis.errorbar(temperatures, cvms, cvm_errors, marker=".", markersize=10, color="k", linestyle="None")
+        inset_axis.errorbar(list(reversed(temperatures)), cvms, cvm_errors, marker=".", markersize=10, color="k",
+                            linestyle="None")
 
     handles, labels = axis.get_legend_handles_labels()
     legend = axis.legend(reversed(handles), reversed(labels), title='colour code', loc="lower right", fontsize=10)

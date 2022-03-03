@@ -13,11 +13,11 @@ setup_scripts = importlib.import_module("setup_scripts")
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=6,
          trispectrum_base_period_shift=1, target_auxiliary_frequency=None):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-     external_global_moves_string, no_of_jobs, temperature, magnitude_of_temperature_increments,
-     pool) = setup_scripts.set_up_polyspectra_script(config_file, observable_string)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+     external_global_moves_string, no_of_jobs, pool) = setup_scripts.set_up_polyspectra_script(config_file,
+                                                                                               observable_string)
 
-    colors = iter(plt.cm.rainbow(np.linspace(0, 1, no_of_temperature_increments + 1)))
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(temperatures) + 1)))
     figure, axes = plt.subplots(3, figsize=(10, 10))
     axes[2].set_xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     axes[0].set_ylabel(r"$S_X \left( f \right)$ / $S_X \left( f_0 \right)$", fontsize=10, labelpad=10)
@@ -27,10 +27,9 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
-    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.2f}")
         current_color = next(colors)
-
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
                                                         temperature, temperature_index, no_of_sites,
                                                         no_of_equilibration_sweeps, external_global_moves_string,
@@ -101,7 +100,6 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
 
         if temperature_index == 0:
             target_auxiliary_frequency = power_trispectrum[0]
-        temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     figure.tight_layout()
@@ -145,7 +143,7 @@ def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_jobs):
                                                                 np.array([10.0, final_frequency])))
             parameter_values = parameter_values_and_errors[0]
             parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
-        except (OptimizeWarning, ValueError) as _:
+        except (OptimizeWarning, ValueError, RuntimeError) as _:
             # ...but set model parameters to defaults if it fails
             parameter_values = np.array([1.0, 1.0e-2])
             parameter_errors = np.array([0.0, 0.0])
@@ -199,7 +197,7 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
                     bounds=(np.array([0.0, 0.0]), np.array([10.0, max_model_exponent])))
             parameter_values = parameter_values_and_errors[0]
             parameter_errors = np.sqrt(np.diag(parameter_values_and_errors[1]))
-        except (OptimizeWarning, ValueError) as _:
+        except (OptimizeWarning, ValueError, RuntimeError) as _:
             # ...but set model parameters to defaults if it fails
             parameter_values = np.array([1.0, 0.0])
             parameter_errors = np.array([0.0, 0.0])

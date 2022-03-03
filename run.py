@@ -29,7 +29,7 @@ def main(config_file_location):
     None
     """
     config_data = get_config_data(config_file_location)
-    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[10], config_data[11]
+    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[8], config_data[9]
     executable_location = get_executable(algorithm_name)
     if no_of_jobs < 1:
         raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
@@ -124,8 +124,17 @@ def get_config_data(config_file_location):
             if 'max_no_of_cpus' in row[0]:
                 max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
     return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations,
-            initial_temperature, final_temperature, no_of_temperature_increments, use_external_global_moves,
-            external_global_moves_string, no_of_jobs, max_no_of_cpus)
+            get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments),
+            use_external_global_moves, external_global_moves_string, no_of_jobs, max_no_of_cpus)
+
+
+def get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments):
+    if no_of_temperature_increments == 0:
+        magnitude_of_temperature_increments = 0.0
+    else:
+        magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
+    return [initial_temperature + temperature_index * magnitude_of_temperature_increments
+            for temperature_index in range(no_of_temperature_increments + 1)]
 
 
 def get_executable(algorithm_name):

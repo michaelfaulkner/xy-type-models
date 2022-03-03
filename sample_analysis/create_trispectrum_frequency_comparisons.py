@@ -11,12 +11,12 @@ polyspectra = importlib.import_module("polyspectra")
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=4,
          trispectrum_base_period_shift=1):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_temperature_increments,
-     external_global_moves_string, no_of_jobs, temperature, magnitude_of_temperature_increments,
-     pool) = setup_scripts.set_up_polyspectra_script(config_file, observable_string)
+    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+     external_global_moves_string, no_of_jobs, pool) = setup_scripts.set_up_polyspectra_script(config_file,
+                                                                                               observable_string)
 
     start_time = time.time()
-    for temperature_index in reversed(range(no_of_temperature_increments + 1)):
+    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.2f}")
 
         power_trispectrum = polyspectra.get_power_trispectrum(
@@ -70,7 +70,6 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                        f"{2 ** no_of_trispectrum_auxiliary_frequency_octaves}_x_{trispectrum_base_period_shift}_delta_t"
                        f".pdf", bbox_inches="tight")
         figure.clf()
-        temperature -= magnitude_of_temperature_increments
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     if no_of_jobs > 1:
