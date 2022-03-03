@@ -64,29 +64,29 @@ def main(config_file, no_of_plotted_cdfs=8):
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
             if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                 if no_of_jobs == 1:
-                    with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
-                              f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", "rb") as output_file:
-                        axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
-                                  label=f"temperature = {temperature:.4f}")
+                    axis.plot(*np.load(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                                       f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                                       f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_"
+                                       f"{temperature:.4f}.npy"), color=colors[min(temperature_index, 1)],
+                              label=f"temperature = {temperature:.4f}")
                 else:
                     for job_index in range(min(no_of_jobs, no_of_plotted_cdfs)):
-                        with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
-                                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                                  f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
-                                  "rb") as output_file:
-                            if job_index == 0:
-                                axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
-                                          linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.4f}")
-                                """use alternative CDF calculation in 
-                                    markov_chain_diagnostics.get_cumulative_distribution() to use fill_between() in the 
-                                    following line"""
-                                """if temperature_index != 0:
-                                    axis.fill_between(cdf[0], cdf[1], np.arange(0.0, 1.0, 1.0 / float(len(cdf[0]))), 
-                                                      color='green')"""
-                            else:
-                                axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
-                                          linestyle=linestyles[job_index])
+                        output_file = (f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                                       f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
+                                       f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_"
+                                       f"{temperature:.4f}_job_{job_index}.npy")
+                        if job_index == 0:
+                            axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
+                                      linestyle=linestyles[0], label=fr"$1 / (\beta J)$ = {temperature:.4f}")
+                            """use alternative CDF calculation in 
+                                markov_chain_diagnostics.get_cumulative_distribution() to use fill_between() in the 
+                                following line"""
+                            """if temperature_index != 0:
+                                axis.fill_between(cdf[0], cdf[1], np.arange(0.0, 1.0, 1.0 / float(len(cdf[0]))), 
+                                                  color='green')"""
+                        else:
+                            axis.plot(*np.load(output_file), color=colors[min(temperature_index, 1)],
+                                      linestyle=linestyles[job_index])
     except IOError:
         cvm_file = open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
@@ -103,10 +103,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                 if temperature_index == 0 or temperature_index == len(temperatures) - 1:
                     axis.plot(*cdf_of_magnetisation_phase, color=colors[min(temperature_index, 1)],
                               label=f"temperature = {temperature:.4f}")
-                    with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
-                              f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                              f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", "wb") as output_file:
-                        np.save(output_file, cdf_of_magnetisation_phase)
+                    np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                            f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
+                            f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", cdf_of_magnetisation_phase)
             else:
                 cdf_and_cvm = np.array(pool.starmap(get_cdf_and_cramervonmises_of_magnetisation_phase, [
                     (f"{output_directory}/job_{job_index}", temperature, temperature_index, no_of_sites,
@@ -120,11 +119,9 @@ def main(config_file, no_of_plotted_cdfs=8):
                                       label=fr"$1 / (\beta J)$ = {temperature:.4f}")
                         else:
                             axis.plot(*cdf, color=colors[min(temperature_index, 1)], linestyle=linestyles[job_index])
-                        with open(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
-                                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x"
-                                  f"{int(no_of_sites ** 0.5)}_sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_"
-                                  f"job_{job_index}.npy", "wb") as output_file:
-                            np.save(output_file, cdf)
+                        np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name.replace('-', '_')}_"
+                                f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
+                                f"sites_{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy", cdf)
             cvms.append(cvm)
             cvm_errors.append(cvm_error)
             cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
