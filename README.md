@@ -86,155 +86,155 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 ### hxy-ecmc configuration file (an example)
 
 ```
-'hxy-ecmc'                              algorithm_name
-'output/convergence_tests/hxy/ecmc'     output_directory
-8                                       integer_lattice_length
-100                                     no_of_equilibration_sweeps
-40000                                   no_of_observations
-1.3d0                                   initial_temperature
-1.3d0                                   final_temperature
-0                                       no_of_temperature_increments
-0                                       vacuum_permittivity_sum_cutoff
-.false.                                 randomise_initial_field_configuration
-.false.                                 use_external_global_moves
-.false.                                 calculate_potential_minimising_twists
-1                                       no_of_jobs
-4                                       max_no_of_cpus
+'hxy-ecmc'                                  algorithm_name
+'output/convergence_tests/hxy/ecmc'         output_directory
+8                                           integer_lattice_length
+100                                         no_of_equilibration_sweeps
+40000                                       no_of_observations
+1.3d0                                       initial_temperature
+1.3d0                                       final_temperature
+0                                           no_of_temperature_increments
+0                                           vacuum_permittivity_sum_cutoff
+.false.                                     randomise_initial_field_configuration
+.false.                                     use_external_global_moves
+.false.                                     calculate_potential_minimising_twists
+1                                           no_of_jobs
+4                                           max_no_of_cpus
 ```
 
 ### hxy-metropolis configuration file (an example)
 
 ```
-'hxy-metropolis'                                algorithm_name
-'output/convergence_tests/hxy/metropolis'       output_directory
-8                                               integer_lattice_length
-10000                                           no_of_equilibration_sweeps
-100000                                          no_of_observations
-1.3d0                                           initial_temperature
-1.3d0                                           final_temperature
-0                                               no_of_temperature_increments
-1.0d0                                           width_of_proposal_interval (initial)
-0.44d0                                          target_acceptance_rate_of_field_rotations
-0                                               vacuum_permittivity_sum_cutoff
-.false.                                         randomise_initial_field_configuration
-.false.                                         use_external_global_moves
-.false.                                         calculate_potential_minimising_twists
-1                                               no_of_jobs
-4                                               max_no_of_cpus
+'hxy-metropolis'                                    algorithm_name
+'output/convergence_tests/hxy/metropolis'           output_directory
+8                                                   integer_lattice_length
+10000                                               no_of_equilibration_sweeps
+100000                                              no_of_observations
+1.3d0                                               initial_temperature
+1.3d0                                               final_temperature
+0                                                   no_of_temperature_increments
+1.0d0                                               width_of_proposal_interval (initial)
+0.44d0                                              target_acceptance_rate_of_field_rotations
+0                                                   vacuum_permittivity_sum_cutoff
+.false.                                             randomise_initial_field_configuration
+.false.                                             use_external_global_moves
+.false.                                             calculate_potential_minimising_twists
+1                                                   no_of_jobs
+4                                                   max_no_of_cpus
 ```
 
 ### hxy-gaussian-noise-metropolis configuration file (an example)
 
 ```
-'hxy-gaussian-noise-metropolis'                             algorithm_name
-'output/convergence_tests/hxy/gaussian_noise_metropolis'    output_directory
-8                                                           integer_lattice_length
-10000                                                       no_of_equilibration_sweeps
-100000                                                      no_of_observations
-1.3d0                                                       initial_temperature
-1.3d0                                                       final_temperature
-0                                                           no_of_temperature_increments
-1.0d0                                                       width_of_proposal_interval (initial)
-0.44d0                                                      target_acceptance_rate_of_field_rotations
-0                                                           vacuum_permittivity_sum_cutoff
-.false.                                                     randomise_initial_field_configuration
-.false.                                                     use_external_global_moves
-.false.                                                     calculate_potential_minimising_twists
-1                                                           no_of_jobs
-4                                                           max_no_of_cpus
+'hxy-gaussian-noise-metropolis'                                     algorithm_name
+'output/convergence_tests/hxy/gaussian_noise_metropolis'            output_directory
+8                                                                   integer_lattice_length
+10000                                                               no_of_equilibration_sweeps
+100000                                                              no_of_observations
+1.3d0                                                               initial_temperature
+1.3d0                                                               final_temperature
+0                                                                   no_of_temperature_increments
+1.0d0                                                               width_of_proposal_interval (initial)
+0.44d0                                                              target_acceptance_rate_of_field_rotations
+0                                                                   vacuum_permittivity_sum_cutoff
+.false.                                                             randomise_initial_field_configuration
+.false.                                                             use_external_global_moves
+.false.                                                             calculate_potential_minimising_twists
+1                                                                   no_of_jobs
+4                                                                   max_no_of_cpus
 ```
 
 ### xy-ecmc configuration file (an example)
 
 ```
-'xy-ecmc'                               algorithm_name
-'output/convergence_tests/xy/ecmc'      output_directory
-8                                       integer_lattice_length
-100                                     no_of_equilibration_sweeps
-40000                                   no_of_observations
-0.8d0                                   initial_temperature
-0.8d0                                   final_temperature
-0                                       no_of_temperature_increments
-.false.                                 randomise_initial_field_configuration
-.false.                                 use_external_global_moves
-1                                       no_of_jobs
-4                                       max_no_of_cpus
-```
-
-### xy-metropolis configuration file (an example)
-
-```
-'xy-metropolis'                             algorithm_name
-'output/convergence_tests/xy/metropolis'    output_directory
+'xy-ecmc'                                   algorithm_name
+'output/convergence_tests/xy/ecmc'          output_directory
 8                                           integer_lattice_length
-10000                                       no_of_equilibration_sweeps
-100000                                      no_of_observations
+100                                         no_of_equilibration_sweeps
+40000                                       no_of_observations
 0.8d0                                       initial_temperature
 0.8d0                                       final_temperature
 0                                           no_of_temperature_increments
-1.0d0                                       width_of_proposal_interval (initial)
-0.44d0                                      target_acceptance_rate_of_field_rotations
 .false.                                     randomise_initial_field_configuration
 .false.                                     use_external_global_moves
 1                                           no_of_jobs
 4                                           max_no_of_cpus
 ```
 
+### xy-metropolis configuration file (an example)
+
+```
+'xy-metropolis'                                     algorithm_name
+'output/convergence_tests/xy/metropolis'            output_directory
+8                                                   integer_lattice_length
+10000                                               no_of_equilibration_sweeps
+100000                                              no_of_observations
+0.8d0                                               initial_temperature
+0.8d0                                               final_temperature
+0                                                   no_of_temperature_increments
+1.0d0                                               width_of_proposal_interval (initial)
+0.44d0                                              target_acceptance_rate_of_field_rotations
+.false.                                             randomise_initial_field_configuration
+.false.                                             use_external_global_moves
+1                                                   no_of_jobs
+4                                                   max_no_of_cpus
+```
+
 ### xy-gaussian-noise-metropolis configuration file (an example)
 
 ```
-'xy-gaussian-noise-metropolis'                          algorithm_name
-'output/convergence_tests/xy/gaussian_noise_metropolis' output_directory
-8                                                       integer_lattice_length
-10000                                                   no_of_equilibration_sweeps
-100000                                                  no_of_observations
-0.8d0                                                   initial_temperature
-0.8d0                                                   final_temperature
-0                                                       no_of_temperature_increments
-1.0d0                                                   width_of_proposal_interval (initial)
-0.44d0                                                  target_acceptance_rate_of_field_rotations
-.false.                                                 randomise_initial_field_configuration
-.false.                                                 use_external_global_moves
-1                                                       no_of_jobs
-4                                                       max_no_of_cpus
+'xy-gaussian-noise-metropolis'                                  algorithm_name
+'output/convergence_tests/xy/gaussian_noise_metropolis'         output_directory
+8                                                               integer_lattice_length
+10000                                                           no_of_equilibration_sweeps
+100000                                                          no_of_observations
+0.8d0                                                           initial_temperature
+0.8d0                                                           final_temperature
+0                                                               no_of_temperature_increments
+1.0d0                                                           width_of_proposal_interval (initial)
+0.44d0                                                          target_acceptance_rate_of_field_rotations
+.false.                                                         randomise_initial_field_configuration
+.false.                                                         use_external_global_moves
+1                                                               no_of_jobs
+4                                                               max_no_of_cpus
 ```
 
 ### elementary-electrolyte configuration file (an example)
 
 ```
-'elementary-electrolyte'                            algorithm_name
-'output/convergence_tests/electrolyte/elementary'   output_directory
-8                                                   integer_lattice_length
-10000                	                            no_of_equilibration_sweeps
-100000	                                            no_of_observations
-1.5d0                 	                            initial_temperature
-1.5d0                                               final_temperature
-0                                                   no_of_temperature_increments
-1.0d0       	                                    width_of_proposal_interval (initial)
-0.44d0                                              target_acceptance_rate_of_field_rotations
-0.66666666666666d0                                  charge_hop_proportion
-.false.                                             use_external_global_moves
-1                                                   no_of_jobs
-4                                                   max_no_of_cpus
+'elementary-electrolyte'                                    algorithm_name
+'output/convergence_tests/electrolyte/elementary'           output_directory
+8                                                           integer_lattice_length
+10000                	                                    no_of_equilibration_sweeps
+100000	                                                    no_of_observations
+1.5d0                 	                                    initial_temperature
+1.5d0                                                       final_temperature
+0                                                           no_of_temperature_increments
+1.0d0       	                                            width_of_proposal_interval (initial)
+0.44d0                                                      target_acceptance_rate_of_field_rotations
+0.66666666666666d0                                          charge_hop_proportion
+.false.                                                     use_external_global_moves
+1                                                           no_of_jobs
+4                                                           max_no_of_cpus
 ```
 
 ### multivalued-electrolyte configuration file (an example)
 
 ```
-'multivalued-electrolyte'                           algorithm_name
-'output/convergence_tests/electrolyte/multivalued'  output_directory
-8                                                   integer_lattice_length
-10000                	                            no_of_equilibration_sweeps
-100000	                                            no_of_observations
-1.5d0                 	                            initial_temperature
-1.5d0                                               final_temperature
-0                                                   no_of_temperature_increments
-1.0d0       	                                    width_of_proposal_interval (initial)
-0.44d0                                              target_acceptance_rate_of_field_rotations
-0.66666666666666d0                                  charge_hop_proportion
-.false.                                             use_external_global_moves
-1                                                   no_of_jobs
-4                                                   max_no_of_cpus
+'multivalued-electrolyte'                                   algorithm_name
+'output/convergence_tests/electrolyte/multivalued'          output_directory
+8                                                           integer_lattice_length
+10000                	                                    no_of_equilibration_sweeps
+100000	                                                    no_of_observations
+1.5d0                 	                                    initial_temperature
+1.5d0                                                       final_temperature
+0                                                           no_of_temperature_increments
+1.0d0       	                                            width_of_proposal_interval (initial)
+0.44d0                                                      target_acceptance_rate_of_field_rotations
+0.66666666666666d0                                          charge_hop_proportion
+.false.                                                     use_external_global_moves
+1                                                           no_of_jobs
+4                                                           max_no_of_cpus
 ```
 
 
