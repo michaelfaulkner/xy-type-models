@@ -77,11 +77,11 @@ directory, but we often replace this with `../bc4-output` – the relative locat
 cluster machine). For the value of `output_directory`, i) refrain from giving long strings, as this can lead to Fortran 
 runtime errors, and ii) ensure three tabbed spaces between the value of `output_directory` and the word 
 `output_directory` itself, as this avoids Fortran errors when performing multiple runs of the same simulation (the 
-number of runs is set by the value of `no_of_jobs`). The values of `no_of_jobs` and `max_no_of_cpus` must be positive 
-integers. For the value of `max_no_of_cpus`, we recommend giving half the number of CPUs available on your personal 
-machine, e.g., for a four-core machine with two threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, 
-xy-type-models will perform two sets of four parallel runs of the same simulation, and similarly for certain 
-sample-analysis processes.
+number of runs is set by the value of `no_of_jobs`). The minimum / maximum value of `no_of_temperature_increments` is 
+0 / 99. The values of `no_of_jobs` and `max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, 
+we recommend giving half the number of CPUs available on your personal machine, e.g., for a four-core machine with two 
+threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four 
+parallel runs of the same simulation, and similarly for certain sample-analysis processes.
 
 ### hxy-ecmc configuration file (an example)
 

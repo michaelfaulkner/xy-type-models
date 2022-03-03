@@ -1,7 +1,6 @@
 subroutine output_metropolis_acceptance_rates(temperature_index)
 use variables
 implicit none
-character(100), parameter :: temperature_string="/temp_"
 character(100) :: filename
 integer :: temperature_index
 double precision :: acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
@@ -14,8 +13,7 @@ acceptance_rate_of_charge_hops = dfloat(no_of_accepted_charge_hops) / dfloat(no_
 acceptance_rate_of_external_global_moves = 0.5d0 * dfloat(no_of_accepted_external_global_moves) &
                                             / dfloat(no_of_observations)
 
-write(filename, '(A, I2.2, "//acceptance_rates.csv")') trim(output_directory)//trim(temperature_string), &
-                                                        temperature_index
+write(filename, '(A, "/temp_", I2.2, "_acceptance_rates.csv")') trim(output_directory), temperature_index
 open(unit=30, file = filename)
 
 if (.not.(use_external_global_moves)) then

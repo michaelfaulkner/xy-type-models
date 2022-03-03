@@ -56,11 +56,10 @@ end program ecmc_algorithm
 subroutine output_no_of_events(temperature_index)
 use variables
 implicit none
-character(100), parameter :: temperature_string="/temp_"
 character(100) :: filename
 integer :: temperature_index
 
-write (filename, '(A, I2.2, "//no_of_events.csv")' ) trim(output_directory)//trim(temperature_string), temperature_index
+write (filename, '(A, "/temp_", I2.2, "_no_of_events.csv")' ) trim(output_directory), temperature_index
 open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
     write(300, 100) no_of_events

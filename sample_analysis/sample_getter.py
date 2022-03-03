@@ -87,7 +87,7 @@ def get_acceptance_rates(output_directory, temperature_index):
         array is 4, the model is a Maggs-electrolyte model and the fourth element is the acceptance rate of the
         external global moves (the externally applied topological-sector fluctuations).
     """
-    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/acceptance_rates.csv",
+    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_acceptance_rates.csv",
                                     dtype=float, delimiter=","))
 
 
@@ -112,7 +112,7 @@ def get_no_of_events(output_directory, temperature_index):
         If the length of the array is 2, external global Metropolis moves (the global spin twists) have been chosen and
         the second element is the acceptance rate of these moves and has type float.
     """
-    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/no_of_events.csv", dtype=float,
+    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_no_of_events.csv", dtype=float,
                                     delimiter=","))
 
 
@@ -139,7 +139,7 @@ def get_entire_sample(output_directory, temperature_index):
         component of the sum of the first derivative of the potential and the sixth / seventh sub-array is the x / y
         component of the sum of the second derivative of the potential.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/sample.csv", dtype=float, delimiter=",")
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample.csv", dtype=float, delimiter=",")
 
 
 def get_potential(output_directory, temperature, temperature_index, no_of_sites):

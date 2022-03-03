@@ -33,6 +33,9 @@ end if
 call setup_periodic_boundaries
 call initialise_field_configuration(.true.)
 
+! opens new directory in which to save the sample files
+call system('mkdir -p ' // trim(output_directory))
+
 ! message informing the start of the Markov process
 write(6, '(A, A, A, I4.4, A, I4.4, A)') 'Starting the ', trim(algorithm_name), ' simulation on ', &
                                             integer_lattice_length, 'x', integer_lattice_length, ' lattice sites.'

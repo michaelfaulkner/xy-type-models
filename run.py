@@ -106,6 +106,9 @@ def get_config_data(config_file_location):
                 final_temperature = float(row[0].replace("d0", "").replace("final_temperature", "").replace(" ", ""))
             if 'no_of_temperature_increments' in row[0]:
                 no_of_temperature_increments = int(row[0].replace("no_of_temperature_increments", "").replace(" ", ""))
+                if type(no_of_temperature_increments) is not int or not (0 <= no_of_temperature_increments <= 99):
+                    raise Exception("ConfigurationError: The value of no_of_temperature_increments must be an integer "
+                                    "not less than zero and not greater than 99.")
             if 'use_external_global_moves' in row[0]:
                 if '.true.' in row[0]:
                     use_external_global_moves = True
