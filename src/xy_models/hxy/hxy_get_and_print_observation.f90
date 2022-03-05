@@ -64,7 +64,7 @@ double precision :: sum_of_squared_emergent_field(2)
 
 proposed_no_of_twists = 1
 do
-    sum_of_squared_twisted_emergent_field = sum_of_squared_emergent_field(2)
+    sum_of_squared_twisted_emergent_field = 0.0d0
     do i = 1, no_of_sites
         sum_of_squared_twisted_emergent_field = sum_of_squared_twisted_emergent_field + &
                                                     get_spin_difference(spin_field(i) + dfloat(sign_of_twist) * &
@@ -95,7 +95,7 @@ double precision :: sum_of_squared_emergent_field(2)
 
 proposed_no_of_twists = 1
 do
-    sum_of_squared_twisted_emergent_field = sum_of_squared_emergent_field(1)
+    sum_of_squared_twisted_emergent_field = 0.0d0
     do i = 1, no_of_sites
         sum_of_squared_twisted_emergent_field = sum_of_squared_twisted_emergent_field + &
                                                     get_spin_difference(spin_field(i) + dfloat(sign_of_twist) * &
