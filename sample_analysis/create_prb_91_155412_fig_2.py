@@ -17,29 +17,54 @@ markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
-def main(electrolyte_version):
-    if electrolyte_version:
+def main(model):
+    if model == "electrolyte":
         config_file_local_moves = "config_files/prb_91_155412_fig_2/local_moves.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2/all_moves.txt"
-    else:
+        get_sample_method = getattr(sample_getter, "get_topological_susceptibility")
+    elif model == "hxy":
         config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy/local_moves.txt"
         config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy/all_moves.txt"
+        get_sample_method = getattr(sample_getter, "get_potential_minimising_twist_susceptibility")
+    elif model == "hxy_literal":
+        config_file_local_moves = "config_files/prb_91_155412_fig_2_hxy_literal/local_moves.txt"
+        config_file_all_moves = "config_files/prb_91_155412_fig_2_hxy_literal/all_moves.txt"
+        get_sample_method = getattr(sample_getter, "get_hxy_topological_susceptibility")
+    elif model == "xy":
+        config_file_local_moves = "config_files/prb_91_155412_fig_2_xy/local_moves.txt"
+        config_file_all_moves = "config_files/prb_91_155412_fig_2_xy/all_moves.txt"
+        get_sample_method = getattr(sample_getter, "get_potential_minimising_twist_susceptibility")
+    else:
+        raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy, "
+                        "hxy_literal or xy.")
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _, _,
      no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory = output_directory_local_moves.replace("/local_moves", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
 
+    if model == "hxy_literal":
+        output_file_string = (f"{output_directory}/prb_91_155412_fig_2_literal_{algorithm_name.replace('-', '_')}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+        accept_rates_file_string = (f"{output_directory}/acceptance_rates_literal_{algorithm_name.replace('-', '_')}_"
+                                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+        figure_file_string = (f"{output_directory}/prb_91_155412_fig_2_literal_{algorithm_name.replace('-', '_')}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf")
+    else:
+        output_file_string = (f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+        accept_rates_file_string = (f"{output_directory}/acceptance_rates_{algorithm_name.replace('-', '_')}_"
+                                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+        figure_file_string = (f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
+                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf")
+
     try:
-        with open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_{int(no_of_sites ** 0.5)}"
-                  f"x{int(no_of_sites ** 0.5)}_sites.tsv", "r") as output_file:
+        with open(output_file_string, "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             chi_w_ratios = output_file_sans_header[1]
     except (IOError, IndexError) as _:
-        output_file = open(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
-                           f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv", "w")
-        accept_rates_file = open(f"{output_directory}/acceptance_rates_{algorithm_name.replace('-', '_')}_"
-                                 f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv", "w")
+        output_file = open(output_file_string, "w")
+        accept_rates_file = open(accept_rates_file_string, "w")
         output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
                           "chi_w (local only)".ljust(30) + "chi_w error (local only)".ljust(30) +
                           "chi_w (all moves)".ljust(30) + "chi_w error (all moves)".ljust(30) + "\n")
@@ -76,13 +101,11 @@ def main(electrolyte_version):
                                                     temperature_index) for job_number in range(no_of_jobs)], axis=0)
 
             sample_means_and_errors_local_moves = np.transpose(
-                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
-                    sample_getter.get_topological_susceptibility(
+                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
                         output_directory_local_moves + f"/job_{job_number}", temperature, temperature_index,
                         no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
             sample_means_and_errors_all_moves = np.transpose(
-                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[
-                    sample_getter.get_topological_susceptibility(
+                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
                         output_directory_all_moves + f"/job_{job_number}", temperature, temperature_index,
                         no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
 
@@ -123,24 +146,21 @@ def main(electrolyte_version):
 
     plt.plot(temperatures, chi_w_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
     plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
-    plt.ylabel(r"$\chi_{\rm w, local}$ / $\chi_{\rm w, all}$", fontsize=15, labelpad=10)
+    plt.ylabel(r"$\chi_{\rm{local}}$ / $\chi_{\rm{all}}$", fontsize=15, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-    plt.savefig(f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
-                f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf", bbox_inches="tight")
+    plt.savefig(figure_file_string, bbox_inches="tight")
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 or len(sys.argv) < 1:
         raise Exception("InterfaceError: provide at most one positional argument.  This is not required, but you may "
                         "provide the value False in order to choose the HXY version of the script (default value is "
-                        "True, which chooses the elementary electrolyte).")
+                        "electrolyte, which chooses the elementary electrolyte).")
     if len(sys.argv) == 2:
-        print("One positional argument provided.  This must be True / False to choose the elementary-electrolyte / HXY "
-              "version of the script.")
-        if not (sys.argv[1] == "True" or sys.argv[1] == "False"):
-            raise Exception("InterfaceError: If provided, the single positional argument must be True or False.")
-        main(eval(sys.argv[1]))
+        print("One positional argument provided.  This must be electrolyte / hxy / hxy_literal / xy / False to choose "
+              "the elementary-electrolyte / HXY / HXY with topological susceptibility / XY version of the script.")
+        main(str(sys.argv[1]))
     else:
-        print("Positional argument not provided.  The default value is True, which chooses the elementary-electrolyte "
-              "version of the script.")
-        main(True)
+        print("Positional argument not provided.  The default value is electrolyte, which chooses the "
+              "elementary-electrolyte version of the script.")
+        main("electrolyte")

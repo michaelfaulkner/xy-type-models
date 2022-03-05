@@ -562,6 +562,68 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
             / temperature / no_of_sites)
 
 
+def get_potential_minimising_twists(output_directory, temperature, temperature_index, no_of_sites):
+    r"""
+    Returns the sample of the potential-minimising twist field -- an integer-valued two-dimensional vector field whose
+    x / y component corresponds to the number of twists required (along the x / y dimension) to minimise the potential.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the potential-minimising twist field.  A two-dimensional numpy array of shape
+        (no_of_observations, 2).  The nth sub-array is the potential-minimising twist field measured at observation n;
+        its first / second element is an int corresponding to the x / y component of the potential-minimising twist
+        field measured at observation n.
+    """
+    return get_entire_sample(output_directory, temperature_index)[:, 9:11]
+
+
+def get_potential_minimising_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites):
+    r"""
+    Returns the sample of the potential-minimising twist susceptibility chi_{\tilde{t}}(x; temperature, no_of_sites) =
+    4 * \pi ** 2 * [\tilde{t} - E[\tilde{t}]] ** 2 / temperature, where E[.] is the expected value of the
+    argument and \tilde{t} \in Z^2 is the potential-minimising twist field w -- an integer-valued two-dimensional
+    vector field whose x / y component corresponds to the number of twists required (along the x / y dimension) to
+    minimise the potential.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the potential-minimising twist susceptibility.  A one-dimensional numpy array of length
+        no_of_observations.  The nth element is a float corresponding to the potential-minimising twist susceptibility
+        measured at observation n.
+    """
+    potential_minimising_twists_sample = get_potential_minimising_twists(output_directory, temperature,
+                                                                         temperature_index, no_of_sites)
+    return 4.0 * math.pi ** 2 * np.mean(
+        (potential_minimising_twists_sample - np.mean(potential_minimising_twists_sample, axis=0)) ** 2,
+        axis=1) / temperature
+
+
 def get_hxy_topological_sector(output_directory, temperature, temperature_index, no_of_sites):
     r"""
     Returns the sample of the HXY topological sector w \in Z^2, an integer-valued vector field whose components are
