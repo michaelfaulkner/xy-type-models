@@ -61,13 +61,13 @@ def main(model):
         with open(output_file_string, "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            chi_w_ratios = output_file_sans_header[1]
+            chi_ratios = output_file_sans_header[1]
     except (IOError, IndexError) as _:
         output_file = open(output_file_string, "w")
         accept_rates_file = open(accept_rates_file_string, "w")
-        output_file.write("# temperature".ljust(30) + "chi_w ratio".ljust(30) + "chi_w ratio error".ljust(30) +
-                          "chi_w (local only)".ljust(30) + "chi_w error (local only)".ljust(30) +
-                          "chi_w (all moves)".ljust(30) + "chi_w error (all moves)".ljust(30) + "\n")
+        output_file.write("# temperature".ljust(30) + "chi ratio".ljust(30) + "chi ratio error".ljust(30) +
+                          "chi (local only)".ljust(30) + "chi error (local only)".ljust(30) +
+                          "chi (all moves)".ljust(30) + "chi error (all moves)".ljust(30) + "\n")
         if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
             accept_rates_file.write("# temperature".ljust(30) +
                                     "final width of proposal interval (local only)".ljust(50) +
@@ -88,7 +88,7 @@ def main(model):
 
         no_of_cpus = mp.cpu_count()
         pool = mp.Pool(no_of_cpus)
-        chi_w_ratios = []
+        chi_ratios = []
         start_time = time.time()
 
         for temperature_index, temperature in enumerate(temperatures):
@@ -113,13 +113,13 @@ def main(model):
             sample_error_local_moves = np.linalg.norm(sample_means_and_errors_local_moves[1])
             sample_mean_all_moves = np.mean(sample_means_and_errors_all_moves[0])
             sample_error_all_moves = np.linalg.norm(sample_means_and_errors_all_moves[1])
-            chi_w_ratio = sample_mean_local_moves / sample_mean_all_moves
-            chi_w_ratio_error = math.sqrt((sample_error_local_moves / sample_mean_all_moves) ** 2 +
+            chi_ratio = sample_mean_local_moves / sample_mean_all_moves
+            chi_ratio_error = math.sqrt((sample_error_local_moves / sample_mean_all_moves) ** 2 +
                                           (sample_mean_local_moves * sample_error_all_moves /
                                            sample_mean_all_moves ** 2) ** 2)
 
-            output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_w_ratio:.14e}".ljust(30) +
-                              f"{chi_w_ratio_error:.14e}".ljust(30) + f"{sample_mean_local_moves:.14e}".ljust(30) +
+            output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_ratio:.14e}".ljust(30) +
+                              f"{chi_ratio_error:.14e}".ljust(30) + f"{sample_mean_local_moves:.14e}".ljust(30) +
                               f"{sample_error_local_moves:.14e}".ljust(30) +
                               f"{sample_mean_all_moves:.14e}".ljust(30) +
                               f"{sample_error_all_moves:.14e}".ljust(30) + "\n")
@@ -139,12 +139,12 @@ def main(model):
                                         f"{acceptance_rates_all_moves[0]:.14e}".ljust(50) +
                                         f"{acceptance_rates_all_moves[1]:.14e}".ljust(50) +
                                         f"{acceptance_rates_all_moves[2]:.14e}" + "\n")
-            chi_w_ratios.append(chi_w_ratio)
+            chi_ratios.append(chi_ratio)
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
         pool.close()
         output_file.close()
 
-    plt.plot(temperatures, chi_w_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
+    plt.plot(temperatures, chi_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
     plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
     plt.ylabel(r"$\chi_{\rm{local}}$ / $\chi_{\rm{all}}$", fontsize=15, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
@@ -153,12 +153,13 @@ def main(model):
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 or len(sys.argv) < 1:
-        raise Exception("InterfaceError: provide at most one positional argument.  This is not required, but you may "
-                        "provide the value False in order to choose the HXY version of the script (default value is "
-                        "electrolyte, which chooses the elementary electrolyte).")
+        raise Exception("InterfaceError: provide at most one positional argument.  You may provide the value "
+                        "electrolyte / hxy / hxy_literal / xy in order to choose the elementary-electrolyte / HXY / "
+                        "HXY with topological susceptibility / XY version of the script (default value is "
+                        "electrolyte).")
     if len(sys.argv) == 2:
-        print("One positional argument provided.  This must be electrolyte / hxy / hxy_literal / xy / False to choose "
-              "the elementary-electrolyte / HXY / HXY with topological susceptibility / XY version of the script.")
+        print("One positional argument provided.  This must be electrolyte / hxy / hxy_literal / xy to choose the "
+              "elementary-electrolyte / HXY / HXY with topological susceptibility / XY version of the script.")
         main(str(sys.argv[1]))
     else:
         print("Positional argument not provided.  The default value is electrolyte, which chooses the "
