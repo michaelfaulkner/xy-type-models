@@ -6,10 +6,10 @@ double precision :: potential, potential_cartesian_components(2), non_normalised
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 
 no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
-potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
 non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
 sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
 sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
 
 do i = 1, no_of_sites
     non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))

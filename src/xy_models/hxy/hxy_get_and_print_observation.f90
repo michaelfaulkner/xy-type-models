@@ -2,9 +2,8 @@ subroutine get_and_print_observation
 use variables
 implicit none
 integer :: i, n, no_of_external_twists_to_minimise_potential(2)
-double precision :: potential, non_normalised_magnetisation(2)
+double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
-double precision :: sum_of_squared_emergent_field(2)
 
 no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
 non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
