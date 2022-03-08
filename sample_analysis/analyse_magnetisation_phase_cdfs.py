@@ -40,7 +40,7 @@ def main(config_file, no_of_plotted_cdfs=8):
     axis.set_xlabel(r"$x$", fontsize=20, labelpad=8)
     axis.set_ylim(0.0, 1.0)
     axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
-    axis.set_ylabel(r"$\mathbb{P}_n \left( \phi_m < x \right)$", fontsize=20, labelpad=-30)
+    axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=20, labelpad=-30)
     axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     axis.yaxis.set_major_formatter('{x:.1f}')
     [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
@@ -51,7 +51,7 @@ def main(config_file, no_of_plotted_cdfs=8):
     inset_axis.yaxis.tick_right()
     inset_axis.tick_params(which='major', width=2, labelsize=7.5)
     inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=7.5)
-    inset_axis.set_ylabel(r"$\omega_n^2$", fontsize=7.5)
+    inset_axis.set_ylabel(r"$n \omega_n^2$", fontsize=7.5)
     [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
 
     try:
@@ -91,7 +91,7 @@ def main(config_file, no_of_plotted_cdfs=8):
         cvm_file = open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                         f"{no_of_observations}_obs.tsv", "w")
-        cvm_file.write("# temperature".ljust(30) + "omega_n^2".ljust(30) + "omega_n^2 error" + "\n")
+        cvm_file.write("# temperature".ljust(30) + "n omega_n^2".ljust(30) + "n omega_n^2 error" + "\n")
         cvms, cvm_errors = [], []
         start_time = time.time()
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
@@ -150,7 +150,7 @@ def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperat
                                                       no_of_equilibration_sweeps):
     r"""
     Returns (for the sample of the magnetisation phase) the empirical CDF F_n(x) and normalised Cramér-von Mises
-    integral \omega_n^2 := \int (F_n(x) - F(x))^2 dF(x) / n, where n is the sample size and F(x) is the CDF of the
+    statistic n \omega_n^2 := n \int (F_n(x) - F(x))^2 dF(x), where n is the sample size and F(x) is the CDF of the
     continuous uniform distribution Uniform(-pi, pi).
 
     The magnetisation phase phi(x; temperature, no_of_sites), where
@@ -185,8 +185,7 @@ def get_cdf_and_cramervonmises_of_magnetisation_phase(sample_directory, temperat
     magnetisation_phase = sample_getter.get_magnetisation_phase(sample_directory, temperature, temperature_index,
                                                                 no_of_sites)[no_of_equilibration_sweeps:]
     return [np.array(markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase)),
-            stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic /
-            len(magnetisation_phase)]
+            stats.cramervonmises(magnetisation_phase, cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic]
 
 
 if __name__ == "__main__":
