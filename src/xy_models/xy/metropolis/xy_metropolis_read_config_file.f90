@@ -15,9 +15,11 @@ read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) randomise_initial_field_configuration
 read(10, *) use_external_global_moves
+read(10, *) calculate_potential_minimising_twists
 
 if ((algorithm_name /= 'xy-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
-   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal xy-metropolis or xy-gaussian-noise-metropolis.'
+   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-metropolis or &
+                    xy-gaussian-noise-metropolis.'
    stop
 end if
 

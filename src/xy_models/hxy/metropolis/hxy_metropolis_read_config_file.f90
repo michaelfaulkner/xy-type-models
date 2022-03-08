@@ -19,7 +19,8 @@ read(10, *) use_external_global_moves
 read(10, *) calculate_potential_minimising_twists
 
 if ((algorithm_name /= 'hxy-metropolis').and.(algorithm_name /= 'hxy-gaussian-noise-metropolis')) then
-   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-metropolis or hxy-gaussian-noise-metropolis.'
+   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal hxy-metropolis or &
+                    hxy-gaussian-noise-metropolis.'
    stop
 end if
 

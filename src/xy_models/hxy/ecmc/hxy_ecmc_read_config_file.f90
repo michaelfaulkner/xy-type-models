@@ -16,7 +16,7 @@ read(10, *) use_external_global_moves
 read(10, *) calculate_potential_minimising_twists
 
 if (algorithm_name /= 'hxy-ecmc') then
-   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal hxy-ecmc.'
+   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal hxy-ecmc.'
    stop
 end if
 

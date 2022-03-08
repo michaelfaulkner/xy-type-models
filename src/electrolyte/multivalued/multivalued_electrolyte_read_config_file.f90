@@ -17,7 +17,7 @@ read(10, *) charge_hop_proportion
 read(10, *) use_external_global_moves
 
 if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
-   write(6, *) 'ConfigurationFileError: the value of algorithm_name does not equal either elementary-electrolyte or &
+   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal either elementary-electrolyte or &
                     multivalued-electrolyte.'
    stop
 end if
