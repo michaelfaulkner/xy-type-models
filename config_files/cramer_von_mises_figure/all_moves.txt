@@ -1,0 +1,15 @@
+'xy-gaussian-noise-metropolis'                              algorithm_name
+'output/cramer_von_mises_figure/all_moves'         output_directory
+16                                                          integer_lattice_length
+100000                                                      no_of_equilibration_sweeps
+1000000                                                     no_of_observations
+0.1d0                                                       initial_temperature
+1.5d0                                                       final_temperature
+7                                                           no_of_temperature_increments
+1.0d0    	                                                width_of_proposal_interval (initial)
+0.6d0 		                                                target_acceptance_rate_of_field_rotations
+.true.                                                      randomise_initial_field_configuration
+.true.                                                      use_external_global_moves
+.false.                                                     calculate_potential_minimising_twists
+8                                                           no_of_jobs
+4                                                           max_no_of_cpus
