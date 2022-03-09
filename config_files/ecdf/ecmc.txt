@@ -1,0 +1,13 @@
+'xy-ecmc'                           algorithm_name
+'../bc4-output/ecdf/ecmc'           output_directory
+256                                 integer_lattice_length
+10000                               no_of_equilibration_sweeps
+100000                              no_of_observations
+0.4d0                               initial_temperature
+1.6d0                               final_temperature
+2                                   no_of_temperature_increments
+.true.                              randomise_initial_field_configuration
+.false.                             use_external_global_moves
+.false.                             calculate_potential_minimising_twists
+4                                   no_of_jobs
+4                                   max_no_of_cpus
