@@ -39,8 +39,18 @@ def main(model):
                         "hxy_literal or xy.")
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _, _,
      no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
-    output_directory = output_directory_local_moves.replace("/local_moves", "")
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
+    try:
+        sample_getter.get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)
+    except OSError:
+        raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_local_moves}' "
+                        f"in the top directory.")
+    try:
+        sample_getter.get_acceptance_rates(f"{output_directory_all_moves}/job_0", 0)
+    except OSError:
+        raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_all_moves}' in "
+                        f"the top directory.")
+    output_directory = output_directory_local_moves.replace("/local_moves", "")
 
     if model == "hxy_literal":
         output_file_string = (f"{output_directory}/prb_91_155412_fig_2_literal_{algorithm_name.replace('-', '_')}_"
