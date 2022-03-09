@@ -12,4 +12,4 @@
 .false.                                 use_external_global_moves
 .false.                                 calculate_potential_minimising_twists
 8                                       no_of_jobs
-4                                       max_no_of_cpus
+8                                       max_no_of_cpus
