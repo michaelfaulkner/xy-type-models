@@ -25,36 +25,18 @@ def main():
                                  linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in
                          linear_system_sizes]
-    '''config_files_metrop_all = [f"config_files/cvm_figure/{value}x{value}_metrop_all_moves.txt" for value in
-                               linear_system_sizes]'''
+    config_files_metrop_all = [f"config_files/cvm_figure/{value}x{value}_metrop_all_moves.txt" for value in
+                               linear_system_sizes]
+
     (algorithm_name_metrop, output_directory, _, no_of_equilibration_sweeps_metrop_local,
      no_of_observations_metrop_local, temperatures_cmv, use_external_global_moves_cmv, external_global_moves_string_cmv,
      no_of_jobs_metrop_local, max_no_of_cpus) = run_script.get_config_data(config_files_metrop_local[0])
     (algorithm_name_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc, _
      ) = run_script.get_config_data(config_files_ecmc[0])
-    '''(_, _, _, no_of_equilibration_sweeps_metrop_all, no_of_observations_metrop_all, temperatures_metrop_all,
+    (_, _, _, no_of_equilibration_sweeps_metrop_all, no_of_observations_metrop_all, temperatures_metrop_all,
      use_external_global_moves_metrop_all, external_global_moves_string_metrop_all, no_of_jobs_metrop_all,
-     _) = run_script.get_config_data(config_files_metrop_all[0])'''
-
+     _) = run_script.get_config_data(config_files_metrop_all[0])
     output_directory = output_directory.replace("/8x8_metrop_local_moves", "")
-    '''try:
-        [sample_getter.get_acceptance_rates(f"{output_directory}/{length}x{length}_metrop_local_moves/job_0", 0)
-         for length in linear_system_sizes]
-    except OSError:
-        raise Exception("Local-dynamics Metropolis simulations have not been run - in the top directory, enter 'python "
-                        "run.py config_files/cvm_figure/LxL_metrop_local_moves.txt' for L = 8, 16, 32, 64,"
-                        " 128, 256.")
-    try:
-        [sample_getter.get_no_of_events(f"{output_directory}/{length}x{length}_ecmc/job_0", 0) for length in
-         linear_system_sizes]
-    except OSError:
-        raise Exception("Event-chain simulations have not been run - in the top directory, enter 'python run.py "
-                        "config_files/cvm_figure/LxL_ecmc.txt' for L = 8, 16, 32, 64, 128, 256.")'''
-    '''try:
-        sample_getter.get_acceptance_rates(f"{output_directory_metrop_all}/job_0", 0)
-    except OSError:
-        raise Exception("All-dynamics Metropolis simulations have not been run - in the top directory, enter 'python "
-                        "run.py config_files/cvm_figure/LxL_metrop_all_moves.txt' for L = 8, 16, 32, 64, 128, 256.")'''
 
     pool = setup_scripts.setup_pool(no_of_jobs_metrop_local, max_no_of_cpus)
     figure, axis = plt.subplots(1)
@@ -65,6 +47,13 @@ def main():
     axis.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=8)
     axis.set_ylabel(r"$n \omega_n^2$", fontsize=20, labelpad=8)
     axis.set_yscale('log')
+
+    inset_axis = plt.axes([0.685, 0.66, 0.2, 0.2])
+    inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=7.5, labelpad=2)
+    inset_axis.set_ylabel(r"$p(\rm{twist})$", fontsize=7.5, labelpad=2)
+    inset_axis.tick_params(which='major', width=2, labelsize=7.5)
+    [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
+
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
     start_time = time.time()
@@ -77,11 +66,29 @@ def main():
             algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_cmv,
             external_global_moves_string_cmv, no_of_jobs_ecmc, pool, length)
+        twists_file = open(f"{output_directory}/probability_of_global_twists_{algorithm_name_metrop.replace('-', '_')}_"
+                           f"{length}x{length}_sites.tsv", "w")
+        twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
+        twist_probabilities, twist_probability_errors = [], []
+        for temperature_index, temperature in enumerate(temperatures_metrop_all):
+            twist_probability_vs_job = pool.starmap(sample_getter.get_acceptance_rates, [
+                (f"{output_directory}/{length}x{length}_metrop_all_moves/job_{job_index}", temperature_index)
+                for job_index in range(no_of_jobs_metrop_all)])
+            twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
+                twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
+            twist_probabilities.append(twist_probability)
+            twist_probability_errors.append(twist_probability_error)
+            twists_file.write(f"{temperature:.14e}".ljust(30) + f"{twist_probability:.14e}".ljust(30) +
+                              f"{twist_probability_error:.14e}" + "\n")
+        twists_file.close()
         axis.errorbar(temperatures_cmv, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                       color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} (Metropolis)")
         axis.errorbar(temperatures_cmv, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=10,
                       color=colors[system_size_index], linestyle="None",
                       label=fr"$N$ = {length}x{length} (event-chain)")
+        inset_axis.errorbar(temperatures_metrop_all, twist_probabilities, twist_probability_errors, marker=".",
+                            markersize=10, color=colors[system_size_index], linestyle="None")
+
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
     legend = axis.legend(loc="center left", fontsize=7.5)
@@ -112,7 +119,7 @@ def get_cramer_von_mises_vs_temperature(algorithm_name, output_directory, sample
             cvm_vs_job = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
                 (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
                  no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
-            cvm, cvm_error = np.mean(cvm_vs_job), (np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5)
+            cvm, cvm_error = np.mean(cvm_vs_job), np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5
             cvms.append(cvm)
             cvm_errors.append(cvm_error)
             cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
