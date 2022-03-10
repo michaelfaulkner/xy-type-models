@@ -31,14 +31,13 @@ def main():
         sample_getter.get_acceptance_rates(f"{output_directory_metrop}/job_0", 0)
     except OSError:
         raise Exception("Metropolis simulations have not been run - enter 'python run.py "
-                        "config_files/ecdf/metropolis.txt' in the top directory.")
+                        "config_files/ecdf_figure/metropolis.txt' in the top directory.")
     try:
-        sample_getter.get_acceptance_rates(f"{output_directory_ecmc}/job_0", 0)
+        sample_getter.get_no_of_events(f"{output_directory_ecmc}/job_0", 0)
     except OSError:
-        raise Exception("Event-chain simulations have not been run - enter 'python run.py config_files/ecdf/ecmc.txt' "
-                        "in the top directory.")
+        raise Exception("Event-chain simulations have not been run - enter "
+                        "'python run.py config_files/ecdf_figure/ecmc.txt' in the top directory.")
     output_directory = output_directory_metrop.replace("/metropolis", "")
-    pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
     figure, axis = plt.subplots(1)
     axis.tick_params(which='both', width=2)
@@ -102,12 +101,12 @@ def main():
         start_time = time.time()
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
-            cdfs_of_magnetisation_phase_metrop = pool.starmap(get_cdf_of_magnetisation_phase, [
-                (f"{output_directory_metrop}/job_{job_index}", temperature, temperature_index, no_of_sites,
-                 no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop)])
-            cdfs_of_magnetisation_phase_ecmc = pool.starmap(get_cdf_of_magnetisation_phase, [
-                (f"{output_directory_ecmc}/job_{job_index}", temperature, temperature_index, no_of_sites,
-                 no_of_equilibration_sweeps_ecmc) for job_index in range(no_of_jobs_ecmc)])
+            cdfs_of_magnetisation_phase_metrop = [get_cdf_of_magnetisation_phase(
+                f"{output_directory_metrop}/job_{job_index}", temperature, temperature_index, no_of_sites,
+                no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop)]
+            cdfs_of_magnetisation_phase_ecmc = [get_cdf_of_magnetisation_phase(
+                f"{output_directory_ecmc}/job_{job_index}", temperature, temperature_index, no_of_sites,
+                no_of_equilibration_sweeps_ecmc) for job_index in range(no_of_jobs_ecmc)]
             for job_index in range(no_of_jobs_metrop):
                 if job_index == 0:
                     axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
@@ -126,7 +125,6 @@ def main():
                             f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
                             f"sites_{no_of_observations_ecmc}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                             cdfs_of_magnetisation_phase_metrop[job_index])
-        pool.close()
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     handles, labels = axis.get_legend_handles_labels()
@@ -168,8 +166,8 @@ def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_in
     numpy.ndarray
         The empirical CDF.  A two-dimensional numpy array (of floats) of size (2, n) representing the empirical CDF.
     """
-    return np.array(markov_chain_diagnostics.get_cumulative_distribution(sample_getter.get_magnetisation_phase(
-        sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:]))
+    return markov_chain_diagnostics.get_cumulative_distribution(sample_getter.get_magnetisation_phase(
+        sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:])
 
 
 if __name__ == "__main__":
