@@ -20,29 +20,43 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(5)]
-    config_files_local = [f"config_files/cramer_von_mises_figure/{value}x{value}_local_moves.txt"
-                          for value in linear_system_sizes]
-    config_file_all = "config_files/cramer_von_mises_figure/all_moves.txt"
-    (algorithm_name, output_directory_local, _, no_of_equilibration_sweeps_local, no_of_observations_local,
-     temperatures_local, use_external_global_moves_local, external_global_moves_string_local, no_of_jobs_local,
-     max_no_of_cpus) = run_script.get_config_data(config_files_local[0])
-    (_, output_directory_all, _, no_of_equilibration_sweeps_all, no_of_observations_all, temperatures_all,
-     use_external_global_moves_local, external_global_moves_string_local, no_of_jobs_all,
-     _) = run_script.get_config_data(config_file_all)
-    try:
-        sample_getter.get_acceptance_rates(f"{output_directory_local}/job_0", 0)
-    except OSError:
-        raise Exception("Local-dynamics simulations have not been run - enter 'python run.py "
-                        "config_files/cramer_von_mises_figure/local_moves.txt' in the top directory.")
-    '''try:
-        sample_getter.get_acceptance_rates(f"{output_directory_all}/job_0", 0)
-    except OSError:
-        raise Exception("All-dynamics simulations have not been run - enter 'python run.py "
-                        "config_files/cramer_von_mises_figure/local_moves.txt' in the top directory.")'''
-    output_directory = output_directory_local.replace("/8x8_local_moves", "")
-    pool = setup_scripts.setup_pool(no_of_jobs_local, max_no_of_cpus)
+    linear_system_sizes = [2 ** (index + 3) for index in range(2)]
+    config_files_metrop_local = [f"config_files/cvm_figure/{value}x{value}_metrop_local_moves.txt" for value in
+                                 linear_system_sizes]
+    config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in
+                         linear_system_sizes]
+    '''config_files_metrop_all = [f"config_files/cvm_figure/{value}x{value}_metrop_all_moves.txt" for value in
+                               linear_system_sizes]'''
+    (algorithm_name_metrop, output_directory, _, no_of_equilibration_sweeps_metrop_local,
+     no_of_observations_metrop_local, temperatures_cmv, use_external_global_moves_cmv, external_global_moves_string_cmv,
+     no_of_jobs_metrop_local, max_no_of_cpus) = run_script.get_config_data(config_files_metrop_local[0])
+    (algorithm_name_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc, _
+     ) = run_script.get_config_data(config_files_ecmc[0])
+    '''(_, _, _, no_of_equilibration_sweeps_metrop_all, no_of_observations_metrop_all, temperatures_metrop_all,
+     use_external_global_moves_metrop_all, external_global_moves_string_metrop_all, no_of_jobs_metrop_all,
+     _) = run_script.get_config_data(config_files_metrop_all[0])'''
 
+    output_directory = output_directory.replace("/8x8_metrop_local_moves", "")
+    '''try:
+        [sample_getter.get_acceptance_rates(f"{output_directory}/{length}x{length}_metrop_local_moves/job_0", 0)
+         for length in linear_system_sizes]
+    except OSError:
+        raise Exception("Local-dynamics Metropolis simulations have not been run - in the top directory, enter 'python "
+                        "run.py config_files/cvm_figure/LxL_metrop_local_moves.txt' for L = 8, 16, 32, 64,"
+                        " 128, 256.")
+    try:
+        [sample_getter.get_no_of_events(f"{output_directory}/{length}x{length}_ecmc/job_0", 0) for length in
+         linear_system_sizes]
+    except OSError:
+        raise Exception("Event-chain simulations have not been run - in the top directory, enter 'python run.py "
+                        "config_files/cvm_figure/LxL_ecmc.txt' for L = 8, 16, 32, 64, 128, 256.")'''
+    '''try:
+        sample_getter.get_acceptance_rates(f"{output_directory_metrop_all}/job_0", 0)
+    except OSError:
+        raise Exception("All-dynamics Metropolis simulations have not been run - in the top directory, enter 'python "
+                        "run.py config_files/cvm_figure/LxL_metrop_all_moves.txt' for L = 8, 16, 32, 64, 128, 256.")'''
+
+    pool = setup_scripts.setup_pool(no_of_jobs_metrop_local, max_no_of_cpus)
     figure, axis = plt.subplots(1)
     axis.tick_params(which='both', width=2)
     axis.tick_params(which='major', length=7, labelsize=18, pad=10)
@@ -50,44 +64,60 @@ def main():
     [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
     axis.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=8)
     axis.set_ylabel(r"$n \omega_n^2$", fontsize=20, labelpad=8)
-
-    colors = ["black", "red", "blue", "green", "yellow"]
+    axis.set_yscale('log')
+    colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
-        try:
-            with open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
-                      f"{external_global_moves_string_local}_{length}x{length}_sites_{no_of_observations_local}_"
-                      f"obs.tsv", "r") as output_file:
-                output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
-                                                    if not line.startswith('#')]).transpose()
-                cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
-        except (IOError, IndexError) as _:
-            cvm_file = open(
-                f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
-                f"{external_global_moves_string_local}_{length}x{length}_sites_{no_of_observations_local}_obs.tsv", "w")
-            cvm_file.write("# temperature".ljust(30) + "n omega_n^2".ljust(30) + "n omega_n^2 error" + "\n")
-            cvms, cvm_errors = [], []
-            for temperature_index, temperature in enumerate(temperatures_local):
-                print(f"Temperature = {temperature:.4f}")
-                cvm_vs_job = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
-                    (f"{output_directory}/{length}x{length}_local_moves/job_{job_index}", temperature,
-                     temperature_index, length ** 2, no_of_equilibration_sweeps_local) for job_index in
-                    range(no_of_jobs_local)])
-                cvm, cvm_error = np.mean(cvm_vs_job), (np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5)
-                cvms.append(cvm)
-                cvm_errors.append(cvm_error)
-                cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
-            cvm_file.close()
-        axis.semilogy(temperatures_local, cvms, marker=".", markersize=10, color=colors[system_size_index],
-                      linestyle="None", label=fr"$N$ = {length}x{length}")
+        cvm_metrops, cvm_metrop_errors = get_cramer_von_mises_vs_temperature(
+            algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop_local_moves",
+            no_of_equilibration_sweeps_metrop_local, no_of_observations_metrop_local, temperatures_cmv,
+            external_global_moves_string_cmv, no_of_jobs_metrop_local, pool, length)
+        cvm_ecmcs, cvm_ecmc_errors = get_cramer_von_mises_vs_temperature(
+            algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
+            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_cmv,
+            external_global_moves_string_cmv, no_of_jobs_ecmc, pool, length)
+        axis.errorbar(temperatures_cmv, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
+                      color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} (Metropolis)")
+        axis.errorbar(temperatures_cmv, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=10,
+                      color=colors[system_size_index], linestyle="None",
+                      label=fr"$N$ = {length}x{length} (event-chain)")
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
-    legend = axis.legend(loc="upper right", fontsize=10)
+    legend = axis.legend(loc="center left", fontsize=7.5)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(1.5)
-    figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}.pdf",
+    figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                    bbox_inches="tight")
+
+
+def get_cramer_von_mises_vs_temperature(algorithm_name, output_directory, sample_directory, no_of_equilibration_sweeps,
+                                        no_of_observations, temperatures, external_global_moves_string, no_of_jobs,
+                                        pool, length):
+    try:
+        with open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}"
+                  f"_{external_global_moves_string}_{length}x{length}_sites_{no_of_observations}_obs.tsv",
+                  "r") as output_file:
+            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                if not line.startswith('#')]).transpose()
+            cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
+    except (IOError, IndexError) as _:
+        cvm_file = open(
+            f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
+            f"{external_global_moves_string}_{length}x{length}_sites_{no_of_observations}_obs.tsv", "w")
+        cvm_file.write("# temperature".ljust(30) + "n omega_n^2".ljust(30) + "n omega_n^2 error" + "\n")
+        cvms, cvm_errors = [], []
+        for temperature_index, temperature in enumerate(temperatures):
+            print(f"Temperature = {temperature:.4f}")
+            cvm_vs_job = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
+                (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
+                 no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
+            cvm, cvm_error = np.mean(cvm_vs_job), (np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5)
+            cvms.append(cvm)
+            cvm_errors.append(cvm_error)
+            cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
+        cvm_file.close()
+    return cvms, cvm_errors
 
 
 def get_cramervonmises_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
