@@ -1,5 +1,5 @@
 'xy-gaussian-noise-metropolis'                              algorithm_name
-'output/cvm_figure/metrop_all_moves'          output_directory
+'../bc4-output/cvm_figure/16x16_metrop_all_moves'           output_directory
 16                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
 1000000                                                     no_of_observations
