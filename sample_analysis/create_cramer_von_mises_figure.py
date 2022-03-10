@@ -20,7 +20,7 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(2)]
+    linear_system_sizes = [2 ** (index + 3) for index in range(3)]
     config_files_metrop_local = [f"config_files/cvm_figure/{value}x{value}_metrop_local_moves.txt" for value in
                                  linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in
