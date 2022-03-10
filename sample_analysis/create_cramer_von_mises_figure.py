@@ -66,21 +66,49 @@ def main():
             algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_cmv,
             external_global_moves_string_cmv, no_of_jobs_ecmc, pool, length)
-        twists_file = open(f"{output_directory}/probability_of_global_twists_{algorithm_name_metrop.replace('-', '_')}_"
-                           f"{length}x{length}_sites.tsv", "w")
-        twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
-        twist_probabilities, twist_probability_errors = [], []
-        for temperature_index, temperature in enumerate(temperatures_metrop_all):
-            twist_probability_vs_job = pool.starmap(sample_getter.get_acceptance_rates, [
-                (f"{output_directory}/{length}x{length}_metrop_all_moves/job_{job_index}", temperature_index)
-                for job_index in range(no_of_jobs_metrop_all)])
-            twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
-                twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
-            twist_probabilities.append(twist_probability)
-            twist_probability_errors.append(twist_probability_error)
-            twists_file.write(f"{temperature:.14e}".ljust(30) + f"{twist_probability:.14e}".ljust(30) +
-                              f"{twist_probability_error:.14e}" + "\n")
-        twists_file.close()
+
+        try:
+            with open(f"{output_directory}/probability_of_global_twists_{algorithm_name_metrop.replace('-', '_')}_"
+                      f"{length}x{length}_sites.tsv", "r") as output_file:
+                output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                    if not line.startswith('#')]).transpose()
+                twist_probabilities, twist_probability_errors = output_file_sans_header[1], output_file_sans_header[2]
+        except (IOError, IndexError) as _:
+            twists_file = open(f"{output_directory}/probability_of_global_twists_"
+                               f"{algorithm_name_metrop.replace('-', '_')}_{length}x{length}_sites.tsv", "w")
+            twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
+            twist_probabilities, twist_probability_errors = [], []
+            for temperature_index, temperature in enumerate(temperatures_metrop_all):
+                twist_probability_vs_job = pool.starmap(sample_getter.get_acceptance_rates, [
+                    (f"{output_directory}/{length}x{length}_metrop_all_moves/job_{job_index}", temperature_index)
+                    for job_index in range(no_of_jobs_metrop_all)])
+                twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
+                    twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
+                twist_probabilities.append(twist_probability)
+                twist_probability_errors.append(twist_probability_error)
+                twists_file.write(f"{temperature:.14e}".ljust(30) + f"{twist_probability:.14e}".ljust(30) +
+                                  f"{twist_probability_error:.14e}" + "\n")
+            twists_file.close()
+
+        try:
+            with open(f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
+                      f"{external_global_moves_string_cmv}_{length}x{length}_sites.tsv", "r") as _:
+                pass
+        except IOError:
+            physical_time_step_file = open(
+                f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
+                f"{external_global_moves_string_cmv}_{length}x{length}_sites.tsv", "w")
+            physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
+            for temperature_index, temperature in enumerate(temperatures_cmv):
+                print(temperature_index)
+                physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
+                    (algorithm_name_metrop, f"{output_directory}/{length}x{length}_metrop_local_moves/job_{job_index}",
+                     temperature_index) for job_index in range(no_of_jobs_metrop_all)])
+                physical_time_step_file.write(
+                    f"{temperature:.14e}".ljust(30) + f"{np.mean(physical_time_step_vs_job):.14e}".ljust(30) +
+                    f"{np.std(physical_time_step_vs_job) / len(physical_time_step_vs_job) ** 0.5:.14e}" + "\n")
+            physical_time_step_file.close()
+
         axis.errorbar(temperatures_cmv, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                       color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} (Metropolis)")
         axis.errorbar(temperatures_cmv, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=10,
