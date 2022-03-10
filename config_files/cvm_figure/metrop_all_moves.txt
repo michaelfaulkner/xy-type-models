@@ -1,5 +1,5 @@
 'xy-gaussian-noise-metropolis'                              algorithm_name
-'output/cramer_von_mises_figure/all_moves'          output_directory
+'output/cvm_figure/metrop_all_moves'          output_directory
 16                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
 1000000                                                     no_of_observations
