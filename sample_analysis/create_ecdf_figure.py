@@ -68,7 +68,7 @@ def main():
     inset_axis.tick_params(which='major', width=3, labelsize=7.5)
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    colors = ["red", "blue", "black"]
+    colors = ["red", "black"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
 
     try:
