@@ -40,10 +40,10 @@ def main():
 
     pool = setup_scripts.setup_pool(no_of_jobs_metrop_local, max_no_of_cpus)
     figure, axis = plt.subplots(1)
-    axis.tick_params(which='both', width=2)
+    axis.tick_params(which='both', width=3)
     axis.tick_params(which='major', length=7, labelsize=18, pad=10)
     axis.tick_params(which='minor', length=4)
-    [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
+    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
     axis.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=8)
     axis.set_ylabel(r"$n \omega_n^2$", fontsize=20, labelpad=8)
     axis.set_yscale('log')
@@ -51,8 +51,8 @@ def main():
     inset_axis = plt.axes([0.685, 0.66, 0.2, 0.2])
     inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=7.5, labelpad=2)
     inset_axis.set_ylabel(r"$p(\rm{twist})$", fontsize=7.5, labelpad=2)
-    inset_axis.tick_params(which='major', width=2, labelsize=7.5)
-    [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
+    inset_axis.tick_params(which='major', width=3, labelsize=7.5)
+    [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
@@ -121,7 +121,7 @@ def main():
     pool.close()
     legend = axis.legend(loc="center left", fontsize=7.5)
     legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(1.5)
+    legend.get_frame().set_lw(3)
     figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                    bbox_inches="tight")
 

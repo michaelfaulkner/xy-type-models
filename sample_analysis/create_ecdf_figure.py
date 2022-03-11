@@ -40,7 +40,7 @@ def main():
     output_directory = output_directory_metrop.replace("/metropolis", "")
 
     figure, axis = plt.subplots(1)
-    axis.tick_params(which='both', width=2)
+    axis.tick_params(which='both', width=3)
     axis.tick_params(which='major', length=7, labelsize=18, pad=10)
     axis.tick_params(which='minor', length=4)
     axis.set_xlim([-math.pi, math.pi])
@@ -48,11 +48,11 @@ def main():
     axis.set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
     axis.set_xlabel(r"$x$", fontsize=20, labelpad=2)
     axis.set_ylim(0.0, 1.0)
-    axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
+    axis.tick_params(which='major', width=3, length=7, labelsize=18, pad=10)
     axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=20, labelpad=-30)
     axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     axis.yaxis.set_major_formatter('{x:.1f}')
-    [axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
+    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     inset_axis = plt.axes([0.145, 0.66, 0.2, 0.2])
     inset_axis.set_xlim([-math.pi, math.pi])
@@ -65,8 +65,8 @@ def main():
     inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=7.5, labelpad=-10)
     inset_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     inset_axis.yaxis.set_major_formatter('{x:.1f}')
-    inset_axis.tick_params(which='major', width=2, labelsize=7.5)
-    [inset_axis.spines[spine].set_linewidth(2) for spine in ["top", "bottom", "left", "right"]]
+    inset_axis.tick_params(which='major', width=3, labelsize=7.5)
+    [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["red", "blue", "black"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
@@ -130,7 +130,7 @@ def main():
     handles, labels = axis.get_legend_handles_labels()
     legend = axis.legend(reversed(handles), reversed(labels), title='colour code', loc="lower right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(1.5)
+    legend.get_frame().set_lw(3)
     figure.savefig(f"{output_directory}/magnetisation_phase_ecdfs_{algorithm_name_metrop.replace('-', '_')}_and_ecmc_"
                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                    f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.pdf",
