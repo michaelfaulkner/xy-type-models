@@ -88,7 +88,7 @@ def main():
         figure.add_artist(
             plt.Line2D([0.646, 0.646], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=3))
 
-        figure.savefig(f"{output_directory}/magnetisation_revolution_xy_model_metropolis_with_gaussian_noise_and_ecmc_"
+        figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_ecmc_"
                        f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs_job_{job_index}.pdf",
                        bbox_inches="tight")
         figure.clear()
@@ -104,7 +104,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
               bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     axis.text(0.97, 0.98, f"{alphabetic_label}", fontsize=30, transform=axis.transAxes)
     axis.tick_params(which='both', width=3)
-    axis.tick_params(which='major', length=7, labelsize=22, pad=10)
+    axis.tick_params(which='major', length=7, labelsize=20, pad=10)
     axis.tick_params(which='minor', length=4)
 
     axis.set_xlim([-1.0, 1.0]), axis.set_ylim([-1.0, 1.0])
@@ -123,10 +123,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.set_yticks(minor_ticks, minor=True)
 
     axis.set_xlabel(r"$m_x$", fontsize=22), axis.set_ylabel(r"$m_y$", fontsize=22, rotation="horizontal")
-    axis.xaxis.set_label_coords(1.0, 0.56), axis.yaxis.set_label_coords(0.55, 0.97)
+    axis.xaxis.set_label_coords(1.01, 0.56), axis.yaxis.set_label_coords(0.55, 0.975)
     colors = ["black", "red"]
 
-    for temperature_index, temperature in enumerate(temperatures):
+    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
         try:
             if use_external_global_moves:
@@ -157,7 +157,9 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=0.1,
                   color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.1f}")
     if alphabetic_label == "(f)":
-        legend = axis.legend(loc='lower right', bbox_to_anchor=(1.075, -0.05), fontsize=18)
+        handles, labels = axis.get_legend_handles_labels()
+        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.075, -0.05),
+                             fontsize=18)
         legend.get_frame().set_edgecolor("black")
         legend.get_frame().set_lw(3)
         [line.set_linewidth(2) for line in legend.get_lines()]

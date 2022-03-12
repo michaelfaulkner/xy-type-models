@@ -49,9 +49,9 @@ def main():
     axis.set_yscale('log')
 
     inset_axis = plt.axes([0.685, 0.66, 0.2, 0.2])
-    inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=7.5, labelpad=2)
-    inset_axis.set_ylabel(r"$p(\rm{twist})$", fontsize=7.5, labelpad=2)
-    inset_axis.tick_params(which='major', width=3, labelsize=7.5)
+    inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=8, labelpad=2)
+    inset_axis.set_ylabel(r"$p(\rm{twist})$", fontsize=8, labelpad=2)
+    inset_axis.tick_params(which='major', width=3, labelsize=8)
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
@@ -119,9 +119,10 @@ def main():
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
-    legend = axis.legend(loc="center left", fontsize=7.5)
+    legend = axis.legend(loc="center left", fontsize=8)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(3)
+    figure.tight_layout()
     figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                    bbox_inches="tight")
 
