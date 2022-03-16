@@ -17,7 +17,7 @@ run_script = importlib.import_module("run")
 
 def main(observable_string="rotated_magnetisation_phase"):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    config_file = "config_files/running_mean.txt"
+    config_file = "config_files/running_mean_figure.txt"
     (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
@@ -25,12 +25,15 @@ def main(observable_string="rotated_magnetisation_phase"):
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
 
-    figure, axis = plt.subplots(1)
-    axis.set_xlabel(r"$\tau$", fontsize=20)
-    axis.set_ylabel(r"$\bar{\phi}_m(\tau)$ / $s_{\phi_m}^2(\tau = \tau_{\rm max})$", fontsize=20)
-    axis.tick_params(which='major', width=3, length=7, labelsize=18)
-    axis.locator_params(axis='x', nbins=4)
-    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    figure, axes = plt.subplots(2, 1, figsize=(7.5, 6.25))
+    axes[1].set_xlabel(r"$\tau$", fontsize=20, labelpad=0)
+    axes[0].set_ylabel(r"$\bar{\phi}_m(\tau)$ / $s_{\phi_m}^2$", fontsize=20, labelpad=-10)
+    axes[1].set_ylabel(r"$\bar{\phi}_m(\tau)$", fontsize=20, labelpad=-10)
+    [axis.tick_params(which='major', width=3, length=7, labelsize=18) for axis in axes]
+    [axis.locator_params(axis='x', nbins=4) for axis in axes]
+    [axis.locator_params(axis='y', nbins=8) for axis in axes]
+    axes[0].xaxis.set_tick_params(labelbottom=False)
+    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     colors = ["black", "red"]
 
     start_time = time.time()
@@ -76,17 +79,22 @@ def main(observable_string="rotated_magnetisation_phase"):
                                     reduced_running_variance[-1])
 
             if job_index == 0:
-                axis.plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
-                          color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
-                          label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                axes[0].plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
+                             label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                axes[1].plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
+                             label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
-                axis.plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
-                          color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
+                axes[0].plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
+                axes[1].plot(np.arange(len(reduced_running_mean)) * physical_time_step, reduced_running_mean,
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
 
     figure.tight_layout()
-    legend = axis.legend(title='colour code', loc="upper left", fontsize=10)
+    '''legend = axes[0].legend(title='colour code', loc="upper left", fontsize=11)
     legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
+    legend.get_frame().set_lw(3)'''
     figure.savefig(f"{output_directory}/{observable_string}_running_mean_vs_time_{algorithm_name.replace('-', '_')}_"
                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf",
                    bbox_inches="tight")
