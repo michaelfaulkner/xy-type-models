@@ -2,9 +2,9 @@
 '../bc4-output/mag_evolution_figure/256x256_metrop'         output_directory
 256                                                         integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
-100000                                                      no_of_observations
-0.4d0                                                       initial_temperature
-1.4d0                                                       final_temperature
+1000000                                                     no_of_observations
+0.45d0                                                      initial_temperature
+1.35d0                                                      final_temperature
 1                                                           no_of_temperature_increments
 1.0d0    	                                                width_of_proposal_interval (initial)
 0.6d0 		                                                target_acceptance_rate_of_field_rotations

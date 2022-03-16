@@ -104,7 +104,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
               bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     axis.text(0.97, 0.98, f"{alphabetic_label}", fontsize=30, transform=axis.transAxes)
     axis.tick_params(which='both', width=3)
-    axis.tick_params(which='major', length=7, labelsize=20, pad=10)
+    axis.tick_params(which='major', length=7, labelsize=22, pad=10)
     axis.tick_params(which='minor', length=4)
 
     axis.set_xlim([-1.0, 1.0]), axis.set_ylim([-1.0, 1.0])
