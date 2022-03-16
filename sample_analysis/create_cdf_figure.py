@@ -102,7 +102,7 @@ def main():
                 if job_index == 0:
                     axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
                               linestyle=linestyles[job_index], linewidth=2,
-                              label=fr"$1 / (\beta J)$ = {temperature:.1f}")
+                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                 else:
                     axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
                               linestyle=linestyles[job_index], linewidth=2)
