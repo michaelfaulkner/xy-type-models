@@ -44,18 +44,18 @@ def main():
     axis.yaxis.set_major_formatter('{x:.1f}')
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    inset_axis = plt.axes([0.145, 0.66, 0.2, 0.2])
+    inset_axis = plt.axes([0.145, 0.68, 0.24, 0.24])
     inset_axis.set_xlim([-math.pi, math.pi])
     inset_axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
     inset_axis.set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
-    inset_axis.set_xlabel(r"$x$", fontsize=8, labelpad=2)
+    inset_axis.set_xlabel(r"$x$", fontsize=12, labelpad=2)
     inset_axis.set_ylim(0.0, 1.0)
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
-    inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=8, labelpad=-10)
+    inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=12, labelpad=-10)
     inset_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     inset_axis.yaxis.set_major_formatter('{x:.1f}')
-    inset_axis.tick_params(which='major', width=3, labelsize=7.5)
+    inset_axis.tick_params(which='major', width=3, labelsize=10)
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["red", "black"]
@@ -120,9 +120,11 @@ def main():
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     handles, labels = axis.get_legend_handles_labels()
-    legend = axis.legend(reversed(handles), reversed(labels), title='colour code', loc="lower right", fontsize=10)
+    legend = axis.legend(reversed(handles), reversed(labels), title='colour code', title_fontsize='large',
+                         loc="lower right", fontsize=13)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(3)
+    figure.tight_layout()
     figure.savefig(f"{output_directory}/magnetisation_phase_cdfs_{algorithm_name_metrop.replace('-', '_')}_and_ecmc_"
                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                    f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.pdf",
