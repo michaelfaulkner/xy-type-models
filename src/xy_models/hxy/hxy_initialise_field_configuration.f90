@@ -9,13 +9,13 @@ if (randomise_initial_field_configuration) then
         spin_field(i) = two_pi * rand()
     end do
     call calculate_emergent_field
-    external_global_move = (/ 0, 0 /)
+    external_global_moves = (/ 0, 0 /)
 else if (pre_simulation) then
     do i = 1, no_of_sites
         spin_field(i) = 0.0d0
     end do
     call calculate_emergent_field
-    external_global_move = (/ 0, 0 /)
+    external_global_moves = (/ 0, 0 /)
 end if
 
 return

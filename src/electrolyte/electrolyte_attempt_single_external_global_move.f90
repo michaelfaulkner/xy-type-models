@@ -18,9 +18,9 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
     end do
     net_charge_displacement(cartesian_component) = candidate_net_charge_displacement
     no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-    external_global_move(cartesian_component) = sign_of_topological_sector_change
+    external_global_moves(cartesian_component) = sign_of_topological_sector_change
 else
-    external_global_move(cartesian_component) = 0
+    external_global_moves(cartesian_component) = 0
 end if
 
 return

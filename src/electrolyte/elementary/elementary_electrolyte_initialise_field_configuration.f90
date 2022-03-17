@@ -11,7 +11,7 @@ if (pre_simulation) then
         charge_configuration(i) = 0
     end do
     net_charge_displacement = (/ 0, 0 /)
-    external_global_move = (/ 0, 0 /)
+    external_global_moves = (/ 0, 0 /)
 end if
 
 return

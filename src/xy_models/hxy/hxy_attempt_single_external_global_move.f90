@@ -48,9 +48,9 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference
         emergent_field(i, 3 - cartesian_component) = candidate_emergent_field_components(i)
     end do
     no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
-    external_global_move(cartesian_component) = sign_of_twist
+    external_global_moves(cartesian_component) = sign_of_twist
 else
-    external_global_move(cartesian_component) = 0
+    external_global_moves(cartesian_component) = 0
 end if
 
 return

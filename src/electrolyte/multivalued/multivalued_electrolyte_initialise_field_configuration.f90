@@ -10,7 +10,7 @@ if (pre_simulation) then
         electric_field(i, 2) = 0.0
     end do
     net_charge_displacement = (/ 0, 0 /)
-    external_global_move = (/ 0, 0 /)
+    external_global_moves = (/ 0, 0 /)
 end if
 
 return

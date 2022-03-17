@@ -11,7 +11,7 @@ OFLAGS = gfortran -O -o
 all: create-executable clean move-executable
 
 OBJECTS = random_number_generator.o hxy_ecmc_variables.o hxy_ecmc_read_config_file.o setup_periodic_boundaries.o \
-			hxy_initialise_field_configuration.o xy_models_create_sample_file.o calculate_emergent_field.o \
+			hxy_initialise_field_configuration.o xy_models_create_sample_files.o calculate_emergent_field.o \
 			get_spin_difference.o hxy_get_and_print_observation.o hxy_attempt_single_external_global_move.o \
 			single_hxy_event_chain.o pre_simulation_processes.o attempt_external_global_moves.o ecmc_algorithm.o
 

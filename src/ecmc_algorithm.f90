@@ -11,7 +11,7 @@ do temperature_index = 0, no_of_temperature_increments
     write(6, '(A, F6.4)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
     spin_space_distance_between_observations = dfloat(no_of_sites)
-    call create_sample_file(temperature_index)
+    call create_sample_files(temperature_index)
 
     do observation_index = 1, no_of_equilibration_sweeps
         call single_event_chain

@@ -10,7 +10,7 @@ call cpu_time(start_time)
 do temperature_index = 0, no_of_temperature_increments
     write(6, '(A, F6.4)') 'Temperature = ', temperature
     beta = 1.0d0 / temperature
-    call create_sample_file(temperature_index)
+    call create_sample_files(temperature_index)
 
     call reset_metropolis_acceptance_counters
     do observation_index = 1, no_of_equilibration_sweeps
