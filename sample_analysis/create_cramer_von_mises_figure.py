@@ -100,7 +100,6 @@ def main():
                 f"{external_global_moves_string_cmv}_{length}x{length}_sites.tsv", "w")
             physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
             for temperature_index, temperature in enumerate(temperatures_cmv):
-                print(temperature_index)
                 physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
                     (algorithm_name_metrop, f"{output_directory}/{length}x{length}_metrop_local_moves/job_{job_index}",
                      temperature_index) for job_index in range(no_of_jobs_metrop_all)])
