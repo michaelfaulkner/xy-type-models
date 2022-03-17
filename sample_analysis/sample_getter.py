@@ -87,7 +87,7 @@ def get_acceptance_rates(output_directory, temperature_index):
         array is 4, the model is a Maggs-electrolyte model and the fourth element is the acceptance rate of the
         external global moves (the externally applied topological-sector fluctuations).
     """
-    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_acceptance_rates.csv",
+    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/acceptance_rates.csv",
                                     dtype=float, delimiter=","))
 
 
@@ -112,7 +112,7 @@ def get_no_of_events(output_directory, temperature_index):
         If the length of the array is 2, external global Metropolis moves (the global spin twists) have been chosen and
         the second element is the acceptance rate of these moves and has type float.
     """
-    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_no_of_events.csv", dtype=float,
+    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/no_of_events.csv", dtype=float,
                                     delimiter=","))
 
 
@@ -138,7 +138,7 @@ def get_potential(output_directory, temperature, temperature_index, no_of_sites)
         The potential sample.  A one-dimensional numpy array of length no_of_observations.  The nth element is a float
         corresponding to the potential measured at observation n.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_potential.csv", dtype=float, delimiter=",")
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/potential.csv", dtype=float, delimiter=",")
 
 
 def get_specific_heat(output_directory, temperature, temperature_index, no_of_sites):
@@ -197,7 +197,7 @@ def get_external_global_move(output_directory, temperature, temperature_index, n
         0 if the x / y component of the external global move was not accepted, 1 if a positive external global move was
         accepted and -1 if a negative external global move was accepted.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_external_global_moves.csv", dtype=int,
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/external_global_moves.csv", dtype=int,
                       delimiter=",")
 
 
@@ -230,7 +230,7 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, te
         element is a float corresponding to the x / y component of the non-normalised magnetisation vector measured at
         observation n.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_magnetisation.csv", dtype=float, delimiter=",")
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/magnetisation.csv", dtype=float, delimiter=",")
 
 
 def get_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites):
@@ -442,7 +442,7 @@ def get_non_normalised_total_vortex_polarisation(output_directory, temperature, 
         observation n; its first / second element is a float corresponding to the x / y component of the non-normalised
         total vortex polarisation measured at observation n.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_1st_deriv_of_potential.csv", dtype=float,
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/1st_deriv_of_potential.csv", dtype=float,
                       delimiter=",")
 
 
@@ -470,7 +470,7 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_i
         The sample of the inverse vacuum permittivity.  A one-dimensional numpy array of length no_of_observations.
         The nth  element is a float corresponding to the inverse vacuum permittivity measured at observation n.
     """
-    return np.mean(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_2nd_deriv_of_potential.csv",
+    return np.mean(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/2nd_deriv_of_potential.csv",
                               dtype=float, delimiter=","), axis=1) / no_of_sites
 
 
@@ -564,7 +564,7 @@ def get_potential_minimising_twists(output_directory, temperature, temperature_i
         its first / second element is an int corresponding to the x / y component of the potential-minimising twist
         field measured at observation n.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_potential_minimising_twists.csv", dtype=float,
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/potential_minimising_twists.csv", dtype=float,
                       delimiter=",")
 
 
@@ -698,7 +698,7 @@ def get_sum_of_electric_field(output_directory, temperature, temperature_index, 
         The nth sub-array is the sum of the electric field measured at observation n; its first / second element is a
         float corresponding to the x / y component of the sum of the electric field measured at observation n.
     """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_electric_field_sum.csv", dtype=float,
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/electric_field_sum.csv", dtype=float,
                       delimiter=",")
 
 

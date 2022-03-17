@@ -1,14 +1,18 @@
 subroutine create_sample_files(temperature_index)
 use variables
 implicit none
-character(100) :: filename
+character(100) :: temperature_directory, filename
 integer :: temperature_index, file_index
 
-write(filename, '(A, "/temp_", I2.2, "_potential.csv")') trim(output_directory), temperature_index
+! opens new directory in which to save the sample files at the current temperature
+write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
+call system('mkdir -p ' // temperature_directory)
+
+write(filename, '(A, "/temp_", I2.2, "/potential.csv")') trim(output_directory), temperature_index
 open(unit=20, file=filename)
-write(filename, '(A, "/temp_", I2.2, "_electric_field_sum.csv")') trim(output_directory), temperature_index
+write(filename, '(A, "/temp_", I2.2, "/electric_field_sum.csv")') trim(output_directory), temperature_index
 open(unit=30, file=filename)
-write(filename, '(A, "/temp_", I2.2, "_external_global_moves.csv")') trim(output_directory), temperature_index
+write(filename, '(A, "/temp_", I2.2, "/external_global_moves.csv")') trim(output_directory), temperature_index
 open(unit=40, file=filename)
 
 do file_index = 2, 4
