@@ -116,32 +116,6 @@ def get_no_of_events(output_directory, temperature_index):
                                     delimiter=","))
 
 
-def get_entire_sample(output_directory, temperature_index):
-    """
-    Returns the entire sample.
-
-    Parameters
-    ----------
-    output_directory : str
-        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
-        option of multiple repeated simulations).
-    temperature_index : int
-        The index of the current sampling temperature within the configuration file.
-
-    Returns
-    -------
-    numpy.ndarray
-        The entire sample.  A two-dimensional numpy array of shape (no_of_observations, n), where n is equal to 3 or 7.
-        Each element is a float.  The first sub-array is the potential sample.  If n is equal to 3, the model is a
-        Maggs-electrolyte model and the second / third sub-array is the x / y component of the non-normalised zero mode
-        of the electric field.  If n is equal to 7, the model is an XY model and the second / third sub-array is the
-        x / y component of the non-normalised Cartesian magnetisation vector, the fourth / fifth sub-array is the x / y
-        component of the sum of the first derivative of the potential and the sixth / seventh sub-array is the x / y
-        component of the sum of the second derivative of the potential.
-    """
-    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample.csv", dtype=float, delimiter=",")
-
-
 def get_potential(output_directory, temperature, temperature_index, no_of_sites):
     """
     Returns the potential sample.
@@ -164,7 +138,8 @@ def get_potential(output_directory, temperature, temperature_index, no_of_sites)
         The potential sample.  A one-dimensional numpy array of length no_of_observations.  The nth element is a float
         corresponding to the potential measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 0]
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_potential.csv", dtype=float,
+                      delimiter=",")
 
 
 def get_specific_heat(output_directory, temperature, temperature_index, no_of_sites):
@@ -223,7 +198,8 @@ def get_external_global_move(output_directory, temperature, temperature_index, n
         0 if the x / y component of the external global move was not accepted, 1 if a positive external global move was
         accepted and -1 if a negative external global move was accepted.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 1:3].astype(int)
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_external_global_move.csv", dtype=int,
+                      delimiter=",")
 
 
 """XY and HXY magnetisation methods"""
@@ -255,7 +231,8 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, te
         element is a float corresponding to the x / y component of the non-normalised magnetisation vector measured at
         observation n.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 3:5]
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_non_normalised_magnetisation.csv",
+                      dtype=float, delimiter=",")
 
 
 def get_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites):
@@ -467,7 +444,8 @@ def get_non_normalised_total_vortex_polarisation(output_directory, temperature, 
         observation n; its first / second element is a float corresponding to the x / y component of the non-normalised
         total vortex polarisation measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 5:7]
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_1st_deriv_of_potential.csv", dtype=float,
+                      delimiter=",")
 
 
 def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_index, no_of_sites):
@@ -494,7 +472,8 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_i
         The sample of the inverse vacuum permittivity.  A one-dimensional numpy array of length no_of_observations.
         The nth  element is a float corresponding to the inverse vacuum permittivity measured at observation n.
     """
-    return np.mean(get_entire_sample(output_directory, temperature_index)[:, 7:9], axis=1) / no_of_sites
+    return np.mean(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_2nd_deriv_of_potential.csv",
+                              dtype=float, delimiter=","), axis=1) / no_of_sites
 
 
 def get_total_vortex_polarisation(output_directory, temperature, temperature_index, no_of_sites):
@@ -587,7 +566,8 @@ def get_potential_minimising_twists(output_directory, temperature, temperature_i
         its first / second element is an int corresponding to the x / y component of the potential-minimising twist
         field measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 9:11]
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_potential_minimising_twists.csv",
+                      dtype=float, delimiter=",")
 
 
 def get_potential_minimising_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites):
@@ -720,7 +700,8 @@ def get_sum_of_electric_field(output_directory, temperature, temperature_index, 
         The nth sub-array is the sum of the electric field measured at observation n; its first / second element is a
         float corresponding to the x / y component of the sum of the electric field measured at observation n.
     """
-    return get_entire_sample(output_directory, temperature_index)[:, 3:5]
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}_sample_sum_of_electric_field.csv", dtype=float,
+                      delimiter=",")
 
 
 def get_electric_field_zero_mode(output_directory, temperature, temperature_index, no_of_sites):

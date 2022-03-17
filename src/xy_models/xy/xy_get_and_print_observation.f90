@@ -29,6 +29,14 @@ do i = 1, no_of_sites
 end do
 potential = potential_cartesian_components(1) + potential_cartesian_components(2)
 
+write(20, 100) potential
+if (use_external_global_moves) then
+    write(30, 200) external_global_move(1), external_global_move(2)
+end if
+write(40, 300) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
+write(50, 300) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
+write(60, 300) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
+
 if (calculate_potential_minimising_twists) then
     call potential_minimising_twists_calculation_x(no_of_external_twists_to_minimise_potential, 1, &
                                                     potential_cartesian_components) ! x direction; positive twists
@@ -38,16 +46,12 @@ if (calculate_potential_minimising_twists) then
                                                     potential_cartesian_components) ! y direction; positive twists
     call potential_minimising_twists_calculation_y(no_of_external_twists_to_minimise_potential, -1, &
                                                     potential_cartesian_components) ! y direction; negative twists
+    write(70, 200) no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
 end if
 
-write(20, 100) potential, external_global_move(1), external_global_move(2), &
-                non_normalised_magnetisation(1), non_normalised_magnetisation(2), &
-                sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2), &
-                sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2), &
-                no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
-
-100 format(ES30.14, ",", I29, ",", I29, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", ES29.14, ",", &
-            ES29.14, ",", I29, ",", I29)
+100 format(ES25.14)
+200 format(I10, ",", I10)
+300 format(ES25.14, ",", ES25.14)
 
 return
 end subroutine get_and_print_observation
