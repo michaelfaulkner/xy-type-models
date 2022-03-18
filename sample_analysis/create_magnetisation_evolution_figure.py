@@ -38,9 +38,10 @@ def main():
      no_of_jobs_ecmc, max_no_of_cpus) = run_script.get_config_data(config_file_16x16_ecmc)
     (_, sample_directory_256x256_ecmc, no_of_sites_256x256_ecmc, _, _, _, _, _, no_of_jobs_ecmc,
      max_no_of_cpus) = run_script.get_config_data(config_file_256x256_ecmc)
-    (_, sample_directory_256x256_metrop_with_twists, no_of_sites_256x256_metrop_with_twists, _, _, _,
-     use_external_global_moves_256x256_metrop_with_twists, external_global_moves_string_256x256_metrop_with_twists,
-     no_of_jobs_metrop_with_twists, _) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
+    (_, sample_directory_256x256_metrop_with_twists, no_of_sites_256x256_metrop_with_twists, _, _,
+     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
+     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _
+     ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
     alphabetic_label_16x16_metrop = "(a)"
@@ -74,8 +75,8 @@ def main():
                      use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_observations_ecmc,
                      alphabetic_label_256x256_ecmc, job_index)
         make_subplot(axes[1, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
-                     no_of_sites_256x256_metrop_with_twists, no_of_equilibration_sweeps_metrop, temperatures,
-                     use_external_global_moves_256x256_metrop_with_twists,
+                     no_of_sites_256x256_metrop_with_twists, no_of_equilibration_sweeps_metrop,
+                     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
                      external_global_moves_string_256x256_metrop_with_twists, no_of_observations_metrop,
                      alphabetic_label_256x256_metrop_with_twists, job_index)
 
@@ -155,14 +156,14 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                         f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", cartesian_magnetisation)
         axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=1.0,
-                  color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.1f}")
-    if alphabetic_label == "(f)":
-        handles, labels = axis.get_legend_handles_labels()
-        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.075, -0.05),
-                             fontsize=18)
-        legend.get_frame().set_edgecolor("black")
-        legend.get_frame().set_lw(3)
-        [line.set_linewidth(2) for line in legend.get_lines()]
+                  color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+    #if alphabetic_label == "(f)":
+    handles, labels = axis.get_legend_handles_labels()
+    legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
+                         fontsize=15)
+    legend.get_frame().set_edgecolor("black")
+    legend.get_frame().set_lw(3)
+    [line.set_linewidth(2) for line in legend.get_lines()]
 
 
 if __name__ == "__main__":
