@@ -154,7 +154,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
                         f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", cartesian_magnetisation)
-        axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=0.1,
+        axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=1.0,
                   color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.1f}")
     if alphabetic_label == "(f)":
         handles, labels = axis.get_legend_handles_labels()
