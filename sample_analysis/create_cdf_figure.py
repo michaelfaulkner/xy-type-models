@@ -71,7 +71,7 @@ def main():
                 if job_index == 0:
                     axis.plot(*np.load(output_file_metrop), color=colors[temperature_index],
                               linestyle=linestyles[job_index], linewidth=2,
-                              label=fr"$1 / (\beta J)$ = {temperature:.1f}")
+                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                     """use alternative CDF calculation in 
                         markov_chain_diagnostics.get_cumulative_distribution() to use fill_between() in the 
                         following line"""
@@ -120,8 +120,7 @@ def main():
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     handles, labels = axis.get_legend_handles_labels()
-    legend = axis.legend(reversed(handles), reversed(labels), title='colour code', title_fontsize='large',
-                         loc="lower right", fontsize=13)
+    legend = axis.legend(reversed(handles), reversed(labels), loc="lower right", fontsize=15)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(3)
     figure.tight_layout()
