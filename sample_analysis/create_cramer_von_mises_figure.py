@@ -3,6 +3,7 @@ import importlib
 import math
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
 import numpy as np
 import os
 import sys
@@ -40,15 +41,15 @@ def main():
 
     pool = setup_scripts.setup_pool(no_of_jobs_metrop_local, max_no_of_cpus)
     figure, axis = plt.subplots(1)
-    axis.tick_params(which='both', width=3)
-    axis.tick_params(which='major', length=7, labelsize=18, pad=10)
+    axis.set_yscale('log')
+    axis.tick_params(which='major', width=3, length=7, labelsize=18, pad=10)
     axis.tick_params(which='minor', length=4)
+    # axis.yaxis.set_minor_locator(AutoMinorLocator(10))
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
     axis.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=8)
     axis.set_ylabel(r"$n \omega_n^2$", fontsize=20, labelpad=8)
-    axis.set_yscale('log')
 
-    inset_axis = plt.axes([0.685, 0.66, 0.2, 0.2])
+    inset_axis = plt.axes([0.8, 0.8, 0.2, 0.2])
     inset_axis.set_xlabel(r"$1 / (\beta J)$", fontsize=8, labelpad=2)
     inset_axis.set_ylabel(r"$p(\rm{twist})$", fontsize=8, labelpad=2)
     inset_axis.tick_params(which='major', width=3, labelsize=8)
