@@ -25,7 +25,7 @@ def main(observable_string="rotated_magnetisation_phase"):
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
 
-    figure, axes = plt.subplots(2, 1, figsize=(7.5, 6.25))
+    figure, axes = plt.subplots(2, 1, figsize=(7.5, 7.1))
     axes[1].set_xlabel(r"$\tau$", fontsize=20, labelpad=0)
     axes[0].set_ylabel(r"$\bar{\phi}_m(\tau)$ / $s_{\phi_m}^2$", fontsize=20, labelpad=-10)
     axes[1].set_ylabel(r"$\bar{\phi}_m(\tau)$", fontsize=20, labelpad=-10)
@@ -92,9 +92,9 @@ def main(observable_string="rotated_magnetisation_phase"):
                              color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
 
     figure.tight_layout()
-    '''legend = axes[0].legend(title='colour code', loc="upper left", fontsize=11)
+    legend = axes[0].legend(loc="upper left", fontsize=12)
     legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)'''
+    legend.get_frame().set_lw(3)
     figure.savefig(f"{output_directory}/{observable_string}_running_mean_vs_time_{algorithm_name.replace('-', '_')}_"
                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf",
                    bbox_inches="tight")
