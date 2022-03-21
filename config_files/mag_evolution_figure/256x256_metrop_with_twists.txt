@@ -2,14 +2,14 @@
 '../bc4-output/mag_evolution_figure/256x256_metrop_with_twists'         output_directory
 256                                                                     integer_lattice_length
 100000                                                                  no_of_equilibration_sweeps
-1000000                                                                 no_of_observations
+500000                                                                  no_of_observations
 0.45d0                                                                  initial_temperature
-1.35d0                                                                  final_temperature
-1                                                                       no_of_temperature_increments
+0.45d0                                                                  final_temperature
+0                                                                       no_of_temperature_increments
 1.0d0    	                                                            width_of_proposal_interval (initial)
 0.6d0 		                                                            target_acceptance_rate_of_field_rotations
 .true.                                                                  randomise_initial_field_configuration
 .true.                                                                  use_external_global_moves
 .false.                                                                 calculate_potential_minimising_twists
-8                                                                      no_of_jobs
-8                                                                      max_no_of_cpus
+16                                                                      no_of_jobs
+8                                                                       max_no_of_cpus
