@@ -14,10 +14,10 @@ do temperature_index = 0, no_of_temperature_increments
 
     call reset_metropolis_acceptance_counters
     do observation_index = 1, no_of_equilibration_sweeps
-        call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_moves
         end if
+        call metropolis_sweep
         ! step-size adaptor
         if (mod(observation_index, 100) == 0) then
             acceptance_rate_of_field_rotations = 1.0d-2 * dfloat(no_of_accepted_field_rotations) / dfloat(no_of_sites) &
@@ -34,10 +34,10 @@ do temperature_index = 0, no_of_temperature_increments
 
     call reset_metropolis_acceptance_counters
     do observation_index = 1, no_of_observations
-        call metropolis_sweep
         if (use_external_global_moves) then
             call attempt_external_global_moves
         end if
+        call metropolis_sweep
         call get_and_print_observation
     end do
 

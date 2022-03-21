@@ -14,6 +14,9 @@ do temperature_index = 0, no_of_temperature_increments
     call create_sample_files(temperature_index)
 
     do observation_index = 1, no_of_equilibration_sweeps
+        if (use_external_global_moves) then
+            call attempt_external_global_moves
+        end if
         call single_event_chain
         ! spin_space_distance_between_observations adaptor
         if (mod(observation_index, no_of_equilibration_sweeps / 10) == 0) then
@@ -24,9 +27,6 @@ do temperature_index = 0, no_of_temperature_increments
                 spin_space_distance_between_observations = 1.001d0 * spin_space_distance_between_observations
             end if
         end if
-        if (use_external_global_moves) then
-            call attempt_external_global_moves
-        end if
         call get_and_print_observation
     end do
 
@@ -34,10 +34,10 @@ do temperature_index = 0, no_of_temperature_increments
     no_of_accepted_external_global_moves = 0
 
     do observation_index = 1, no_of_observations
-        call single_event_chain
         if (use_external_global_moves) then
             call attempt_external_global_moves
         end if
+        call single_event_chain
         call get_and_print_observation
     end do
 
