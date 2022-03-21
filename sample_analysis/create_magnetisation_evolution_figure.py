@@ -55,57 +55,61 @@ def main():
     for job_index in range(no_of_jobs_metrop_with_twists):
         figure, axes = plt.subplots(2, 3, figsize=(30, 20))
         make_subplot(axes[0, 0], algorithm_name_metrop, output_directory, sample_directory_16x16_metrop,
-                     no_of_sites_16x16_metrop, no_of_equilibration_sweeps_metrop, temperatures,
-                     use_external_global_moves_16x16_metrop, external_global_moves_string_16x16_metrop,
-                     no_of_observations_metrop, alphabetic_label_16x16_metrop, job_index)
+                     no_of_sites_16x16_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
+                     temperatures, use_external_global_moves_16x16_metrop, external_global_moves_string_16x16_metrop,
+                     alphabetic_label_16x16_metrop, job_index)
         make_subplot(axes[0, 1], algorithm_name_metrop, output_directory, sample_directory_64x64_metrop,
-                     no_of_sites_64x64_metrop, no_of_equilibration_sweeps_metrop, temperatures,
-                     use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop,
-                     no_of_observations_metrop, alphabetic_label_64x64_metrop, job_index)
+                     no_of_sites_64x64_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
+                     temperatures, use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop,
+                     alphabetic_label_64x64_metrop, job_index)
         make_subplot(axes[0, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop,
-                     no_of_sites_256x256_metrop, no_of_equilibration_sweeps_metrop, temperatures,
-                     use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop,
-                     no_of_observations_metrop, alphabetic_label_256x256_metrop, job_index)
+                     no_of_sites_256x256_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
+                     temperatures, use_external_global_moves_256x256_metrop,
+                     external_global_moves_string_256x256_metrop, alphabetic_label_256x256_metrop, job_index)
         make_subplot(axes[1, 0], algorithm_name_ecmc, output_directory, sample_directory_16x16_ecmc,
-                     no_of_sites_16x16_ecmc, no_of_equilibration_sweeps_ecmc, temperatures,
-                     use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_observations_ecmc,
+                     no_of_sites_16x16_ecmc, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
+                     use_external_global_moves_ecmc, external_global_moves_string_ecmc,
                      alphabetic_label_16x16_ecmc, job_index)
         make_subplot(axes[1, 1], algorithm_name_ecmc, output_directory, sample_directory_256x256_ecmc,
-                     no_of_sites_256x256_ecmc, no_of_equilibration_sweeps_ecmc, temperatures,
-                     use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_observations_ecmc,
+                     no_of_sites_256x256_ecmc, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
+                     use_external_global_moves_ecmc, external_global_moves_string_ecmc,
                      alphabetic_label_256x256_ecmc, job_index)
         make_subplot(axes[1, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
                      no_of_sites_256x256_metrop_with_twists, no_of_equilibration_sweeps_metrop,
-                     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
-                     external_global_moves_string_256x256_metrop_with_twists, no_of_observations_metrop,
+                     no_of_observations_metrop, temperatures_256x256_metrop_with_twists,
+                     use_external_global_moves_256x256_metrop_with_twists,
+                     external_global_moves_string_256x256_metrop_with_twists,
                      alphabetic_label_256x256_metrop_with_twists, job_index)
 
         # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
         plt.subplots_adjust(wspace=0.125, hspace=0.05)
         figure.add_artist(
-            plt.Line2D([0.1125, 0.91], [0.495, 0.495], transform=figure.transFigure, color="black", linewidth=3))
+            plt.Line2D([0.115, 0.91], [0.495, 0.495], transform=figure.transFigure, color="black", linewidth=4))
         figure.add_artist(
-            plt.Line2D([0.3775, 0.3775], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=3))
+            plt.Line2D([0.378, 0.378], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4))
         figure.add_artist(
-            plt.Line2D([0.646, 0.646], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=3))
+            plt.Line2D([0.6465, 0.6465], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4))
 
         figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_ecmc_"
-                       f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs_job_{job_index}.pdf",
+                       f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs_job_{job_index}.png",
                        bbox_inches="tight")
         figure.clear()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_equilibration_sweeps,
-                 temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
+                 no_of_observations, temperatures, use_external_global_moves, external_global_moves_string,
                  alphabetic_label, job_index):
     axis.axis('square')
-    axis.text(-0.03, 0.98, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=20,
+    axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
               transform=axis.transAxes,
               bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
-    axis.text(0.97, 0.98, f"{alphabetic_label}", fontsize=30, transform=axis.transAxes)
+    axis.text(0.96, 0.9775, f"{alphabetic_label}", fontsize=32, transform=axis.transAxes)
     axis.tick_params(which='both', width=3)
-    axis.tick_params(which='major', length=7, labelsize=22, pad=10)
+    if alphabetic_label == "(a)":
+        axis.tick_params(which='major', length=7, labelsize=24, pad=10)
+    else:
+        axis.tick_params(which='major', length=7, labelsize=26, pad=10)
     axis.tick_params(which='minor', length=4)
 
     axis.set_xlim([-1.0, 1.0]), axis.set_ylim([-1.0, 1.0])
@@ -123,8 +127,8 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.yaxis.set_major_formatter('{x:.1f}')
     axis.set_yticks(minor_ticks, minor=True)
 
-    axis.set_xlabel(r"$m_x$", fontsize=22), axis.set_ylabel(r"$m_y$", fontsize=22, rotation="horizontal")
-    axis.xaxis.set_label_coords(1.01, 0.56), axis.yaxis.set_label_coords(0.55, 0.975)
+    axis.set_xlabel(r"$m_x$", fontsize=30), axis.set_ylabel(r"$m_y$", fontsize=30, rotation="horizontal")
+    axis.xaxis.set_label_coords(1.005, 0.57), axis.yaxis.set_label_coords(0.56, 0.9625)
     colors = ["black", "red"]
 
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
@@ -157,10 +161,16 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                         f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", cartesian_magnetisation)
         axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=1.0,
                   color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
-    #if alphabetic_label == "(f)":
     handles, labels = axis.get_legend_handles_labels()
-    legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
-                         fontsize=15)
+    if alphabetic_label == "(a)":
+        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
+                             fontsize=17)
+    elif alphabetic_label == "(d)":
+        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
+                             fontsize=18)
+    else:
+        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
+                             fontsize=20)
     legend.get_frame().set_edgecolor("black")
     legend.get_frame().set_lw(3)
     [line.set_linewidth(2) for line in legend.get_lines()]
