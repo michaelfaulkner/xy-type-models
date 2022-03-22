@@ -105,8 +105,8 @@ def get_sample_is_one_dimensional(observable_string):
             or observable_string == "magnetisation_norm" or observable_string == "magnetisation_phase"
             or observable_string == "rotated_magnetisation_phase" or observable_string == "magnetic_susceptibility"
             or observable_string == "inverse_vacuum_permittivity" or observable_string == "helicity_modulus"
-            or observable_string != "hxy_topological_susceptibility" or observable_string == "inverse_permittivity"
-            or observable_string != "topological_susceptibility"):
+            or observable_string == "hxy_topological_susceptibility" or observable_string == "inverse_permittivity"
+            or observable_string == "topological_susceptibility"):
         return True
     else:
         return False
