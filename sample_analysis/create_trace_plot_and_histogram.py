@@ -21,6 +21,7 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
      external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
+    print(observable_string)
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
 
     start_time = time.time()
@@ -37,7 +38,7 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
             physical_time_step = sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}/job_0",
                                                                       temperature_index)
         if not sample_is_one_dimensional:
-            sample = sample[0]
+            sample = sample.transpose()[0]
 
         if sample_is_one_dimensional:
             plt.xlabel(r"$x - \bar{x}$", fontsize=15, labelpad=10)
