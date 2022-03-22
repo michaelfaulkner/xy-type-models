@@ -1,5 +1,5 @@
 all: multivalued-electrolyte elementary-electrolyte hxy-ecmc hxy-metropolis hxy-gaussian-noise-metropolis xy-ecmc \
-		xy-metropolis xy-gaussian-noise-metropolis
+		xy-metropolis xy-gaussian-noise-metropolis 3dxy
 
 elementary-electrolyte:
 	cd src/electrolyte/elementary && $(MAKE)
@@ -24,3 +24,6 @@ xy-metropolis:
 
 xy-gaussian-noise-metropolis:
 	cd src/xy_models/xy/metropolis/gaussian_noise_metropolis && $(MAKE)
+
+3dxy:
+	cd src/3dxy && $(MAKE)

@@ -94,7 +94,10 @@ def get_config_data(config_file_location):
             if 'integer_lattice_length' in row[0]:
                 integer_lattice_length = int(row[0].replace("'", "").replace("integer_lattice_length", "").replace(" ",
                                                                                                                    ""))
-                no_of_sites = integer_lattice_length ** 2
+                if algorithm_name == "3dxy-gaussian-noise-metropolis":
+                    no_of_sites = integer_lattice_length ** 3
+                else:
+                    no_of_sites = integer_lattice_length ** 2
             if 'no_of_equilibration_sweeps' in row[0]:
                 no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
             if 'no_of_observations' in row[0]:
@@ -166,6 +169,8 @@ def get_executable(algorithm_name):
         executable_location = "executables/xy_metropolis_algorithm.exe"
     elif algorithm_name == "xy-gaussian-noise-metropolis":
         executable_location = "executables/xy_gaussian_noise_metropolis_algorithm.exe"
+    elif algorithm_name == "3dxy-gaussian-noise-metropolis":
+        executable_location = "executables/3dxy_gaussian_noise_metropolis_algorithm.exe"
     elif algorithm_name == "elementary-electrolyte":
         executable_location = "executables/elementary_electrolyte_algorithm.exe"
     elif algorithm_name == "multivalued-electrolyte":
@@ -173,7 +178,7 @@ def get_executable(algorithm_name):
     else:
         raise Exception("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, "
                         "hxy-gaussian-noise-metropolis, xy-ecmc, xy-metropolis, xy-gaussian-noise-metropolis, "
-                        "elementary-electrolyte or multivalued-electrolyte.")
+                        "3dxy-gaussian-noise-metropolis, elementary-electrolyte or multivalued-electrolyte.")
     if not os.path.isfile(executable_location):
         raise Exception(f"Executable for the {algorithm_name} algorithm does not exist.  Run 'make' or 'make "
                         f"{algorithm_name}' then try again.")
