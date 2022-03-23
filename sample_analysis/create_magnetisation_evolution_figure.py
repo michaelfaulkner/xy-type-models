@@ -25,23 +25,24 @@ def main():
     config_file_256x256_ecmc = "config_files/mag_evolution_figure/256x256_ecmc.txt"
     config_file_256x256_metrop_with_twists = "config_files/mag_evolution_figure/256x256_metrop_with_twists.txt"
 
-    (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16_metrop, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
+    (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
+     no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
      external_global_moves_string_16x16_metrop, no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(
         config_file_16x16_metrop)
-    (_, sample_directory_64x64_metrop, no_of_sites_64x64_metrop, _, _, _, use_external_global_moves_64x64_metrop,
-     external_global_moves_string_64x64_metrop, _, _) = run_script.get_config_data(config_file_64x64_metrop)
-    (_, sample_directory_256x256_metrop, no_of_sites_256x256_metrop, _, _, _, use_external_global_moves_256x256_metrop,
-     external_global_moves_string_256x256_metrop, _, _) = run_script.get_config_data(config_file_256x256_metrop)
-    (algorithm_name_ecmc, sample_directory_16x16_ecmc, no_of_sites_16x16_ecmc, no_of_equilibration_sweeps_ecmc,
-     no_of_observations_ecmc, _, use_external_global_moves_ecmc, external_global_moves_string_ecmc,
-     no_of_jobs_ecmc, max_no_of_cpus) = run_script.get_config_data(config_file_16x16_ecmc)
-    (_, sample_directory_256x256_ecmc, no_of_sites_256x256_ecmc, _, _, _, _, _, no_of_jobs_ecmc,
-     max_no_of_cpus) = run_script.get_config_data(config_file_256x256_ecmc)
-    (_, sample_directory_256x256_metrop_with_twists, no_of_sites_256x256_metrop_with_twists, _, _,
-     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
-     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _
-     ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
+    (_, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64, _, _, _,
+     use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop, _, _
+     ) = run_script.get_config_data(config_file_64x64_metrop)
+    (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _,
+     use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop, _, _
+     ) = run_script.get_config_data(config_file_256x256_metrop)
+    (algorithm_name_ecmc, sample_directory_16x16_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
+     _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_jobs_ecmc, _
+     ) = run_script.get_config_data(config_file_16x16_ecmc)
+    (_, sample_directory_256x256_ecmc, _, _, _, _, _, _, _, no_of_jobs_ecmc, _) = run_script.get_config_data(
+        config_file_256x256_ecmc)
+    (_, sample_directory_256x256_metrop_with_twists, _, _, _, _, temperatures_256x256_metrop_with_twists,
+     use_external_global_moves_256x256_metrop_with_twists, external_global_moves_string_256x256_metrop_with_twists,
+     no_of_jobs_metrop_with_twists, _) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
     alphabetic_label_16x16_metrop = "(a)"
@@ -55,27 +56,27 @@ def main():
     for job_index in range(no_of_jobs_metrop_with_twists):
         figure, axes = plt.subplots(2, 3, figsize=(30, 20))
         make_subplot(axes[0, 0], algorithm_name_metrop, output_directory, sample_directory_16x16_metrop,
-                     no_of_sites_16x16_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
-                     temperatures, use_external_global_moves_16x16_metrop, external_global_moves_string_16x16_metrop,
-                     alphabetic_label_16x16_metrop, job_index)
+                     no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_metrop,
+                     no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
+                     external_global_moves_string_16x16_metrop, alphabetic_label_16x16_metrop, job_index)
         make_subplot(axes[0, 1], algorithm_name_metrop, output_directory, sample_directory_64x64_metrop,
-                     no_of_sites_64x64_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
-                     temperatures, use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop,
-                     alphabetic_label_64x64_metrop, job_index)
+                     no_of_sites_64x64, no_of_sites_string_64x64, no_of_equilibration_sweeps_metrop,
+                     no_of_observations_metrop, temperatures, use_external_global_moves_64x64_metrop,
+                     external_global_moves_string_64x64_metrop, alphabetic_label_64x64_metrop, job_index)
         make_subplot(axes[0, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop,
-                     no_of_sites_256x256_metrop, no_of_equilibration_sweeps_metrop, no_of_observations_metrop,
-                     temperatures, use_external_global_moves_256x256_metrop,
+                     no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
+                     no_of_observations_metrop, temperatures, use_external_global_moves_256x256_metrop,
                      external_global_moves_string_256x256_metrop, alphabetic_label_256x256_metrop, job_index)
         make_subplot(axes[1, 0], algorithm_name_ecmc, output_directory, sample_directory_16x16_ecmc,
-                     no_of_sites_16x16_ecmc, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
-                     use_external_global_moves_ecmc, external_global_moves_string_ecmc,
-                     alphabetic_label_16x16_ecmc, job_index)
+                     no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_ecmc,
+                     no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
+                     external_global_moves_string_ecmc, alphabetic_label_16x16_ecmc, job_index)
         make_subplot(axes[1, 1], algorithm_name_ecmc, output_directory, sample_directory_256x256_ecmc,
-                     no_of_sites_256x256_ecmc, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
-                     use_external_global_moves_ecmc, external_global_moves_string_ecmc,
-                     alphabetic_label_256x256_ecmc, job_index)
+                     no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_ecmc,
+                     no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
+                     external_global_moves_string_ecmc, alphabetic_label_256x256_ecmc, job_index)
         make_subplot(axes[1, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
-                     no_of_sites_256x256_metrop_with_twists, no_of_equilibration_sweeps_metrop,
+                     no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
                      no_of_observations_metrop, temperatures_256x256_metrop_with_twists,
                      use_external_global_moves_256x256_metrop_with_twists,
                      external_global_moves_string_256x256_metrop_with_twists,
@@ -97,9 +98,9 @@ def main():
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
-def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_equilibration_sweeps,
-                 no_of_observations, temperatures, use_external_global_moves, external_global_moves_string,
-                 alphabetic_label, job_index):
+def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_sites_string,
+                 no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
+                 external_global_moves_string, alphabetic_label, job_index):
     axis.axis('square')
     axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
               transform=axis.transAxes,
@@ -137,28 +138,27 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
             if use_external_global_moves:
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                    f"{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                    f"{temperature:.4f}_job_{job_index}.npy")
             else:
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                    f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy")
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                    f"{temperature:.4f}.npy")
         except IOError:
             if use_external_global_moves:
                 cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(
                     f"{sample_directory}/job_{job_index}", temperature, temperature_index, no_of_sites)[
                                           no_of_equilibration_sweeps:]
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                        f"{no_of_observations}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
-                        cartesian_magnetisation)
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                        f"{temperature:.4f}_job_{job_index}.npy", cartesian_magnetisation)
             else:
                 cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(
                     sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:]
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                        f"{no_of_observations}_obs_temp_eq_{temperature:.4f}.npy", cartesian_magnetisation)
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                        f"{temperature:.4f}.npy", cartesian_magnetisation)
         axis.plot(cartesian_magnetisation[:, 0], cartesian_magnetisation[:, 1], linestyle="solid", linewidth=1.0,
                   color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
     handles, labels = axis.get_legend_handles_labels()

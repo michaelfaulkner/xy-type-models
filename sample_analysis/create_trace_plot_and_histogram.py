@@ -17,7 +17,7 @@ run_script = importlib.import_module("run")
 
 def main(config_file, observable_string, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
+    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
@@ -50,8 +50,8 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
         plt.hist(sample[no_of_equilibration_sweeps:] - np.mean(sample[no_of_equilibration_sweeps:]),
                  bins=no_of_histogram_bins, density=True)
         plt.savefig(f"{output_directory}/{observable_string}_histogram_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
-                    f"{temperature:.4f}.pdf", bbox_inches="tight")
+                    f"{external_global_moves_string}_{no_of_sites_string}_temp_eq_{temperature:.4f}.pdf",
+                    bbox_inches="tight")
         plt.clf()
 
         plt.xlabel(r"$t$", fontsize=15, labelpad=10)
@@ -62,8 +62,8 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.plot(np.arange(len(sample)) * physical_time_step, sample, color="k", linewidth=1, linestyle="-")
         plt.savefig(f"{output_directory}/{observable_string}_vs_time_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_"
-                    f"{temperature:.4f}.pdf", bbox_inches="tight")
+                    f"{external_global_moves_string}_{no_of_sites_string}_temp_eq_{temperature:.4f}.pdf",
+                    bbox_inches="tight")
         plt.clf()
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")

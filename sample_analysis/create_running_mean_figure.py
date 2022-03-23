@@ -19,10 +19,10 @@ def main(observable_string="rotated_magnetisation_phase"):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     config_file_2d = "config_files/running_mean_figure/2dxy.txt"
     config_file_3d = "config_files/running_mean_figure/3dxy.txt"
-    (algorithm_name_2d, sample_directory_2d, no_of_sites_2d, no_of_equilibration_sweeps_2d, _, temperatures_2d, _,
-     external_global_moves_string_2d, no_of_jobs, _) = run_script.get_config_data(config_file_2d)
-    (algorithm_name_3d, sample_directory_3d, no_of_sites_3d, no_of_equilibration_sweeps_3d, _, temperatures_3d, _,
-     external_global_moves_string_3d, _, _) = run_script.get_config_data(config_file_3d)
+    (algorithm_name_2d, sample_directory_2d, no_of_sites_2d, no_of_sites_string_2d, no_of_equilibration_sweeps_2d, _,
+     temperatures_2d, _, external_global_moves_string_2d, no_of_jobs, _) = run_script.get_config_data(config_file_2d)
+    (algorithm_name_3d, sample_directory_3d, no_of_sites_3d, no_of_sites_string_3d, no_of_equilibration_sweeps_3d, _,
+     temperatures_3d, _, external_global_moves_string_3d, _, _) = run_script.get_config_data(config_file_3d)
     output_directory = sample_directory_2d.replace("/2dxy", "")
 
     setup_scripts.check_for_observable_error(algorithm_name_2d, observable_string)
@@ -47,24 +47,23 @@ def main(observable_string="rotated_magnetisation_phase"):
         try:
             physical_time_step_2d = np.loadtxt(
                 f"{output_directory}/physical_time_step_{algorithm_name_2d.replace('-', '_')}_"
-                f"{external_global_moves_string_2d}_{int(no_of_sites_2d ** 0.5)}x{int(no_of_sites_2d ** 0.5)}_sites_"
-                f"temp_eq_{temperature:.4f}.csv", dtype=float, delimiter=",")
+                f"{external_global_moves_string_2d}_{no_of_sites_string_2d}_temp_eq_{temperature:.4f}.csv", dtype=float,
+                delimiter=",")
         except IOError:
             physical_time_step_2d = sum([sample_getter.get_physical_time_step(
                     algorithm_name_2d, f"{sample_directory_2d}/job_{job_index}", temperature_index) for job_index in
                 range(no_of_jobs)]) / no_of_jobs
             np.savetxt(f"{output_directory}/physical_time_step_{algorithm_name_2d.replace('-', '_')}_"
-                       f"{external_global_moves_string_2d}_{int(no_of_sites_2d ** 0.5)}x{int(no_of_sites_2d ** 0.5)}_"
-                       f"sites_temp_eq_{temperature:.4f}.csv", np.atleast_1d(physical_time_step_2d), delimiter=",")
+                       f"{external_global_moves_string_2d}_{no_of_sites_string_2d}_temp_eq_{temperature:.4f}.csv",
+                       np.atleast_1d(physical_time_step_2d), delimiter=",")
 
         for job_index in range(no_of_jobs):
             try:
                 # first, attempt to open file containing the sample, running mean and running variance...
                 sample_2d, running_mean_2d, running_variance_2d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
-                    f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_"
-                    f"{int(no_of_sites_2d ** 0.5)}x{int(no_of_sites_2d ** 0.5)}_sites_temp_eq_{temperature:.4f}_job_"
-                    f"{job_index}.npy")
+                    f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_{no_of_sites_string_2d}_"
+                    f"temp_eq_{temperature:.4f}_job_{job_index}.npy")
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 sample_2d = get_sample_method(f"{sample_directory_2d}/job_{job_index}", temperature, temperature_index,
@@ -75,8 +74,8 @@ def main(observable_string="rotated_magnetisation_phase"):
                 running_variance_2d = np.array([np.var(sample_2d[:index + 1]) for index in range(len(sample_2d))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_"
-                        f"{int(no_of_sites_2d ** 0.5)}x{int(no_of_sites_2d ** 0.5)}_sites_temp_eq_{temperature:.4f}_"
-                        f"job_{job_index}.npy", np.array([sample_2d, running_mean_2d, running_variance_2d]))
+                        f"{no_of_sites_string_2d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        np.array([sample_2d, running_mean_2d, running_variance_2d]))
 
             if temperature_index == 0 and job_index == 0:
                 max_total_physical_time = physical_time_step_2d * (len(sample_2d) - 1)
@@ -99,16 +98,15 @@ def main(observable_string="rotated_magnetisation_phase"):
         try:
             physical_time_step_3d = np.loadtxt(
                 f"{output_directory}/physical_time_step_{algorithm_name_3d.replace('-', '_')}_"
-                f"{external_global_moves_string_3d}_{int(no_of_sites_3d ** (1 / 3))}x{int(no_of_sites_3d ** (1 / 3))}x"
-                f"{int(no_of_sites_3d ** (1 / 3))}_sites_temp_eq_{temperature:.4f}.csv", dtype=float, delimiter=",")
+                f"{external_global_moves_string_3d}_{no_of_sites_string_3d}_temp_eq_{temperature:.4f}.csv", dtype=float,
+                delimiter=",")
         except IOError:
             physical_time_step_3d = sum([sample_getter.get_physical_time_step(
                     algorithm_name_3d, f"{sample_directory_3d}/job_{job_index}", temperature_index) for job_index in
                 range(no_of_jobs)]) / no_of_jobs
             np.savetxt(
                 f"{output_directory}/physical_time_step_{algorithm_name_3d.replace('-', '_')}_"
-                f"{external_global_moves_string_3d}_{int(no_of_sites_3d ** (1 / 3))}x{int(no_of_sites_3d ** (1 / 3))}x"
-                f"{int(no_of_sites_3d ** (1 / 3))}_sites_temp_eq_{temperature:.4f}.csv",
+                f"{external_global_moves_string_3d}_{no_of_sites_string_3d}_temp_eq_{temperature:.4f}.csv",
                 np.atleast_1d(physical_time_step_3d), delimiter=",")
 
         for job_index in range(no_of_jobs):
@@ -117,13 +115,11 @@ def main(observable_string="rotated_magnetisation_phase"):
                 '''sample_3d, running_mean_3d, running_variance_3d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                     f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                    f"{int(no_of_sites_3d ** 0.125)}x{int(no_of_sites_3d ** 0.125)}x{int(no_of_sites_3d ** 0.125)}_"
-                    f"sites_temp_eq_{temperature:.4f}_job_{job_index}.npy")'''
+                    f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy")'''
                 sample_3d, running_mean_3d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_"
                     f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                    f"{int(no_of_sites_3d ** (1 / 3))}x{int(no_of_sites_3d ** (1 / 3))}x"
-                    f"{int(no_of_sites_3d ** (1 / 3))}_sites_temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy")
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 sample_3d = get_sample_method(f"{sample_directory_3d}/job_{job_index}", temperature, temperature_index,
@@ -134,13 +130,11 @@ def main(observable_string="rotated_magnetisation_phase"):
                 # running_variance_3d = np.array([np.var(sample_3d[:index + 1]) for index in range(len(sample_3d))])
                 '''np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                        f"{int(no_of_sites_3d ** 0.125)}x{int(no_of_sites_3d ** 0.125)}x{int(no_of_sites_3d ** 0.125)}_"
-                        f"sites_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                         np.array([sample_3d, running_mean_3d, running_variance_3d]))'''
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_"
                         f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                        f"{int(no_of_sites_3d ** (1 / 3))}x{int(no_of_sites_3d ** (1 / 3))}x"
-                        f"{int(no_of_sites_3d ** (1 / 3))}_sites_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                         np.array([sample_3d, running_mean_3d]))
 
             if temperature_index == 0 and job_index == 0:

@@ -13,9 +13,9 @@ setup_scripts = importlib.import_module("setup_scripts")
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=6,
          trispectrum_base_period_shift=1, target_auxiliary_frequency=None):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.set_up_polyspectra_script(config_file,
-                                                                                               observable_string)
+    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
+     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
+                                                                                              observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(temperatures) + 1)))
     figure, axes = plt.subplots(3, figsize=(10, 10))
@@ -31,16 +31,16 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         print(f"Temperature = {temperature:.4f}")
         current_color = next(colors)
         power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
-                                                        temperature, temperature_index, no_of_sites,
+                                                        temperature, temperature_index, no_of_sites, no_of_sites_string,
                                                         no_of_equilibration_sweeps, external_global_moves_string,
                                                         no_of_jobs, pool)
         second_spectrum = polyspectra.get_second_spectrum(algorithm_name, observable_string, output_directory,
                                                           temperature, temperature_index, no_of_sites,
-                                                          no_of_equilibration_sweeps, external_global_moves_string,
-                                                          no_of_jobs, pool)
+                                                          no_of_sites_string, no_of_equilibration_sweeps,
+                                                          external_global_moves_string, no_of_jobs, pool)
         power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
             no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, target_auxiliary_frequency)
 
         # normalise polyspectra with respect to their low-frequency values
@@ -115,9 +115,9 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(1.5) for legend in legends]
     figure.savefig(f"{output_directory}/{observable_string}_polyspectra_{algorithm_name.replace('-', '_')}_"
-                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_max_"
-                   f"trispectrum_shift_eq_{2 ** no_of_trispectrum_auxiliary_frequency_octaves}_x_"
-                   f"{trispectrum_base_period_shift}_delta_t.pdf", bbox_inches="tight")
+                   f"{external_global_moves_string}_{no_of_sites_string}_max_trispectrum_shift_eq_"
+                   f"{2 ** no_of_trispectrum_auxiliary_frequency_octaves}_x_{trispectrum_base_period_shift}_"
+                   f"delta_t.pdf", bbox_inches="tight")
     if no_of_jobs > 1:
         pool.close()
 

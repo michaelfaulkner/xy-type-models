@@ -68,12 +68,12 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
         raise SystemExit
 
 
-def set_up_polyspectra_script(config_file, observable_string):
+def setup_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
+    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
-    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
+    return (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
             external_global_moves_string, no_of_jobs, setup_pool(no_of_jobs, max_no_of_cpus))
 
 

@@ -17,21 +17,19 @@ run_script = importlib.import_module("run")
 
 
 def main(config_file, observable_string):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _,
+    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
 
     try:
         with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                  f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}.tsv",
-                  "r") as output_file:
+                  f"{external_global_moves_string}_{no_of_sites_string}.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             means, errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
         output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                           f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}.tsv",
-                           "w")
+                           f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
         if observable_string == "acceptance_rates":
             if no_of_jobs == 1:
                 acceptance_rates = sample_getter.get_acceptance_rates(output_directory, 0)
@@ -130,8 +128,7 @@ def main(config_file, observable_string):
     plt.ylabel(f"{observable_string.replace('_', ' ')}", fontsize=15, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
     plt.savefig(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}.pdf",
-                bbox_inches="tight")
+                f"{external_global_moves_string}_{no_of_sites_string}.pdf", bbox_inches="tight")
 
 
 def check_for_observable_error(algorithm_name, observable_string):

@@ -29,7 +29,7 @@ def main(config_file_location):
     None
     """
     config_data = get_config_data(config_file_location)
-    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[8], config_data[9]
+    algorithm_name, no_of_jobs, max_no_of_cpus = config_data[0], config_data[9], config_data[10]
     executable_location = get_executable(algorithm_name)
     if no_of_jobs < 1:
         raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
@@ -96,8 +96,11 @@ def get_config_data(config_file_location):
                                                                                                                    ""))
                 if algorithm_name == "3dxy-gaussian-noise-metropolis":
                     no_of_sites = integer_lattice_length ** 3
+                    no_of_sites_string = (f"{integer_lattice_length}x{integer_lattice_length}x{integer_lattice_length}_"
+                                          f"sites")
                 else:
                     no_of_sites = integer_lattice_length ** 2
+                    no_of_sites_string = f"{integer_lattice_length}x{integer_lattice_length}_sites"
             if 'no_of_equilibration_sweeps' in row[0]:
                 no_of_equilibration_sweeps = int(row[0].replace("no_of_equilibration_sweeps", "").replace(" ", ""))
             if 'no_of_observations' in row[0]:
@@ -129,8 +132,8 @@ def get_config_data(config_file_location):
                 no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
             if 'max_no_of_cpus' in row[0]:
                 max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
-    return (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, no_of_observations,
-            get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments),
+    return (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
+            no_of_observations, get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments),
             use_external_global_moves, external_global_moves_string, no_of_jobs, max_no_of_cpus)
 
 

@@ -10,9 +10,9 @@ polyspectra = importlib.import_module("polyspectra")
 
 
 def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispectrum_base_period_shift=1):
-    (algorithm_name, output_directory, no_of_sites, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.set_up_polyspectra_script(config_file,
-                                                                                               observable_string)
+    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
+     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
+                                                                                              observable_string)
 
     start_time = time.time()
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
@@ -29,8 +29,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
-                trispectrum_base_period_shift)
+                no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                no_of_trispectrum_octaves, trispectrum_base_period_shift)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
@@ -41,8 +41,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             current_color = next(colors)
             power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
-                trispectrum_base_period_shift)
+                no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
+                no_of_trispectrum_octaves, trispectrum_base_period_shift)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
@@ -55,9 +55,8 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(1.5)
         figure.savefig(f"{output_directory}/{observable_string}_convergence_of_trispectrum_zero_auxiliary_frequency_"
-                       f"mode_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
-                       f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_temp_eq_{temperature:.4f}.pdf",
-                       bbox_inches="tight")
+                       f"mode_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_{no_of_sites_string}_"
+                       f"temp_eq_{temperature:.4f}.pdf", bbox_inches="tight")
         figure.clf()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 

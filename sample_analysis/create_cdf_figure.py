@@ -22,11 +22,11 @@ def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     config_file_metrop = "config_files/cdf_figure/metropolis.txt"
     config_file_ecmc = "config_files/cdf_figure/ecmc.txt"
-    (algorithm_name_metrop, output_directory_metrop, no_of_sites, no_of_equilibration_sweeps_metrop,
+    (algorithm_name_metrop, output_directory_metrop, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps_metrop,
      no_of_observations_metrop, temperatures, use_external_global_moves, external_global_moves_string,
      no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(config_file_metrop)
-    (algorithm_name_ecmc, output_directory_ecmc, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _,
-     no_of_jobs_ecmc, _) = run_script.get_config_data(config_file_ecmc)
+    (algorithm_name_ecmc, output_directory_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _,
+     _, no_of_jobs_ecmc, _) = run_script.get_config_data(config_file_ecmc)
     output_directory = output_directory_metrop.replace("/metropolis", "")
 
     figure, axis = plt.subplots(1)
@@ -66,8 +66,8 @@ def main():
             for job_index in range(no_of_jobs_metrop):
                 output_file_metrop = (
                     f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                    f"{no_of_observations_metrop}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_temp_eq_"
+                    f"{temperature:.4f}_job_{job_index}.npy")
                 if job_index == 0:
                     axis.plot(*np.load(output_file_metrop), color=colors[temperature_index],
                               linestyle=linestyles[job_index], linewidth=2,
@@ -84,8 +84,8 @@ def main():
                 if job_index < no_of_jobs_ecmc:
                     output_file_ecmc = (
                         f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                        f"{no_of_observations_ecmc}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_temp_eq_"
+                        f"{temperature:.4f}_job_{job_index}.npy")
                     inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
                                     linestyle=linestyles[job_index], linewidth=2)
     except IOError:
@@ -107,16 +107,15 @@ def main():
                     axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
                               linestyle=linestyles[job_index], linewidth=2)
                 np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                        f"sites_{no_of_observations_metrop}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_temp_eq_"
+                        f"{temperature:.4f}_job_{job_index}.npy",
                         cdfs_of_magnetisation_phase_metrop[job_index])
                 if job_index < no_of_jobs_ecmc:
                     inset_axis.plot(*cdfs_of_magnetisation_phase_ecmc[job_index], color=colors[temperature_index],
                                     linestyle=linestyles[job_index], linewidth=2)
                     np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                            f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_"
-                            f"sites_{no_of_observations_ecmc}_obs_temp_eq_{temperature:.4f}_job_{job_index}.npy",
-                            cdfs_of_magnetisation_phase_ecmc[job_index])
+                            f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_temp_eq"
+                            f"_{temperature:.4f}_job_{job_index}.npy", cdfs_of_magnetisation_phase_ecmc[job_index])
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
     handles, labels = axis.get_legend_handles_labels()
@@ -125,9 +124,8 @@ def main():
     legend.get_frame().set_lw(3)
     figure.tight_layout()
     figure.savefig(f"{output_directory}/magnetisation_phase_cdfs_{algorithm_name_metrop.replace('-', '_')}_and_ecmc_"
-                   f"{external_global_moves_string}_{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites_"
-                   f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.pdf",
-                   bbox_inches="tight")
+                   f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_metrop_obs_"
+                   f"{no_of_observations_ecmc}_ecmc_obs.pdf", bbox_inches="tight")
 
 
 def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,

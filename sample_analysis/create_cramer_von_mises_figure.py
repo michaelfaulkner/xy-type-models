@@ -3,7 +3,6 @@ import importlib
 import math
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.ticker import AutoMinorLocator
 import numpy as np
 import os
 import sys
@@ -28,13 +27,14 @@ def main():
                          linear_system_sizes]
     config_files_metrop_all = [f"config_files/cvm_figure/{value}x{value}_metrop_all_moves.txt" for value in
                                linear_system_sizes]
+    config_files_metrop_local = config_files_metrop_all
 
-    (algorithm_name_metrop, output_directory, _, no_of_equilibration_sweeps_metrop_local,
+    (algorithm_name_metrop, output_directory, _, _, no_of_equilibration_sweeps_metrop_local,
      no_of_observations_metrop_local, temperatures_cmv, use_external_global_moves_cmv, external_global_moves_string_cmv,
      no_of_jobs_metrop_local, max_no_of_cpus) = run_script.get_config_data(config_files_metrop_local[0])
-    (algorithm_name_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc, _
-     ) = run_script.get_config_data(config_files_ecmc[0])
-    (_, _, _, no_of_equilibration_sweeps_metrop_all, no_of_observations_metrop_all, temperatures_metrop_all,
+    (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
+     _) = run_script.get_config_data(config_files_ecmc[0])
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_all, no_of_observations_metrop_all, temperatures_metrop_all,
      use_external_global_moves_metrop_all, external_global_moves_string_metrop_all, no_of_jobs_metrop_all,
      _) = run_script.get_config_data(config_files_metrop_all[0])
     output_directory = output_directory.replace("/8x8_metrop_local_moves", "")

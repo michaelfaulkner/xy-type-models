@@ -37,8 +37,8 @@ def main(model):
     else:
         raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy, "
                         "hxy_literal or xy.")
-    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_equilibration_sweeps, _, temperatures, _, _,
-     no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
+    (algorithm_name, output_directory_local_moves, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _,
+     temperatures, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
     try:
         sample_getter.get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)
@@ -54,18 +54,18 @@ def main(model):
 
     if model == "hxy_literal":
         output_file_string = (f"{output_directory}/prb_91_155412_fig_2_literal_{algorithm_name.replace('-', '_')}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+                              f"{no_of_sites_string}.tsv")
         accept_rates_file_string = (f"{output_directory}/acceptance_rates_literal_{algorithm_name.replace('-', '_')}_"
-                                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+                                    f"{no_of_sites_string}.tsv")
         figure_file_string = (f"{output_directory}/prb_91_155412_fig_2_literal_{algorithm_name.replace('-', '_')}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf")
+                              f"{no_of_sites_string}.pdf")
     else:
         output_file_string = (f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+                              f"{no_of_sites_string}.tsv")
         accept_rates_file_string = (f"{output_directory}/acceptance_rates_{algorithm_name.replace('-', '_')}_"
-                                    f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.tsv")
+                                    f"{no_of_sites_string}.tsv")
         figure_file_string = (f"{output_directory}/prb_91_155412_fig_2_{algorithm_name.replace('-', '_')}_"
-                              f"{int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}_sites.pdf")
+                              f"{no_of_sites_string}.pdf")
 
     try:
         with open(output_file_string, "r") as output_file:
