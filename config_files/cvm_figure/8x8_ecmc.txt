@@ -2,12 +2,12 @@
 '../bc4-output/cvm_figure/8x8_ecmc'         output_directory
 8                                           integer_lattice_length
 10000                                       no_of_equilibration_sweeps
-10000                                       no_of_observations
+100000                                      no_of_observations
 0.1d0                                       initial_temperature
-1.5d0                                       final_temperature
-7                                           no_of_temperature_increments
+2.5d0                                       final_temperature
+12                                          no_of_temperature_increments
 .true.                                      randomise_initial_field_configuration
-.false.                                     use_external_global_moves
+.true.                                      use_external_global_moves
 .false.                                     calculate_potential_minimising_twists
-16                                          no_of_jobs
+64                                          no_of_jobs
 16                                          max_no_of_cpus
