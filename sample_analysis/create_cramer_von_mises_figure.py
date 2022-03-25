@@ -20,7 +20,7 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(4)]
+    linear_system_sizes = [2 ** (index + 3) for index in range(3)]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
     config_file_64x64_metrop_local = "config_files/cvm_figure/64x64_metrop_local_moves.txt"
@@ -119,7 +119,7 @@ def main():
                    bbox_inches="tight")
     figure.clear()
 
-    try:
+    '''try:
         with open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
                   "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
@@ -156,7 +156,7 @@ def main():
     axis.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
     axis.ylabel(r"$\omega_{n, \rm{all}}^2$ / $\omega_{n, \rm{all}}^2$", fontsize=15, labelpad=10)
     axis.tick_params(axis="both", which="major", labelsize=14, pad=10)
-    axis.savefig(f"cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.pdf", bbox_inches="tight")
+    axis.savefig(f"cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.pdf", bbox_inches="tight")'''
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
 
