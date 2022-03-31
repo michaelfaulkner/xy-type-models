@@ -326,6 +326,33 @@ def get_rotated_magnetisation_phase(output_directory, temperature, temperature_i
             + math.pi) % (2.0 * math.pi) - math.pi
 
 
+def get_magnetisation_squared(output_directory, temperature, temperature_index, no_of_sites):
+    """
+    Returns the sample of the magnetisation squared || m(x; temperature, no_of_sites) ||^2, where
+    m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation, with
+    x_i the position of particle i at the time of observation.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the magnetisation norm.  A one-dimensional numpy array of length no_of_observations.  The nth
+        element is a float corresponding to magnetisation norm measured at observation n.
+    """
+    return get_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites) ** 2
+
+
 def get_cartesian_magnetisation(output_directory, temperature, temperature_index, no_of_sites):
     """
     Returns the sample of the Cartesian magnetisation vector m(x; temperature, no_of_sites) =
