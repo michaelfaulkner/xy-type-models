@@ -31,9 +31,10 @@ def main(observable_string="rotated_magnetisation_phase"):
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
 
     figure, axes = plt.subplots(2, 1, figsize=(7.5, 7.1))
-    axes[1].set_xlabel(r"$\tau$", fontsize=20, labelpad=0)
+    # axes[1].set_xlabel(r"$\tau$", fontsize=20, labelpad=0)
+    axes[1].set_xlabel(r"$t_{\rm Metrop} / \Delta t_{\rm Metrop}$", fontsize=20, labelpad=0)
     axes[0].set_ylabel(r"$\bar{\phi}_m(\tau)$ / $s_{\phi_m}^2$", fontsize=20, labelpad=-10)
-    axes[1].set_ylabel(r"$\bar{\phi}_m(\tau)$", fontsize=20, labelpad=-10)
+    axes[1].set_ylabel(r"$\bar{\phi}_m(\tau)$ / $s_{\phi_m}^2$", fontsize=20, labelpad=-10)
     [axis.tick_params(which='major', width=3, length=7, labelsize=18) for axis in axes]
     [axis.locator_params(axis='x', nbins=4) for axis in axes]
     [axis.locator_params(axis='y', nbins=8) for axis in axes]
@@ -77,23 +78,37 @@ def main(observable_string="rotated_magnetisation_phase"):
                         f"{no_of_sites_string_2d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
                         np.array([sample_2d, running_mean_2d, running_variance_2d]))
 
-            if temperature_index == 0 and job_index == 0:
+            """Previous versions converted MC time to physical time, using the following commented-out code.  I then 
+            realised that the only difference (in terms of symmetry breaking) between the 2D and 3D cases is the 
+            absence of a singular limit.  But their equivalence (otherwise) means that we don't need to compare the 2D 
+            and 3D sample means vs time, so I abandoned this figure and decided not to invest time in finding the 
+            optimal temperatures to compares physical time across all fours phases that encompass the 2D and 3D 
+            systems."""
+
+            '''if temperature_index == 0 and job_index == 0:
                 max_total_physical_time = physical_time_step_2d * (len(sample_2d) - 1)
             reduced_running_variance_2d = running_variance_2d[:int(max_total_physical_time / physical_time_step_2d) + 1]
             reduced_running_mean_2d = (running_mean_2d[:int(max_total_physical_time / physical_time_step_2d) + 1] /
                                        reduced_running_variance_2d[-1])
-
             if job_index == 0:
                 axes[0].plot(np.arange(len(reduced_running_mean_2d)) * physical_time_step_2d, reduced_running_mean_2d,
                              color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
                 axes[0].plot(np.arange(len(reduced_running_mean_2d)) * physical_time_step_2d, reduced_running_mean_2d,
-                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])'''
+
+            if job_index == 0:
+                axes[0].plot(np.arange(len(running_mean_2d)), running_mean_2d / running_variance_2d[-1],
+                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[job_index],
+                             label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+            else:
+                axes[0].plot(np.arange(len(running_mean_2d)), running_mean_2d / running_variance_2d[-1],
+                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[job_index])
 
     for temperature_index, temperature in enumerate(temperatures_3d):
-        observable_string = "magnetisation_phase"
-        get_sample_method = getattr(sample_getter, "get_magnetisation_phase")
+        observable_string = "rotated_magnetisation_phase"
+        get_sample_method = getattr(sample_getter, "get_rotated_magnetisation_phase")
         print(f"Temperature = {temperature:.4f}")
         try:
             physical_time_step_3d = np.loadtxt(
@@ -112,12 +127,8 @@ def main(observable_string="rotated_magnetisation_phase"):
         for job_index in range(no_of_jobs):
             try:
                 # first, attempt to open file containing the sample, running mean and running variance...
-                '''sample_3d, running_mean_3d, running_variance_3d = np.load(
+                sample_3d, running_mean_3d, running_variance_3d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
-                    f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                    f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy")'''
-                sample_3d, running_mean_3d = np.load(
-                    f"{output_directory}/{observable_string}_sample_and_running_mean_"
                     f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
                     f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy")
             except IOError:
@@ -127,34 +138,25 @@ def main(observable_string="rotated_magnetisation_phase"):
                 if not sample_is_one_dimensional:
                     sample_3d = sample_3d.transpose()[0]
                 running_mean_3d = np.array([np.mean(sample_3d[:index + 1]) for index in range(len(sample_3d))])
-                # running_variance_3d = np.array([np.var(sample_3d[:index + 1]) for index in range(len(sample_3d))])
-                '''np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
+                running_variance_3d = np.array([np.var(sample_3d[:index + 1]) for index in range(len(sample_3d))])
+                np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
                         f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
-                        np.array([sample_3d, running_mean_3d, running_variance_3d]))'''
-                np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_"
-                        f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                        f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
-                        np.array([sample_3d, running_mean_3d]))
-
-            if temperature_index == 0 and job_index == 0:
-                max_total_physical_time = physical_time_step_3d * (len(sample_3d) - 1)
-            # reduced_running_variance_3d = running_variance_3d[:int(max_total_physical_time / physical_time_step_3d) + 1]
-            reduced_running_mean_3d = running_mean_3d[:int(max_total_physical_time / physical_time_step_3d) + 1]
-            print(running_mean_3d)
+                        np.array([sample_3d, running_mean_3d, running_variance_3d]))
 
             if job_index == 0:
-                axes[1].plot(np.arange(len(reduced_running_mean_3d)) * physical_time_step_3d, reduced_running_mean_3d,
+                axes[1].plot(np.arange(len(running_mean_3d)), running_mean_3d / running_variance_3d[-1],
                              color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
-                axes[1].plot(np.arange(len(reduced_running_mean_3d)) * physical_time_step_3d, reduced_running_mean_3d,
+                axes[1].plot(np.arange(len(running_mean_3d)), running_mean_3d / running_variance_3d[-1],
                              color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
 
     figure.tight_layout()
-    legend = axes[0].legend(loc="upper left", fontsize=12)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
+    legends = [axes[0].legend(loc="upper left", fontsize=12),
+               axes[1].legend(loc="lower right", fontsize=12, title = "2D / 3D case in upper / lower panel")]
+    [legend.get_frame().set_edgecolor("k") for legend in legends]
+    [legend.get_frame().set_lw(3) for legend in legends]
     figure.savefig(f"{output_directory}/{observable_string}_running_means_vs_time_2D_vs_3D.pdf", bbox_inches="tight")
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
