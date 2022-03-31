@@ -23,6 +23,7 @@ no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
 allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites))
+allocate(get_up_neighbour(no_of_sites), get_down_neighbour(no_of_sites))
 
 return
 end subroutine read_config_file
