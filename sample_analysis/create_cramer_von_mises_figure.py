@@ -31,7 +31,7 @@ def main():
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
      _) = run_script.get_config_data(config_files_ecmc[0])
     (_, sample_directory_64x64_metrop_local, _, _, _, _, _, _, external_global_moves_string_64x64_metrop_local, _, _
-     ) = run_script.get_config_data(config_file_64x64_metrop_local)[1]
+     ) = run_script.get_config_data(config_file_64x64_metrop_local)
     output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
 
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
@@ -67,7 +67,7 @@ def main():
             twist_probabilities, twist_probability_errors = [], []
             for temperature_index, temperature in enumerate(temperatures_cvm):
                 twist_probability_vs_job = pool.starmap(sample_getter.get_acceptance_rates, [
-                    (f"{output_directory}/{length}x{length}_metrop_all_moves/job_{job_index}", temperature_index)
+                    (f"{output_directory}/{length}x{length}_metrop/job_{job_index}", temperature_index)
                     for job_index in range(no_of_jobs_metrop)])
                 twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
                     twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
