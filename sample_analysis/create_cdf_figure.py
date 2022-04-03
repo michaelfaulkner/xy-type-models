@@ -20,58 +20,111 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    config_file_metrop = "config_files/cdf_figure/metropolis.txt"
-    config_file_ecmc = "config_files/cdf_figure/ecmc.txt"
-    (algorithm_name_metrop, output_directory_metrop, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures, use_external_global_moves, external_global_moves_string,
-     no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(config_file_metrop)
-    (algorithm_name_ecmc, output_directory_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _,
-     _, no_of_jobs_ecmc, _) = run_script.get_config_data(config_file_ecmc)
-    output_directory = output_directory_metrop.replace("/metropolis", "")
+    matplotlib.rcParams["axes.unicode_minus"] = False
+    config_file_64x64_metrop = "config_files/cdf_figure/64x64_metropolis.txt"
+    config_file_64x64_ecmc = "config_files/cdf_figure/64x64_ecmc.txt"
+    config_file_256x256_metrop = "config_files/cdf_figure/256x256_metropolis.txt"
+    config_file_256x256_ecmc = "config_files/cdf_figure/256x256_ecmc.txt"
+    (algorithm_name_metrop, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64,
+     no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves,
+     external_global_moves_string, no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(
+        config_file_64x64_metrop)
+    (algorithm_name_ecmc, sample_directory_64x64_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
+     _, _, _, no_of_jobs_ecmc, _) = run_script.get_config_data(config_file_64x64_ecmc)
+    (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _, _, _, _, _
+     ) = run_script.get_config_data(config_file_256x256_metrop)
+    sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
+    output_directory = sample_directory_64x64_metrop.replace("/64x64_metropolis", "")
 
-    figure, axis = plt.subplots(1)
-    axis.tick_params(which='both', width=3)
-    axis.tick_params(which='major', length=7, labelsize=18, pad=10)
-    axis.tick_params(which='minor', length=4)
-    axis.set_xlim([-math.pi, math.pi])
-    axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
-    axis.set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
-    axis.set_xlabel(r"$x$", fontsize=20, labelpad=2)
-    axis.set_ylim(0.0, 1.0)
-    axis.tick_params(which='major', width=3, length=7, labelsize=18, pad=10)
-    axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=20, labelpad=-30)
-    axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
-    axis.yaxis.set_major_formatter('{x:.1f}')
-    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    figure, axes = plt.subplots(1, 3, figsize=(15, 4.25))
+    alphabetic_labels = ["(a)", "(b)", "(c)"]
+    [axis.text(-0.25, -0.25, f"{alphabetic_labels[axis_index]}", fontsize=18) for axis_index, axis in enumerate(axes)]
+    # plt.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout(w_pad=-5)
+    for axis_index, axis in enumerate(axes):
+        axis.tick_params(which='both', direction='in', width=3)
+        axis.tick_params(which='major', length=7, labelsize=18, pad=5)
+        axis.tick_params(which='minor', length=4)
+        axis.set_xlim([-math.pi, math.pi])
+        axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
+        axis.set_xticklabels(["", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", ""])
+        axis.set_xlabel(r"$x$", fontsize=20, labelpad=-1)
+        axis.set_ylim(0.0, 1.0)
+        axis.yaxis.set_major_locator(ticker.MultipleLocator(base=0.5))
+        if axis_index == 0:
+            # axis.tick_params(which='major', width=3, length=7, labelsize=18, pad=10)
+            axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=20, labelpad=5)
+            axis.yaxis.set_major_formatter('{x:.1f}')
+        else:
+            axis.axes.yaxis.set_ticklabels([])
+        [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    inset_axis = plt.axes([0.145, 0.68, 0.24, 0.24])
+    inset_axis = plt.axes([0.385, 0.71, 0.09, 0.22])
+    inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=11)
     inset_axis.set_xlim([-math.pi, math.pi])
     inset_axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
-    inset_axis.set_xticklabels([r"$-\pi$", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", r"$\pi$"])
-    inset_axis.set_xlabel(r"$x$", fontsize=12, labelpad=2)
+    inset_axis.set_xticklabels(["", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", ""])
+    inset_axis.set_xlabel(r"$x$", fontsize=12, labelpad=-1)
     inset_axis.set_ylim(0.0, 1.0)
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
     inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=12, labelpad=-10)
     inset_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     inset_axis.yaxis.set_major_formatter('{x:.1f}')
-    inset_axis.tick_params(which='major', width=3, labelsize=10)
+    inset_axis.yaxis.set_minor_locator(ticker.MultipleLocator(base=0.5))
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["red", "black"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
 
+    axes[0].plot([-math.pi, math.pi], [0.0, 1.0], linestyle="-", color="black", linewidth=3, label="symmetric phase")
+    try:
+        heaviside_centres = np.load(f"{output_directory}/heaviside_centres.npy")
+    except IOError:
+        heaviside_centres = [np.random.uniform(-math.pi, math.pi) for _ in range(8)]
+        np.save(f"{output_directory}/heaviside_centres.npy", np.array(heaviside_centres))
+    [axes[0].plot([heaviside_centre, heaviside_centre], [0.0, 1.0], color="red",
+                  linestyle=linestyles[realisation_index], linewidth=3, label="broken-symmetry phase")
+     for realisation_index, heaviside_centre in enumerate(heaviside_centres)]
+
+    start_time = time.time()
+    make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
+                               no_of_sites_64x64, no_of_sites_string_64x64, temperatures,
+                               no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
+                               no_of_observations_ecmc, no_of_observations_metrop, no_of_jobs_ecmc, no_of_jobs_metrop,
+                               output_directory, sample_directory_64x64_ecmc, sample_directory_64x64_metrop, axes,
+                               inset_axis, linestyles, colors, 1)
+    make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
+                               no_of_sites_256x256, no_of_sites_string_256x256, temperatures,
+                               no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
+                               no_of_observations_ecmc, no_of_observations_metrop, no_of_jobs_ecmc, no_of_jobs_metrop,
+                               output_directory, sample_directory_256x256_ecmc, sample_directory_256x256_metrop, axes,
+                               inset_axis, linestyles, colors, 2)
+
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
+    handles, labels = axes[1].get_legend_handles_labels()
+    legend = axes[1].legend(reversed(handles), reversed(labels), loc="lower right", fontsize=14)
+    legend.get_frame().set_edgecolor("k")
+    legend.get_frame().set_lw(3)
+    figure.savefig(f"{output_directory}/magnetisation_phase_cdfs.pdf", bbox_inches="tight")
+
+
+def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string, no_of_sites,
+                               no_of_sites_string, temperatures, no_of_equilibration_sweeps_ecmc,
+                               no_of_equilibration_sweeps_metrop, no_of_observations_ecmc, no_of_observations_metrop,
+                               no_of_jobs_ecmc, no_of_jobs_metrop, output_directory, sample_directory_ecmc,
+                               sample_directory_metrop, axes, inset_axis, linestyles, colors, subplot_index):
     try:
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
             for job_index in range(no_of_jobs_metrop):
                 output_file_metrop = (
                     f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_temp_eq_"
-                    f"{temperature:.4f}_job_{job_index}.npy")
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_"
+                    f"temp_eq_{temperature:.4f}_job_{job_index}.npy")
                 if job_index == 0:
-                    axis.plot(*np.load(output_file_metrop), color=colors[temperature_index],
-                              linestyle=linestyles[job_index], linewidth=2,
-                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                    axes[subplot_index].plot(*np.load(output_file_metrop), color=colors[temperature_index],
+                                             linestyle=linestyles[job_index], linewidth=2,
+                                             label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                     """use alternative CDF calculation in 
                         markov_chain_diagnostics.get_cumulative_distribution() to use fill_between() in the 
                         following line"""
@@ -79,53 +132,45 @@ def main():
                         axis.fill_between(cdf[0], cdf[1], np.arange(0.0, 1.0, 1.0 / float(len(cdf[0]))), 
                                           color='green')"""
                 else:
-                    axis.plot(*np.load(output_file_metrop), color=colors[temperature_index],
-                              linestyle=linestyles[job_index], linewidth=2)
+                    axes[subplot_index].plot(*np.load(output_file_metrop), color=colors[temperature_index],
+                                             linestyle=linestyles[job_index], linewidth=2)
                 if job_index < no_of_jobs_ecmc:
                     output_file_ecmc = (
                         f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_temp_eq_"
-                        f"{temperature:.4f}_job_{job_index}.npy")
-                    inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
-                                    linestyle=linestyles[job_index], linewidth=2)
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
+                        f"temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    if subplot_index == 1:
+                        inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
+                                        linestyle=linestyles[job_index], linewidth=2)
     except IOError:
-        start_time = time.time()
         for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
             cdfs_of_magnetisation_phase_metrop = [get_cdf_of_magnetisation_phase(
-                f"{output_directory_metrop}/job_{job_index}", temperature, temperature_index, no_of_sites,
+                f"{sample_directory_metrop}/job_{job_index}", temperature, temperature_index, no_of_sites,
                 no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop)]
             cdfs_of_magnetisation_phase_ecmc = [get_cdf_of_magnetisation_phase(
-                f"{output_directory_ecmc}/job_{job_index}", temperature, temperature_index, no_of_sites,
+                f"{sample_directory_ecmc}/job_{job_index}", temperature, temperature_index, no_of_sites,
                 no_of_equilibration_sweeps_ecmc) for job_index in range(no_of_jobs_ecmc)]
             for job_index in range(no_of_jobs_metrop):
                 if job_index == 0:
-                    axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
-                              linestyle=linestyles[job_index], linewidth=2,
-                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
+                    axes[subplot_index].plot(*cdfs_of_magnetisation_phase_metrop[job_index],
+                                             color=colors[temperature_index], linestyle=linestyles[job_index],
+                                             linewidth=2, label=fr"$1 / (\beta J)$ = {temperature:.2f}")
                 else:
-                    axis.plot(*cdfs_of_magnetisation_phase_metrop[job_index], color=colors[temperature_index],
-                              linestyle=linestyles[job_index], linewidth=2)
+                    axes[subplot_index].plot(*cdfs_of_magnetisation_phase_metrop[job_index],
+                                             color=colors[temperature_index], linestyle=linestyles[job_index],
+                                             linewidth=2)
                 np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_temp_eq_"
-                        f"{temperature:.4f}_job_{job_index}.npy",
-                        cdfs_of_magnetisation_phase_metrop[job_index])
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_"
+                        f"temp_eq_{temperature:.4f}_job_{job_index}.npy", cdfs_of_magnetisation_phase_metrop[job_index])
                 if job_index < no_of_jobs_ecmc:
-                    inset_axis.plot(*cdfs_of_magnetisation_phase_ecmc[job_index], color=colors[temperature_index],
-                                    linestyle=linestyles[job_index], linewidth=2)
                     np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                            f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_temp_eq"
-                            f"_{temperature:.4f}_job_{job_index}.npy", cdfs_of_magnetisation_phase_ecmc[job_index])
-        print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
-
-    handles, labels = axis.get_legend_handles_labels()
-    legend = axis.legend(reversed(handles), reversed(labels), loc="lower right", fontsize=15)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
-    figure.tight_layout()
-    figure.savefig(f"{output_directory}/magnetisation_phase_cdfs_{algorithm_name_metrop.replace('-', '_')}_and_ecmc_"
-                   f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_metrop_obs_"
-                   f"{no_of_observations_ecmc}_ecmc_obs.pdf", bbox_inches="tight")
+                            f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
+                            f"temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                            cdfs_of_magnetisation_phase_ecmc[job_index])
+                    if subplot_index == 1:
+                        inset_axis.plot(*cdfs_of_magnetisation_phase_ecmc[job_index], color=colors[temperature_index],
+                                        linestyle=linestyles[job_index], linewidth=2)
 
 
 def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
