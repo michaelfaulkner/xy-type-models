@@ -440,6 +440,68 @@ def get_magnetic_susceptibility(output_directory, temperature, temperature_index
     return no_of_sites * (magnetisation_norm - np.mean(magnetisation_norm)) ** 2 / temperature
 
 
+def get_cartesian_relative_magnetisation(output_directory, temperature, temperature_index, no_of_sites):
+    """
+    Returns the sample of the Cartesian relative magnetisation vector tilde{m}(x; temperature, no_of_sites) =
+    m / sigma_{|| m ||}, where m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the
+    Cartesian magnetisation (with x_i the position of particle i at the time of observation) and sigma_{|| m ||} is
+    the standard deviation of its norm.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the Cartesian relative magnetisation.  A two-dimensional numpy array of shape
+        (no_of_observations, 2).  The nth sub-array is the Cartesian magnetisation vector measured at observation n;
+        its first / second element is a float corresponding to the x / y component of the relative Cartesian
+        magnetisation vector measured at observation n.
+    """
+    cartesian_magnetisation = get_cartesian_magnetisation(output_directory, temperature, temperature_index, no_of_sites)
+    return cartesian_magnetisation / np.std(cartesian_magnetisation)
+
+
+def get_relative_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites):
+    """
+    Returns the sample of the relative magnetisation norm || tilde{m}(x; temperature, no_of_sites) ||, where
+    tilde{m}(x; temperature, no_of_sites) = m / sigma_{|| m ||} is the Cartesian relative magnetisation,
+    m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation (with
+    x_i the position of particle i at the time of observation) and sigma_{|| m ||} is the standard deviation of its
+    norm.
+
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the relative magnetisation norm.  A one-dimensional numpy array of length no_of_observations.
+        The nth element is a float corresponding to the relative magnetisation norm measured at observation n.
+    """
+    return np.linalg.norm(get_cartesian_relative_magnetisation(output_directory, temperature, temperature_index,
+                                                               no_of_sites), axis=1)
+
+
 """XY and HXY emergent-field-based methods"""
 
 
