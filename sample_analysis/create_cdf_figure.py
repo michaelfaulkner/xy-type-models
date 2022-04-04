@@ -40,7 +40,7 @@ def main():
     alphabetic_labels = ["(a)", "(b)", "(c)"]
     [axis.text(-0.25, -0.25, f"{alphabetic_labels[axis_index]}", fontsize=18) for axis_index, axis in enumerate(axes)]
     # plt.subplots_adjust(wspace=0, hspace=0)
-    figure.tight_layout(w_pad=-5)
+    figure.tight_layout(w_pad=-6.0)
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=18, pad=5)
@@ -59,7 +59,7 @@ def main():
             axis.axes.yaxis.set_ticklabels([])
         [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    inset_axis = plt.axes([0.385, 0.71, 0.09, 0.22])
+    inset_axis = plt.axes([0.0745, 0.71, 0.09, 0.22])
     inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=11)
     inset_axis.set_xlim([-math.pi, math.pi])
     inset_axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
@@ -77,35 +77,36 @@ def main():
     colors = ["red", "black"]
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
 
-    axes[0].plot([-math.pi, math.pi], [0.0, 1.0], linestyle="-", color="black", linewidth=3, label="symmetric phase")
-    try:
-        heaviside_centres = np.load(f"{output_directory}/heaviside_centres.npy")
-    except IOError:
-        heaviside_centres = [np.random.uniform(-math.pi, math.pi) for _ in range(8)]
-        np.save(f"{output_directory}/heaviside_centres.npy", np.array(heaviside_centres))
-    [axes[0].plot([heaviside_centre, heaviside_centre], [0.0, 1.0], color="red",
-                  linestyle=linestyles[realisation_index], linewidth=3, label="broken-symmetry phase")
-     for realisation_index, heaviside_centre in enumerate(heaviside_centres)]
-
     start_time = time.time()
     make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
                                no_of_sites_64x64, no_of_sites_string_64x64, temperatures,
                                no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
                                no_of_observations_ecmc, no_of_observations_metrop, no_of_jobs_ecmc, no_of_jobs_metrop,
                                output_directory, sample_directory_64x64_ecmc, sample_directory_64x64_metrop, axes,
-                               inset_axis, linestyles, colors, 1)
+                               inset_axis, linestyles, colors, 0)
     make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
                                no_of_sites_256x256, no_of_sites_string_256x256, temperatures,
                                no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
                                no_of_observations_ecmc, no_of_observations_metrop, no_of_jobs_ecmc, no_of_jobs_metrop,
                                output_directory, sample_directory_256x256_ecmc, sample_directory_256x256_metrop, axes,
-                               inset_axis, linestyles, colors, 2)
-
+                               inset_axis, linestyles, colors, 1)
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
-    handles, labels = axes[1].get_legend_handles_labels()
-    legend = axes[1].legend(reversed(handles), reversed(labels), loc="lower right", fontsize=14)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
+
+    axes[2].plot([-math.pi, math.pi], [0.0, 1.0], linestyle="-", color="black", linewidth=2, label="symmetric phase")
+    try:
+        heaviside_centres = np.load(f"{output_directory}/heaviside_centres.npy")
+    except IOError:
+        heaviside_centres = [np.random.uniform(-math.pi, math.pi) for _ in range(8)]
+        np.save(f"{output_directory}/heaviside_centres.npy", np.array(heaviside_centres))
+    [axes[2].plot([heaviside_centre, heaviside_centre], [0.0, 1.0], color="red",
+                  linestyle=linestyles[realisation_index], linewidth=2, label="broken-symmetry phase")
+     for realisation_index, heaviside_centre in enumerate(heaviside_centres)]
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    legends = [axes[0].legend(reversed(handles), reversed(labels), loc="lower right", fontsize=14),
+               axes[1].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=11)]
+    [legend.get_frame().set_edgecolor("k") for legend in legends]
+    [legend.get_frame().set_lw(3) for legend in legends]
     figure.savefig(f"{output_directory}/magnetisation_phase_cdfs.pdf", bbox_inches="tight")
 
 
