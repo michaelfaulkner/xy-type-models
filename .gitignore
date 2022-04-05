@@ -1,10 +1,11 @@
 # Sample files
 *.dat
-!*_reference_sample.dat
 *.csv
 *.tsv
 *.npy
 *.npz
+!*_reference_sample.npy
+!*xy_snapshot*.npy
 
 # Prerequisites
 *.d

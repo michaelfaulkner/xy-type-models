@@ -1,0 +1,14 @@
+'3dxy-gaussian-noise-metropolis'        algorithm_name
+'output/convergence_tests/3dxy'         output_directory
+4                                       integer_lattice_length
+10000                                   no_of_equilibration_sweeps
+100000                                  no_of_observations
+0.5d0                                   initial_temperature
+0.5d0                                   final_temperature
+0                                       no_of_temperature_increments
+1.0d0    	                            width_of_proposal_interval (initial)
+0.44d0		                            target_acceptance_rate_of_field_rotations
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+1                                       no_of_jobs
+1                                       max_no_of_cpus
