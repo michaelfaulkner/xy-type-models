@@ -3,14 +3,13 @@
 # xy-type-models
 
 xy-type-models is an open-source Fortran-Python application that implements the event-chain and Metropolis Monte Carlo 
-algorithms for the simulation of two-dimensional XY-type models in statistical physics.
+algorithms for the simulation of XY-type models in statistical physics.
 
-Event-chain and Metropolis simulation is available for the XY and harmonic XY (HXY) spin models.  Metropolis simulation 
-is available for the Maggs lattice-field electrolyte model in the grand canonical ensemble (for particles). Each model 
-is defined on a two-dimensional square lattice. 
-
-We provide uniform- and Gaussian-noise versions of the Metropolis algorithm for the XY and HXY models. The latter are 
-labelled appropriately.
+Event-chain and Metropolis simulation is available for the two-dimensional XY and harmonic XY (HXY) spin models.  Both 
+uniform- and Gaussian-noise versions of the Metropolis algorithm are provided. Uniform-noise Metropolis simulation is 
+available for the two-dimensional Maggs lattice-field electrolyte model in the grand canonical ensemble (for particles).
+Gaussian-noise Metropolis simulation is available for the three-dimensional XY model. Each model is defined on a square 
+or cubic lattice. Unless otherwise stated, the two-dimensional XY model is assumed.
 
 We provide multivalued and elementary versions of the lattice-field electrolyte. In the former, the charge value at 
 each lattice site can be any integer multiple of the elementary charge, q; in the latter, the charge values are zero or 
@@ -240,6 +239,25 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 4                                                           max_no_of_cpus
 ```
 
+### 3dxy configuration file (an example)
+
+```
+'3dxy-gaussian-noise-metropolis'        algorithm_name
+'output/convergence_tests/3dxy'         output_directory
+4                                       integer_lattice_length
+10000                                   no_of_equilibration_sweeps
+100000                                  no_of_observations
+0.5d0                                   initial_temperature
+0.5d0                                   final_temperature
+0                                       no_of_temperature_increments
+1.0d0    	                            width_of_proposal_interval (initial)
+0.44d0		                            target_acceptance_rate_of_field_rotations
+.false.                                 randomise_initial_field_configuration
+.false.                                 use_external_global_moves
+1                                       no_of_jobs
+1                                       max_no_of_cpus
+```
+
 
 ## Convergence tests
 
@@ -284,16 +302,17 @@ write and contains a lot of functionality).
 In the top directory, the `make` command runs the [`makefile`](makefile) contained there. By running eight different 
 makefiles, this creates all eight executables (`xy_ecmc_algorithm.exe`, `xy_metropolis_algorithm.exe`, 
 `xy_gaussian_noise_metropolis_algorithm.exe`, `hxy_ecmc_algorithm.exe`, `hxy_metropolis_algorithm.exe`, 
-`hxy_gaussian_noise_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe` and 
-`multivalued_electrolyte_algorithm.exe`) and stores them in a new directory called `executables`.
+`hxy_gaussian_noise_metropolis_algorithm.exe`, `elementary_electrolyte_algorithm.exe`, 
+`multivalued_electrolyte_algorithm.exe` and `3dxy_gaussian_noise_metropolis_algorithm.exe`) and stores them in a new 
+directory called `executables`.
 
 Each makefile is located in the youngest child directory corresponding to the relevant algorithm, e.g., the 
 [`makefile`](src/xy_models/xy/ecmc/makefile) for `xy_ecmc_algorithm.exe` is contained in [the xy-ecmc directory](
 src/xy_models/xy/ecmc). To create a single Fortran executable, open your terminal, navigate to the top xy-type-models 
 directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-noise-metropolis`, `make hxy-ecmc`, 
-`make hxy-metropolis`, `make hxy-gaussian-noise-metropolis`, `make elementary-electrolyte` or 
-`make multivalued-electrolyte`. This will create the corresponding executable and store it in the `executables` 
-directory.
+`make hxy-metropolis`, `make hxy-gaussian-noise-metropolis`, `make elementary-electrolyte`, 
+`make multivalued-electrolyte` or `make 3dxy`. This will create the corresponding executable and store it in the 
+`executables` directory.
 
 
 ## Citation
