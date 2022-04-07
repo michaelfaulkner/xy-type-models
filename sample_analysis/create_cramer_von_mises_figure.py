@@ -87,9 +87,9 @@ def main():
             twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
             twist_probabilities, twist_probability_errors = [], []
             for temperature_index, temperature in enumerate(temperatures_cvm):
-                twist_probability_vs_job = pool.starmap(sample_getter.get_acceptance_rates, [
+                twist_probability_vs_job = np.array(pool.starmap(sample_getter.get_acceptance_rates, [
                     (f"{output_directory}/{length}x{length}_metrop/job_{job_index}", temperature_index)
-                    for job_index in range(no_of_jobs_metrop)])
+                    for job_index in range(no_of_jobs_metrop)]))[:, 2]
                 twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
                     twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
                 twist_probabilities.append(twist_probability)
