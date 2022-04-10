@@ -148,16 +148,17 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.spines['left'].set_linewidth(3), axis.spines['bottom'].set_linewidth(3)
 
     minor_ticks = np.arange(-0.75, 1.0, 0.25)
-    axis.set_xticks([-1.0, 1.0])
     axis.xaxis.set_major_formatter('{x:.1f}')
     axis.set_xticks(minor_ticks, minor=True)
     axis.yaxis.set_major_formatter('{x:.1f}')
     if alphabetic_label is None:
+        axis.set_xticks([-1.0, 0.0, 1.0])
         axis.set_yticks(np.arange(0.25, 1.0, 0.25), minor=True)
         axis.set_yticks([1.0])
         axis.set_xlabel(r"$m_x$", fontsize=20), axis.set_ylabel(r"$m_y$", fontsize=20, rotation="horizontal")
         axis.xaxis.set_label_coords(1.01, 0.15), axis.yaxis.set_label_coords(0.56, 0.925)
     else:
+        axis.set_xticks([-1.0, 1.0])
         axis.set_yticks(minor_ticks, minor=True)
         axis.set_yticks([-1.0, 1.0])
         axis.set_xlabel(r"$m_x$", fontsize=30), axis.set_ylabel(r"$m_y$", fontsize=30, rotation="horizontal")

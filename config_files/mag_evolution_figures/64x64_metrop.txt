@@ -1,5 +1,5 @@
 'xy-gaussian-noise-metropolis'                              algorithm_name
-'../bc4-output/mag_evolution_figure/64x64_metrop'           output_directory
+'../bc4-output/mag_evolution_figures/64x64_metrop'          output_directory
 64                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
 500000                                                      no_of_observations
