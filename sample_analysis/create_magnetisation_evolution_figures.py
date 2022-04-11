@@ -19,13 +19,13 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    config_file_16x16_metrop = "config_files/mag_evolution_figure/16x16_metrop.txt"
-    config_file_64x64_metrop = "config_files/mag_evolution_figure/64x64_metrop.txt"
-    config_file_256x256_metrop = "config_files/mag_evolution_figure/256x256_metrop.txt"
-    config_file_16x16_ecmc = "config_files/mag_evolution_figure/16x16_ecmc.txt"
-    config_file_64x64_ecmc = "config_files/mag_evolution_figure/64x64_ecmc.txt"
-    config_file_256x256_ecmc = "config_files/mag_evolution_figure/256x256_ecmc.txt"
-    config_file_256x256_metrop_with_twists = "config_files/mag_evolution_figure/256x256_metrop_with_twists.txt"
+    config_file_16x16_metrop = "config_files/mag_evolution_figures/16x16_metrop.txt"
+    config_file_64x64_metrop = "config_files/mag_evolution_figures/64x64_metrop.txt"
+    config_file_256x256_metrop = "config_files/mag_evolution_figures/256x256_metrop.txt"
+    config_file_16x16_ecmc = "config_files/mag_evolution_figures/16x16_ecmc.txt"
+    config_file_64x64_ecmc = "config_files/mag_evolution_figures/64x64_ecmc.txt"
+    config_file_256x256_ecmc = "config_files/mag_evolution_figures/256x256_ecmc.txt"
+    config_file_256x256_metrop_with_twists = "config_files/mag_evolution_figures/256x256_metrop_with_twists.txt"
 
     (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
@@ -42,9 +42,10 @@ def main():
      ) = run_script.get_config_data(config_file_16x16_ecmc)
     sample_directory_64x64_ecmc = run_script.get_config_data(config_file_64x64_ecmc)[1]
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
-    (_, sample_directory_256x256_metrop_with_twists, _, _, _, _, temperatures_256x256_metrop_with_twists,
-     use_external_global_moves_256x256_metrop_with_twists, external_global_moves_string_256x256_metrop_with_twists,
-     no_of_jobs_metrop_with_twists, _) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
+    (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
+     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
+     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _
+     ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
     alphabetic_label_16x16_metrop = "(a)"
@@ -100,7 +101,7 @@ def main():
         figure, axis = plt.subplots(1)
         make_subplot(axis, algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
                      no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
-                     no_of_observations_metrop, temperatures_256x256_metrop_with_twists,
+                     no_of_observations_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
                      use_external_global_moves_256x256_metrop_with_twists,
                      external_global_moves_string_256x256_metrop_with_twists, None, job_index)
         figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_"
