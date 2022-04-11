@@ -5,39 +5,49 @@ integer :: i, n, no_of_external_twists_to_minimise_potential(2)
 double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 
-no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
-non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
-sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-sum_of_squared_emergent_field = (/ 0.0d0, 0.0d0 /)
-
-do i = 1, no_of_sites
-    non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
-    non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
-    sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field(i, 2)
-    sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field(i, 1)
-    do n = 1, vacuum_permittivity_sum_cutoff
-        sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
-                                                            (-1.0d0) ** (n + 1) * cos(dfloat(n) * emergent_field(i, 2))
-        sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
-                                                            (-1.0d0) ** (n + 1) * cos(dfloat(n) * emergent_field(i, 1))
+if (measure_magnetisation) then
+    non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
+        non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
     end do
-    sum_of_squared_emergent_field(1) = sum_of_squared_emergent_field(1) + emergent_field(i, 1) ** 2
-    sum_of_squared_emergent_field(2) = sum_of_squared_emergent_field(2) + emergent_field(i, 2) ** 2
-end do
-sum_of_2nd_derivative_of_potential(1) = 2.0d0 * sum_of_2nd_derivative_of_potential(1)
-sum_of_2nd_derivative_of_potential(2) = 2.0d0 * sum_of_2nd_derivative_of_potential(2)
-potential = 0.5d0 * (sum_of_squared_emergent_field(1) + sum_of_squared_emergent_field(2))
-
-write(20, 100) potential
-write(30, 200) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
-write(40, 200) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
-write(50, 200) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
-if (use_external_global_moves) then
-    write(60, 300) external_global_moves(1), external_global_moves(2)
+    write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
 end if
 
-if (calculate_potential_minimising_twists) then
+if (measure_helicity) then
+    sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+    sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field(i, 2)
+        sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field(i, 1)
+        do n = 1, vacuum_permittivity_sum_cutoff
+            sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
+                                                            (-1.0d0) ** (n + 1) * cos(dfloat(n) * emergent_field(i, 2))
+            sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
+                                                            (-1.0d0) ** (n + 1) * cos(dfloat(n) * emergent_field(i, 1))
+        end do
+    end do
+    sum_of_2nd_derivative_of_potential(1) = 2.0d0 * sum_of_2nd_derivative_of_potential(1)
+    sum_of_2nd_derivative_of_potential(2) = 2.0d0 * sum_of_2nd_derivative_of_potential(2)
+    write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
+    write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
+end if
+
+if ((measure_potential).or.(measure_potential_minimising_twists)) then
+    sum_of_squared_emergent_field = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        sum_of_squared_emergent_field(1) = sum_of_squared_emergent_field(1) + emergent_field(i, 1) ** 2
+        sum_of_squared_emergent_field(2) = sum_of_squared_emergent_field(2) + emergent_field(i, 2) ** 2
+    end do
+end if
+
+if (measure_potential) then
+    potential = 0.5d0 * (sum_of_squared_emergent_field(1) + sum_of_squared_emergent_field(2))
+    write(60, 200) potential
+end if
+
+if (measure_potential_minimising_twists) then
+    no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
     call potential_minimising_twists_calculation_x(no_of_external_twists_to_minimise_potential, 1, &
                                                         sum_of_squared_emergent_field) ! x direction; positive twists
     call potential_minimising_twists_calculation_x(no_of_external_twists_to_minimise_potential, -1, &
@@ -49,8 +59,12 @@ if (calculate_potential_minimising_twists) then
     write(70, 300) no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
 end if
 
-100 format(ES25.14)
-200 format(ES25.14, ",", ES25.14)
+if (use_external_global_moves) then
+    write(80, 300) external_global_moves(1), external_global_moves(2)
+end if
+
+100 format(ES25.14, ",", ES25.14)
+200 format(ES25.14)
 300 format(I10, ",", I10)
 
 return

@@ -9,10 +9,12 @@ acceptance_rate_of_field_rotations = dfloat(no_of_accepted_field_rotations) / df
                                         / dfloat(no_of_sites)
 
 write(filename, '(A, "/temp_", I2.2, "/acceptance_rates.csv")') trim(output_directory), temperature_index
-open(unit=30, file = filename)
+open(unit=20, file = filename)
+write(20, '("#", A30, "; ", I0.4, "x", I0.4, "x", I0.4, " lattice sites; temperature = ", ES8.2)') &
+        trim(algorithm_name), integer_lattice_length, integer_lattice_length, integer_lattice_length, temperature
 
-write(30, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations
-close(30)
+write(20, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations
+close(20)
 
 100 format(ES24.14, ", ", ES24.14)
 

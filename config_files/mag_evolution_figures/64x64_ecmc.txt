@@ -8,6 +8,10 @@
 1                                                           no_of_temperature_increments
 .true.                                                      randomise_initial_field_configuration
 .false.                                                     use_external_global_moves
-.false.                                                     calculate_potential_minimising_twists
+.true.                                                      measure_magnetisation
+.false.                                                     measure_helicity
+.false.                                                     measure_potential
+.false.                                                     measure_potential_minimising_twists
+.false.                                                     measure_external_global_moves
 1                                                           no_of_jobs
 1                                                           max_no_of_cpus

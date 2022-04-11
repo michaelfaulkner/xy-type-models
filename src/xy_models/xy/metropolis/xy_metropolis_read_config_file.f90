@@ -15,7 +15,11 @@ read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) randomise_initial_field_configuration
 read(10, *) use_external_global_moves
-read(10, *) calculate_potential_minimising_twists
+read(10, *) measure_magnetisation
+read(10, *) measure_helicity
+read(10, *) measure_potential
+read(10, *) measure_potential_minimising_twists
+read(10, *) measure_external_global_moves
 
 if ((algorithm_name /= 'xy-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-metropolis or &
@@ -23,6 +27,9 @@ if ((algorithm_name /= 'xy-metropolis').and.(algorithm_name /= 'xy-gaussian-nois
    stop
 end if
 
+if (.not.(use_external_global_moves)) then
+    measure_external_global_moves = .false.
+end if
 no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))

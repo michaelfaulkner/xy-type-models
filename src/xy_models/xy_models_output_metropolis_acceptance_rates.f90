@@ -11,15 +11,17 @@ acceptance_rate_of_external_global_moves = 0.5d0 * dfloat(no_of_accepted_externa
                                                 / dfloat(no_of_observations)
 
 write(filename, '(A, "/temp_", I2.2, "/acceptance_rates.csv")') trim(output_directory), temperature_index
-open(unit=30, file = filename)
+open(unit=20, file = filename)
+write(20, '("#", A30, "; ", I0.4, "x", I0.4, " lattice sites; temperature = ", ES8.2)') &
+        trim(algorithm_name), integer_lattice_length, integer_lattice_length, temperature
 
 if (.not.(use_external_global_moves)) then
-    write(30, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations
+    write(20, 100) width_of_proposal_interval, acceptance_rate_of_field_rotations
 else
-    write(30, 200) width_of_proposal_interval, acceptance_rate_of_field_rotations, &
+    write(20, 200) width_of_proposal_interval, acceptance_rate_of_field_rotations, &
                                                                         acceptance_rate_of_external_global_moves
 end if
-close(30)
+close(20)
 
 100 format(ES24.14, ", ", ES24.14)
 200 format(ES24.14, ", ", ES24.14, ", ", ES24.14)

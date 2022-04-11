@@ -14,12 +14,16 @@ read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) randomise_initial_field_configuration
+read(10, *) use_external_global_moves
+read(10, *) measure_magnetisation
+read(10, *) measure_potential
 
 if (algorithm_name /= '3dxy-gaussian-noise-metropolis') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal 3dxy-gaussian-noise-metropolis.'
    stop
 end if
 
+use_external_global_moves = .false.
 no_of_sites = integer_lattice_length * integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))

@@ -15,6 +15,9 @@ read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) charge_hop_proportion
 read(10, *) use_external_global_moves
+read(10, *) measure_electric_field_sum
+read(10, *) measure_potential
+read(10, *) measure_external_global_moves
 
 if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal either elementary-electrolyte or &
@@ -22,6 +25,9 @@ if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multiva
    stop
 end if
 
+if (.not.(use_external_global_moves)) then
+    measure_external_global_moves = .false.
+end if
 no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(electric_field(no_of_sites, 2))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))

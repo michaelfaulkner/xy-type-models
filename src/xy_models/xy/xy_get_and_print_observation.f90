@@ -5,39 +5,49 @@ integer :: i, no_of_external_twists_to_minimise_potential(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 
-no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
-non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
-sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
-
-do i = 1, no_of_sites
-    non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
-    non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
-    sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + &
-                                                sin(spin_field(get_east_neighbour(i)) - spin_field(i))
-    sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + &
-                                                sin(spin_field(get_north_neighbour(i)) - spin_field(i))
-    sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
-                                                cos(spin_field(get_east_neighbour(i)) - spin_field(i))
-    sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
-                                                cos(spin_field(get_north_neighbour(i)) - spin_field(i))
-    potential_cartesian_components(1) = potential_cartesian_components(1) - &
-                                            cos(spin_field(get_east_neighbour(i)) - spin_field(i))
-    potential_cartesian_components(2) = potential_cartesian_components(2) - &
-                                            cos(spin_field(get_north_neighbour(i)) - spin_field(i))
-end do
-potential = potential_cartesian_components(1) + potential_cartesian_components(2)
-
-write(20, 100) potential
-write(30, 200) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
-write(40, 200) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
-write(50, 200) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
-if (use_external_global_moves) then
-    write(60, 300) external_global_moves(1), external_global_moves(2)
+if (measure_magnetisation) then
+    non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
+        non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
+    end do
+    write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
 end if
 
-if (calculate_potential_minimising_twists) then
+if (measure_helicity) then
+    sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+    sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + &
+                                                    sin(spin_field(get_east_neighbour(i)) - spin_field(i))
+        sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + &
+                                                    sin(spin_field(get_north_neighbour(i)) - spin_field(i))
+        sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
+                                                    cos(spin_field(get_east_neighbour(i)) - spin_field(i))
+        sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
+                                                    cos(spin_field(get_north_neighbour(i)) - spin_field(i))
+    end do
+    write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
+    write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
+end if
+
+if ((measure_potential).or.(measure_potential_minimising_twists)) then
+    potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        potential_cartesian_components(1) = potential_cartesian_components(1) - &
+                                                cos(spin_field(get_east_neighbour(i)) - spin_field(i))
+        potential_cartesian_components(2) = potential_cartesian_components(2) - &
+                                                cos(spin_field(get_north_neighbour(i)) - spin_field(i))
+    end do
+end if
+
+if (measure_potential) then
+    potential = potential_cartesian_components(1) + potential_cartesian_components(2)
+    write(60, 200) potential
+end if
+
+if (measure_potential_minimising_twists) then
+    no_of_external_twists_to_minimise_potential = (/ 0, 0 /)
     call potential_minimising_twists_calculation_x(no_of_external_twists_to_minimise_potential, 1, &
                                                     potential_cartesian_components) ! x direction; positive twists
     call potential_minimising_twists_calculation_x(no_of_external_twists_to_minimise_potential, -1, &
@@ -49,8 +59,12 @@ if (calculate_potential_minimising_twists) then
     write(70, 300) no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
 end if
 
-100 format(ES25.14)
-200 format(ES25.14, ",", ES25.14)
+if (measure_external_global_moves) then
+    write(80, 300) external_global_moves(1), external_global_moves(2)
+end if
+
+100 format(ES25.14, ",", ES25.14)
+200 format(ES25.14)
 300 format(I10, ",", I10)
 
 return

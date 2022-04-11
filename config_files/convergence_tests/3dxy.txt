@@ -10,5 +10,7 @@
 0.44d0		                            target_acceptance_rate_of_field_rotations
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
+.true.                                  measure_magnetisation
+.false.                                 measure_potential
 1                                       no_of_jobs
 1                                       max_no_of_cpus

@@ -10,5 +10,8 @@
 0.44d0                                                  target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                      charge_hop_proportion
 .false.                                                 use_external_global_moves
+.true.                                                  measure_electric_field_sum
+.false.                                                 measure_potential
+.false.                                                 measure_external_global_moves
 256                                                     no_of_jobs
 16                                                      max_no_of_cpus
