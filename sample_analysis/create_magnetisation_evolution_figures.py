@@ -86,11 +86,11 @@ def main():
     # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
     plt.subplots_adjust(wspace=0.125, hspace=0.05)
     figure.add_artist(
-        plt.Line2D([0.115, 0.91], [0.495, 0.495], transform=figure.transFigure, color="black", linewidth=4))
+        plt.Line2D([0.115, 0.91], [0.495, 0.495], transform=figure.transFigure, color="black", linewidth=4.5))
     figure.add_artist(
-        plt.Line2D([0.378, 0.378], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4))
+        plt.Line2D([0.378, 0.378], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4.5))
     figure.add_artist(
-        plt.Line2D([0.6465, 0.6465], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4))
+        plt.Line2D([0.6465, 0.6465], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4.5))
 
     figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_ecmc_"
                    f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.png",
@@ -119,30 +119,33 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.text(-0.0325, 0.95, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=14,
                   transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+        axis.tick_params(which='both', length=5.333, width=3)
+        axis.tick_params(which='minor', length=4)
     else:
         axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
                   transform=axis.transAxes,
-                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
-    if alphabetic_label is not None:
+                  bbox=dict(facecolor='none', edgecolor='black', linewidth=4.5, boxstyle='round, pad=0.5'))
         axis.text(0.96, 0.9775, f"{alphabetic_label}", fontsize=32, transform=axis.transAxes)
-    axis.tick_params(which='both', width=3)
+        axis.tick_params(which='both', length=8, width=4.5)
+        axis.tick_params(which='minor', length=6)
     if alphabetic_label is None:
-        axis.tick_params(which='major', length=7, labelsize=18, pad=5)
+        axis.tick_params(which='major', labelsize=18, pad=5)
     elif alphabetic_label == "(a)":
-        axis.tick_params(which='major', length=7, labelsize=24, pad=10)
+        axis.tick_params(which='major', labelsize=24, pad=10)
     else:
-        axis.tick_params(which='major', length=7, labelsize=26, pad=10)
-    axis.tick_params(which='minor', length=4)
+        axis.tick_params(which='major', labelsize=30, pad=10)
 
     # create four-quadrant axes
-    if alphabetic_label is not None:
-        axis.spines['bottom'].set_position('center')
-    else:
+    if alphabetic_label is None:
         axis.spines['bottom'].set_position('zero')
+        axis.spines['left'].set_linewidth(3), axis.spines['bottom'].set_linewidth(3)
+    else:
+        axis.spines['bottom'].set_position('center')
+        axis.spines['left'].set_linewidth(4.5), axis.spines['bottom'].set_linewidth(4.5)
     axis.spines['left'].set_position('center')
     axis.spines['top'].set_color('none'), axis.spines['right'].set_color('none')
     axis.xaxis.set_ticks_position('bottom'), axis.yaxis.set_ticks_position('left')
-    axis.spines['left'].set_linewidth(3), axis.spines['bottom'].set_linewidth(3)
+
 
     minor_ticks = np.arange(-0.75, 1.0, 0.25)
     axis.xaxis.set_major_formatter('{x:.1f}')
@@ -160,8 +163,8 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.set_ylim([-1.0, 1.0])
         axis.set_yticks(minor_ticks, minor=True)
         axis.set_yticks([-1.0, 1.0])
-        axis.set_xlabel(r"$m_x$", fontsize=30), axis.set_ylabel(r"$m_y$", fontsize=30, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.005, 0.57), axis.yaxis.set_label_coords(0.56, 0.9625)
+        axis.set_xlabel(r"$m_x$", fontsize=35), axis.set_ylabel(r"$m_y$", fontsize=32.5, rotation="horizontal")
+        axis.xaxis.set_label_coords(1.005, 0.575), axis.yaxis.set_label_coords(0.565, 0.96)
 
     colors = ["black", "red"]
     for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
@@ -215,7 +218,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
                              fontsize=20)
     legend.get_frame().set_edgecolor("black")
-    legend.get_frame().set_lw(3)
+    if alphabetic_label is None:
+        legend.get_frame().set_lw(3)
+    else:
+        legend.get_frame().set_lw(4.5)
     [line.set_linewidth(2) for line in legend.get_lines()]
 
 
