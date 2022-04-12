@@ -36,40 +36,48 @@ def main():
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
     figure, axes = plt.subplots(1, 2, figsize=(10.0, 4.5))
-    alphabetic_labels = ["(a)", "(b)"]
-    # [axis.text(0.45, -0.3, f"{alphabetic_labels[axis_index]}", fontsize=20) for axis_index, axis in enumerate(axes)]
-    axes[0].text(0.75, 0.0000001, "(a)", fontsize=20)
-    axes[1].text(0.45, -0.3, "(b)", fontsize=20)
-    figure.tight_layout(w_pad=4.0)
+    axes[0].text(1.1, 0.000000035, "(a)", fontsize=20)
+    axes[1].text(0.45, -0.29, "(b)", fontsize=20)
+    figure.tight_layout(w_pad=-0.5)
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
-    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-1)
+    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
     axes[1].set_xlabel(r"$1 / N$", fontsize=20, labelpad=3)
     axes[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=4)
-    # axes[2].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
-    # axes[2].set_ylabel(r"$\omega_{\phi_m,n,{\rm all}}^2$ / $\omega_{\phi_m,n,{\rm local}}^2$", fontsize=20, labelpad=4)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=18, pad=5)
         axis.tick_params(which='minor', length=4)
 
-    inset_axis_1 = plt.axes([0.57, 0.72, 0.13, 0.215])
-    inset_axis_1.tick_params(which='both', direction='in', length=5, width=3, labelsize=12)
-    inset_axis_1.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=2)
-    inset_axis_1.yaxis.set_label_position("right")
-    inset_axis_1.yaxis.tick_right()
-    inset_axis_1.set_ylabel(r"$p(\rm{twist})$", fontsize=12, labelpad=2)
+    inset_axis_1 = plt.axes([0.3, 0.66, 0.1525, 0.275])
+    inset_axis_1.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
+    inset_axis_1.set_xlim([0.86, 1.325])
+    inset_axis_1.set_ylim([2.0, 5.0 * 10 ** 3])
+    inset_axis_1.set_yscale('log')
     [inset_axis_1.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    inset_axis_2 = plt.axes([0.834, 0.3, 0.13, 0.215])
-    inset_axis_2.tick_params(which='both', direction='in', length=5, width=3, labelsize=11)
-    inset_axis_2.xaxis.set_label_position("top")
-    inset_axis_2.xaxis.tick_top()
-    inset_axis_2.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=2)
-    inset_axis_2.set_ylabel(r"$\omega_{\phi_m,n,{\rm all}}^2 / \omega_{\phi_m,n,{\rm local}}^2$", fontsize=9,
-                            labelpad=2)
+    inset_axis_2 = plt.axes([0.57, 0.72, 0.13, 0.215])
+    inset_axis_2.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
+    inset_axis_2.set_xticks([0.0, 1.0, 2.0])
+    inset_axis_2.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=0)
+    inset_axis_2.set_yscale('log')
+    inset_axis_2.yaxis.set_label_position("right")
+    inset_axis_2.yaxis.tick_right()
+    inset_axis_2.set_yticks([10 ** (-5), 10 ** (-3), 10 ** (-1)])
+    inset_axis_2.set_ylabel(r"$p(\rm{twist})$", fontsize=12, labelpad=2)
     [inset_axis_2.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    inset_axis_2.text(0.08, 0.03, "(i)", fontsize=13)
+
+    inset_axis_3 = plt.axes([0.8, 0.2925, 0.165, 0.26])
+    inset_axis_3.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
+    inset_axis_3.xaxis.set_label_position("top")
+    inset_axis_3.xaxis.tick_top()
+    inset_axis_3.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=2)
+    inset_axis_3.set_ylabel(r"$\omega_{\phi_m,n,{\rm all}}^2 / \omega_{\phi_m,n,{\rm local}}^2$", fontsize=11,
+                            labelpad=2)
+    [inset_axis_3.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    inset_axis_3.text(0.03, 0.825, "(ii)", fontsize=13)
 
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
@@ -126,12 +134,14 @@ def main():
             external_global_moves_string_cvm, no_of_jobs_ecmc, pool, length)
         axes[0].errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
-        axes[0].errorbar(temperatures_cvm, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=10,
+        axes[0].errorbar(temperatures_cvm, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None")
-        inset_axis_1.errorbar(temperatures_cvm, twist_probabilities, twist_probability_errors, marker=".",
-                              markersize=10, color=colors[system_size_index], linestyle="None")
+        inset_axis_1.errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=8,
+                              color=colors[system_size_index], linestyle="None")
+        inset_axis_2.errorbar(temperatures_cvm, twist_probabilities, twist_probability_errors, marker=".",
+                              markersize=8, color=colors[system_size_index], linestyle="None")
 
-    legend = axes[0].legend(loc="upper right", fontsize=8)
+    legend = axes[0].legend(loc="center left", fontsize=10)
     legend.get_frame().set_edgecolor("k")
     legend.get_frame().set_lw(3)
     figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
@@ -172,9 +182,6 @@ def main():
                               f"{cvm_64x64_metrop_locals[temperature_index]:.14e}".ljust(30) +
                               f"{cvm_64x64_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
     axis.plot(temperatures_cvm, cvm_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
-    axis.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
-    axis.ylabel(r"$\omega_{n, \rm{all}}^2$ / $\omega_{n, \rm{all}}^2$", fontsize=15, labelpad=10)
-    axis.tick_params(axis="both", which="major", labelsize=14, pad=10)
     axis.savefig(f"cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.pdf", bbox_inches="tight")'''
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
