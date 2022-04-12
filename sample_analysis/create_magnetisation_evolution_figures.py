@@ -105,7 +105,8 @@ def main():
                      use_external_global_moves_256x256_metrop_with_twists,
                      external_global_moves_string_256x256_metrop_with_twists, None, job_index)
         figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_"
-                       f"twists_{no_of_observations_metrop}_metrop_obs_job_{job_index}.png", bbox_inches="tight")
+                       f"twists_{no_of_observations_256x256_metrop_with_twists}_metrop_obs_job_{job_index}.png",
+                       bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
@@ -114,12 +115,12 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
                  external_global_moves_string, alphabetic_label, job_index):
     axis.axis('square')
-    if alphabetic_label is not None:
-        axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
+    if alphabetic_label is None:
+        axis.text(-0.0325, 0.95, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=14,
                   transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     else:
-        axis.text(-0.03, 0.93, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=14,
+        axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
                   transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     if alphabetic_label is not None:
@@ -133,11 +134,6 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.tick_params(which='major', length=7, labelsize=26, pad=10)
     axis.tick_params(which='minor', length=4)
 
-    axis.set_xlim([-1.0, 1.0])
-    if alphabetic_label is not None:
-        axis.set_ylim([-1.0, 1.0])
-    else:
-        axis.set_ylim([-0.001, 1.0])
     # create four-quadrant axes
     if alphabetic_label is not None:
         axis.spines['bottom'].set_position('center')
@@ -150,16 +146,18 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
 
     minor_ticks = np.arange(-0.75, 1.0, 0.25)
     axis.xaxis.set_major_formatter('{x:.1f}')
+    axis.set_xlim([-1.0, 1.0])
+    axis.set_xticks([-1.0, 1.0])
     axis.set_xticks(minor_ticks, minor=True)
     axis.yaxis.set_major_formatter('{x:.1f}')
     if alphabetic_label is None:
-        axis.set_xticks([-1.0, 0.0, 1.0])
-        axis.set_yticks(np.arange(0.25, 1.0, 0.25), minor=True)
+        axis.set_ylim([-0.18, 1.0])
+        axis.set_yticks(np.arange(0.0, 1.0, 0.25), minor=True)
         axis.set_yticks([1.0])
         axis.set_xlabel(r"$m_x$", fontsize=20), axis.set_ylabel(r"$m_y$", fontsize=20, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.01, 0.15), axis.yaxis.set_label_coords(0.56, 0.925)
+        axis.xaxis.set_label_coords(1.005, 0.26), axis.yaxis.set_label_coords(0.56, 0.93)
     else:
-        axis.set_xticks([-1.0, 1.0])
+        axis.set_ylim([-1.0, 1.0])
         axis.set_yticks(minor_ticks, minor=True)
         axis.set_yticks([-1.0, 1.0])
         axis.set_xlabel(r"$m_x$", fontsize=30), axis.set_ylabel(r"$m_y$", fontsize=30, rotation="horizontal")
@@ -194,7 +192,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
                         f"{temperature:.4f}.npy", cartesian_magnetisation)
         if alphabetic_label is None:
-            rotation = -0.3
+            rotation = -0.15
             axis.plot(cartesian_magnetisation[:, 0] * math.cos(rotation) +
                       cartesian_magnetisation[:, 1] * math.sin(rotation),
                       cartesian_magnetisation[:, 1] * math.cos(rotation) -
