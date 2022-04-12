@@ -146,7 +146,6 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.spines['top'].set_color('none'), axis.spines['right'].set_color('none')
     axis.xaxis.set_ticks_position('bottom'), axis.yaxis.set_ticks_position('left')
 
-
     minor_ticks = np.arange(-0.75, 1.0, 0.25)
     axis.xaxis.set_major_formatter('{x:.1f}')
     axis.set_xlim([-1.0, 1.0])
