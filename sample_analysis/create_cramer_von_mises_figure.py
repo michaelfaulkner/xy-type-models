@@ -81,7 +81,7 @@ def main():
                 output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                     if not line.startswith('#')]).transpose()
                 twist_probabilities, twist_probability_errors = output_file_sans_header[1], output_file_sans_header[2]
-        except (IOError, IndexError) as _:
+        except IOError:
             twists_file = open(f"{output_directory}/probability_of_global_twists_"
                                f"{algorithm_name_metrop.replace('-', '_')}_{length}x{length}_sites.tsv", "w")
             twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
@@ -144,7 +144,7 @@ def main():
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             cvm_ratios = output_file_sans_header[1]
-    except (IOError, IndexError) as _:
+    except IOError:
         output_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
                            "w")
         output_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
@@ -190,7 +190,7 @@ def get_cramer_von_mises_vs_temperature(algorithm_name, output_directory, sample
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
-    except (IOError, IndexError) as _:
+    except IOError:
         cvm_file = open(
             f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
             f"{external_global_moves_string}_{length}x{length}_sites_{no_of_observations}_obs.tsv", "w")

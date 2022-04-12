@@ -72,7 +72,7 @@ def main(model):
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             chi_ratios = output_file_sans_header[1]
-    except (IOError, IndexError) as _:
+    except IOError:
         output_file = open(output_file_string, "w")
         accept_rates_file = open(accept_rates_file_string, "w")
         output_file.write("# temperature".ljust(30) + "chi ratio".ljust(30) + "chi ratio error".ljust(30) +
