@@ -20,9 +20,9 @@ def main(observable_string="rotated_magnetisation_phase"):
     config_file_2d = "config_files/running_mean_figure/2dxy.txt"
     config_file_3d = "config_files/running_mean_figure/3dxy.txt"
     (algorithm_name_2d, sample_directory_2d, no_of_sites_2d, no_of_sites_string_2d, no_of_equilibration_sweeps_2d, _,
-     temperatures_2d, _, external_global_moves_string_2d, no_of_jobs, _) = run_script.get_config_data(config_file_2d)
+     temperatures_2d, _, external_global_moves_string_2d, no_of_jobs, _, _) = run_script.get_config_data(config_file_2d)
     (algorithm_name_3d, sample_directory_3d, no_of_sites_3d, no_of_sites_string_3d, no_of_equilibration_sweeps_3d, _,
-     temperatures_3d, _, external_global_moves_string_3d, _, _) = run_script.get_config_data(config_file_3d)
+     temperatures_3d, _, external_global_moves_string_3d, _, _, _) = run_script.get_config_data(config_file_3d)
     output_directory = sample_directory_2d.replace("/2dxy", "")
 
     setup_scripts.check_for_observable_error(algorithm_name_2d, observable_string)

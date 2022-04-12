@@ -18,8 +18,10 @@ run_script = importlib.import_module("run")
 def main(config_file, observable_string, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
-     external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+     external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
+        config_file)
     setup_scripts.check_for_observable_error(algorithm_name, observable_string)
+    setup_scripts.check_initial_job_index(initial_job_index)
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
     print(observable_string)
     sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)

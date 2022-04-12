@@ -27,10 +27,10 @@ def main():
 
     (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
      no_of_observations_metrop, temperatures_cvm, use_external_global_moves_cvm, external_global_moves_string_cvm,
-     no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
+     no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
-     _) = run_script.get_config_data(config_files_ecmc[0])
-    (_, sample_directory_64x64_metrop_local, _, _, _, _, _, _, external_global_moves_string_64x64_metrop_local, _, _
+     _, _) = run_script.get_config_data(config_files_ecmc[0])
+    (_, sample_directory_64x64_metrop_local, _, _, _, _, _, _, external_global_moves_string_64x64_metrop_local, _, _, _
      ) = run_script.get_config_data(config_file_64x64_metrop_local)
     output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)

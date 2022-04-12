@@ -3,6 +3,7 @@ import matplotlib
 import multiprocessing as mp
 import os
 import sys
+import warnings
 
 # import the run script as a module; have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
@@ -79,8 +80,10 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
 def setup_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
-     external_global_moves_string, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file)
+     external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
+        config_file)
     check_for_observable_error(algorithm_name, observable_string)
+    check_initial_job_index(initial_job_index)
     return (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
             external_global_moves_string, no_of_jobs, setup_pool(no_of_jobs, max_no_of_cpus))
 
@@ -124,3 +127,9 @@ def get_sample_is_one_dimensional(observable_string):
 def reverse_enumerate(iterable_object):
     return [(len(iterable_object) - index - 1, element) for index, element in
             enumerate(list(reversed(iterable_object)))]
+
+
+def check_initial_job_index(initial_job_index):
+    if initial_job_index != 0:
+        warnings.warn("Warning: The value of initial_job_index is not equal to zero.  Configuration files of this type "
+                      "are designed for running Fortran code only.")

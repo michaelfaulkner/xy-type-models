@@ -38,7 +38,7 @@ def main(model):
         raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy, "
                         "hxy_literal or xy.")
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _,
-     temperatures, _, _, no_of_jobs, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
+     temperatures, _, _, no_of_jobs, _, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
     try:
         sample_getter.get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)

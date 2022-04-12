@@ -27,11 +27,11 @@ def main():
     config_file_256x256_ecmc = "config_files/cdf_figure/256x256_ecmc.txt"
     (algorithm_name_metrop, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves,
-     external_global_moves_string, no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(
+     external_global_moves_string, no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
         config_file_64x64_metrop)
     (algorithm_name_ecmc, sample_directory_64x64_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
-     _, _, _, no_of_jobs_ecmc, _) = run_script.get_config_data(config_file_64x64_ecmc)
-    (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _, _, _, _, _
+     _, _, _, no_of_jobs_ecmc, _, _) = run_script.get_config_data(config_file_64x64_ecmc)
+    (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _, _, _, _, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop)
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
     output_directory = sample_directory_64x64_metrop.replace("/64x64_metropolis", "")

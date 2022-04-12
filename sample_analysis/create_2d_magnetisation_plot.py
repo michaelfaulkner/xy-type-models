@@ -21,12 +21,13 @@ run_script = importlib.import_module("run")
 def main(config_file, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
-     temperatures, use_external_global_moves, external_global_moves_string, no_of_jobs, max_no_of_cpus
-     ) = run_script.get_config_data(config_file)
+     temperatures, use_external_global_moves, external_global_moves_string, no_of_jobs, initial_job_index,
+     max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
         raise SystemExit
+    setup_scripts.check_initial_job_index(initial_job_index)
 
     start_time = time.time()
     if no_of_jobs == 1:

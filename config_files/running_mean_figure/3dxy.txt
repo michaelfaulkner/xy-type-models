@@ -13,4 +13,5 @@
 .true.                                      measure_magnetisation
 .false.                                     measure_potential
 4                                           no_of_jobs
+0                                           initial_job_index
 4                                           max_no_of_cpus

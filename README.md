@@ -91,17 +91,22 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'hxy-ecmc'                                  algorithm_name
 'output/convergence_tests/hxy/ecmc'         output_directory
 8                                           integer_lattice_length
-100                                         no_of_equilibration_sweeps
-40000                                       no_of_observations
+10000                                       no_of_equilibration_sweeps
+100000                                      no_of_observations
 1.3d0                                       initial_temperature
 1.3d0                                       final_temperature
 0                                           no_of_temperature_increments
 0                                           vacuum_permittivity_sum_cutoff
 .false.                                     randomise_initial_field_configuration
-.false.                                     use_external_global_moves
-.false.                                     calculate_potential_minimising_twists
+.true.                                      use_external_global_moves
+.true.                                      measure_magnetisation
+.false.                                     measure_helicity
+.false.                                     measure_potential
+.false.                                     measure_potential_minimising_twists
+.false.                                     measure_external_global_moves
 1                                           no_of_jobs
-4                                           max_no_of_cpus
+0                                           initial_job_index
+1                                           max_no_of_cpus
 ```
 
 ### hxy-metropolis configuration file (an example)
@@ -110,19 +115,24 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'hxy-metropolis'                                    algorithm_name
 'output/convergence_tests/hxy/metropolis'           output_directory
 8                                                   integer_lattice_length
-10000                                               no_of_equilibration_sweeps
-100000                                              no_of_observations
+100000                                              no_of_equilibration_sweeps
+1000000                                             no_of_observations
 1.3d0                                               initial_temperature
 1.3d0                                               final_temperature
 0                                                   no_of_temperature_increments
-1.0d0                                               width_of_proposal_interval (initial)
-0.44d0                                              target_acceptance_rate_of_field_rotations
+1.0d0   	                                        width_of_proposal_interval (initial)
+0.44d0		                                        target_acceptance_rate_of_field_rotations
 0                                                   vacuum_permittivity_sum_cutoff
 .false.                                             randomise_initial_field_configuration
-.false.                                             use_external_global_moves
-.false.                                             calculate_potential_minimising_twists
+.true.                                              use_external_global_moves
+.true.                                              measure_magnetisation
+.false.                                             measure_helicity
+.false.                                             measure_potential
+.false.                                             measure_potential_minimising_twists
+.false.                                             measure_external_global_moves
 1                                                   no_of_jobs
-4                                                   max_no_of_cpus
+0                                                   initial_job_index
+1                                                   max_no_of_cpus
 ```
 
 ### hxy-gaussian-noise-metropolis configuration file (an example)
@@ -131,19 +141,24 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'hxy-gaussian-noise-metropolis'                                     algorithm_name
 'output/convergence_tests/hxy/gaussian_noise_metropolis'            output_directory
 8                                                                   integer_lattice_length
-10000                                                               no_of_equilibration_sweeps
-100000                                                              no_of_observations
+100000                                                              no_of_equilibration_sweeps
+1000000                                                             no_of_observations
 1.3d0                                                               initial_temperature
 1.3d0                                                               final_temperature
 0                                                                   no_of_temperature_increments
-1.0d0                                                               width_of_proposal_interval (initial)
-0.44d0                                                              target_acceptance_rate_of_field_rotations
+1.0d0   	                                                        width_of_proposal_interval (initial)
+0.44d0		                                                        target_acceptance_rate_of_field_rotations
 0                                                                   vacuum_permittivity_sum_cutoff
 .false.                                                             randomise_initial_field_configuration
-.false.                                                             use_external_global_moves
-.false.                                                             calculate_potential_minimising_twists
+.true.                                                              use_external_global_moves
+.true.                                                              measure_magnetisation
+.false.                                                             measure_helicity
+.false.                                                             measure_potential
+.false.                                                             measure_potential_minimising_twists
+.false.                                                             measure_external_global_moves
 1                                                                   no_of_jobs
-4                                                                   max_no_of_cpus
+0                                                                   initial_job_index
+1                                                                   max_no_of_cpus
 ```
 
 ### xy-ecmc configuration file (an example)
@@ -152,15 +167,21 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'xy-ecmc'                                   algorithm_name
 'output/convergence_tests/xy/ecmc'          output_directory
 8                                           integer_lattice_length
-100                                         no_of_equilibration_sweeps
-40000                                       no_of_observations
+10000                                       no_of_equilibration_sweeps
+100000                                      no_of_observations
 0.8d0                                       initial_temperature
 0.8d0                                       final_temperature
 0                                           no_of_temperature_increments
 .false.                                     randomise_initial_field_configuration
-.false.                                     use_external_global_moves
+.true.                                      use_external_global_moves
+.true.                                      measure_magnetisation
+.false.                                     measure_helicity
+.false.                                     measure_potential
+.false.                                     measure_potential_minimising_twists
+.false.                                     measure_external_global_moves
 1                                           no_of_jobs
-4                                           max_no_of_cpus
+0                                           initial_job_index
+1                                           max_no_of_cpus
 ```
 
 ### xy-metropolis configuration file (an example)
@@ -169,17 +190,23 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'xy-metropolis'                                     algorithm_name
 'output/convergence_tests/xy/metropolis'            output_directory
 8                                                   integer_lattice_length
-10000                                               no_of_equilibration_sweeps
-100000                                              no_of_observations
+100000                                              no_of_equilibration_sweeps
+1000000                                             no_of_observations
 0.8d0                                               initial_temperature
 0.8d0                                               final_temperature
 0                                                   no_of_temperature_increments
-1.0d0                                               width_of_proposal_interval (initial)
-0.44d0                                              target_acceptance_rate_of_field_rotations
+1.0d0    	                                        width_of_proposal_interval (initial)
+0.44d0		                                        target_acceptance_rate_of_field_rotations
 .false.                                             randomise_initial_field_configuration
-.false.                                             use_external_global_moves
+.true.                                              use_external_global_moves
+.true.                                              measure_magnetisation
+.false.                                             measure_helicity
+.false.                                             measure_potential
+.false.                                             measure_potential_minimising_twists
+.false.                                             measure_external_global_moves
 1                                                   no_of_jobs
-4                                                   max_no_of_cpus
+0                                                   initial_job_index
+1                                                   max_no_of_cpus
 ```
 
 ### xy-gaussian-noise-metropolis configuration file (an example)
@@ -188,17 +215,23 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'xy-gaussian-noise-metropolis'                                  algorithm_name
 'output/convergence_tests/xy/gaussian_noise_metropolis'         output_directory
 8                                                               integer_lattice_length
-10000                                                           no_of_equilibration_sweeps
-100000                                                          no_of_observations
+100000                                                          no_of_equilibration_sweeps
+1000000                                                         no_of_observations
 0.8d0                                                           initial_temperature
 0.8d0                                                           final_temperature
 0                                                               no_of_temperature_increments
-1.0d0                                                           width_of_proposal_interval (initial)
-0.44d0                                                          target_acceptance_rate_of_field_rotations
+1.0d0    	                                                    width_of_proposal_interval (initial)
+0.44d0		                                                    target_acceptance_rate_of_field_rotations
 .false.                                                         randomise_initial_field_configuration
-.false.                                                         use_external_global_moves
+.true.                                                          use_external_global_moves
+.true.                                                          measure_magnetisation
+.false.                                                         measure_helicity
+.false.                                                         measure_potential
+.false.                                                         measure_potential_minimising_twists
+.false.                                                         measure_external_global_moves
 1                                                               no_of_jobs
-4                                                               max_no_of_cpus
+0                                                               initial_job_index
+1                                                               max_no_of_cpus
 ```
 
 ### elementary-electrolyte configuration file (an example)
@@ -207,17 +240,21 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'elementary-electrolyte'                                    algorithm_name
 'output/convergence_tests/electrolyte/elementary'           output_directory
 8                                                           integer_lattice_length
-10000                	                                    no_of_equilibration_sweeps
-100000	                                                    no_of_observations
-1.5d0                 	                                    initial_temperature
+100000                                                      no_of_equilibration_sweeps
+1000000                                                     no_of_observations
+1.5d0                                                       initial_temperature
 1.5d0                                                       final_temperature
 0                                                           no_of_temperature_increments
-1.0d0       	                                            width_of_proposal_interval (initial)
+1.0d0                                                       width_of_proposal_interval (initial)
 0.44d0                                                      target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                          charge_hop_proportion
-.false.                                                     use_external_global_moves
+.true.                                                      use_external_global_moves
+.false.                                                     measure_electric_field_sum
+.true.                                                      measure_potential
+.false.                                                     measure_external_global_moves
 1                                                           no_of_jobs
-4                                                           max_no_of_cpus
+0                                                           initial_job_index
+1                                                           max_no_of_cpus
 ```
 
 ### multivalued-electrolyte configuration file (an example)
@@ -226,17 +263,21 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 'multivalued-electrolyte'                                   algorithm_name
 'output/convergence_tests/electrolyte/multivalued'          output_directory
 8                                                           integer_lattice_length
-10000                	                                    no_of_equilibration_sweeps
-100000	                                                    no_of_observations
-1.5d0                 	                                    initial_temperature
+100000                                                      no_of_equilibration_sweeps
+1000000                                                     no_of_observations
+1.5d0                                                       initial_temperature
 1.5d0                                                       final_temperature
 0                                                           no_of_temperature_increments
-1.0d0       	                                            width_of_proposal_interval (initial)
+1.0d0                                                       width_of_proposal_interval (initial)
 0.44d0                                                      target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                          charge_hop_proportion
-.false.                                                     use_external_global_moves
+.true.                                                      use_external_global_moves
+.false.                                                     measure_electric_field_sum
+.true.                                                      measure_potential
+.false.                                                     measure_external_global_moves
 1                                                           no_of_jobs
-4                                                           max_no_of_cpus
+0                                                           initial_job_index
+1                                                           max_no_of_cpus
 ```
 
 ### 3dxy configuration file (an example)
@@ -254,7 +295,10 @@ parallel runs of the same simulation, and similarly for certain sample-analysis 
 0.44d0		                            target_acceptance_rate_of_field_rotations
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
+.true.                                  measure_magnetisation
+.false.                                 measure_potential
 1                                       no_of_jobs
+0                                       initial_job_index
 1                                       max_no_of_cpus
 ```
 

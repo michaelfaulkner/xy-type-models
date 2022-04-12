@@ -29,22 +29,22 @@ def main():
 
     (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
-     external_global_moves_string_16x16_metrop, no_of_jobs_metrop, max_no_of_cpus) = run_script.get_config_data(
+     external_global_moves_string_16x16_metrop, no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
         config_file_16x16_metrop)
     (_, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64, _, _, _,
-     use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop, _, _
+     use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop, _, _, _
      ) = run_script.get_config_data(config_file_64x64_metrop)
     (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _,
-     use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop, _, _
+     use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop, _, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop)
     (algorithm_name_ecmc, sample_directory_16x16_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
-     _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_jobs_ecmc, _
+     _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_jobs_ecmc, _, _
      ) = run_script.get_config_data(config_file_16x16_ecmc)
     sample_directory_64x64_ecmc = run_script.get_config_data(config_file_64x64_ecmc)[1]
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
     (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
      temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
-     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _
+     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
