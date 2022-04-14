@@ -85,6 +85,13 @@ we recommend giving half the number of CPUs available on your personal machine, 
 threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four 
 parallel runs of the same simulation, and similarly for certain sample-analysis processes.
 
+Note that each configuration file whose name is suffixed with a letter is a Markov-process configuration file, where 
+the configuration file with no suffix must be used for the sample analysis.  For example, in the [`cvm_figure`](
+config_files/cvm_figure) configuration-file directory, `64x64_metrop_a.txt`, `64x64_metrop_b.txt`, `64x64_metrop_c.txt` 
+and `64x64_metrop_d.txt` are the four Markov-process configuration files that generate the samples for 
+`64x64_metrop.txt`.  This allows us to submit four separate Markov-process jobs to the cluster, thus optimising 
+simulation time and ensuring larger system sizes fall within the time limit. 
+
 ### hxy-ecmc configuration file (an example)
 
 ```
