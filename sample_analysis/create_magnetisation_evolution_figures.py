@@ -116,14 +116,14 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.0325, 0.95, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=14,
-                  transform=axis.transAxes,
+        axis.text(-0.0325, 0.95, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+                  fontsize=14, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
         axis.tick_params(which='both', length=5.333, width=3)
         axis.tick_params(which='minor', length=4)
     else:
-        axis.text(-0.0175, 0.965, fr"$N = $ {int(no_of_sites ** 0.5)}x{int(no_of_sites ** 0.5)}", fontsize=25,
-                  transform=axis.transAxes,
+        axis.text(-0.0175, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+                  fontsize=25, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=4.5, boxstyle='round, pad=0.5'))
         axis.text(0.96, 0.9775, f"{alphabetic_label}", fontsize=32, transform=axis.transAxes)
         axis.tick_params(which='both', length=8, width=4.5)

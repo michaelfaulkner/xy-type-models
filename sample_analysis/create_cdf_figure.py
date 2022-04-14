@@ -59,6 +59,13 @@ def main():
             axis.axes.yaxis.set_ticklabels([])
         [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
+    axes[0].text(0.7225, 0.31, r"$N = 64 \! \times \! 64$", fontsize=14, transform=axes[0].transAxes,
+                 bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+    axes[1].text(0.039, 0.7, r"$N = 256 \! \times \! 256$", fontsize=13.5, transform=axes[1].transAxes,
+                 bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+    axes[2].text(0.1175, 0.89, r"$N \,\, \to \,\, \infty$", fontsize=15, transform=axes[2].transAxes,
+                 bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+
     inset_axis = plt.axes([0.0745, 0.71, 0.09, 0.22])
     inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=11)
     inset_axis.set_xlim([-math.pi, math.pi])
