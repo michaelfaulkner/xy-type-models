@@ -20,7 +20,7 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(3)]
+    linear_system_sizes = [2 ** (index + 3) for index in range(4)]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
     config_file_64x64_metrop_local = "config_files/cvm_figure/64x64_metrop_local_moves.txt"
@@ -74,7 +74,7 @@ def main():
     inset_axis_3.xaxis.set_label_position("top")
     inset_axis_3.xaxis.tick_top()
     inset_axis_3.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=2)
-    inset_axis_3.set_ylabel(r"$\omega_{\phi_m,n,{\rm all}}^2 / \omega_{\phi_m,n,{\rm local}}^2$", fontsize=11,
+    inset_axis_3.set_ylabel(r"$\omega_{\phi_m,n}^{2,{\rm all}} / \omega_{\phi_m,n}^{2,{\rm local}}$", fontsize=12,
                             labelpad=2)
     [inset_axis_3.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
     inset_axis_3.text(0.03, 0.825, "(ii)", fontsize=13)
@@ -141,25 +141,18 @@ def main():
         inset_axis_2.errorbar(temperatures_cvm, twist_probabilities, twist_probability_errors, marker=".",
                               markersize=8, color=colors[system_size_index], linestyle="None")
 
-    legend = axes[0].legend(loc="center left", fontsize=10)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
-    figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
-                   bbox_inches="tight")
-    figure.clear()
-
-    '''try:
+    try:
         with open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
                   "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             cvm_ratios = output_file_sans_header[1]
     except IOError:
-        output_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
-                           "w")
-        output_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
-                          "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
-                          "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
+        cvm_ratio_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
+                              "w")
+        cvm_ratio_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
+                             "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
+                             "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
         cvm_64x64_metrop_alls, cvm_64x64_metrop_all_errors = get_cramer_von_mises_vs_temperature(
             algorithm_name_metrop, output_directory, "{output_directory}/64x64_metrop",
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
@@ -175,14 +168,21 @@ def main():
             (cvm_64x64_metrop_alls[temperature_index] * cvm_64x64_metrop_local_errors[temperature_index] /
              cvm_64x64_metrop_locals[temperature_index] ** 2) ** 2) for temperature_index in range(temperatures_cvm)]
         for temperature_index, temperature in enumerate(temperatures_cvm):
-            output_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
-                              f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
-                              f"{cvm_64x64_metrop_alls[temperature_index]:.14e}".ljust(30) +
-                              f"{cvm_64x64_metrop_all_errors[temperature_index]:.14e}".ljust(30) +
-                              f"{cvm_64x64_metrop_locals[temperature_index]:.14e}".ljust(30) +
-                              f"{cvm_64x64_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
-    axis.plot(temperatures_cvm, cvm_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
-    axis.savefig(f"cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.pdf", bbox_inches="tight")'''
+            cvm_ratio_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
+                                 f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
+                                 f"{cvm_64x64_metrop_alls[temperature_index]:.14e}".ljust(30) +
+                                 f"{cvm_64x64_metrop_all_errors[temperature_index]:.14e}".ljust(30) +
+                                 f"{cvm_64x64_metrop_locals[temperature_index]:.14e}".ljust(30) +
+                                 f"{cvm_64x64_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
+        cvm_ratio_file.close()
+    inset_axis_3.plot(temperatures_cvm, cvm_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
+
+    legend = axes[0].legend(loc="center left", fontsize=10)
+    legend.get_frame().set_edgecolor("k")
+    legend.get_frame().set_lw(3)
+    figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
+                   bbox_inches="tight")
+
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
 
