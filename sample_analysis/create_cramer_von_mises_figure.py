@@ -154,7 +154,7 @@ def main():
                              "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
                              "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
         cvm_64x64_metrop_alls, cvm_64x64_metrop_all_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, "{output_directory}/64x64_metrop",
+            algorithm_name_metrop, output_directory, f"{output_directory}/64x64_metrop",
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
             external_global_moves_string_cvm, no_of_jobs_metrop, pool, 64)
         cvm_64x64_metrop_locals, cvm_64x64_metrop_local_errors = get_cramer_von_mises_vs_temperature(
