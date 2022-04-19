@@ -20,18 +20,20 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(4)]
+    # linear_system_sizes = [2 ** (index + 3) for index in range(4)]
+    linear_system_sizes = [8, 64]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
-    config_file_64x64_metrop_local = "config_files/cvm_figure/64x64_metrop_local_moves.txt"
+    config_files_metrop_all = [f"config_files/cvm_figure/{value}x{value}_metrop_all_moves.txt" for value in
+                               linear_system_sizes]
 
     (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures_cvm, use_external_global_moves_cvm, external_global_moves_string_cvm,
-     no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
+     no_of_observations_metrop, temperatures, _, external_global_moves_string_local, no_of_jobs_metrop, _, max_no_of_cpus
+     ) = run_script.get_config_data(config_files_metrop[0])
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
      _, _) = run_script.get_config_data(config_files_ecmc[0])
-    (_, sample_directory_64x64_metrop_local, _, _, _, _, _, _, external_global_moves_string_64x64_metrop_local, _, _, _
-     ) = run_script.get_config_data(config_file_64x64_metrop_local)
+    (_, sample_directory_8x8_metrop_all, _, _, _, _, _, _, external_global_moves_string_all, _, _, _
+     ) = run_script.get_config_data(config_files_metrop_all[0])
     output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
@@ -94,7 +96,7 @@ def main():
                                f"{algorithm_name_metrop.replace('-', '_')}_{length}x{length}_sites.tsv", "w")
             twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
             twist_probabilities, twist_probability_errors = [], []
-            for temperature_index, temperature in enumerate(temperatures_cvm):
+            for temperature_index, temperature in enumerate(temperatures):
                 twist_probability_vs_job = np.array(pool.starmap(sample_getter.get_acceptance_rates, [
                     (f"{output_directory}/{length}x{length}_metrop/job_{job_index}", temperature_index)
                     for job_index in range(no_of_jobs_metrop)]))[:, 2]
@@ -108,14 +110,14 @@ def main():
 
         try:
             with open(f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                      f"{external_global_moves_string_cvm}_{length}x{length}_sites.tsv", "r") as _:
+                      f"{external_global_moves_string_local}_{length}x{length}_sites.tsv", "r") as _:
                 pass
         except IOError:
             physical_time_step_file = open(
                 f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                f"{external_global_moves_string_cvm}_{length}x{length}_sites.tsv", "w")
+                f"{external_global_moves_string_local}_{length}x{length}_sites.tsv", "w")
             physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
-            for temperature_index, temperature in enumerate(temperatures_cvm):
+            for temperature_index, temperature in enumerate(temperatures):
                 physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
                     (algorithm_name_metrop, f"{output_directory}/{length}x{length}_metrop/job_{job_index}",
                      temperature_index) for job_index in range(no_of_jobs_metrop)])
@@ -126,57 +128,58 @@ def main():
 
         cvm_metrops, cvm_metrop_errors = get_cramer_von_mises_vs_temperature(
             algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop",
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_metrop, pool, length)
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures,
+            external_global_moves_string_local, no_of_jobs_metrop, pool, length)
         cvm_ecmcs, cvm_ecmc_errors = get_cramer_von_mises_vs_temperature(
             algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
-            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_ecmc, pool, length)
-        axes[0].errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
+            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
+            external_global_moves_string_local, no_of_jobs_ecmc, pool, length)
+        axes[0].errorbar(temperatures, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
-        axes[0].errorbar(temperatures_cvm, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
+        axes[0].errorbar(temperatures, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None")
-        inset_axis_1.errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=8,
+        inset_axis_1.errorbar(temperatures, cvm_metrops, cvm_metrop_errors, marker=".", markersize=8,
                               color=colors[system_size_index], linestyle="None")
-        inset_axis_2.errorbar(temperatures_cvm, twist_probabilities, twist_probability_errors, marker=".",
+        inset_axis_2.errorbar(temperatures, twist_probabilities, twist_probability_errors, marker=".",
                               markersize=8, color=colors[system_size_index], linestyle="None")
 
-    try:
-        with open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
-                  "r") as output_file:
-            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
-                                                if not line.startswith('#')]).transpose()
-            cvm_ratios = output_file_sans_header[1]
-    except IOError:
-        cvm_ratio_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
-                              "w")
-        cvm_ratio_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
-                             "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
-                             "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
-        cvm_64x64_metrop_alls, cvm_64x64_metrop_all_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, "{output_directory}/64x64_metrop",
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_metrop, pool, 64)
-        cvm_64x64_metrop_locals, cvm_64x64_metrop_local_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, sample_directory_64x64_metrop_local,
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_64x64_metrop_local, no_of_jobs_metrop, pool, 64)
-        cvm_ratios = [cvm_64x64_metrop_alls[temperature_index] / cvm_64x64_metrop_locals[temperature_index]
-                      for temperature_index in range(len(temperatures_cvm))]
-        cvm_ratio_errors = [math.sqrt(
-            (cvm_64x64_metrop_all_errors[temperature_index] / cvm_64x64_metrop_locals[temperature_index]) ** 2 +
-            (cvm_64x64_metrop_alls[temperature_index] * cvm_64x64_metrop_local_errors[temperature_index] /
-             cvm_64x64_metrop_locals[temperature_index] ** 2) ** 2)
-            for temperature_index in range(len(temperatures_cvm))]
-        for temperature_index, temperature in enumerate(temperatures_cvm):
-            cvm_ratio_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_alls[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_all_errors[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_locals[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
-        cvm_ratio_file.close()
-    inset_axis_3.plot(temperatures_cvm, cvm_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
+        try:
+            with open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_{length}x{length}_sites"
+                      f".tsv", "r") as output_file:
+                output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                    if not line.startswith('#')]).transpose()
+                cvm_ratios = output_file_sans_header[1]
+        except IOError:
+            cvm_ratio_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_"
+                                  f"{length}x{length}_sites.tsv", "w")
+            cvm_ratio_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
+                                 "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
+                                 "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
+            cvm_metrop_alls, cvm_metrop_all_errors = get_cramer_von_mises_vs_temperature(
+                algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop_all_moves",
+                no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures,
+                external_global_moves_string_local, no_of_jobs_metrop, pool, 64)
+            cvm_metrop_locals, cvm_metrop_local_errors = get_cramer_von_mises_vs_temperature(
+                algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop",
+                no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures,
+                external_global_moves_string_all, no_of_jobs_metrop, pool, 64)
+            cvm_ratios = [cvm_metrop_alls[temperature_index] / cvm_metrop_locals[temperature_index]
+                          for temperature_index in range(len(temperatures))]
+            cvm_ratio_errors = [math.sqrt(
+                (cvm_metrop_all_errors[temperature_index] / cvm_metrop_locals[temperature_index]) ** 2 +
+                (cvm_metrop_alls[temperature_index] * cvm_metrop_local_errors[temperature_index] /
+                 cvm_metrop_locals[temperature_index] ** 2) ** 2) for temperature_index in range(len(temperatures))]
+            for temperature_index, temperature in enumerate(temperatures):
+                cvm_ratio_file.write(f"{temperature:.14e}".ljust(30) +
+                                     f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
+                                     f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
+                                     f"{cvm_metrop_alls[temperature_index]:.14e}".ljust(30) +
+                                     f"{cvm_metrop_all_errors[temperature_index]:.14e}".ljust(30) +
+                                     f"{cvm_metrop_locals[temperature_index]:.14e}".ljust(30) +
+                                     f"{cvm_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
+            cvm_ratio_file.close()
+        inset_axis_3.plot(temperatures, cvm_ratios, marker=".", markersize=5, color=colors[system_size_index],
+                          linestyle='dashed')
 
     legend = axes[0].legend(loc="center left", fontsize=10)
     legend.get_frame().set_edgecolor("k")
