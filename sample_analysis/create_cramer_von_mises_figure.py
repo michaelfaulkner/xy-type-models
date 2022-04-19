@@ -28,8 +28,8 @@ def main():
                                linear_system_sizes]
 
     (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures, _, external_global_moves_string_local, no_of_jobs_metrop, _, max_no_of_cpus
-     ) = run_script.get_config_data(config_files_metrop[0])
+     no_of_observations_metrop, temperatures, _, external_global_moves_string_local, no_of_jobs_metrop, _,
+     max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
      _, _) = run_script.get_config_data(config_files_ecmc[0])
     (_, sample_directory_8x8_metrop_all, _, _, _, _, _, _, external_global_moves_string_all, _, _, _
@@ -108,7 +108,7 @@ def main():
                                   f"{twist_probability_error:.14e}" + "\n")
             twists_file.close()
 
-        try:
+        '''try:
             with open(f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
                       f"{external_global_moves_string_local}_{length}x{length}_sites.tsv", "r") as _:
                 pass
@@ -124,7 +124,7 @@ def main():
                 physical_time_step_file.write(
                     f"{temperature:.14e}".ljust(30) + f"{np.mean(physical_time_step_vs_job):.14e}".ljust(30) +
                     f"{np.std(physical_time_step_vs_job) / len(physical_time_step_vs_job) ** 0.5:.14e}" + "\n")
-            physical_time_step_file.close()
+            physical_time_step_file.close()'''
 
         cvm_metrops, cvm_metrop_errors = get_cramer_von_mises_vs_temperature(
             algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop",
@@ -133,7 +133,7 @@ def main():
         cvm_ecmcs, cvm_ecmc_errors = get_cramer_von_mises_vs_temperature(
             algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
-            external_global_moves_string_local, no_of_jobs_ecmc, pool, length)
+            external_global_moves_string_all, no_of_jobs_ecmc, pool, length)
         axes[0].errorbar(temperatures, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
         axes[0].errorbar(temperatures, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
