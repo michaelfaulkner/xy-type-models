@@ -162,11 +162,12 @@ def main():
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
             external_global_moves_string_64x64_metrop_local, no_of_jobs_metrop, pool, 64)
         cvm_ratios = [cvm_64x64_metrop_alls[temperature_index] / cvm_64x64_metrop_locals[temperature_index]
-                      for temperature_index in range(temperatures_cvm)]
+                      for temperature_index in range(len(temperatures_cvm))]
         cvm_ratio_errors = [math.sqrt(
             (cvm_64x64_metrop_all_errors[temperature_index] / cvm_64x64_metrop_locals[temperature_index]) ** 2 +
             (cvm_64x64_metrop_alls[temperature_index] * cvm_64x64_metrop_local_errors[temperature_index] /
-             cvm_64x64_metrop_locals[temperature_index] ** 2) ** 2) for temperature_index in range(temperatures_cvm)]
+             cvm_64x64_metrop_locals[temperature_index] ** 2) ** 2)
+            for temperature_index in range(len(temperatures_cvm))]
         for temperature_index, temperature in enumerate(temperatures_cvm):
             cvm_ratio_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
                                  f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
