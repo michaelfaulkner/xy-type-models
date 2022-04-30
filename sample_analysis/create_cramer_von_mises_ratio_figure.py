@@ -87,7 +87,7 @@ def main():
                                      f"{cvm_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
             cvm_ratio_file.close()
         axis.plot(temperatures, cvm_ratios, marker=".", markersize=5, color=colors[system_size_index],
-                  linestyle='dashed')
+                  linestyle='dashed', label=fr"$N$ = {length}x{length}")
 
     legend = axis.legend(loc="upper right", fontsize=10)
     legend.get_frame().set_edgecolor("k")
