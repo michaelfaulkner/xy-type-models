@@ -23,7 +23,7 @@ def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     linear_system_sizes = [2 ** (index + 3) for index in range(4)]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
-    config_files_metrop_local = [f"config_files/cvm_ratio_figure/{value}x{value}_metrop_local.txt" for value in
+    config_files_metrop_local = [f"config_files/cvm_ratio_vs_temp/{value}x{value}_metrop_local.txt" for value in
                                  linear_system_sizes]
 
     (algorithm_name_metrop, sample_directory_8x8_metrop_all, _, _, no_of_equilibration_sweeps_metrop,
