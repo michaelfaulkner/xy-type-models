@@ -1,4 +1,5 @@
 import importlib
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,12 +24,14 @@ def main():
     linear_system_sizes = [2 ** (index + 3) for index in range(4)]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
-
+    config_files_metrop_local = [f"config_files/cvm_figure/{value}x{value}_metrop_local.txt" for value in
+                                 linear_system_sizes]
     (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures, _, external_global_moves_string, no_of_jobs_metrop, _,
+     no_of_observations_metrop, temperatures, _, external_global_moves_string_all, no_of_jobs_metrop, _,
      max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
      _, _) = run_script.get_config_data(config_files_ecmc[0])
+    external_global_moves_string_local = run_script.get_config_data(config_files_metrop_local[0])[8]
     output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
@@ -37,15 +40,23 @@ def main():
     axes[1].text(0.45, -0.29, "(b)", fontsize=20)
     figure.tight_layout(w_pad=-0.5)
     axes[0].set_yscale('log')
-    axes[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
+    axes[0].set_xlabel(r"$(\beta J)^{- 1}$", fontsize=20, labelpad=3)
     axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
-    axes[1].set_xlabel(r"$1 / N$", fontsize=20, labelpad=3)
+    axes[1].set_xlabel(r"$N^{- 1 / 2}$", fontsize=20, labelpad=3)
     axes[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=4)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=18, pad=5)
         axis.tick_params(which='minor', length=4)
+
+    additional_y_axis = axes[1].twinx()  # add a twinned y axis to the right-hand subplot
+    additional_y_axis.set_ylabel(r"$\omega_{\phi_m,n}^{2,\rm{all}}(\beta J = 1) / "
+                                 r"\omega_{\phi_m,n}^{2,\rm{local}}(\beta J = 1)$", color="red")
+    additional_y_axis.tick_params(which='both', direction='in', width=3)
+    additional_y_axis.tick_params(which='major', length=7, labelsize=18, pad=5)
+    additional_y_axis.tick_params(which='minor', length=4)
+    additional_y_axis.tick_params(axis='y', labelcolor='red')
 
     inset_axis_1 = plt.axes([0.3, 0.66, 0.1525, 0.275])
     inset_axis_1.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
@@ -67,6 +78,7 @@ def main():
 
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
+    cvm_ratios, cvm_ratio_errors = [], []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         try:
@@ -94,12 +106,12 @@ def main():
 
         try:
             with open(f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                      f"{external_global_moves_string}_{length}x{length}_sites.tsv", "r") as _:
+                      f"{external_global_moves_string_all}_{length}x{length}_sites.tsv", "r") as _:
                 pass
         except IOError:
             physical_time_step_file = open(
                 f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                f"{external_global_moves_string}_{length}x{length}_sites.tsv", "w")
+                f"{external_global_moves_string_all}_{length}x{length}_sites.tsv", "w")
             physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
             for temperature_index, temperature in enumerate(temperatures):
                 physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
@@ -113,11 +125,21 @@ def main():
         cvm_metrops, cvm_metrop_errors = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop",
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures,
-            external_global_moves_string, no_of_jobs_metrop, pool, length)
+            external_global_moves_string_all, no_of_jobs_metrop, pool, length)
         cvm_ecmcs, cvm_ecmc_errors = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
             algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
-            external_global_moves_string, no_of_jobs_ecmc, pool, length)
+            external_global_moves_string_all, no_of_jobs_ecmc, pool, length)
+        low_temp_cvm_metrop_local, low_temp_cvm_metrop_local_error = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop_local",
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, [temperatures[0]],
+            external_global_moves_string_local, no_of_jobs_metrop, pool, length)
+
+        cvm_ratios.append(cvm_metrops[0] / low_temp_cvm_metrop_local[0])
+        cvm_ratio_errors.append(math.sqrt((cvm_metrop_errors[0] / low_temp_cvm_metrop_local[0]) ** 2 +
+                                          (cvm_metrops[0] * low_temp_cvm_metrop_local_error[0] /
+                                           low_temp_cvm_metrop_local[0] ** 2) ** 2))
+
         axes[0].errorbar(temperatures, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
         axes[0].errorbar(temperatures, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
@@ -126,6 +148,10 @@ def main():
                               color=colors[system_size_index], linestyle="None")
         inset_axis_2.errorbar(temperatures, twist_probabilities, twist_probability_errors, marker=".",
                               markersize=8, color=colors[system_size_index], linestyle="None")
+
+    inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
+    additional_y_axis.plot(inverse_linear_system_sizes, cvm_ratios, marker=".", markersize=8, color="red",
+                           linestyle='None')
 
     legend = axes[0].legend(loc="center left", fontsize=10)
     legend.get_frame().set_edgecolor("k")
