@@ -21,15 +21,15 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    # linear_system_sizes = [2 ** (index + 3) for index in range(4)]
+    # linear_system_sizes = [2 ** (index + 3) for index in range(5)]
     linear_system_sizes = [2 ** (index + 3) for index in range(1)]
     config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
     config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
 
-    config_file_low_temp_all = f"config_files/cvm_figure/8x8_low_temp_all.txt"
-    config_file_low_temp_local = f"config_files/cvm_figure/8x8_low_temp_local.txt"
+    config_file_low_temp_all = f"config_files/cvm_figure/4x4_low_temp_all.txt"
+    config_file_low_temp_local = f"config_files/cvm_figure/4x4_low_temp_local.txt"
 
-    (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
+    (algorithm_name_metrop, sample_directory_4x4_metrop, _, _, no_of_equilibration_sweeps_metrop,
      no_of_observations_metrop, temperatures, _, external_global_moves_string_all, no_of_jobs_metrop, _,
      max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
@@ -39,7 +39,7 @@ def main():
      ) = run_script.get_config_data(config_file_low_temp_all)
     external_global_moves_string_local = run_script.get_config_data(config_file_low_temp_local)[8]
 
-    output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
+    output_directory = sample_directory_4x4_metrop.replace("/4x4_metrop", "")
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
     figure_cvm, axes_cvm = plt.subplots(1, 2, figsize=(10.0, 4.5))
