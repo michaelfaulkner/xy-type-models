@@ -41,8 +41,8 @@ def main():
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
     figure_cvm, axes_cvm = plt.subplots(1, 2, figsize=(10.0, 4.5), gridspec_kw={'width_ratios': [1.2, 1.0]})
-    figure_cvm.text(0.0025, 0.925, "e", fontsize=20, weight='bold')
-    figure_cvm.text(0.52, 0.925, "f", fontsize=20, weight='bold')
+    figure_cvm.text(0.0025, 0.925, "d", fontsize=20, weight='bold')
+    figure_cvm.text(0.52, 0.925, "e", fontsize=20, weight='bold')
     figure_cvm.tight_layout(w_pad=3.0)
     axes_cvm[0].set_yscale('log')
     axes_cvm[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
