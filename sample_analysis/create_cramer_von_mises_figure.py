@@ -21,36 +21,34 @@ run_script = importlib.import_module("run")
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    # linear_system_sizes = [2 ** (index + 3) for index in range(5)]
-    linear_system_sizes = [2 ** (index + 3) for index in range(1)]
-    config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
-    config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
-
-    config_file_low_temp_all = f"config_files/cvm_figure/4x4_low_temp_all.txt"
-    config_file_low_temp_local = f"config_files/cvm_figure/4x4_low_temp_local.txt"
+    # linear_system_sizes = [2 ** (index + 2) for index in range(5)]
+    linear_system_sizes = [2 ** (index + 2) for index in range(1)]
+    base_config_file_metrop = f"config_files/cvm_figure/4x4_metrop.txt"
+    base_config_file_ecmc = f"config_files/cvm_figure/4x4_ecmc.txt"
+    base_config_file_low_temp_all = f"config_files/cvm_figure/4x4_low_temp_all.txt"
+    base_config_file_low_temp_local = f"config_files/cvm_figure/4x4_low_temp_local.txt"
 
     (algorithm_name_metrop, sample_directory_4x4_metrop, _, _, no_of_equilibration_sweeps_metrop,
      no_of_observations_metrop, temperatures, _, external_global_moves_string_all, no_of_jobs_metrop, _,
-     max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
+     max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop)
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
-     _, _) = run_script.get_config_data(config_files_ecmc[0])
-
+     _, _) = run_script.get_config_data(base_config_file_ecmc)
     (_, _, _, _, _, no_of_observations_metrop_low_temp, temperatures_low_temp, _, _, no_of_jobs_metrop_low_temp, _, _
-     ) = run_script.get_config_data(config_file_low_temp_all)
-    external_global_moves_string_local = run_script.get_config_data(config_file_low_temp_local)[8]
+     ) = run_script.get_config_data(base_config_file_low_temp_all)
+    external_global_moves_string_local = run_script.get_config_data(base_config_file_low_temp_local)[8]
 
     output_directory = sample_directory_4x4_metrop.replace("/4x4_metrop", "")
     pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
-    figure_cvm, axes_cvm = plt.subplots(1, 2, figsize=(10.0, 4.5))
-    axes_cvm[0].text(1.1, 0.000000035, "(a)", fontsize=20)
-    axes_cvm[1].text(0.3, -0.29, "(b)", fontsize=20)
-    figure_cvm.tight_layout(w_pad=-0.5)
+    figure_cvm, axes_cvm = plt.subplots(1, 2, figsize=(10.0, 4.5), gridspec_kw={'width_ratios': [1.2, 1.0]})
+    figure_cvm.text(0.0025, 0.925, "e", fontsize=20, weight='bold')
+    figure_cvm.text(0.52, 0.925, "f", fontsize=20, weight='bold')
+    figure_cvm.tight_layout(w_pad=3.0)
     axes_cvm[0].set_yscale('log')
-    axes_cvm[0].set_xlabel(r"$(\beta J)^{- 1}$", fontsize=20, labelpad=3)
+    axes_cvm[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
     axes_cvm[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
-    axes_cvm[1].set_xlabel(r"$N^{- 1 / 2}$", fontsize=20, labelpad=3)
-    axes_cvm[1].set_ylabel(r"$(\beta_{\rm int} \,\, J)^{-1}$", fontsize=20, labelpad=4)
+    axes_cvm[1].set_xlabel(r"$1 / N$", fontsize=20, labelpad=3)
+    axes_cvm[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=1)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes_cvm]
     for axis_index, axis in enumerate(axes_cvm):
         axis.tick_params(which='both', direction='in', width=3)
@@ -58,15 +56,13 @@ def main():
         axis.tick_params(which='minor', length=4)
 
     additional_y_axis = axes_cvm[1].twinx()  # add a twinned y axis to the right-hand subplot
-    additional_y_axis.set_ylabel(r"$\omega_{\phi_m,n}^{2,\rm{all}}(\beta J = 10) / "
-                                 r"\omega_{\phi_m,n}^{2,\rm{local}}(\beta J = 10)$",
-                                 fontsize=18, labelpad=4, color="red")
+    additional_y_axis.set_ylabel(r"$\chi_(\beta J = 10)$", fontsize=20, labelpad=1, color="red")
     additional_y_axis.tick_params(which='both', direction='in', width=3)
     additional_y_axis.tick_params(which='major', length=7, labelsize=18, pad=5)
     additional_y_axis.tick_params(which='minor', length=4)
     additional_y_axis.tick_params(axis='y', labelcolor='red')
 
-    inset_axis = plt.axes([0.3, 0.66, 0.1525, 0.275])
+    inset_axis = plt.axes([0.345, 0.66, 0.1525, 0.275])
     inset_axis.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
     inset_axis.set_xlim([0.86, 1.325])
     inset_axis.set_ylim([2.0, 5.0 * 10 ** 3])
@@ -75,7 +71,7 @@ def main():
 
     figure_twist_probs, axis_twist_probs = plt.subplots(1, figsize=(5.0, 2.25))
     figure_twist_probs.tight_layout()
-    axis_twist_probs.set_xlabel(r"$(\beta J)^{-1}$", fontsize=20, labelpad=3)
+    axis_twist_probs.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
     axis_twist_probs.set_yscale('log')
     axis_twist_probs.set_ylim([9.0 * 10 ** (-8), 0.7])
     axis_twist_probs.set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
@@ -176,9 +172,47 @@ def main():
                              f"{cvm_ratios[linear_system_size_index]:.14e}".ljust(30) +
                              f"{cvm_ratio_errors[linear_system_size_index]:.14e}" + "\n")
     cvm_ratio_file.close()'''
-    inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
-    additional_y_axis.plot(inverse_linear_system_sizes, cvm_ratios, marker=".", markersize=8, color="red",
-                           linestyle='None')
+
+    try:
+        with open(f"{output_directory}/sample_variance_of_mag_phase_{algorithm_name_metrop.replace('-', '_')}_"
+                  f"{external_global_moves_string_local}_temp_eq_{temperatures_low_temp[0]:.4f}_"
+                  f"{no_of_observations_metrop}_obs_{no_of_jobs_metrop}_jobs.tsv", "r") as output_file:
+            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                if not line.startswith('#')]).transpose()
+            low_temp_sample_variances = output_file_sans_header[1]
+            low_temp_sample_variance_errors = output_file_sans_header[2]
+    except IOError:
+        low_temp_sample_variance_file = open(
+            f"{output_directory}/sample_variance_of_mag_phase_{algorithm_name_metrop.replace('-', '_')}_"
+            f"{external_global_moves_string_local}_temp_eq_{temperatures_low_temp[0]:.4f}_{no_of_observations_metrop}_"
+            f"obs_{no_of_jobs_metrop}_jobs.tsv", "w")
+        low_temp_sample_variance_file.write("# no of sites".ljust(30) + "sample variance".ljust(30) +
+                                            "sample variance error" + "\n")
+        low_temp_sample_variances, low_temp_sample_variance_errors = [], []
+        for length in linear_system_sizes:
+            low_temp_sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
+                (f"{output_directory}/{length}x{length}_low_temp_local/job_{job_index}", temperatures_low_temp[0], 0,
+                 length ** 2, no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop_low_temp)])
+            low_temp_sample_variance, low_temp_sample_variance_error = np.mean(low_temp_sample_variance_vs_job), np.std(
+                low_temp_sample_variance_vs_job) / len(low_temp_sample_variance_vs_job) ** 0.5
+            low_temp_sample_variances.append(low_temp_sample_variance)
+            low_temp_sample_variance_errors.append(low_temp_sample_variance_error)
+            low_temp_sample_variance_file.write(f"{length ** 2}".ljust(30) +
+                                                f"{low_temp_sample_variance:.14e}".ljust(30) +
+                                                f"{low_temp_sample_variance_error:.14e}" + "\n")
+        low_temp_sample_variance_file.close()
+
+    inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
+    """next two lines are dummy lines while we wait for intercept data"""
+    axes_cvm[1].plot(inverse_system_sizes, cvm_ratios, marker=".", markersize=8, color="black", linestyle='None')
+    axes_cvm[1].plot(inverse_system_sizes, low_temp_sample_variances, marker="*", markersize=8, color="black",
+                     linestyle='None')
+    """faut pas oublier d'ajouter les erreurs en dessous"""
+    additional_y_axis.plot(inverse_system_sizes, cvm_ratios, marker=".", markersize=8, color="red",
+                           linestyle='None', label=r"$\chi(\beta J) = \omega_{\phi_m,n}^{2,\rm{all}}(\beta J) / "
+                                                   r"\omega_{\phi_m,n}^{2,\rm{local}}(\beta J)$")
+    additional_y_axis.plot(inverse_system_sizes, low_temp_sample_variances, marker="*", markersize=8, color="red",
+                           linestyle='None', label=r"$\chi(\beta J) = s_{\phi_m,n}^2(\beta J)$")
 
     legend_cvm = axes_cvm[0].legend(loc="center left", fontsize=10)
     legend_cvm.get_frame().set_edgecolor("k")
@@ -194,6 +228,33 @@ def main():
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
+
+
+def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
+                                               no_of_equilibration_sweeps):
+    r"""
+    Returns the sample variance of the magnetisation phase.
+
+    Parameters
+    ----------
+    sample_directory : str
+        The location of the directory containing the sample and Metropolis acceptance rate.
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The number of lattice sites.
+    no_of_equilibration_sweeps : int
+        The number of discarded equilibration observations.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample variance of the magnetisation phase.  A float.
+    """
+    return np.var(sample_getter.get_magnetisation_phase(sample_directory, temperature, temperature_index,
+                                                        no_of_sites)[no_of_equilibration_sweeps:])
 
 
 if __name__ == "__main__":
