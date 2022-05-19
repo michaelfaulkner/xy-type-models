@@ -86,6 +86,7 @@ def main():
     cvm_ratios, cvm_ratio_errors = [], []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
+        print(f"No of sites, N = {length}x{length}")
         try:
             with open(f"{output_directory}/probability_of_global_twists_{algorithm_name_metrop.replace('-', '_')}_"
                       f"{length}x{length}_sites_{no_of_observations_metrop}_obs_{no_of_jobs_metrop}_jobs.tsv",
@@ -204,19 +205,20 @@ def main():
 
     inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
     """next two lines are dummy lines while we wait for intercept data"""
-    axes_cvm[1].plot(inverse_system_sizes, cvm_ratios, marker=".", markersize=8, color="black", linestyle='None')
     axes_cvm[1].plot(inverse_system_sizes, low_temp_sample_variances, marker="*", markersize=8, color="black",
                      linestyle='None')
+    axes_cvm[1].plot(inverse_system_sizes, cvm_ratios, marker=".", markersize=8, color="black", linestyle='None')
     """faut pas oublier d'ajouter les erreurs en dessous"""
-    additional_y_axis.plot(inverse_system_sizes, cvm_ratios, marker=".", markersize=8, color="red",
+    additional_y_axis.plot(inverse_system_sizes, low_temp_sample_variances, marker=".", markersize=8, color="red",
+                           linestyle='None', label=r"$\chi(\beta J) = s_{\phi_m,n = 10^6}^2(\beta J)$")
+    additional_y_axis.plot(inverse_system_sizes, cvm_ratios, marker="*", markersize=8, color="red",
                            linestyle='None', label=r"$\chi(\beta J) = \omega_{\phi_m,n}^{2,\rm{all}}(\beta J) / "
                                                    r"\omega_{\phi_m,n}^{2,\rm{local}}(\beta J)$")
-    additional_y_axis.plot(inverse_system_sizes, low_temp_sample_variances, marker="*", markersize=8, color="red",
-                           linestyle='None', label=r"$\chi(\beta J) = s_{\phi_m,n}^2(\beta J)$")
 
-    legend_cvm = axes_cvm[0].legend(loc="center left", fontsize=10)
-    legend_cvm.get_frame().set_edgecolor("k")
-    legend_cvm.get_frame().set_lw(3)
+    legends_cvm = [axes_cvm[0].legend(loc="center left", fontsize=10),
+                   additional_y_axis.legend(loc="upper left", fontsize=10)]
+    [legend.get_frame().set_edgecolor("k") for legend in legends_cvm]
+    [legend.get_frame().set_lw(3) for legend in legends_cvm]
     figure_cvm.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc"
                        f".pdf", bbox_inches="tight")
 
