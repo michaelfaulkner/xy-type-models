@@ -19,10 +19,9 @@ sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
-def main():
+def main(no_of_system_sizes=7):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    # linear_system_sizes = [2 ** (index + 2) for index in range(5)]
-    linear_system_sizes = [2 ** (index + 2) for index in range(1)]
+    linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
     base_config_file_metrop = f"config_files/cvm_figure/4x4_metrop.txt"
     base_config_file_ecmc = f"config_files/cvm_figure/4x4_ecmc.txt"
     base_config_file_low_temp_all = f"config_files/cvm_figure/4x4_low_temp_all.txt"
@@ -84,6 +83,7 @@ def main():
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
     cvm_ratios, cvm_ratio_errors = [], []
+    low_temp_sample_variances, low_temp_sample_variance_errors = [], []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"No of sites, N = {length}x{length}")
@@ -154,6 +154,35 @@ def main():
             (low_temp_cvm_all_error[0] / low_temp_cvm_local[0]) ** 2 +
             (low_temp_cvm_all[0] * low_temp_cvm_local_error[0] / low_temp_cvm_local[0] ** 2) ** 2))
 
+        try:
+            with open(f"{output_directory}/magnetisation_phase_sample_variance_"
+                      f"{algorithm_name_metrop.replace('-', '_')}_{external_global_moves_string_local}_{length}x"
+                      f"{length}_sites_temp_eq_{temperatures_low_temp[0]:.4f}_{no_of_observations_metrop}_obs_"
+                      f"{no_of_jobs_metrop}_jobs.tsv", "r") as output_file:
+                output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                    if not line.startswith('#')]).transpose()
+                low_temp_sample_variances.append(output_file_sans_header[1])
+                low_temp_sample_variance_errors.append(output_file_sans_header[2])
+        except IOError:
+            low_temp_sample_variance_file = open(
+                f"{output_directory}/magnetisation_phase_sample_variance_{algorithm_name_metrop.replace('-', '_')}_"
+                f"{external_global_moves_string_local}_{length}x{length}_sites_temp_eq_{temperatures_low_temp[0]:.4f}_"
+                f"{no_of_observations_metrop}_obs_{no_of_jobs_metrop}_jobs.tsv", "w")
+            low_temp_sample_variance_file.write("# temperature".ljust(30) + "sample variance".ljust(30) +
+                                                "sample variance error" + "\n")
+
+            low_temp_sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
+                (f"{output_directory}/{length}x{length}_low_temp_local/job_{job_index}", temperatures_low_temp[0], 0,
+                 length ** 2, no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop_low_temp)])
+            low_temp_sample_variance, low_temp_sample_variance_error = np.mean(low_temp_sample_variance_vs_job), np.std(
+                low_temp_sample_variance_vs_job) / len(low_temp_sample_variance_vs_job) ** 0.5
+            low_temp_sample_variances.append(low_temp_sample_variance)
+            low_temp_sample_variance_errors.append(low_temp_sample_variance_error)
+            low_temp_sample_variance_file.write(f"{temperatures_low_temp[0]:.14e}".ljust(30) +
+                                                f"{low_temp_sample_variance:.14e}".ljust(30) +
+                                                f"{low_temp_sample_variance_error:.14e}" + "\n")
+            low_temp_sample_variance_file.close()
+
         axes_cvm[0].errorbar(temperatures, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
                              color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
         axes_cvm[0].errorbar(temperatures, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
@@ -173,35 +202,6 @@ def main():
                              f"{cvm_ratios[linear_system_size_index]:.14e}".ljust(30) +
                              f"{cvm_ratio_errors[linear_system_size_index]:.14e}" + "\n")
     cvm_ratio_file.close()'''
-
-    try:
-        with open(f"{output_directory}/sample_variance_of_mag_phase_{algorithm_name_metrop.replace('-', '_')}_"
-                  f"{external_global_moves_string_local}_temp_eq_{temperatures_low_temp[0]:.4f}_"
-                  f"{no_of_observations_metrop}_obs_{no_of_jobs_metrop}_jobs.tsv", "r") as output_file:
-            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
-                                                if not line.startswith('#')]).transpose()
-            low_temp_sample_variances = output_file_sans_header[1]
-            low_temp_sample_variance_errors = output_file_sans_header[2]
-    except IOError:
-        low_temp_sample_variance_file = open(
-            f"{output_directory}/sample_variance_of_mag_phase_{algorithm_name_metrop.replace('-', '_')}_"
-            f"{external_global_moves_string_local}_temp_eq_{temperatures_low_temp[0]:.4f}_{no_of_observations_metrop}_"
-            f"obs_{no_of_jobs_metrop}_jobs.tsv", "w")
-        low_temp_sample_variance_file.write("# no of sites".ljust(30) + "sample variance".ljust(30) +
-                                            "sample variance error" + "\n")
-        low_temp_sample_variances, low_temp_sample_variance_errors = [], []
-        for length in linear_system_sizes:
-            low_temp_sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
-                (f"{output_directory}/{length}x{length}_low_temp_local/job_{job_index}", temperatures_low_temp[0], 0,
-                 length ** 2, no_of_equilibration_sweeps_metrop) for job_index in range(no_of_jobs_metrop_low_temp)])
-            low_temp_sample_variance, low_temp_sample_variance_error = np.mean(low_temp_sample_variance_vs_job), np.std(
-                low_temp_sample_variance_vs_job) / len(low_temp_sample_variance_vs_job) ** 0.5
-            low_temp_sample_variances.append(low_temp_sample_variance)
-            low_temp_sample_variance_errors.append(low_temp_sample_variance_error)
-            low_temp_sample_variance_file.write(f"{length ** 2}".ljust(30) +
-                                                f"{low_temp_sample_variance:.14e}".ljust(30) +
-                                                f"{low_temp_sample_variance_error:.14e}" + "\n")
-        low_temp_sample_variance_file.close()
 
     inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
     """next two lines are dummy lines while we wait for intercept data"""
@@ -260,7 +260,19 @@ def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, te
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        raise Exception("InterfaceError: no positional arguments allowed.")
+    if len(sys.argv) > 2:
+        raise Exception("InterfaceError: At most one positional arguments permitted.  None are required but you may "
+                        "provide no_of_system_sizes, which must be an integer greater than 0 and less than 8 (default "
+                        "value is 7).")
+    if len(sys.argv) == 2:
+        print("One positional argument provided.  This must be no_of_system_sizes - which must be an integer greater "
+              "than 0 and less than 8 (default value is 7).")
+        chosen_no_of_system_sizes = int(sys.argv[1])
+        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 7:
+            raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 8 "
+                            "(default value is 7).")
+        main(chosen_no_of_system_sizes)
     else:
+        print("No positional arguments orivuded.  None are required but you may provide no_of_system_sizes, which must "
+              "be an integer greater than 0 and less than 8 (default value is 7).")
         main()
