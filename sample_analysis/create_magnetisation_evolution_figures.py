@@ -48,12 +48,12 @@ def main():
      ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
-    alphabetic_label_16x16_metrop = "(a)"
-    alphabetic_label_64x64_metrop = "(b)"
-    alphabetic_label_256x256_metrop = "(c)"
-    alphabetic_label_16x16_ecmc = "(d)"
-    alphabetic_label_64x64_ecmc = "(e)"
-    alphabetic_label_256x256_ecmc = "(f)"
+    alphabetic_label_16x16_metrop = "a"
+    alphabetic_label_64x64_metrop = "b"
+    alphabetic_label_256x256_metrop = "c"
+    alphabetic_label_16x16_ecmc = "d"
+    alphabetic_label_64x64_ecmc = "e"
+    alphabetic_label_256x256_ecmc = "f"
 
     start_time = time.time()
     # for job_index in range(no_of_jobs_metrop_with_twists):
@@ -116,21 +116,27 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.0325, 0.95, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+        axis.text(-0.04, 0.9625, "e", fontsize=22.5, transform=axis.transAxes, weight='bold')
+        axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                   fontsize=14, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
         axis.tick_params(which='both', length=5.333, width=3)
         axis.tick_params(which='minor', length=4)
     else:
-        axis.text(-0.0175, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
-                  fontsize=25, transform=axis.transAxes,
-                  bbox=dict(facecolor='none', edgecolor='black', linewidth=4.5, boxstyle='round, pad=0.5'))
-        axis.text(0.96, 0.9775, f"{alphabetic_label}", fontsize=32, transform=axis.transAxes)
+        axis.text(-0.0325, 0.97, f"{alphabetic_label}", fontsize=40, transform=axis.transAxes, weight='bold')
+        if alphabetic_label == "c" or alphabetic_label == "f":
+            axis.text(0.692, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+                      fontsize=25, transform=axis.transAxes,
+                      bbox=dict(facecolor='none', edgecolor='black', linewidth=4.5, boxstyle='round, pad=0.5'))
+        else:
+            axis.text(0.75, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+                      fontsize=25, transform=axis.transAxes,
+                      bbox=dict(facecolor='none', edgecolor='black', linewidth=4.5, boxstyle='round, pad=0.5'))
         axis.tick_params(which='both', length=8, width=4.5)
         axis.tick_params(which='minor', length=6)
     if alphabetic_label is None:
         axis.tick_params(which='major', labelsize=18, pad=5)
-    elif alphabetic_label == "(a)":
+    elif alphabetic_label == "a":
         axis.tick_params(which='major', labelsize=24, pad=10)
     else:
         axis.tick_params(which='major', labelsize=30, pad=10)
@@ -207,10 +213,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     if alphabetic_label is None:
         legend = axis.legend(reversed(handles), reversed(labels), loc='upper right', bbox_to_anchor=(1.065, 1.065),
                              fontsize=14)
-    elif alphabetic_label == "(a)":
+    elif alphabetic_label == "a":
         legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
                              fontsize=17)
-    elif alphabetic_label == "(d)":
+    elif alphabetic_label == "d":
         legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
                              fontsize=18)
     else:
