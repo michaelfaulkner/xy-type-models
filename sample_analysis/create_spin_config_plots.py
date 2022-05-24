@@ -43,7 +43,7 @@ def make_single_plot(spin_phases, zero_temp_spin_phases, output_directory, outpu
                           [- math.cos(math.pi * (index % 20) / 10) for index in range(len(spin_phases))]]
 
     fig, axes = plt.subplots(1, 4, figsize=(16.0, 4.0))
-    fig.tight_layout(w_pad=-10)
+    fig.tight_layout(w_pad=-12)
     axes[0].quiver(lattice_coordinates[0], lattice_coordinates[1], np.cos(spin_phases), np.sin(spin_phases), scale=25,
                    width=0.005, color="r", pivot="mid")
     axes[1].quiver(lattice_coordinates[0], lattice_coordinates[1], np.cos(zero_temp_spin_phases),
@@ -59,8 +59,11 @@ def make_single_plot(spin_phases, zero_temp_spin_phases, output_directory, outpu
     [axis.yaxis.set_tick_params(labelleft=False) for axis in axes]
     [axis.set_xticks([]) for axis in axes], [axis.set_yticks([]) for axis in axes]
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
-    alphabetic_labels = ["(a)", "(b)", "(c)", "(d)"]
-    [axis.text(9.35, -1.85, f"{alphabetic_labels[axis_index]}", fontsize=20) for axis_index, axis in enumerate(axes)]
+    letter_heights = 0.975
+    fig.text(0.07125, letter_heights, "a", fontsize=25, weight='bold')
+    fig.text(0.289, letter_heights, "b", fontsize=25, weight='bold')
+    fig.text(0.509, letter_heights, "c", fontsize=25, weight='bold')
+    fig.text(0.7285, letter_heights, "d", fontsize=25, weight='bold')
     os.system(f"mkdir -p {output_directory}")
     fig.savefig(f"{output_directory}/{output_file_string}", bbox_inches="tight")
     fig.clear()
