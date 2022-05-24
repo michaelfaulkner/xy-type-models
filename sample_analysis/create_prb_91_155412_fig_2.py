@@ -125,8 +125,8 @@ def main(model):
             sample_error_all_moves = np.linalg.norm(sample_means_and_errors_all_moves[1])
             chi_ratio = sample_mean_local_moves / sample_mean_all_moves
             chi_ratio_error = math.sqrt((sample_error_local_moves / sample_mean_all_moves) ** 2 +
-                                          (sample_mean_local_moves * sample_error_all_moves /
-                                           sample_mean_all_moves ** 2) ** 2)
+                                        (sample_mean_local_moves * sample_error_all_moves /
+                                         sample_mean_all_moves ** 2) ** 2)
 
             output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_ratio:.14e}".ljust(30) +
                               f"{chi_ratio_error:.14e}".ljust(30) + f"{sample_mean_local_moves:.14e}".ljust(30) +

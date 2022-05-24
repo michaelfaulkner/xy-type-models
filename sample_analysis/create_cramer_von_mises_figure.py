@@ -1,4 +1,3 @@
-from scipy import stats
 import importlib
 import math
 import matplotlib
@@ -9,229 +8,298 @@ import sys
 import time
 
 # import additional modules; have to add the directory that contains run.py to sys.path
+
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
+cramer_von_mises = importlib.import_module("cramer_von_mises")
 markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 setup_scripts = importlib.import_module("setup_scripts")
 sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
-def main():
+def main(no_of_system_sizes=7):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    linear_system_sizes = [2 ** (index + 3) for index in range(4)]
-    config_files_metrop = [f"config_files/cvm_figure/{value}x{value}_metrop.txt" for value in linear_system_sizes]
-    config_files_ecmc = [f"config_files/cvm_figure/{value}x{value}_ecmc.txt" for value in linear_system_sizes]
-    config_file_64x64_metrop_local = "config_files/cvm_figure/64x64_metrop_local_moves.txt"
+    linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
+    base_config_file_metrop_high_temps = f"config_files/cvm_figure/4x4_metrop.txt"
+    base_config_file_ecmc = f"config_files/cvm_figure/4x4_ecmc.txt"
+    base_config_file_low_temp_all = f"config_files/cvm_figure/4x4_low_temp_all.txt"
+    base_config_file_low_temp_local = f"config_files/cvm_figure/4x4_low_temp_local.txt"
 
-    (algorithm_name_metrop, sample_directory_8x8_metrop, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures_cvm, use_external_global_moves_cvm, external_global_moves_string_cvm,
-     no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
-    (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, _, _, _, no_of_jobs_ecmc,
-     _, _) = run_script.get_config_data(config_files_ecmc[0])
-    (_, sample_directory_64x64_metrop_local, _, _, _, _, _, _, external_global_moves_string_64x64_metrop_local, _, _, _
-     ) = run_script.get_config_data(config_file_64x64_metrop_local)
-    output_directory = sample_directory_8x8_metrop.replace("/8x8_metrop", "")
-    pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
+    """n.b., temperatures = [*temperatures_low_temp, *temperatures_high_temps] in the following lines"""
+    (algorithm_name_metrop, sample_directory_4x4_metrop_high_temps, _, _, no_of_equilibration_sweeps_metrop,
+     no_of_observations_metrop, temperatures_high_temps, _, external_global_moves_string_all,
+     no_of_jobs_metrop_high_temps, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop_high_temps)
+    (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures, _, _,
+     no_of_jobs_ecmc, _, _) = run_script.get_config_data(base_config_file_ecmc)
+    (_, _, _, _, _, _, temperatures_low_temp, _, _, no_of_jobs_metrop_low_temp, _, _
+     ) = run_script.get_config_data(base_config_file_low_temp_all)
+    external_global_moves_string_local = run_script.get_config_data(base_config_file_low_temp_local)[8]
 
-    figure, axes = plt.subplots(1, 2, figsize=(10.0, 4.5))
-    axes[0].text(1.1, 0.000000035, "(a)", fontsize=20)
-    axes[1].text(0.45, -0.29, "(b)", fontsize=20)
-    figure.tight_layout(w_pad=-0.5)
-    axes[0].set_yscale('log')
-    axes[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
-    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
-    axes[1].set_xlabel(r"$1 / N$", fontsize=20, labelpad=3)
-    axes[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=4)
-    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
-    for axis_index, axis in enumerate(axes):
+    output_directory = sample_directory_4x4_metrop_high_temps.replace("/4x4_metrop", "")
+    sample_directories_metrop_high_temps = [f"{output_directory}/{length}x{length}_metrop" for length in
+                                            linear_system_sizes]
+    sample_directories_low_temp_local = [f"{output_directory}/{length}x{length}_low_temp_local" for length in
+                                         linear_system_sizes]
+    sample_directories_low_temp_all = [f"{output_directory}/{length}x{length}_low_temp_all" for length in
+                                       linear_system_sizes]
+    sample_directories_ecmc = [f"{output_directory}/{length}x{length}_ecmc" for length in linear_system_sizes]
+    pool = setup_scripts.setup_pool(no_of_jobs_metrop_low_temp, max_no_of_cpus)
+
+    figure_cvm, axes_cvm = plt.subplots(1, 2, figsize=(10.0, 4.5), gridspec_kw={'width_ratios': [1.2, 1.0]})
+    figure_cvm.text(0.0025, 0.925, "d", fontsize=20, weight='bold')
+    figure_cvm.text(0.52, 0.925, "e", fontsize=20, weight='bold')
+    figure_cvm.tight_layout(w_pad=3.0)
+    axes_cvm[0].set_yscale('log')
+    axes_cvm[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
+    axes_cvm[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
+    axes_cvm[1].set_xlabel(r"$1 / N$", fontsize=20, labelpad=3)
+    axes_cvm[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=1)
+    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes_cvm]
+    for axis_index, axis in enumerate(axes_cvm):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=18, pad=5)
         axis.tick_params(which='minor', length=4)
 
-    inset_axis_1 = plt.axes([0.3, 0.66, 0.1525, 0.275])
-    inset_axis_1.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
-    inset_axis_1.set_xlim([0.86, 1.325])
-    inset_axis_1.set_ylim([2.0, 5.0 * 10 ** 3])
-    inset_axis_1.set_yscale('log')
-    [inset_axis_1.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    additional_y_axis = axes_cvm[1].twinx()  # add a twinned y axis to the right-hand subplot
+    additional_y_axis.set_ylabel(r"$\chi_(\beta J = 10)$", fontsize=20, labelpad=1, color="red")
+    additional_y_axis.tick_params(which='both', direction='in', width=3)
+    additional_y_axis.tick_params(which='major', length=7, labelsize=18, pad=5)
+    additional_y_axis.tick_params(which='minor', length=4)
+    additional_y_axis.tick_params(axis='y', labelcolor='red')
 
-    inset_axis_2 = plt.axes([0.57, 0.72, 0.13, 0.215])
-    inset_axis_2.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
-    inset_axis_2.set_xticks([0.0, 1.0, 2.0])
-    inset_axis_2.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=0)
-    inset_axis_2.set_yscale('log')
-    inset_axis_2.yaxis.set_label_position("right")
-    inset_axis_2.yaxis.tick_right()
-    inset_axis_2.set_yticks([10 ** (-5), 10 ** (-3), 10 ** (-1)])
-    inset_axis_2.set_ylabel(r"$p(\rm{twist})$", fontsize=12, labelpad=2)
-    [inset_axis_2.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
-    inset_axis_2.text(0.08, 0.03, "(i)", fontsize=13)
+    inset_axis = plt.axes([0.345, 0.66, 0.1525, 0.275])
+    inset_axis.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
+    inset_axis.set_xlim([0.86, 1.325])
+    inset_axis.set_ylim([2.0, 5.0 * 10 ** 3])
+    inset_axis.set_yscale('log')
+    [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    inset_axis_3 = plt.axes([0.8, 0.2925, 0.165, 0.26])
-    inset_axis_3.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
-    inset_axis_3.xaxis.set_label_position("top")
-    inset_axis_3.xaxis.tick_top()
-    inset_axis_3.set_xlabel(r"$1 / (\beta J)$", fontsize=12, labelpad=2)
-    inset_axis_3.set_ylabel(r"$\omega_{\phi_m,n}^{2,{\rm all}} / \omega_{\phi_m,n}^{2,{\rm local}}$", fontsize=12,
-                            labelpad=2)
-    [inset_axis_3.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
-    inset_axis_3.text(0.03, 0.825, "(ii)", fontsize=13)
+    figure_twist_probs, axis_twist_probs = plt.subplots(1, figsize=(5.0, 2.25))
+    figure_twist_probs.tight_layout()
+    axis_twist_probs.set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)
+    axis_twist_probs.set_yscale('log')
+    axis_twist_probs.set_ylim([9.0 * 10 ** (-8), 0.7])
+    axis_twist_probs.set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
+    axis_twist_probs.set_ylabel(r"$p(\rm{twist})$", fontsize=20, labelpad=4)
+    [axis_twist_probs.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    axis_twist_probs.tick_params(which='both', direction='in', width=3)
+    axis_twist_probs.tick_params(which='major', length=7, labelsize=18, pad=5)
+    axis_twist_probs.tick_params(which='minor', length=4)
 
     colors = ["black", "red", "blue", "green", "yellow", "cyan"]
 
+    cvm_ratios, cvm_ratio_errors = [], []
+    sample_variance_vs_system_size_low_temp_local = []
+    sample_variance_error_vs_system_size_low_temp_local = []
+    sample_variance_vs_system_size_low_temp_all = []
+    sample_variance_error_vs_system_size_low_temp_all = []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
-        try:
-            with open(f"{output_directory}/probability_of_global_twists_{algorithm_name_metrop.replace('-', '_')}_"
-                      f"{length}x{length}_sites.tsv", "r") as output_file:
-                output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
-                                                    if not line.startswith('#')]).transpose()
-                twist_probabilities, twist_probability_errors = output_file_sans_header[1], output_file_sans_header[2]
-        except IOError:
-            twists_file = open(f"{output_directory}/probability_of_global_twists_"
-                               f"{algorithm_name_metrop.replace('-', '_')}_{length}x{length}_sites.tsv", "w")
-            twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
-            twist_probabilities, twist_probability_errors = [], []
-            for temperature_index, temperature in enumerate(temperatures_cvm):
-                twist_probability_vs_job = np.array(pool.starmap(sample_getter.get_acceptance_rates, [
-                    (f"{output_directory}/{length}x{length}_metrop/job_{job_index}", temperature_index)
-                    for job_index in range(no_of_jobs_metrop)]))[:, 2]
-                twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
-                    twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
-                twist_probabilities.append(twist_probability)
-                twist_probability_errors.append(twist_probability_error)
-                twists_file.write(f"{temperature:.14e}".ljust(30) + f"{twist_probability:.14e}".ljust(30) +
-                                  f"{twist_probability_error:.14e}" + "\n")
-            twists_file.close()
+        print(f"No of sites, N = {length}x{length}")
 
-        try:
-            with open(f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                      f"{external_global_moves_string_cvm}_{length}x{length}_sites.tsv", "r") as _:
-                pass
-        except IOError:
-            physical_time_step_file = open(
-                f"{output_directory}/physical_time_steps_{algorithm_name_metrop.replace('-', '_')}_"
-                f"{external_global_moves_string_cvm}_{length}x{length}_sites.tsv", "w")
-            physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
-            for temperature_index, temperature in enumerate(temperatures_cvm):
-                physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
-                    (algorithm_name_metrop, f"{output_directory}/{length}x{length}_metrop/job_{job_index}",
-                     temperature_index) for job_index in range(no_of_jobs_metrop)])
-                physical_time_step_file.write(
-                    f"{temperature:.14e}".ljust(30) + f"{np.mean(physical_time_step_vs_job):.14e}".ljust(30) +
-                    f"{np.std(physical_time_step_vs_job) / len(physical_time_step_vs_job) ** 0.5:.14e}" + "\n")
-            physical_time_step_file.close()
+        twist_probabilities_low_temp, twist_probability_errors_low_temp = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_low_temp_all[system_size_index],
+            temperatures_low_temp, length, no_of_observations_metrop, no_of_jobs_metrop_low_temp, pool)
+        twist_probabilities_high_temps, twist_probability_errors_high_temps = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
+            temperatures_high_temps, length, no_of_observations_metrop, no_of_jobs_metrop_high_temps, pool)
+        twist_probabilities = [*twist_probabilities_low_temp, *twist_probabilities_high_temps]
+        twist_probability_errors = [*twist_probability_errors_low_temp, *twist_probability_errors_high_temps]
 
-        cvm_metrops, cvm_metrop_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, f"{output_directory}/{length}x{length}_metrop",
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_metrop, pool, length)
-        cvm_ecmcs, cvm_ecmc_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_ecmc, output_directory, f"{output_directory}/{length}x{length}_ecmc",
-            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_ecmc, pool, length)
-        axes[0].errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=10,
-                         color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
-        axes[0].errorbar(temperatures_cvm, cvm_ecmcs, cvm_ecmc_errors, marker="*", markersize=8,
-                         color=colors[system_size_index], linestyle="None")
-        inset_axis_1.errorbar(temperatures_cvm, cvm_metrops, cvm_metrop_errors, marker=".", markersize=8,
-                              color=colors[system_size_index], linestyle="None")
-        inset_axis_2.errorbar(temperatures_cvm, twist_probabilities, twist_probability_errors, marker=".",
-                              markersize=8, color=colors[system_size_index], linestyle="None")
+        compute_physical_time_steps(algorithm_name_metrop, external_global_moves_string_all, output_directory,
+                                    sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
+                                    no_of_observations_metrop, no_of_jobs_metrop_low_temp, pool)
+        compute_physical_time_steps(algorithm_name_metrop, external_global_moves_string_all, output_directory,
+                                    sample_directories_metrop_high_temps[system_size_index], temperatures_high_temps,
+                                    length, no_of_observations_metrop, no_of_jobs_metrop_high_temps, pool)
 
-    try:
-        with open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
-                  "r") as output_file:
-            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
-                                                if not line.startswith('#')]).transpose()
-            cvm_ratios = output_file_sans_header[1]
-    except IOError:
-        cvm_ratio_file = open(f"{output_directory}/cvm_ratio_{algorithm_name_metrop.replace('-', '_')}_64x64_sites.tsv",
-                              "w")
-        cvm_ratio_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
-                             "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
-                             "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
-        cvm_64x64_metrop_alls, cvm_64x64_metrop_all_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, f"{output_directory}/64x64_metrop",
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_cvm, no_of_jobs_metrop, pool, 64)
-        cvm_64x64_metrop_locals, cvm_64x64_metrop_local_errors = get_cramer_von_mises_vs_temperature(
-            algorithm_name_metrop, output_directory, sample_directory_64x64_metrop_local,
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_cvm,
-            external_global_moves_string_64x64_metrop_local, no_of_jobs_metrop, pool, 64)
-        cvm_ratios = [cvm_64x64_metrop_alls[temperature_index] / cvm_64x64_metrop_locals[temperature_index]
-                      for temperature_index in range(len(temperatures_cvm))]
-        cvm_ratio_errors = [math.sqrt(
-            (cvm_64x64_metrop_all_errors[temperature_index] / cvm_64x64_metrop_locals[temperature_index]) ** 2 +
-            (cvm_64x64_metrop_alls[temperature_index] * cvm_64x64_metrop_local_errors[temperature_index] /
-             cvm_64x64_metrop_locals[temperature_index] ** 2) ** 2)
-            for temperature_index in range(len(temperatures_cvm))]
-        for temperature_index, temperature in enumerate(temperatures_cvm):
-            cvm_ratio_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm_ratios[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_ratio_errors[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_alls[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_all_errors[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_locals[temperature_index]:.14e}".ljust(30) +
-                                 f"{cvm_64x64_metrop_local_errors[temperature_index]:.14e}".ljust(30) + "\n")
-        cvm_ratio_file.close()
-    inset_axis_3.plot(temperatures_cvm, cvm_ratios, marker=".", markersize=5, color="k", linestyle='dashed')
+        cvms_metrop_high_temps, cvm_errors_metrop_high_temps = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_high_temps,
+            external_global_moves_string_all, no_of_jobs_metrop_high_temps, pool, length)
+        cvms_ecmc, cvm_errors_ecmc = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            algorithm_name_ecmc, output_directory, sample_directories_ecmc[system_size_index],
+            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures,
+            external_global_moves_string_all, no_of_jobs_ecmc, pool, length)
+        low_temp_cvm_local, low_temp_cvm_local_error = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, sample_directories_low_temp_local[system_size_index],
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_low_temp,
+            external_global_moves_string_local, no_of_jobs_metrop_low_temp, pool, length)
+        low_temp_cvm_all, low_temp_cvm_all_error = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, sample_directories_low_temp_all[system_size_index],
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_low_temp,
+            external_global_moves_string_all, no_of_jobs_metrop_low_temp, pool, length)
 
-    legend = axes[0].legend(loc="center left", fontsize=10)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(3)
-    figure.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
-                   bbox_inches="tight")
+        cvms_metrop, cvm_errors_metrop = [*low_temp_cvm_all, *cvms_metrop_high_temps], [*low_temp_cvm_all_error,
+                                                                                        *cvm_errors_metrop_high_temps]
+        cvm_ratios.append(low_temp_cvm_all[0] / low_temp_cvm_local[0])
+        cvm_ratio_errors.append(math.sqrt(
+            (low_temp_cvm_all_error[0] / low_temp_cvm_local[0]) ** 2 +
+            (low_temp_cvm_all[0] * low_temp_cvm_local_error[0] / low_temp_cvm_local[0] ** 2) ** 2))
+
+        (sample_variances_low_temp_local,
+         sample_variance_errors_low_temp_local) = get_mag_phase_sample_variances_and_errors(
+            algorithm_name_metrop, external_global_moves_string_local, output_directory,
+            sample_directories_low_temp_local[system_size_index], temperatures_low_temp, length,
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, no_of_jobs_metrop_low_temp, pool)
+        sample_variances_low_temp_all, sample_variance_errors_low_temp_all = get_mag_phase_sample_variances_and_errors(
+            algorithm_name_metrop, external_global_moves_string_all, output_directory,
+            sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, no_of_jobs_metrop_low_temp, pool)
+        '''_, _ = get_mag_phase_sample_variances_and_errors(
+            algorithm_name_metrop, external_global_moves_string_all, output_directory,
+            sample_directories_metrop_high_temps[system_size_index], temperatures_high_temps, length,
+            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, no_of_jobs_metrop_high_temps, pool)
+        _, _ = get_mag_phase_sample_variances_and_errors(
+            algorithm_name_ecmc, external_global_moves_string_all, output_directory,
+            sample_directories_ecmc[system_size_index], temperatures, length, no_of_equilibration_sweeps_ecmc,
+            no_of_observations_ecmc, no_of_jobs_ecmc, pool)'''
+
+        sample_variance_vs_system_size_low_temp_local.append(sample_variances_low_temp_local[0])
+        sample_variance_error_vs_system_size_low_temp_local.append(sample_variance_errors_low_temp_local[0])
+        sample_variance_vs_system_size_low_temp_all.append(sample_variances_low_temp_all[0])
+        sample_variance_error_vs_system_size_low_temp_all.append(sample_variance_errors_low_temp_all[0])
+
+        axes_cvm[0].errorbar(temperatures, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
+                             color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
+        axes_cvm[0].errorbar(temperatures, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
+                             color=colors[system_size_index], linestyle="None")
+        inset_axis.errorbar(temperatures, cvms_metrop, cvm_errors_metrop, marker=".", markersize=8,
+                            color=colors[system_size_index], linestyle="None")
+        axis_twist_probs.errorbar(temperatures, twist_probabilities, twist_probability_errors, marker=".",
+                                  markersize=10, color=colors[system_size_index], linestyle="None",
+                                  label=fr"$N$ = {length}x{length}")
+
+    cvm_ratio_file = open(
+        f"{output_directory}/cvm_ratio_vs_system_size_{algorithm_name_metrop.replace('-', '_')}_temp_eq_"
+        f"{temperatures_low_temp[0]:.4f}_{no_of_observations_metrop}_obs_{no_of_jobs_metrop_low_temp}_jobs.tsv", "w")
+    cvm_ratio_file.write("# no of sites".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error" + "\n")
+    for linear_system_size_index, linear_system_size in enumerate(linear_system_sizes):
+        cvm_ratio_file.write(f"{linear_system_size ** 2}".ljust(30) +
+                             f"{cvm_ratios[linear_system_size_index]:.14e}".ljust(30) +
+                             f"{cvm_ratio_errors[linear_system_size_index]:.14e}" + "\n")
+    cvm_ratio_file.close()
+
+    inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
+
+    """faut pas oublier d'ajouter les erreurs en dessous"""
+    additional_y_axis.plot(inverse_system_sizes, sample_variance_vs_system_size_low_temp_local, marker=".",
+                           markersize=8, color="red", linestyle='None',
+                           label=r"$\chi(\beta J) = s_{\phi_m,n = 10^6}^2(\beta J)$; local")
+    additional_y_axis.plot(inverse_system_sizes, sample_variance_vs_system_size_low_temp_all, marker="d", markersize=8,
+                           color="red", linestyle='None',
+                           label=r"$\chi(\beta J) = s_{\phi_m,n = 10^6}^2(\beta J)$; all")
+    additional_y_axis.plot(inverse_system_sizes, cvm_ratios, marker="*", markersize=8, color="red",
+                           linestyle='None', label=r"$\chi(\beta J) = \omega_{\phi_m,n}^{2,\rm{all}}(\beta J) / "
+                                                   r"\omega_{\phi_m,n}^{2,\rm{local}}(\beta J)$")
+
+    legends_cvm = [axes_cvm[0].legend(loc="center left", fontsize=10),
+                   additional_y_axis.legend(loc="upper left", fontsize=10)]
+    [legend.get_frame().set_edgecolor("k") for legend in legends_cvm]
+    [legend.get_frame().set_lw(3) for legend in legends_cvm]
+    figure_cvm.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc"
+                       f".pdf", bbox_inches="tight")
+
+    legend_twist_probs = axis_twist_probs.legend(loc="lower right", fontsize=10)
+    legend_twist_probs.get_frame().set_edgecolor("k")
+    legend_twist_probs.get_frame().set_lw(3)
+    figure_twist_probs.savefig(f"{output_directory}/probability_of_global_twists_xy_gaussian_noise_metropolis.pdf",
+                               bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
 
 
-def get_cramer_von_mises_vs_temperature(algorithm_name, output_directory, sample_directory, no_of_equilibration_sweeps,
-                                        no_of_observations, temperatures, external_global_moves_string, no_of_jobs,
-                                        pool, length):
+def get_twist_probabilities_and_errors(algorithm_name, output_directory, sample_directory, temperatures, length,
+                                       no_of_observations, no_of_jobs, pool):
     try:
-        with open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}"
-                  f"_{external_global_moves_string}_{length}x{length}_sites_{no_of_observations}_obs.tsv",
-                  "r") as output_file:
+        with open(f"{output_directory}/probability_of_global_twists_{algorithm_name.replace('-', '_')}_"
+                  f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_"
+                  f"{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
+            twist_probabilities, twist_probability_errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
-        cvm_file = open(
-            f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
-            f"{external_global_moves_string}_{length}x{length}_sites_{no_of_observations}_obs.tsv", "w")
-        cvm_file.write("# temperature".ljust(30) + "n omega_n^2".ljust(30) + "n omega_n^2 error" + "\n")
-        cvms, cvm_errors = [], []
+        twists_file = open(
+            f"{output_directory}/probability_of_global_twists_{algorithm_name.replace('-', '_')}_{length}x{length}_"
+            f"sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_"
+            f"jobs.tsv", "w")
+        twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
+        twist_probabilities, twist_probability_errors = [], []
         for temperature_index, temperature in enumerate(temperatures):
-            print(f"Temperature = {temperature:.4f}")
-            cvm_vs_job = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
-                (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
-                 no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
-            cvm, cvm_error = np.mean(cvm_vs_job), np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5
-            cvms.append(cvm)
-            cvm_errors.append(cvm_error)
-            cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
-        cvm_file.close()
-    return cvms, cvm_errors
+            twist_probability_vs_job = np.array(pool.starmap(sample_getter.get_acceptance_rates, [
+                (f"{sample_directory}/job_{job_index}", temperature_index) for job_index in range(no_of_jobs)]))[:, 2]
+            twist_probability, twist_probability_error = (np.mean(twist_probability_vs_job), np.std(
+                twist_probability_vs_job) / len(twist_probability_vs_job) ** 0.5)
+            twist_probabilities.append(twist_probability)
+            twist_probability_errors.append(twist_probability_error)
+            twists_file.write(f"{temperature:.14e}".ljust(30) + f"{twist_probability:.14e}".ljust(30) +
+                              f"{twist_probability_error:.14e}" + "\n")
+        twists_file.close()
+    return twist_probabilities, twist_probability_errors
 
 
-def get_cramervonmises_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
-                                              no_of_equilibration_sweeps):
+def compute_physical_time_steps(algorithm_name, external_global_moves_string, output_directory, sample_directory,
+                                temperatures, length, no_of_observations, no_of_jobs, pool):
+    try:
+        with open(f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
+                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as _:
+            pass
+    except IOError:
+        physical_time_step_file = open(
+            f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
+            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_"
+            f"obs_{no_of_jobs}_jobs.tsv", "w")
+        physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
+        for temperature_index, temperature in enumerate(temperatures):
+            physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
+                (algorithm_name, f"{sample_directory}/job_{job_index}", temperature_index) for job_index in
+                range(no_of_jobs)])
+            physical_time_step_file.write(
+                f"{temperature:.14e}".ljust(30) + f"{np.mean(physical_time_step_vs_job):.14e}".ljust(30) +
+                f"{np.std(physical_time_step_vs_job) / len(physical_time_step_vs_job) ** 0.5:.14e}" + "\n")
+        physical_time_step_file.close()
+
+
+def get_mag_phase_sample_variances_and_errors(algorithm_name, external_global_moves_string, output_directory,
+                                              sample_directory, temperatures, length, no_of_equilibration_sweeps,
+                                              no_of_observations, no_of_jobs, pool):
+    try:
+        with open(f"{output_directory}/magnetisation_phase_sample_variance_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
+                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as output_file:
+            output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
+                                                if not line.startswith('#')]).transpose()
+            sample_variances, sample_variance_errors = output_file_sans_header[1], output_file_sans_header[2]
+    except IOError:
+        sample_variance_file = open(
+            f"{output_directory}/magnetisation_phase_sample_variance_{algorithm_name.replace('-', '_')}_"
+            f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
+            f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "w")
+        sample_variance_file.write("# temperature".ljust(30) + "sample variance".ljust(30) + "sample variance error" +
+                                   "\n")
+        sample_variances, sample_variance_errors = [], []
+        for temperature_index, temperature in enumerate(temperatures):
+            sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
+                (f"{sample_directory}/job_{job_index}", temperature, 0, length ** 2, no_of_equilibration_sweeps)
+                for job_index in range(no_of_jobs)])
+            sample_variance, sample_variance_error = np.mean(sample_variance_vs_job), np.std(
+                sample_variance_vs_job) / len(sample_variance_vs_job) ** 0.5
+            sample_variances.append(sample_variance)
+            sample_variance_errors.append(sample_variance_error)
+            sample_variance_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_variance:.14e}".ljust(30) +
+                                       f"{sample_variance_error:.14e}" + "\n")
+        sample_variance_file.close()
+    return sample_variances, sample_variance_errors
+
+
+def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
+                                               no_of_equilibration_sweeps):
     r"""
-    Returns (for the sample of the magnetisation phase) the normalised Cramér-von Mises statistic
-    n \omega_n^2 := n \int (F_n(x) - F(x))^2 dF(x), where n is the sample size and F(x) is the CDF of the continuous
-    uniform distribution Uniform(-pi, pi).
-
-    The magnetisation phase phi(x; temperature, no_of_sites) is defined via
-    m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
-    radial coordinates, where m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the
-    Cartesian magnetisation, with x_i the position of particle i at the time of observation.
-
-    NB, RuntimeWarnings are often thrown by lines 175, 178, 179 and 188 of scipy/stats/_hypotests.py when calculating
-    the p-value of scipy.stats.cramervonmises() for highly nonergodic magnetisation-phase samples.  They do not affect
-    the calculation of the Cramér-von Mises integral itself.
+    Returns the sample variance of the magnetisation phase.
 
     Parameters
     ----------
@@ -249,15 +317,26 @@ def get_cramervonmises_of_magnetisation_phase(sample_directory, temperature, tem
     Returns
     -------
     numpy.ndarray
-        The normalised Cramér-von Mises integral.  A float estimating the normalised Cramér-von Mises integral.
+        The sample variance of the magnetisation phase.  A float.
     """
-    return stats.cramervonmises(sample_getter.get_magnetisation_phase(
-        sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:], cdf="uniform",
-                                args=(-math.pi, 2.0 * math.pi)).statistic
+    return np.var(sample_getter.get_magnetisation_phase(sample_directory, temperature, temperature_index,
+                                                        no_of_sites)[no_of_equilibration_sweeps:])
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        raise Exception("InterfaceError: no positional arguments allowed.")
+    if len(sys.argv) > 2:
+        raise Exception("InterfaceError: At most one positional arguments permitted.  None are required but you may "
+                        "provide no_of_system_sizes, which must be an integer greater than 0 and less than 8 (default "
+                        "value is 7).")
+    if len(sys.argv) == 2:
+        print("One positional argument provided.  This must be no_of_system_sizes - which must be an integer greater "
+              "than 0 and less than 8 (default value is 7).")
+        chosen_no_of_system_sizes = int(sys.argv[1])
+        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 7:
+            raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 8 "
+                            "(default value is 7).")
+        main(chosen_no_of_system_sizes)
     else:
+        print("No positional arguments orivuded.  None are required but you may provide no_of_system_sizes, which must "
+              "be an integer greater than 0 and less than 8 (default value is 7).")
         main()
