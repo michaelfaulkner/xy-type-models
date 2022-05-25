@@ -116,7 +116,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.04, 0.9625, "e", fontsize=22.5, transform=axis.transAxes, weight='bold')
+        axis.text(-0.04, 0.9625, "e", fontsize=22, transform=axis.transAxes, weight='bold')
         axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                   fontsize=14, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))

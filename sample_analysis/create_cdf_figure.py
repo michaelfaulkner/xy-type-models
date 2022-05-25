@@ -36,46 +36,46 @@ def main():
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
     output_directory = sample_directory_64x64_metrop.replace("/64x64_metropolis", "")
 
-    figure, axes = plt.subplots(1, 3, figsize=(15, 4.25))
-    alphabetic_labels = ["(a)", "(b)", "(c)"]
-    [axis.text(-0.25, -0.25, f"{alphabetic_labels[axis_index]}", fontsize=18) for axis_index, axis in enumerate(axes)]
-    # plt.subplots_adjust(wspace=0, hspace=0)
-    figure.tight_layout(w_pad=-6.0)
+    figure, axes = plt.subplots(1, 3, figsize=(15, 3.8))
+    figure.tight_layout(w_pad=-2.5)
+    letter_heights = 0.9625
+    figure.text(0.03125, letter_heights, "a", fontsize=27, weight='bold')
+    figure.text(0.348, letter_heights, "b", fontsize=27, weight='bold')
+    figure.text(0.6677, letter_heights, "c", fontsize=27, weight='bold')
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
-        axis.tick_params(which='major', length=7, labelsize=18, pad=5)
+        axis.tick_params(which='major', length=7, labelsize=22.5, pad=3)
         axis.tick_params(which='minor', length=4)
         axis.set_xlim([-math.pi, math.pi])
         axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
         axis.set_xticklabels(["", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", ""])
-        axis.set_xlabel(r"$x$", fontsize=20, labelpad=-1)
+        axis.set_xlabel(r"$x$", fontsize=25, labelpad=-4)
         axis.set_ylim(0.0, 1.0)
         axis.yaxis.set_major_locator(ticker.MultipleLocator(base=0.5))
         if axis_index == 0:
-            # axis.tick_params(which='major', width=3, length=7, labelsize=18, pad=10)
-            axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=20, labelpad=5)
+            axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=25, labelpad=-1.0)
             axis.yaxis.set_major_formatter('{x:.1f}')
         else:
             axis.axes.yaxis.set_ticklabels([])
         [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    axes[0].text(0.7225, 0.31, r"$N = 64 \! \times \! 64$", fontsize=14, transform=axes[0].transAxes,
+    axes[0].text(0.7253, 0.32, r"$N = 64 \! \times \! 64$", fontsize=14.25, transform=axes[0].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
-    axes[1].text(0.039, 0.7, r"$N = 256 \! \times \! 256$", fontsize=13.5, transform=axes[1].transAxes,
+    axes[1].text(0.039, 0.705, r"$N = 256 \! \times \! 256$", fontsize=14.25, transform=axes[1].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
-    axes[2].text(0.1175, 0.89, r"$N \,\, \to \,\, \infty$", fontsize=15, transform=axes[2].transAxes,
+    axes[2].text(0.1195, 0.89, r"$N \,\, \to \,\, \infty$", fontsize=15.5, transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
 
-    inset_axis = plt.axes([0.0745, 0.71, 0.09, 0.22])
-    inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=11)
+    inset_axis = plt.axes([0.0365, 0.6575, 0.1, 0.265])
+    inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=13, pad=2)
     inset_axis.set_xlim([-math.pi, math.pi])
     inset_axis.set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
     inset_axis.set_xticklabels(["", r"$-\pi / 2$", r"$0$", r"$\pi / 2$", ""])
-    inset_axis.set_xlabel(r"$x$", fontsize=12, labelpad=-1)
+    inset_axis.set_xlabel(r"$x$", fontsize=14, labelpad=-2)
     inset_axis.set_ylim(0.0, 1.0)
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
-    inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=12, labelpad=-10)
+    inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=14, labelpad=-11)
     inset_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     inset_axis.yaxis.set_major_formatter('{x:.1f}')
     inset_axis.yaxis.set_minor_locator(ticker.MultipleLocator(base=0.5))
@@ -110,8 +110,8 @@ def main():
      for realisation_index, heaviside_centre in enumerate(heaviside_centres)]
 
     handles, labels = axes[0].get_legend_handles_labels()
-    legends = [axes[0].legend(reversed(handles), reversed(labels), loc="lower right", fontsize=14),
-               axes[1].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=11)]
+    legends = [axes[0].legend(reversed(handles), reversed(labels), loc="lower right", fontsize=15),
+               axes[1].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=11.625)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
     figure.savefig(f"{output_directory}/magnetisation_phase_cdfs.pdf", bbox_inches="tight")
