@@ -148,14 +148,14 @@ def main(no_of_system_sizes=7):
             algorithm_name_metrop, external_global_moves_string_all, output_directory,
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, no_of_jobs_metrop_low_temp, pool)
-        '''_, _ = get_mag_phase_sample_variances_and_errors(
+        _, _ = get_mag_phase_sample_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string_all, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_high_temps, length,
             no_of_equilibration_sweeps_metrop, no_of_observations_metrop, no_of_jobs_metrop_high_temps, pool)
         _, _ = get_mag_phase_sample_variances_and_errors(
             algorithm_name_ecmc, external_global_moves_string_all, output_directory,
             sample_directories_ecmc[system_size_index], temperatures, length, no_of_equilibration_sweeps_ecmc,
-            no_of_observations_ecmc, no_of_jobs_ecmc, pool)'''
+            no_of_observations_ecmc, no_of_jobs_ecmc, pool)
 
         sample_variance_vs_system_size_low_temp_local.append(sample_variances_low_temp_local[0])
         sample_variance_error_vs_system_size_low_temp_local.append(sample_variance_errors_low_temp_local[0])
