@@ -88,7 +88,7 @@ def main(no_of_system_sizes=7):
     axis_twist_probs.tick_params(which='major', length=7, labelsize=18, pad=5)
     axis_twist_probs.tick_params(which='minor', length=4)
 
-    colors = ["black", "red", "blue", "green", "yellow", "cyan"]
+    colors = ["magenta", "cyan", "yellow", "green", "blue", "red", "black"]
 
     cvm_ratios, cvm_ratio_errors = [], []
     sample_variance_vs_system_size_low_temp_local = []
