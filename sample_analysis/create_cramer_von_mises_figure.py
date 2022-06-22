@@ -184,7 +184,7 @@ def main(no_of_system_sizes=7):
 
     inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
 
-    """faut pas oublier d'ajouter les erreurs en dessous"""
+    # TODO add errors in the following plotting functions
     additional_y_axis.plot(inverse_system_sizes, sample_variance_vs_system_size_low_temp_local, marker=".",
                            markersize=8, color="red", linestyle='None',
                            label=r"$\chi(\beta J) = s_{\phi_m,n = 10^6}^2(\beta J)$; local")
