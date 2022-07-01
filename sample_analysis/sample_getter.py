@@ -143,10 +143,10 @@ def get_potential(output_directory, temperature, temperature_index, no_of_sites)
 
 def get_specific_heat(output_directory, temperature, temperature_index, no_of_sites):
     """
-    Returns the specific-heat C_V(x; temperature, no_of_sites) sample, where C_V(x; temperature, no_of_sites) =
-    [U(x; temperature, no_of_sites) - E[U(x; temperature, no_of_sites)]] ** 2 / no_of_sites / temperature ** 2, with x
-    the particle positions at the time of observation, E[.] the expected value of the argument and
-    U(x; temperature, no_of_sites) the system potential.
+    Returns the sample of the specific-heat C_V(x; temperature, no_of_sites) per particle, where
+    C_V(x; temperature, no_of_sites) = [U(x; temperature, no_of_sites) - E[U(x; temperature, no_of_sites)]] ** 2 /
+    temperature ** 2, with x the particle positions at the time of observation, E[.] the expected value of the argument
+    and U(x; temperature, no_of_sites) the system potential.
 
     Parameters
     ----------
