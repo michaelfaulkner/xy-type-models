@@ -1,17 +1,18 @@
+from sample_getter import get_physical_time_step
+from setup_scripts import check_for_observable_error, get_sample_is_one_dimensional
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import sample_getter
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -25,10 +26,10 @@ def main(observable_string="rotated_magnetisation_phase"):
      temperatures_3d, _, external_global_moves_string_3d, _, _, _) = run_script.get_config_data(config_file_3d)
     output_directory = sample_directory_2d.replace("/2dxy", "")
 
-    setup_scripts.check_for_observable_error(algorithm_name_2d, observable_string)
+    check_for_observable_error(algorithm_name_2d, observable_string)
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
     linestyles = ["solid", "dotted", "dashed", "dashdot", (0, (1, 1)), (0, (5, 10)), (0, (5, 1)), (0, (3, 1, 1, 1))]
-    sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
+    sample_is_one_dimensional = get_sample_is_one_dimensional(observable_string)
 
     figure, axes = plt.subplots(2, 1, figsize=(7.5, 7.1))
     # axes[1].set_xlabel(r"$\tau$", fontsize=20, labelpad=0)
@@ -51,9 +52,9 @@ def main(observable_string="rotated_magnetisation_phase"):
                 f"{external_global_moves_string_2d}_{no_of_sites_string_2d}_temp_eq_{temperature:.4f}.csv", dtype=float,
                 delimiter=",")
         except IOError:
-            physical_time_step_2d = sum([sample_getter.get_physical_time_step(
-                    algorithm_name_2d, f"{sample_directory_2d}/job_{job_index}", temperature_index) for job_index in
-                range(no_of_jobs)]) / no_of_jobs
+            physical_time_step_2d = sum([
+                get_physical_time_step(algorithm_name_2d, f"{sample_directory_2d}/job_{job_index}", temperature_index)
+                for job_index in range(no_of_jobs)]) / no_of_jobs
             np.savetxt(f"{output_directory}/physical_time_step_{algorithm_name_2d.replace('-', '_')}_"
                        f"{external_global_moves_string_2d}_{no_of_sites_string_2d}_temp_eq_{temperature:.4f}.csv",
                        np.atleast_1d(physical_time_step_2d), delimiter=",")
@@ -68,7 +69,7 @@ def main(observable_string="rotated_magnetisation_phase"):
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 sample_2d = get_sample_method(f"{sample_directory_2d}/job_{job_index}", temperature, temperature_index,
-                                              no_of_sites_2d)[no_of_equilibration_sweeps_2d:]
+                                              no_of_sites_2d, no_of_equilibration_sweeps_2d)
                 if not sample_is_one_dimensional:
                     sample_2d = sample_2d.transpose()[0]
                 running_mean_2d = np.array([np.mean(sample_2d[:index + 1]) for index in range(len(sample_2d))])
@@ -80,10 +81,10 @@ def main(observable_string="rotated_magnetisation_phase"):
 
             """Previous versions converted MC time to physical time, using the following commented-out code.  I then 
             realised that the only difference (in terms of symmetry breaking) between the 2D and 3D cases is the 
-            absence of a singular limit.  But their equivalence (otherwise) means that we don't need to compare the 2D 
-            and 3D sample means vs time, so I abandoned this figure and decided not to invest time in finding the 
-            optimal temperatures to compares physical time across all fours phases that encompass the 2D and 3D 
-            systems."""
+            absence of a singular limit (wrt N and then h).  But their equivalence (otherwise) means that we don't need 
+            to compare the 2D and 3D sample means vs time, so I abandoned this figure and decided not to invest time in 
+            finding the optimal temperatures to compares physical time across all fours phases that encompass the 2D 
+            and 3D systems."""
 
             '''if temperature_index == 0 and job_index == 0:
                 max_total_physical_time = physical_time_step_2d * (len(sample_2d) - 1)
@@ -116,9 +117,9 @@ def main(observable_string="rotated_magnetisation_phase"):
                 f"{external_global_moves_string_3d}_{no_of_sites_string_3d}_temp_eq_{temperature:.4f}.csv", dtype=float,
                 delimiter=",")
         except IOError:
-            physical_time_step_3d = sum([sample_getter.get_physical_time_step(
-                    algorithm_name_3d, f"{sample_directory_3d}/job_{job_index}", temperature_index) for job_index in
-                range(no_of_jobs)]) / no_of_jobs
+            physical_time_step_3d = sum([
+                get_physical_time_step(algorithm_name_3d, f"{sample_directory_3d}/job_{job_index}", temperature_index)
+                for job_index in range(no_of_jobs)]) / no_of_jobs
             np.savetxt(
                 f"{output_directory}/physical_time_step_{algorithm_name_3d.replace('-', '_')}_"
                 f"{external_global_moves_string_3d}_{no_of_sites_string_3d}_temp_eq_{temperature:.4f}.csv",
@@ -134,7 +135,7 @@ def main(observable_string="rotated_magnetisation_phase"):
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
                 sample_3d = get_sample_method(f"{sample_directory_3d}/job_{job_index}", temperature, temperature_index,
-                                              no_of_sites_3d)[no_of_equilibration_sweeps_3d:]
+                                              no_of_sites_3d, no_of_equilibration_sweeps_3d)
                 if not sample_is_one_dimensional:
                     sample_3d = sample_3d.transpose()[0]
                 running_mean_3d = np.array([np.mean(sample_3d[:index + 1]) for index in range(len(sample_3d))])

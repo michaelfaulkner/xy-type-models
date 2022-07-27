@@ -61,7 +61,7 @@ def main(no_of_system_sizes=6):
     axes[0].set_yscale('log')
     axes[0].set_ylim([9.0 * 10 ** (-8), 0.7])
     axes[0].set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
-    axes[0].set_ylabel(r"$p(\rm{twist})$", fontsize=20, labelpad=4)
+    axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=20, labelpad=4)
     axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=3)
     axes[1].set_ylabel(r"$\frac{s_{\phi_m, n=10^6}^2(\beta J = 10)}{{\rm Var}\left[ \phi_m \right]}$", fontsize=20,
                        labelpad=1)

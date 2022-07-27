@@ -1,3 +1,6 @@
+from markov_chain_diagnostics import get_cumulative_distribution
+from sample_getter import get_magnetisation_phase
+from setup_scripts import reverse_enumerate
 import importlib
 import math
 import matplotlib
@@ -8,23 +11,20 @@ import os
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
 def main():
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     matplotlib.rcParams["axes.unicode_minus"] = False
-    config_file_64x64_metrop = "config_files/cdf_figure/64x64_metropolis.txt"
-    config_file_64x64_ecmc = "config_files/cdf_figure/64x64_ecmc.txt"
-    config_file_256x256_metrop = "config_files/cdf_figure/256x256_metropolis.txt"
-    config_file_256x256_ecmc = "config_files/cdf_figure/256x256_ecmc.txt"
+    config_file_64x64_metrop = "config_files/cdf_figs/64x64_metropolis.txt"
+    config_file_64x64_ecmc = "config_files/cdf_figs/64x64_ecmc.txt"
+    config_file_256x256_metrop = "config_files/cdf_figs/256x256_metropolis.txt"
+    config_file_256x256_ecmc = "config_files/cdf_figs/256x256_ecmc.txt"
     (algorithm_name_metrop, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves,
      external_global_moves_string, no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
@@ -36,12 +36,12 @@ def main():
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
     output_directory = sample_directory_64x64_metrop.replace("/64x64_metropolis", "")
 
-    figure, axes = plt.subplots(1, 3, figsize=(15, 3.8))
-    figure.tight_layout(w_pad=-2.5)
+    fig, axes = plt.subplots(1, 3, figsize=(15, 3.8))
+    fig.tight_layout(w_pad=-2.5)
     letter_heights = 0.9625
-    figure.text(0.03125, letter_heights, "a", fontsize=27, weight='bold')
-    figure.text(0.348, letter_heights, "b", fontsize=27, weight='bold')
-    figure.text(0.6677, letter_heights, "c", fontsize=27, weight='bold')
+    fig.text(0.03125, letter_heights, "a", fontsize=27, weight='bold')
+    fig.text(0.348, letter_heights, "b", fontsize=27, weight='bold')
+    fig.text(0.6677, letter_heights, "c", fontsize=27, weight='bold')
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=22.5, pad=3)
@@ -114,7 +114,7 @@ def main():
                axes[1].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=11.625)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
-    figure.savefig(f"{output_directory}/magnetisation_phase_cdfs.pdf", bbox_inches="tight")
+    fig.savefig(f"{output_directory}/magnetisation_phase_cdfs.pdf", bbox_inches="tight")
 
 
 def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string, no_of_sites,
@@ -123,7 +123,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                                no_of_jobs_ecmc, no_of_jobs_metrop, output_directory, sample_directory_ecmc,
                                sample_directory_metrop, axes, inset_axis, linestyles, colors, subplot_index):
     try:
-        for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+        for temperature_index, temperature in reverse_enumerate(temperatures):
             for job_index in range(no_of_jobs_metrop):
                 output_file_metrop = (
                     f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
@@ -151,7 +151,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                         inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
                                         linestyle=linestyles[job_index], linewidth=2)
     except IOError:
-        for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+        for temperature_index, temperature in reverse_enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
             cdfs_of_magnetisation_phase_metrop = [get_cdf_of_magnetisation_phase(
                 f"{sample_directory_metrop}/job_{job_index}", temperature, temperature_index, no_of_sites,
@@ -210,8 +210,8 @@ def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_in
     numpy.ndarray
         The empirical CDF.  A two-dimensional numpy array (of floats) of size (2, n) representing the empirical CDF.
     """
-    return markov_chain_diagnostics.get_cumulative_distribution(sample_getter.get_magnetisation_phase(
-        sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:])
+    return get_cumulative_distribution(get_magnetisation_phase(sample_directory, temperature, temperature_index,
+                                                               no_of_sites, no_of_equilibration_sweeps))
 
 
 if __name__ == "__main__":

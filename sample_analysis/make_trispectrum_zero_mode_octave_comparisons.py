@@ -1,21 +1,17 @@
-import importlib
+from polyspectra import get_power_trispectrum_zero_mode
+from setup_scripts import reverse_enumerate, setup_polyspectra_script
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import time
 
-# import additional modules
-setup_scripts = importlib.import_module("setup_scripts")
-polyspectra = importlib.import_module("polyspectra")
-
 
 def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
-                                                                                              observable_string)
+     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
-    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+    for temperature_index, temperature in reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
 
         figure, axis = plt.subplots(1, 2, figsize=(10, 5))
@@ -27,10 +23,10 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         colors = iter(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves)))
         for no_of_trispectrum_octaves in range(1, max_no_of_trispectrum_octaves + 1):
             current_color = next(colors)
-            power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
+            power_trispectrum_zero_mode = get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-                no_of_trispectrum_octaves, trispectrum_base_period_shift)
+                no_of_sites_string, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
+                trispectrum_base_period_shift, no_of_equilibration_sweeps)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[0].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,
@@ -39,10 +35,10 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         colors = iter(reversed(plt.cm.rainbow(np.linspace(0, 1, max_no_of_trispectrum_octaves))))
         for no_of_trispectrum_octaves in range(max_no_of_trispectrum_octaves, 0, -1):
             current_color = next(colors)
-            power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
+            power_trispectrum_zero_mode = get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-                no_of_trispectrum_octaves, trispectrum_base_period_shift)
+                no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                no_of_trispectrum_octaves, trispectrum_base_period_shift, no_of_equilibration_sweeps)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
             axis[1].loglog(power_trispectrum_zero_mode[0], power_trispectrum_zero_mode[1], color=current_color,

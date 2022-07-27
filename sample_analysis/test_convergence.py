@@ -1,3 +1,5 @@
+from markov_chain_diagnostics import get_effective_sample_size, get_cumulative_distribution
+from sample_getter import get_magnetisation_norm, get_potential
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
@@ -5,13 +7,10 @@ import numpy as np
 import os
 import sys
 
-# import additional modules; have to add the directories that contain sample_getter.py, markov_chain_diagnostics.py
-# and run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-sample_getter = importlib.import_module("sample_getter")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
@@ -25,14 +24,14 @@ def main(config_file):
         raise SystemExit
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-        sample = sample_getter.get_potential(output_directory, temperatures[0], 0, no_of_sites)[
-                 no_of_equilibration_sweeps:]
+        sample = get_potential(output_directory, temperatures[0], 0, no_of_sites, no_of_equilibration_sweeps)
     elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
           algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
           algorithm_name == "3dxy-gaussian-noise-metropolis"):
-        sample = sample_getter.get_magnetisation_norm(output_directory, temperatures[0], 0, no_of_sites)[
-                 no_of_equilibration_sweeps:]
+        sample = get_magnetisation_norm(output_directory, temperatures[0], 0, no_of_sites, no_of_equilibration_sweeps)
+    else:
+        sample = None
 
     if algorithm_name == "elementary-electrolyte":
         reference_sample = np.load("permanent_data/reference_data/elementary_electrolyte_8x8_sites_temp_1_point_5_"
@@ -51,13 +50,13 @@ def main(config_file):
     elif algorithm_name == "3dxy-gaussian-noise-metropolis":
         reference_sample = np.load("permanent_data/reference_data/3dxy_4x4x4_sites_temp_0_point_5_magnetisation_norm_"
                                    "reference_sample.npy")
+    else:
+        reference_sample = None
 
-    effective_sample_size = markov_chain_diagnostics.get_effective_sample_size(sample)
+    effective_sample_size = get_effective_sample_size(sample)
     print(f"Effective sample size = {effective_sample_size} (from a total sample size of {len(sample)}).")
 
-    reference_cdf = markov_chain_diagnostics.get_cumulative_distribution(reference_sample)
-    sample_cdf = markov_chain_diagnostics.get_cumulative_distribution(sample)
-
+    reference_cdf, sample_cdf = get_cumulative_distribution(reference_sample), get_cumulative_distribution(sample)
     plt.plot(reference_cdf[0], reference_cdf[1], color="r", linewidth=4, linestyle="-", label="reference data")
     plt.plot(sample_cdf[0], sample_cdf[1], color="k", linewidth=2, linestyle="-", label="xy-type-models data")
 

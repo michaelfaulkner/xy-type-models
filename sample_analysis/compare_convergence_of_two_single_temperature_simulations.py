@@ -1,15 +1,15 @@
+from markov_chain_diagnostics import get_cumulative_distribution, get_effective_sample_size
+from sample_getter import get_magnetisation_norm, get_potential
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
 import os
 import sys
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-sample_getter = importlib.import_module("sample_getter")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
@@ -19,27 +19,25 @@ def main(config_file_1, config_file_2):
      no_of_equilibration_sweeps_2, temperature) = get_required_config_data_and_error_check(config_file_1, config_file_2)
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
-        sample_1 = sample_getter.get_potential(output_directory_1, temperature, 0, no_of_sites)[
-                   no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_potential(output_directory_2, temperature, 0, no_of_sites)[
-                   no_of_equilibration_sweeps_2:]
+        sample_1 = get_potential(output_directory_1, temperature, 0, no_of_sites, no_of_equilibration_sweeps_1)
+        sample_2 = get_potential(output_directory_2, temperature, 0, no_of_sites, no_of_equilibration_sweeps_2)
     elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
           algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
-        sample_1 = sample_getter.get_magnetisation_norm(output_directory_1, temperature, 0, no_of_sites)[
-                 no_of_equilibration_sweeps_1:]
-        sample_2 = sample_getter.get_magnetisation_norm(output_directory_2, temperature, 0, no_of_sites)[
-                   no_of_equilibration_sweeps_2:]
+        sample_1 = get_magnetisation_norm(output_directory_1, temperature, 0, no_of_sites, no_of_equilibration_sweeps_1)
+        sample_2 = get_magnetisation_norm(output_directory_2, temperature, 0, no_of_sites, no_of_equilibration_sweeps_2)
+    else:
+        sample_1, sample_2 = None, None
 
-    effective_sample_size_1 = markov_chain_diagnostics.get_effective_sample_size(sample_1)
+    effective_sample_size_1 = get_effective_sample_size(sample_1)
     print(f"Effective sample size (first config file) = {effective_sample_size_1} (from a total sample size of "
           f"{len(sample_1)}).")
-    effective_sample_size_2 = markov_chain_diagnostics.get_effective_sample_size(sample_2)
+    effective_sample_size_2 = get_effective_sample_size(sample_2)
     print(f"Effective sample size (second config file) = {effective_sample_size_2} (from a total sample size of "
           f"{len(sample_2)}).")
 
-    sample_1_cdf = markov_chain_diagnostics.get_cumulative_distribution(sample_1)
-    sample_2_cdf = markov_chain_diagnostics.get_cumulative_distribution(sample_2)
+    sample_1_cdf = get_cumulative_distribution(sample_1)
+    sample_2_cdf = get_cumulative_distribution(sample_2)
     plt.plot(sample_1_cdf[0], sample_1_cdf[1], color="r", linewidth=4, linestyle="-", label="first config file")
     plt.plot(sample_2_cdf[0], sample_2_cdf[1], color="k", linewidth=2, linestyle="-", label="second config file")
 

@@ -1,17 +1,18 @@
+from sample_getter import get_physical_time_step
+from setup_scripts import check_for_observable_error, check_initial_job_index, get_sample_is_one_dimensional
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import sample_getter
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -20,11 +21,11 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
-    setup_scripts.check_for_observable_error(algorithm_name, observable_string)
-    setup_scripts.check_initial_job_index(initial_job_index)
+    check_for_observable_error(algorithm_name, observable_string)
+    check_initial_job_index(initial_job_index)
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
     print(observable_string)
-    sample_is_one_dimensional = setup_scripts.get_sample_is_one_dimensional(observable_string)
+    sample_is_one_dimensional = get_sample_is_one_dimensional(observable_string)
 
     start_time = time.time()
     for temperature_index, temperature in enumerate(temperatures):
@@ -32,13 +33,11 @@ def main(config_file, observable_string, no_of_histogram_bins=100):
         if no_of_jobs != 1:
             sample = get_sample_method(f"{output_directory}/job_0", temperature, temperature_index,
                                        no_of_sites)[no_of_equilibration_sweeps:]
-            physical_time_step = sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}/job_0",
-                                                                      temperature_index)
+            physical_time_step = get_physical_time_step(algorithm_name, f"{output_directory}/job_0", temperature_index)
         else:
             sample = get_sample_method(output_directory, temperature, temperature_index,
                                        no_of_sites)[no_of_equilibration_sweeps:]
-            physical_time_step = sample_getter.get_physical_time_step(algorithm_name, f"{output_directory}/job_0",
-                                                                      temperature_index)
+            physical_time_step = get_physical_time_step(algorithm_name, f"{output_directory}/job_0", temperature_index)
         if not sample_is_one_dimensional:
             sample = sample.transpose()[0]
 

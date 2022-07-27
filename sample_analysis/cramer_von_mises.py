@@ -1,10 +1,8 @@
 """This module contains methods that compute the Cramér-von Mises statistics of the magnetisation phase."""
+from sample_getter import get_magnetisation_phase
 from scipy import stats
-import importlib
 import math
 import numpy as np
-
-sample_getter = importlib.import_module("sample_getter")
 
 
 def get_cvm_mag_phase_vs_temperature(algorithm_name, output_directory, sample_directory, no_of_equilibration_sweeps,
@@ -29,15 +27,14 @@ def get_cvm_mag_phase_vs_temperature(algorithm_name, output_directory, sample_di
                 (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
                  no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
             cvm, cvm_error = np.mean(cvm_vs_job), np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5
-            cvms.append(cvm)
-            cvm_errors.append(cvm_error)
+            cvms.append(cvm), cvm_errors.append(cvm_error)
             cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
         cvm_file.close()
     return cvms, cvm_errors
 
 
 def get_cramervonmises_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
-                                              no_of_equilibration_sweeps):
+                                              no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns (for the sample of the magnetisation phase) the normalised Cramér-von Mises statistic
     n \omega_n^2 := n \int (F_n(x) - F(x))^2 dF(x), where n is the sample size and F(x) is the CDF of the continuous
@@ -62,14 +59,17 @@ def get_cramervonmises_of_magnetisation_phase(sample_directory, temperature, tem
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
+    no_of_equilibration_sweeps : None or int, optional
+        The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
 
     Returns
     -------
     numpy.ndarray
         The normalised Cramér-von Mises integral.  A float estimating the normalised Cramér-von Mises integral.
     """
-    return stats.cramervonmises(sample_getter.get_magnetisation_phase(
-        sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:], cdf="uniform",
-                                args=(-math.pi, 2.0 * math.pi)).statistic
+    return stats.cramervonmises(get_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
+                                                        no_of_equilibration_sweeps, thinning_level),
+                                cdf="uniform", args=(-math.pi, 2.0 * math.pi)).statistic

@@ -1,21 +1,19 @@
+from polyspectra import get_power_spectrum, get_second_spectrum, get_power_trispectrum_nonzero_mode
 from scipy.optimize import curve_fit
 from scipy.optimize import OptimizeWarning
-import importlib
+from setup_scripts import reverse_enumerate, setup_polyspectra_script
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import time
 import warnings
-polyspectra = importlib.import_module("polyspectra")
-setup_scripts = importlib.import_module("setup_scripts")
 
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=6,
          trispectrum_base_period_shift=1, target_auxiliary_frequency=None):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
-                                                                                              observable_string)
+     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(temperatures) + 1)))
     figure, axes = plt.subplots(3, figsize=(10, 10))
@@ -27,21 +25,21 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
 
     start_time = time.time()
-    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+    for temperature_index, temperature in reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
         current_color = next(colors)
-        power_spectrum = polyspectra.get_power_spectrum(algorithm_name, observable_string, output_directory,
-                                                        temperature, temperature_index, no_of_sites, no_of_sites_string,
-                                                        no_of_equilibration_sweeps, external_global_moves_string,
-                                                        no_of_jobs, pool)
-        second_spectrum = polyspectra.get_second_spectrum(algorithm_name, observable_string, output_directory,
-                                                          temperature, temperature_index, no_of_sites,
-                                                          no_of_sites_string, no_of_equilibration_sweeps,
-                                                          external_global_moves_string, no_of_jobs, pool)
-        power_trispectrum = polyspectra.get_power_trispectrum_nonzero_mode(
+        power_spectrum = get_power_spectrum(algorithm_name, observable_string, output_directory, temperature,
+                                            temperature_index, no_of_sites, no_of_sites_string,
+                                            external_global_moves_string, no_of_jobs, pool, no_of_equilibration_sweeps)
+        second_spectrum = get_second_spectrum(algorithm_name, observable_string, output_directory, temperature,
+                                              temperature_index, no_of_sites, no_of_sites_string,
+                                              external_global_moves_string, no_of_jobs, pool,
+                                              no_of_equilibration_sweeps)
+        power_trispectrum = get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, target_auxiliary_frequency)
+            no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, target_auxiliary_frequency,
+            no_of_equilibration_sweeps)
 
         # normalise polyspectra with respect to their low-frequency values
         if power_spectrum[1, 0] == 0.0:

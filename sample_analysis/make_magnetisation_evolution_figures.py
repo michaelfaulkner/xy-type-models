@@ -1,3 +1,5 @@
+from sample_getter import get_cartesian_magnetisation
+from setup_scripts import reverse_enumerate
 import importlib
 import math
 import matplotlib
@@ -7,13 +9,10 @@ import os
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -172,7 +171,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.xaxis.set_label_coords(1.005, 0.575), axis.yaxis.set_label_coords(0.565, 0.96)
 
     colors = ["black", "red"]
-    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+    for temperature_index, temperature in reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
         try:
             if use_external_global_moves:
@@ -187,15 +186,15 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                     f"{temperature:.4f}.npy")
         except IOError:
             if use_external_global_moves:
-                cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(
-                    f"{sample_directory}/job_{job_index}", temperature, temperature_index, no_of_sites)[
-                                          no_of_equilibration_sweeps:]
+                cartesian_magnetisation = get_cartesian_magnetisation(f"{sample_directory}/job_{job_index}",
+                                                                      temperature, temperature_index, no_of_sites,
+                                                                      no_of_equilibration_sweeps)
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
                         f"{temperature:.4f}_job_{job_index}.npy", cartesian_magnetisation)
             else:
-                cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(
-                    sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:]
+                cartesian_magnetisation = get_cartesian_magnetisation(sample_directory, temperature, temperature_index,
+                                                                      no_of_sites, no_of_equilibration_sweeps)
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
                         f"{temperature:.4f}.npy", cartesian_magnetisation)

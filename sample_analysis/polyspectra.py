@@ -1,19 +1,19 @@
 """This module contains methods that compute the polyspectra of some sample observable."""
+from sample_getter import get_sampling_frequency
 from scipy import signal
 from typing import List
-import importlib
 import math
 import numpy as np
+import sample_getter
 import statistics
 
-sample_getter = importlib.import_module("sample_getter")
 
 """Main methods (see further down for separate sections of single-observation methods and base methods)"""
 
 
 def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                       no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-                       sampling_frequency=None):
+                       no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                       no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} (with a
     standard error at each f) of the time series X(t) of observable_string, where T is the total simulation time,
@@ -49,14 +49,17 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -83,7 +86,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
             power_spectrum = get_single_observation_of_power_spectrum(algorithm_name, observable_string,
                                                                       output_directory, temperature, temperature_index,
                                                                       no_of_sites, no_of_equilibration_sweeps,
-                                                                      sampling_frequency)
+                                                                      thinning_level, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
             power_spectrum = np.concatenate([power_spectrum.flatten(),
                                              np.ones(len(power_spectrum[0]))]).reshape((3, -1))
@@ -93,7 +96,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
             power_spectra = pool.starmap(get_single_observation_of_power_spectrum,
                                          [(algorithm_name, observable_string,
                                            f"{output_directory}/job_{job_number}", temperature, temperature_index,
-                                           no_of_sites, no_of_equilibration_sweeps)
+                                           no_of_sites, no_of_equilibration_sweeps, thinning_level)
                                           for job_number in range(no_of_jobs)])
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             power_spectrum = get_power_spectrum_means_and_std_errors(power_spectra)
@@ -104,8 +107,8 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
 
 
 def get_second_spectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                        no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string,
-                        no_of_jobs, pool, sampling_frequency=None):
+                        no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                        no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the second spectrum (minus its Gaussian contribution)
     S_Y(f, s = 0) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s = 0) | ** 2] / T} (with a standard error at each f) of
@@ -144,14 +147,17 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -170,14 +176,14 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
     """
     return get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
                                             temperature_index, no_of_sites, no_of_sites_string,
-                                            no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-                                            0, sampling_frequency)
+                                            external_global_moves_string, no_of_jobs, pool, 0,
+                                            no_of_equilibration_sweeps, thinning_level, sampling_frequency)
 
 
 def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
-                                     temperature_index, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-                                     external_global_moves_string, no_of_jobs, pool, time_period_shift=10,
-                                     sampling_frequency=None):
+                                     temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
+                                     no_of_jobs, pool, time_period_shift=10, no_of_equilibration_sweeps=None,
+                                     thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
     (with a standard error at each f) of the correlator Y(t, s) := X(t) * X(t - s), where X(t) is the time series of
@@ -214,8 +220,6 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
@@ -225,6 +229,11 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
     time_period_shift : int, optional
         The number of multiples of the physical sampling interval by which the time series is shifted in order to form
         the correlator.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -251,7 +260,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         if no_of_jobs == 1:
             correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, time_period_shift, sampling_frequency)
+                time_period_shift, no_of_equilibration_sweeps, thinning_level, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
             correlator_power_spectrum = np.concatenate([correlator_power_spectrum.flatten(),
                                                         np.ones(len(correlator_power_spectrum[0]))]).reshape((3, -1))
@@ -261,7 +270,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
             correlator_power_spectra = pool.starmap(
                 get_single_observation_of_power_spectrum_of_correlator,
                 [(algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
-                  temperature_index, no_of_sites, no_of_equilibration_sweeps, time_period_shift)
+                  temperature_index, no_of_sites, time_period_shift, no_of_equilibration_sweeps, thinning_level)
                  for job_number in range(no_of_jobs)])
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             correlator_power_spectrum = get_power_spectrum_means_and_std_errors(correlator_power_spectra)
@@ -273,9 +282,9 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
 
 
 def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                          no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string,
-                          no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
-                          sampling_frequency=None):
+                          no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                          no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                          no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the shortcut estimator
     E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
@@ -321,8 +330,6 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
@@ -334,6 +341,11 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -373,12 +385,10 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
-            power_trispectrum = get_single_observation_of_power_trispectrum(algorithm_name, observable_string,
-                                                                            output_directory, temperature,
-                                                                            temperature_index, no_of_sites,
-                                                                            no_of_equilibration_sweeps,
-                                                                            no_of_auxiliary_frequency_octaves,
-                                                                            base_time_period_shift, sampling_frequency)
+            power_trispectrum = get_single_observation_of_power_trispectrum(
+                algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+                no_of_auxiliary_frequency_octaves, base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
+                sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
             power_trispectrum.append(np.ones(np.shape(power_trispectrum[2])))
         else:
@@ -387,8 +397,8 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
             power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
                                             [(algorithm_name, observable_string,
                                               f"{output_directory}/job_{job_number}", temperature,
-                                              temperature_index, no_of_sites, no_of_equilibration_sweeps,
-                                              no_of_auxiliary_frequency_octaves, base_time_period_shift,
+                                              temperature_index, no_of_sites, no_of_auxiliary_frequency_octaves,
+                                              base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
                                               sampling_frequency) for job_number in range(no_of_jobs)])
             # ...then extract the frequencies and spectra...
             auxiliary_frequencies = np.mean([simulation[0] for simulation in power_trispectra], axis=0)
@@ -411,9 +421,9 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
 
 
 def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                                    no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-                                    external_global_moves_string, no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6,
-                                    base_time_period_shift=1, sampling_frequency=None):
+                                    no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                                    no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                    no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the zero (auxiliary-frequency) mode
     S_X^3(f, f' = 0) := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} ds of the power trispectrum (with
@@ -452,8 +462,6 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
@@ -465,6 +473,11 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -495,7 +508,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         if no_of_jobs == 1:
             power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
+                no_of_auxiliary_frequency_octaves, base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
                 sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
             power_trispectrum_zero_mode = np.concatenate(
@@ -507,8 +520,8 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                                                        [(algorithm_name, observable_string,
                                                          f"{output_directory}/job_{job_number}",
                                                          temperature, temperature_index, no_of_sites,
-                                                         no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
-                                                         base_time_period_shift, sampling_frequency)
+                                                         no_of_auxiliary_frequency_octaves, base_time_period_shift,
+                                                         no_of_equilibration_sweeps, thinning_level, sampling_frequency)
                                                         for job_number in range(no_of_jobs)])
             # ...then extract the frequencies and spectra...
             frequencies = np.mean(np.array([simulation[0] for simulation in power_trispectra_zero_modes]), axis=0)
@@ -526,10 +539,10 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
 
 
 def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory, temperature,
-                                       temperature_index, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-                                       external_global_moves_string, no_of_jobs, pool,
-                                       no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
-                                       target_auxiliary_frequency=None, sampling_frequency=None):
+                                       temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
+                                       no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                       target_auxiliary_frequency=None, no_of_equilibration_sweeps=None,
+                                       thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of a single auxiliary-frequency mode of the shortcut estimator
     E[| int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) ds |] of the complex norm
@@ -575,8 +588,6 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
@@ -592,6 +603,11 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         The target auxiliary frequency.  Within each repeated simulation, the auxiliary-frequency mode (of the
         trispectrum) whose auxiliary-frequency value is closest to target_auxiliary_frequency is chosen.  If None is
         given, the largest auxiliary frequency is chosen.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -629,8 +645,8 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         if no_of_jobs == 1:
             power_trispectrum_nonzero_mode = get_single_observation_of_power_trispectrum_nonzero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves, base_time_period_shift,
-                target_auxiliary_frequency, sampling_frequency)
+                no_of_auxiliary_frequency_octaves, base_time_period_shift, target_auxiliary_frequency,
+                no_of_equilibration_sweeps, thinning_level, sampling_frequency)
             # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
             power_trispectrum_nonzero_mode.append(np.ones(np.shape(power_trispectrum_nonzero_mode[2])))
         else:
@@ -639,8 +655,8 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
             power_trispectra_nonzero_mode = pool.starmap(
                 get_single_observation_of_power_trispectrum_nonzero_mode,
                 [(algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
-                  temperature_index, no_of_sites, no_of_equilibration_sweeps, no_of_auxiliary_frequency_octaves,
-                  base_time_period_shift, target_auxiliary_frequency, sampling_frequency)
+                  temperature_index, no_of_sites, no_of_auxiliary_frequency_octaves, base_time_period_shift,
+                  target_auxiliary_frequency, no_of_equilibration_sweeps, thinning_level, sampling_frequency)
                  for job_number in range(no_of_jobs)])
             # ...then extract the frequencies and spectra...
             auxiliary_frequency = statistics.mean([simulation[0] for simulation in power_trispectra_nonzero_mode])
@@ -664,10 +680,9 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
 
 
 def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature,
-                                     temperature_index, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-                                     external_global_moves_string, no_of_jobs, pool,
-                                     no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
-                                     sampling_frequency=None):
+                                     temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
+                                     no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                     no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the complex norm (as defined) of the power trispectrum
     S_X^3(f, f') := int lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T} exp(- 2 * pi * i * f' * s)ds of the
@@ -713,8 +728,6 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         The number of lattice sites.
     no_of_sites_string : str
         The string describing the number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
     no_of_jobs : int
@@ -726,6 +739,11 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -765,24 +783,21 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
         if no_of_jobs == 1:
-            sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory,
-                                                                      sampling_frequency, temperature_index)
+            sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
+                                                        temperature_index)
             power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves,
+                base_time_period_shift, no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps, thinning_level,
                 sampling_frequency)
         else:
-            sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, f"{output_directory}/job_1",
-                                                                      sampling_frequency, temperature_index)
+            sampling_frequency = get_sampling_frequency(algorithm_name, f"{output_directory}/job_1", sampling_frequency,
+                                                        temperature_index)
             # no_of_jobs > 1, so use the multiprocessing pool to compute the set of estimates of the spectra of the
             # correlators corresponding to each repeated simulation...
-            power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators,
-                                                        [(algorithm_name, observable_string,
-                                                          f"{output_directory}/job_{job_number}",
-                                                          temperature, temperature_index, no_of_sites,
-                                                          no_of_equilibration_sweeps, base_time_period_shift,
-                                                          no_of_auxiliary_frequency_octaves, sampling_frequency)
-                                                         for job_number in range(no_of_jobs)])
+            power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators, [
+                (algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
+                 temperature_index, no_of_sites, base_time_period_shift, no_of_auxiliary_frequency_octaves,
+                 no_of_equilibration_sweeps, thinning_level, sampling_frequency) for job_number in range(no_of_jobs)])
             # ...then average over the set
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
@@ -810,8 +825,8 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
 
 
 def get_single_observation_of_power_spectrum(algorithm_name, observable_string, output_directory, temperature,
-                                             temperature_index, no_of_sites, no_of_equilibration_sweeps,
-                                             sampling_frequency=None):
+                                             temperature_index, no_of_sites, no_of_equilibration_sweeps=None,
+                                             thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of a single observation lim_{T -> inf} [| \Delta \tilde{X}_T(f) | ** 2 / T] of the power
     spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} of the time series X(t) of
@@ -846,8 +861,11 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -863,17 +881,16 @@ def get_single_observation_of_power_spectrum(algorithm_name, observable_string, 
         {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric about
         f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
     """
-    sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_index)
+    sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_index)
     time_series = get_time_series(observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                                  no_of_equilibration_sweeps)
+                                  no_of_equilibration_sweeps, thinning_level)
     return get_component_averaged_power_spectrum(time_series, sampling_frequency)
 
 
 def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory,
                                                            temperature, temperature_index, no_of_sites,
-                                                           no_of_equilibration_sweeps, time_period_shift=10,
-                                                           sampling_frequency=None):
+                                                           time_period_shift=10, no_of_equilibration_sweeps=None,
+                                                           thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of a single observation lim_{T -> inf} [| \Delta \tilde{Y}_T(f) | ** 2 / T] of the power
     spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
@@ -909,11 +926,14 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     time_period_shift : int, optional
         The number of multiples of the physical sampling interval by which the time series is shifted in order to form
         the correlator.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -929,10 +949,9 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
         frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because
         the power spectrum is symmetric about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.
     """
-    sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_index)
+    sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_index)
     time_series = get_time_series(observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                                  no_of_equilibration_sweeps)
+                                  no_of_equilibration_sweeps, thinning_level)
     if time_period_shift >= len(time_series[0]):
         raise Exception("time_period_shift must be an integer less than the sample size.")
     return get_component_averaged_power_spectrum(get_two_point_correlator(
@@ -941,9 +960,9 @@ def get_single_observation_of_power_spectrum_of_correlator(algorithm_name, obser
 
 
 def get_single_observation_of_power_trispectrum(algorithm_name, observable_string, output_directory, temperature,
-                                                temperature_index, no_of_sites, no_of_equilibration_sweeps,
-                                                no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
-                                                sampling_frequency=None):
+                                                temperature_index, no_of_sites, no_of_auxiliary_frequency_octaves=6,
+                                                base_time_period_shift=1, no_of_equilibration_sweeps=None,
+                                                thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of a single observation
     | int lim_{T -> inf}{| \Delta \tilde{Y}_T(f; s) ∣ ** 2 / T} exp(- 2 * pi * i * f' * s) | ds of the shortcut
@@ -983,13 +1002,16 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     no_of_auxiliary_frequency_octaves : int, optional
         The number of auxiliary-frequency octaves over which the trispectrum is estimated.
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -1010,15 +1032,11 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
         [odd].  The nth sub-array of the third component is the (single observation of the shortcut estimator of the)
         trispectrum at the auxiliary-frequency value given by the nth element of the first component.
     """
-    sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_index)
-    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string,
-                                                                                output_directory, temperature,
-                                                                                temperature_index, no_of_sites,
-                                                                                no_of_equilibration_sweeps,
-                                                                                base_time_period_shift,
-                                                                                no_of_auxiliary_frequency_octaves,
-                                                                                sampling_frequency)
+    sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_index)
+    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
+        algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+        base_time_period_shift, no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps, thinning_level,
+        sampling_frequency)
     transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()
     norm_of_spectra_in_auxiliary_frequency_space = np.array(
         [np.absolute(item) for index, item in enumerate(np.fft.fft(transposed_power_spectra).transpose())
@@ -1030,8 +1048,8 @@ def get_single_observation_of_power_trispectrum(algorithm_name, observable_strin
 
 def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory,
                                                           temperature, temperature_index, no_of_sites,
-                                                          no_of_equilibration_sweeps,
                                                           no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                                          no_of_equilibration_sweeps=None, thinning_level=None,
                                                           sampling_frequency=None):
     r"""
     Returns an estimate of a single observation int lim_{T -> inf}[| \Delta \tilde{Y}_T(f, s) | ** 2 / T] ds of the
@@ -1069,13 +1087,16 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     no_of_auxiliary_frequency_octaves : int, optional
         The number of auxiliary-frequency octaves over which the trispectrum is estimated.
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -1093,16 +1114,17 @@ def get_single_observation_of_power_trispectrum_zero_mode(algorithm_name, observ
     """
     power_spectra_of_trispectrum_correlators = get_power_spectra_of_trispectrum_correlators(
         algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-        no_of_equilibration_sweeps, base_time_period_shift, no_of_auxiliary_frequency_octaves, sampling_frequency)
+        base_time_period_shift, no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps, thinning_level,
+        sampling_frequency)
     return np.concatenate([np.mean(power_spectra_of_trispectrum_correlators[:, 0], axis=0),
                            np.sum(power_spectra_of_trispectrum_correlators[:, 1], axis=0)]).reshape((2, -1))
 
 
 def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory,
                                                              temperature, temperature_index, no_of_sites,
-                                                             no_of_equilibration_sweeps,
                                                              no_of_auxiliary_frequency_octaves=6,
                                                              base_time_period_shift=1, target_auxiliary_frequency=None,
+                                                             no_of_equilibration_sweeps=None, thinning_level=None,
                                                              sampling_frequency=None):
     r"""
     Returns an estimate of a single observation
@@ -1144,8 +1166,6 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     no_of_auxiliary_frequency_octaves : int, optional
         The number of auxiliary-frequency octaves over which the trispectrum is estimated.
     base_time_period_shift : int, optional
@@ -1155,6 +1175,11 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
         The target auxiliary frequency.  The auxiliary-frequency mode (of the trispectrum) whose auxiliary-frequency
         value is closest to target_auxiliary_frequency is chosen.  If None is given, the largest auxiliary frequency is
         chosen.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -1172,8 +1197,7 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
         finite-time stationary signal.  The third component is the trispectrum at the auxiliary-frequency value given
         by the first component.
     """
-    sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_index)
+    sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_index)
     auxiliary_frequencies = (np.array([index for index in range(1, 2 ** (no_of_auxiliary_frequency_octaves + 1))])
                              * sampling_frequency / base_time_period_shift
                              / 2 ** (no_of_auxiliary_frequency_octaves + 1))
@@ -1184,13 +1208,10 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
     auxiliary_frequency = auxiliary_frequencies[auxiliary_frequency_mode]
     '''auxiliary_frequency = auxiliary_frequency_mode * sampling_frequency / base_time_period_shift / 2 ** (
             no_of_auxiliary_frequency_octaves + 1)'''
-    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string,
-                                                                                output_directory, temperature,
-                                                                                temperature_index, no_of_sites,
-                                                                                no_of_equilibration_sweeps,
-                                                                                base_time_period_shift,
-                                                                                no_of_auxiliary_frequency_octaves,
-                                                                                sampling_frequency)
+    power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
+        algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
+        base_time_period_shift, no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps, thinning_level,
+        sampling_frequency)
     norm_of_spectrum_at_auxiliary_frequency_mode = np.absolute(
         np.fft.fft(power_spectra_of_correlators[:, 1].transpose()).transpose()[auxiliary_frequency_mode])
     return [auxiliary_frequency, power_spectra_of_correlators[0, 0], norm_of_spectrum_at_auxiliary_frequency_mode]
@@ -1200,7 +1221,7 @@ def get_single_observation_of_power_trispectrum_nonzero_mode(algorithm_name, obs
 
 
 def get_time_series(observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                    no_of_equilibration_sweeps):
+                    no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the time series of observable_string.
 
@@ -1217,8 +1238,11 @@ def get_time_series(observable_string, output_directory, temperature, temperatur
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
 
     Returns
     -------
@@ -1228,11 +1252,11 @@ def get_time_series(observable_string, output_directory, temperature, temperatur
         sampling interval.
     """
     get_sample_method = getattr(sample_getter, "get_" + observable_string)
-    sample = get_sample_method(output_directory, temperature, temperature_index, no_of_sites)[
-             no_of_equilibration_sweeps:]
+    sample = get_sample_method(output_directory, temperature, temperature_index, no_of_sites,
+                               no_of_equilibration_sweeps, thinning_level)
     sample = np.atleast_2d(sample)
     if len(sample) > 1:
-        sample = sample.transpose()
+        return sample.transpose()
     return sample
 
 
@@ -1310,9 +1334,9 @@ def get_component_averaged_power_spectrum(time_series, sampling_frequency):
 
 
 def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_string, output_directory, temperature,
-                                                 temperature_index, no_of_sites, no_of_equilibration_sweeps,
-                                                 base_time_period_shift, no_of_auxiliary_frequency_octaves,
-                                                 sampling_frequency):
+                                                 temperature_index, no_of_sites, base_time_period_shift,
+                                                 no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps=None,
+                                                 thinning_level=None, sampling_frequency=None):
     r"""
     Returns a numpy array of single observations of estimates of the quantity
     lim_{T -> inf}[\Delta \tilde{Y}_T(f; s) ∣ ** 2 / T] used to estimate the shortcut estimator
@@ -1352,13 +1376,16 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
         The index of the current sampling temperature within the configuration file.
     no_of_sites : int
         The number of lattice sites.
-    no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
     no_of_auxiliary_frequency_octaves : int, optional
         The number of auxiliary-frequency octaves over which the trispectrum is estimated.
     base_time_period_shift : int, optional
         The elementary number of multiples of the physical sampling interval by which the time series is shifted in
         order to form the correlator whose power spectrum is computed in order to compute the trispectrum.
+    no_of_equilibration_sweeps : None or int, optional
+        The number of discarded equilibration observations.  If None, no_of_equilibration_sweeps = 0.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
     sampling_frequency : float or None, optional
         The sampling frequency.  If None is given, a float is computed via sample_getter.get_physical_time_step(),
         which computes the emergent physical time step of the Metropolis algorithm, where the physical timescale arises
@@ -1377,10 +1404,9 @@ def get_power_spectra_of_trispectrum_correlators(algorithm_name, observable_stri
         the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
         stationary signal.
     """
-    sampling_frequency = sample_getter.get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
-                                                              temperature_index)
+    sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency, temperature_index)
     time_series = get_time_series(observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                                  no_of_equilibration_sweeps)
+                                  no_of_equilibration_sweeps, thinning_level)
     if base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) >= len(time_series[0]):
         raise Exception("base_time_period_shift * 2 ** (no_of_auxiliary_frequency_octaves + 1) must be less than the "
                         "smallest power of 2 that is less than the sample size.")

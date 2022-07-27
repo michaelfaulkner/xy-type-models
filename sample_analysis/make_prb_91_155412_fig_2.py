@@ -1,19 +1,19 @@
+from markov_chain_diagnostics import get_sample_mean_and_error
+from sample_getter import get_acceptance_rates
 import importlib
 import math
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
 import os
+import sample_getter
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
@@ -41,12 +41,12 @@ def main(model):
      temperatures, _, _, no_of_jobs, _, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
     try:
-        sample_getter.get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)
+        get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)
     except OSError:
         raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_local_moves}' "
                         f"in the top directory.")
     try:
-        sample_getter.get_acceptance_rates(f"{output_directory_all_moves}/job_0", 0)
+        get_acceptance_rates(f"{output_directory_all_moves}/job_0", 0)
     except OSError:
         raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_all_moves}' in "
                         f"the top directory.")
@@ -104,20 +104,18 @@ def main(model):
         for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
             acceptance_rates_local_moves = np.mean(
-                [sample_getter.get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}",
-                                                    temperature_index) for job_number in range(no_of_jobs)], axis=0)
+                [get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}", temperature_index) for
+                 job_number in range(no_of_jobs)], axis=0)
             acceptance_rates_all_moves = np.mean(
-                [sample_getter.get_acceptance_rates(output_directory_all_moves + f"/job_{job_number}",
-                                                    temperature_index) for job_number in range(no_of_jobs)], axis=0)
+                [get_acceptance_rates(output_directory_all_moves + f"/job_{job_number}", temperature_index) for
+                 job_number in range(no_of_jobs)], axis=0)
 
-            sample_means_and_errors_local_moves = np.transpose(
-                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
-                        output_directory_local_moves + f"/job_{job_number}", temperature, temperature_index,
-                        no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
-            sample_means_and_errors_all_moves = np.transpose(
-                np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
-                        output_directory_all_moves + f"/job_{job_number}", temperature, temperature_index,
-                        no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
+            sample_means_and_errors_local_moves = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
+                get_sample_method(output_directory_local_moves + f"/job_{job_number}", temperature, temperature_index,
+                                  no_of_sites, no_of_equilibration_sweeps)] for job_number in range(no_of_jobs)])))
+            sample_means_and_errors_all_moves = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
+                get_sample_method(output_directory_all_moves + f"/job_{job_number}", temperature, temperature_index,
+                                  no_of_sites, no_of_equilibration_sweeps)] for job_number in range(no_of_jobs)])))
 
             sample_mean_local_moves = np.mean(sample_means_and_errors_local_moves[0])
             sample_error_local_moves = np.linalg.norm(sample_means_and_errors_local_moves[1])
@@ -130,8 +128,7 @@ def main(model):
 
             output_file.write(f"{temperature:.14e}".ljust(30) + f"{chi_ratio:.14e}".ljust(30) +
                               f"{chi_ratio_error:.14e}".ljust(30) + f"{sample_mean_local_moves:.14e}".ljust(30) +
-                              f"{sample_error_local_moves:.14e}".ljust(30) +
-                              f"{sample_mean_all_moves:.14e}".ljust(30) +
+                              f"{sample_error_local_moves:.14e}".ljust(30) + f"{sample_mean_all_moves:.14e}".ljust(30) +
                               f"{sample_error_all_moves:.14e}".ljust(30) + "\n")
             if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
                 accept_rates_file.write(f"{temperature:.14e}".ljust(30) +

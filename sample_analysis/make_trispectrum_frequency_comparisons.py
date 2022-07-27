@@ -1,32 +1,28 @@
-import importlib
+from polyspectra import get_power_trispectrum, get_power_trispectrum_zero_mode
+from setup_scripts import reverse_enumerate, setup_polyspectra_script
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import time
 
-# import additional modules
-setup_scripts = importlib.import_module("setup_scripts")
-polyspectra = importlib.import_module("polyspectra")
-
 
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=4,
          trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
-                                                                                              observable_string)
+     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
-    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+    for temperature_index, temperature in reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
 
-        power_trispectrum = polyspectra.get_power_trispectrum(
+        power_trispectrum = get_power_trispectrum(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
-        power_trispectrum_zero_mode = polyspectra.get_power_trispectrum_zero_mode(
+            no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, no_of_equilibration_sweeps)
+        power_trispectrum_zero_mode = get_power_trispectrum_zero_mode(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift)
+            no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+            no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, no_of_equilibration_sweeps)
 
         # normalise power trispectra with respect to their low-frequency values
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]
@@ -85,8 +81,8 @@ if __name__ == "__main__":
                         "respectively.")
     if len(sys.argv) == 3:
         print("Two positional arguments provided.  The first / second must be the location of the configuration file / "
-              "the string of the observable whose power trispectrum you wish to estimate.  In addition, you may provide "
-              "no_of_trispectrum_auxiliary_frequency_octaves (default value is 4) and trispectrum_base_period_shift "
+              "the string of the observable whose power trispectrum you wish to estimate.  In addition, you may provide"
+              " no_of_trispectrum_auxiliary_frequency_octaves (default value is 4) and trispectrum_base_period_shift "
               "(default value is 1) in the third and fourth positions, respectively.")
         main(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:

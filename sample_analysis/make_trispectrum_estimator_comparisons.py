@@ -1,30 +1,26 @@
-import importlib
+from polyspectra import get_power_trispectrum, get_power_trispectrum_as_defined
+from setup_scripts import reverse_enumerate, setup_polyspectra_script
 import matplotlib.pyplot as plt
 import sys
 import time
 
-# import additional modules
-setup_scripts = importlib.import_module("setup_scripts")
-polyspectra = importlib.import_module("polyspectra")
-
 
 def main(config_file, observable_string, no_of_trispectrum_octaves=3, trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_scripts.setup_polyspectra_script(config_file,
-                                                                                              observable_string)
+     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
-    for temperature_index, temperature in setup_scripts.reverse_enumerate(temperatures):
+    for temperature_index, temperature in reverse_enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
 
-        power_trispectrum = polyspectra.get_power_trispectrum(
+        power_trispectrum = get_power_trispectrum(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-            no_of_trispectrum_octaves, trispectrum_base_period_shift)
-        power_trispectrum_as_defined = polyspectra.get_power_trispectrum_as_defined(
+            no_of_sites_string, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
+            trispectrum_base_period_shift, no_of_equilibration_sweeps)
+        power_trispectrum_as_defined = get_power_trispectrum_as_defined(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string, no_of_jobs, pool,
-            no_of_trispectrum_octaves, trispectrum_base_period_shift)
+            no_of_sites_string, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
+            trispectrum_base_period_shift, no_of_equilibration_sweeps)
 
         # normalise each estimator of power trispectrum with respect to their low-frequency values
         power_trispectrum[2] = [spectrum / spectrum[0] for spectrum in power_trispectrum[2]]

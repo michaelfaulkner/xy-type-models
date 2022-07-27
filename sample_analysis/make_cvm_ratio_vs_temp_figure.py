@@ -1,4 +1,5 @@
-from scipy import stats
+from cramer_von_mises import get_cvm_mag_phase_vs_temperature
+from setup_scripts import setup_pool
 import importlib
 import math
 import matplotlib
@@ -8,14 +9,10 @@ import os
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-cramer_von_mises = importlib.import_module("cramer_von_mises")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -33,7 +30,7 @@ def main():
      ) = run_script.get_config_data(config_files_metrop_local[0])
     main_cvm_output_directory = sample_directory_8x8_metrop_all.replace("/8x8_metrop", "")
     cvm_ratio_output_directory = sample_directory_8x8_metrop_local.replace("/8x8_metrop_local", "")
-    pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
+    pool = setup_pool(no_of_jobs_metrop, max_no_of_cpus)
 
     figure, axis = plt.subplots(1)
     figure.tight_layout()
@@ -61,12 +58,12 @@ def main():
             cvm_ratio_file.write("# temperature".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error".ljust(30) +
                                  "CvM (all moves)".ljust(30) + "CvM error (all moves)".ljust(30) +
                                  "CvM (local only)".ljust(30) + "CvM error (local only)".ljust(30) + "\n")
-            cvm_metrop_alls, cvm_metrop_all_errors = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            cvm_metrop_alls, cvm_metrop_all_errors = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, main_cvm_output_directory,
                 f"{main_cvm_output_directory}/{length}x{length}_metrop", no_of_equilibration_sweeps_metrop,
                 no_of_observations_metrop, temperatures, external_global_moves_string_all, no_of_jobs_metrop, pool,
                 length)
-            cvm_metrop_locals, cvm_metrop_local_errors = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            cvm_metrop_locals, cvm_metrop_local_errors = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, cvm_ratio_output_directory,
                 f"{cvm_ratio_output_directory}/{length}x{length}_metrop_local_moves", no_of_equilibration_sweeps_metrop,
                 no_of_observations_metrop, temperatures, external_global_moves_string_local, no_of_jobs_metrop, pool,

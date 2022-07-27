@@ -1,15 +1,7 @@
-import importlib
 import matplotlib.pyplot as plt
 import math
 import numpy as np
 import os
-import sys
-
-# import additional modules; have to add the directory that contains run.py to sys.path
-this_directory = os.path.dirname(os.path.abspath(__file__))
-directory_containing_run_script = os.path.abspath(this_directory + "/../")
-sys.path.insert(0, directory_containing_run_script)
-sample_getter = importlib.import_module("sample_getter")
 
 
 def main():

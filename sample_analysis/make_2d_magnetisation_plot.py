@@ -1,3 +1,6 @@
+from markov_chain_diagnostics import get_cumulative_distribution
+from sample_getter import get_cartesian_magnetisation, get_external_global_move, get_phase_in_polar_coordinates
+from setup_scripts import check_initial_job_index, setup_pool
 import importlib
 import math
 import matplotlib
@@ -8,13 +11,10 @@ import os
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -27,7 +27,7 @@ def main(config_file, no_of_histogram_bins=100):
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
         raise SystemExit
-    setup_scripts.check_initial_job_index(initial_job_index)
+    check_initial_job_index(initial_job_index)
 
     start_time = time.time()
     if no_of_jobs == 1:
@@ -35,7 +35,7 @@ def main(config_file, no_of_histogram_bins=100):
                    temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
                    no_of_histogram_bins, job_index=None)
     else:
-        pool = setup_scripts.setup_pool(no_of_jobs, max_no_of_cpus)
+        pool = setup_pool(no_of_jobs, max_no_of_cpus)
         pool.starmap(make_plots, [
             (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
              temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
@@ -55,11 +55,11 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
 
     for temperature_index, temperature in enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
-        cartesian_magnetisation = sample_getter.get_cartesian_magnetisation(sample_directory, temperature,
-                                                                            temperature_index, no_of_sites)
+        cartesian_magnetisation = get_cartesian_magnetisation(sample_directory, temperature, temperature_index,
+                                                              no_of_sites)
         magnetisation_norm = np.linalg.norm(cartesian_magnetisation, axis=1)
-        magnetisation_phase = np.array([sample_getter.get_phase_in_polar_coordinates(observation)
-                                        for observation in cartesian_magnetisation])
+        magnetisation_phase = np.array([get_phase_in_polar_coordinates(observation) for observation in
+                                        cartesian_magnetisation])
         cartesian_magnetisation = cartesian_magnetisation.transpose()
         figure, axes = plt.subplots(1, 2, figsize=(20, 10))
 
@@ -77,7 +77,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
         magnetisation_phase = magnetisation_phase[no_of_equilibration_sweeps:]
 
         if use_external_global_moves and np.mean(magnetisation_norm) > (2.0 * no_of_sites) ** (-1.0 / 16.0):
-            external_global_move = sample_getter.get_external_global_move(
+            external_global_move = get_external_global_move(
                 sample_directory, temperature, temperature_index, no_of_sites)[no_of_equilibration_sweeps:]
             if np.any(external_global_move != 0):
                 global_move_event_times = np.where(np.linalg.norm(external_global_move, axis=1).astype(int) != 0)[0]
@@ -124,15 +124,14 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
         set_magnetisation_evolution_axes(axes)
         axes[1].tick_params(axis='y', colors='red')
         axes[1].set_ylabel(r"$\pi \left( \phi_m = x \right)$", fontsize=20, labelpad=4, color="red")
-        axes[0].plot(cartesian_magnetisation[0, :10000], cartesian_magnetisation[1, :10000], linestyle="solid", linewidth=1,
-                     color="black")
+        axes[0].plot(cartesian_magnetisation[0, :10000], cartesian_magnetisation[1, :10000], linestyle="solid",
+                     linewidth=1, color="black")
         axes[1].hist(magnetisation_phase, bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
         cdf_axis = axes[1].twinx()
         cdf_axis.set_ylim(0.0, 1.0)
         cdf_axis.tick_params(which='major', width=2, length=7, labelsize=18, pad=10)
         cdf_axis.set_ylabel(r"$F_{\phi_m,n}(x)$", fontsize=20, labelpad=-30)
-        cdf_axis.plot(*markov_chain_diagnostics.get_cumulative_distribution(magnetisation_phase), color="black",
-                      linewidth=2, linestyle="-")
+        cdf_axis.plot(*get_cumulative_distribution(magnetisation_phase), color="black", linewidth=2, linestyle="-")
         cdf_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
         cdf_axis.yaxis.set_major_formatter('{x:.1f}')
         figure.savefig(f"{output_directory}/magnetisation_evolution_{algorithm_name.replace('-', '_')}_"

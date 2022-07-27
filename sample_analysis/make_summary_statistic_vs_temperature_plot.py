@@ -1,8 +1,12 @@
+from sample_getter import get_acceptance_rates, get_no_of_events
+from setup_scripts import check_initial_job_index, check_for_observable_vs_model_error
+from markov_chain_diagnostics import get_sample_mean_and_error
 import importlib
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import numpy as np
 import os
+import sample_getter
 import sys
 import time
 
@@ -10,9 +14,6 @@ import time
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
 run_script = importlib.import_module("run")
 
 
@@ -21,7 +22,7 @@ def main(config_file, observable_string):
      external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
     check_for_observable_error(algorithm_name, observable_string)
-    setup_scripts.check_initial_job_index(initial_job_index)
+    check_initial_job_index(initial_job_index)
 
     try:
         with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
@@ -34,9 +35,9 @@ def main(config_file, observable_string):
                            f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
         if observable_string == "acceptance_rates":
             if no_of_jobs == 1:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory, 0)
+                acceptance_rates = get_acceptance_rates(output_directory, 0)
             else:
-                acceptance_rates = sample_getter.get_acceptance_rates(output_directory + "/job_1", 0)
+                acceptance_rates = get_acceptance_rates(output_directory + "/job_1", 0)
             if len(acceptance_rates) == 2:
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "rotational acceptance rate" + "\n")
@@ -55,9 +56,9 @@ def main(config_file, observable_string):
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
         elif observable_string == "no_of_events":
             if no_of_jobs == 1:
-                no_of_events = sample_getter.get_no_of_events(output_directory, 0)
+                no_of_events = get_no_of_events(output_directory, 0)
             else:
-                no_of_events = sample_getter.get_no_of_events(output_directory + "/job_1", 0)
+                no_of_events = get_no_of_events(output_directory + "/job_1", 0)
             if len(no_of_events) == 1:
                 output_file.write("# temperature".ljust(30) + "number of events (field rotations)" + "\n")
             else:
@@ -70,6 +71,8 @@ def main(config_file, observable_string):
         if no_of_jobs > 1:
             no_of_cpus = mp.cpu_count()
             pool = mp.Pool(no_of_cpus)
+        else:
+            pool = None
 
         means = []
         errors = []
@@ -105,14 +108,13 @@ def main(config_file, observable_string):
             else:
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
-                    sample = get_sample_method(output_directory, temperature, temperature_index, no_of_sites)[
-                             no_of_equilibration_sweeps:]
-                    sample_mean, sample_error = markov_chain_diagnostics.get_sample_mean_and_error(sample)
+                    sample_mean, sample_error = get_sample_mean_and_error(get_sample_method(
+                        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
                 else:
-                    sample_means_and_errors = np.transpose(
-                        np.array(pool.starmap(markov_chain_diagnostics.get_sample_mean_and_error, [[get_sample_method(
-                            output_directory + "/job_" + str(job_number), temperature, temperature_index,
-                            no_of_sites)[no_of_equilibration_sweeps:]] for job_number in range(no_of_jobs)])))
+                    sample_means_and_errors = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
+                        get_sample_method(output_directory + "/job_" + str(job_number), temperature, temperature_index,
+                                          no_of_sites, no_of_equilibration_sweeps)]
+                        for job_number in range(no_of_jobs)])))
                     sample_mean = np.mean(sample_means_and_errors[0])
                     sample_error = np.linalg.norm(sample_means_and_errors[1])
                 output_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_mean:.14e}".ljust(35) +
@@ -166,7 +168,7 @@ def check_for_observable_error(algorithm_name, observable_string):
         print("ConfigurationError: These samples were generated by a Metropolis algorithm: rather than "
               "no_of_events, give acceptance_rates as the second positional argument.")
         raise SystemExit
-    setup_scripts.check_for_observable_vs_model_error(algorithm_name, observable_string)
+    check_for_observable_vs_model_error(algorithm_name, observable_string)
 
 
 if __name__ == "__main__":
