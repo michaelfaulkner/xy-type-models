@@ -74,14 +74,13 @@ def main(no_of_system_sizes=6):
     colors = ["black", "red", "blue", "green", "tab:brown", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
 
-    low_temp_cvm_ratios, low_temp_cvm_ratio_errors = [], []
     low_temp_sample_variance_vs_system_size_local = []
     low_temp_sample_variance_error_vs_system_size_local = []
     low_temp_sample_variance_vs_system_size_all = []
     low_temp_sample_variance_error_vs_system_size_all = []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
-        print(f"No of sites, N = {length}x{length}")
+        print(f"Number of sites, N = {length}x{length}")
         compute_physical_time_steps(algorithm_name, external_global_moves_string_all, output_directory_low_temp,
                                     sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
                                     no_of_observations_low_temp, no_of_jobs_low_temp, pool)
@@ -95,41 +94,34 @@ def main(no_of_system_sizes=6):
         twist_probabilities_high_temps, twist_probability_errors_high_temps = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_higher_temps, sample_directories_high_temps[system_size_index],
             temperatures_high_temps, length, no_of_observations_high_temps, no_of_jobs_high_temps, pool)
-        twist_probabilities = np.array([*twist_probabilities_low_temp, *twist_probabilities_mid_temps,
-                                        *twist_probabilities_high_temps]) / (math.pi ** 2 / 3.0)
-        twist_probability_errors = np.array([*twist_probability_errors_low_temp, *twist_probability_errors_mid_temps,
-                                             *twist_probability_errors_high_temps]) / (math.pi ** 2 / 3.0)
+        twist_probabilities = [*twist_probabilities_low_temp, *twist_probabilities_mid_temps,
+                               *twist_probabilities_high_temps]
+        twist_probability_errors = [*twist_probability_errors_low_temp, *twist_probability_errors_mid_temps,
+                                    *twist_probability_errors_high_temps]
 
-        low_temp_cvm_local, low_temp_cvm_local_error = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
-            algorithm_name, output_directory_low_temp, sample_directories_low_temp_local[system_size_index],
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, temperatures_low_temp,
-            external_global_moves_string_local, no_of_jobs_low_temp, pool, length)
-        low_temp_cvm_all, low_temp_cvm_all_error = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
-            algorithm_name, output_directory_low_temp, sample_directories_low_temp_all[system_size_index],
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, temperatures_low_temp,
-            external_global_moves_string_all, no_of_jobs_low_temp, pool, length)
-        low_temp_cvm_ratios.append(low_temp_cvm_all[0] / low_temp_cvm_local[0])
-        low_temp_cvm_ratio_errors.append(math.sqrt(
-            (low_temp_cvm_all_error[0] / low_temp_cvm_local[0]) ** 2 +
-            (low_temp_cvm_all[0] * low_temp_cvm_local_error[0] / low_temp_cvm_local[0] ** 2) ** 2))
-
+        """n.b., the 1 / (math.pi ** 2 / 3.0) factors below divide the sample variances by their expected value"""
         (low_temp_sample_variances_local,
-         low_temp_sample_variance_errors_local) = get_mag_phase_sample_variances_and_errors(
+         low_temp_sample_variance_errors_local) = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name, external_global_moves_string_local, output_directory_low_temp,
             sample_directories_low_temp_local[system_size_index], temperatures_low_temp, length,
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)
-        low_temp_sample_variances_all, low_temp_sample_variance_errors_all = get_mag_phase_sample_variances_and_errors(
+            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
+                math.pi ** 2 / 3.0)
+        (low_temp_sample_variances_all,
+         low_temp_sample_variance_errors_all) = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name, external_global_moves_string_all, output_directory_low_temp,
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)
-        _, _ = get_mag_phase_sample_variances_and_errors(
+            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
+                math.pi ** 2 / 3.0)
+        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
             sample_directories_mid_temps[system_size_index], temperatures_mid_temps, length,
-            no_of_equilibration_sweeps_mid_temps, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool)
-        _, _ = get_mag_phase_sample_variances_and_errors(
+            no_of_equilibration_sweeps_mid_temps, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool)) / (
+                math.pi ** 2 / 3.0)
+        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
             sample_directories_high_temps[system_size_index], temperatures_high_temps, length,
-            no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, no_of_jobs_high_temps, pool)
+            no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, no_of_jobs_high_temps, pool)) / (
+                math.pi ** 2 / 3.0)
 
         low_temp_sample_variance_vs_system_size_local.append(low_temp_sample_variances_local[0])
         low_temp_sample_variance_error_vs_system_size_local.append(low_temp_sample_variance_errors_local[0])
@@ -139,22 +131,13 @@ def main(no_of_system_sizes=6):
         axes[0].errorbar(temperatures, twist_probabilities, twist_probability_errors, marker=".", markersize=10,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
 
-    cvm_ratio_file = open(
-        f"{output_directory_low_temp}/cvm_ratio_vs_system_size_{algorithm_name.replace('-', '_')}_temp_eq_"
-        f"{temperatures_low_temp[0]:.4f}_{no_of_observations_low_temp}_obs_{no_of_jobs_low_temp}_jobs.tsv", "w")
-    cvm_ratio_file.write("# no of sites".ljust(30) + "CvM ratio".ljust(30) + "CvM ratio error" + "\n")
-    for linear_system_size_index, linear_system_size in enumerate(linear_system_sizes):
-        cvm_ratio_file.write(f"{linear_system_size ** 2}".ljust(30) +
-                             f"{low_temp_cvm_ratios[linear_system_size_index]:.14e}".ljust(30) +
-                             f"{low_temp_cvm_ratio_errors[linear_system_size_index]:.14e}" + "\n")
-    cvm_ratio_file.close()
-
-    inverse_linear_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
-    # TODO add errors in the following plotting functions
-    axes[1].plot(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_local, marker=".", markersize=8,
-                 color="black", linestyle='None', label="local dynamics only")
-    axes[1].plot(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_all, marker="*", markersize=8,
-                 color="red", linestyle='None', label="local dynamics with twists")
+    inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
+    axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_local,
+                     low_temp_sample_variance_error_vs_system_size_local, marker=".", markersize=8, color="black",
+                     linestyle='None', label="local dynamics only")
+    axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_all,
+                     low_temp_sample_variance_error_vs_system_size_all, marker="*", markersize=8, color="red",
+                     linestyle='None', label="local dynamics with twists")
 
     legends = [axes[0].legend(loc="lower right", fontsize=10), axes[1].legend(loc="lower right", fontsize=10)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
