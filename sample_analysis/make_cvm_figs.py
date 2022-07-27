@@ -53,9 +53,9 @@ def main(no_of_system_sizes=6):
     fig.text(0.52, 0.925, "e", fontsize=20, weight='bold')
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
-    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=3)
+    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
     axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
-    axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=3)
+    axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
