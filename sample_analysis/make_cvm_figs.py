@@ -1,3 +1,6 @@
+from cramer_von_mises import get_cvm_mag_phase_vs_temperature
+from sample_getter import get_physical_time_step
+from setup_scripts import setup_pool
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
@@ -6,15 +9,10 @@ import os
 import sys
 import time
 
-# import additional modules; have to add the directory that contains run.py to sys.path
-
+# import run script - have to add the directory that contains run.py to sys.path
 this_directory = os.path.dirname(os.path.abspath(__file__))
 directory_containing_run_script = os.path.abspath(this_directory + "/../")
 sys.path.insert(0, directory_containing_run_script)
-cramer_von_mises = importlib.import_module("cramer_von_mises")
-markov_chain_diagnostics = importlib.import_module("markov_chain_diagnostics")
-setup_scripts = importlib.import_module("setup_scripts")
-sample_getter = importlib.import_module("sample_getter")
 run_script = importlib.import_module("run")
 
 
@@ -26,10 +24,12 @@ def main(no_of_system_sizes=6):
     base_config_file_ecmc = f"config_files/cvm_fig/4x4_ecmc.txt"
 
     """temperatures_ecmc = [*temperatures_metrop_low_temps, *temperatures_metrop_high_temps] in the following lines"""
-    (algorithm_name_metrop, sample_directory_4x4_metrop_low_temps, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures_metrop_low_temps, _, external_global_moves_string_all,
-     no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop_low_temps)
-    temperatures_metrop_high_temps = run_script.get_config_data(base_config_file_metrop_high_temps)[6]
+    (algorithm_name_metrop, sample_directory_4x4_metrop_low_temps, _, _, no_of_equilibration_sweeps_metrop_low_temps,
+     no_of_observations_metrop_low_temps, temperatures_metrop_low_temps, _, external_global_moves_string,
+     no_of_jobs_metrop_low_temps, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop_low_temps)
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
+     temperatures_metrop_high_temps, _, _, no_of_jobs_metrop_high_temps, _, _) = run_script.get_config_data(
+        base_config_file_metrop_high_temps)
     (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc, _, _,
      no_of_jobs_ecmc, _, _) = run_script.get_config_data(base_config_file_ecmc)
 
@@ -39,17 +39,24 @@ def main(no_of_system_sizes=6):
     sample_directories_metrop_high_temps = [f"{output_directory}/{length}x{length}_metrop_high_temps" for length in
                                             linear_system_sizes]
     sample_directories_ecmc = [f"{output_directory}/{length}x{length}_ecmc" for length in linear_system_sizes]
-    pool = setup_scripts.setup_pool(no_of_jobs_metrop, max_no_of_cpus)
+    pool = setup_pool(no_of_jobs_metrop_low_temps, max_no_of_cpus)
 
-    fig, axes = plt.subplots(1, 2, figsize=(8.0, 4.5), gridspec_kw={'width_ratios': [1.2, 1.0]})
+    approx_transition_temperature = 0.887
+    reduced_temperatures_metrop_low_temps = [temperature / approx_transition_temperature for temperature in
+                                             temperatures_metrop_low_temps]
+    reduced_temperatures_metrop_high_temps = [temperature / approx_transition_temperature for temperature in
+                                              temperatures_metrop_high_temps]
+    reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.0), gridspec_kw={'width_ratios': [1.2, 1.0]})
     fig.text(0.0025, 0.925, "d", fontsize=20, weight='bold')
     fig.text(0.52, 0.925, "e", fontsize=20, weight='bold')
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
-    axes[0].set_xlabel(r"$1 / (\beta J)$", fontsize=20, labelpad=3)  # todo change to tilde{beta}_bkt / beta
-    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-4)
+    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=3)
+    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
     axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=3)
-    axes[1].set_ylabel(r"$1 / (\beta_{\rm int} \,\, J)$", fontsize=20, labelpad=1)
+    axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
@@ -70,37 +77,37 @@ def main(no_of_system_sizes=6):
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"Number of sites, N = {length}x{length}")
         compute_physical_time_steps(
-            algorithm_name_metrop, external_global_moves_string_all, output_directory,
+            algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
-            no_of_observations_metrop, no_of_jobs_metrop, pool)
+            no_of_observations_metrop_low_temps, no_of_jobs_metrop_low_temps, pool)
         compute_physical_time_steps(
-            algorithm_name_metrop, external_global_moves_string_all, output_directory,
+            algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
-            no_of_observations_metrop, no_of_jobs_metrop, pool)
+            no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps, pool)
 
-        cvms_metrop_low_temps, cvm_errors_metrop_low_temps = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+        cvms_metrop_low_temps, cvm_errors_metrop_low_temps = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_metrop_low_temps,
-            external_global_moves_string_all, no_of_jobs_metrop, pool, length)
-        cvms_metrop_high_temps, cvm_errors_metrop_high_temps = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps,
+            temperatures_metrop_low_temps, external_global_moves_string, no_of_jobs_metrop_low_temps, pool, length)
+        cvms_metrop_high_temps, cvm_errors_metrop_high_temps = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
-            no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures_metrop_high_temps,
-            external_global_moves_string_all, no_of_jobs_metrop, pool, length)
-        cvms_ecmc, cvm_errors_ecmc = cramer_von_mises.get_cvm_mag_phase_vs_temperature(
+            no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
+            temperatures_metrop_high_temps, external_global_moves_string, no_of_jobs_metrop_high_temps, pool, length)
+        cvms_ecmc, cvm_errors_ecmc = get_cvm_mag_phase_vs_temperature(
             algorithm_name_ecmc, output_directory, sample_directories_ecmc[system_size_index],
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc,
-            external_global_moves_string_all, no_of_jobs_ecmc, pool, length)
+            external_global_moves_string, no_of_jobs_ecmc, pool, length)
 
-        axes[0].errorbar(temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps, marker=".",
+        axes[0].errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps, marker=".",
                          markersize=10, color=colors[system_size_index], linestyle="None",
                          label=fr"$N$ = {length}x{length}")
-        axes[0].errorbar(temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
+        axes[0].errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
                          marker=".", markersize=10, color=colors[system_size_index], linestyle="None")
-        axes[0].errorbar(temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
+        axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None")
-        inset_axis.errorbar(temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
+        inset_axis.errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
                             marker=".", markersize=8, color=colors[system_size_index], linestyle="None")
-        inset_axis.errorbar(temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
+        inset_axis.errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
                             marker=".", markersize=8, color=colors[system_size_index], linestyle="None")
 
     inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
@@ -129,7 +136,7 @@ def compute_physical_time_steps(algorithm_name, external_global_moves_string, ou
             f"obs_{no_of_jobs}_jobs.tsv", "w")
         physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
         for temperature_index, temperature in enumerate(temperatures):
-            physical_time_step_vs_job = pool.starmap(sample_getter.get_physical_time_step, [
+            physical_time_step_vs_job = pool.starmap(get_physical_time_step, [
                 (algorithm_name, f"{sample_directory}/job_{job_index}", temperature_index) for job_index in
                 range(no_of_jobs)])
             physical_time_step_file.write(
@@ -142,16 +149,16 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         raise Exception("InterfaceError: At most one positional arguments permitted.  None are required but you may "
                         "provide no_of_system_sizes, which must be an integer greater than 0 and less than 8 (default "
-                        "value is 7).")
+                        "value is 6).")
     if len(sys.argv) == 2:
         print("One positional argument provided.  This must be no_of_system_sizes - which must be an integer greater "
-              "than 0 and less than 8 (default value is 7).")
+              "than 0 and less than 8 (default value is 6).")
         chosen_no_of_system_sizes = int(sys.argv[1])
         if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 7:
             raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 8 "
-                            "(default value is 7).")
+                            "(default value is 6).")
         main(chosen_no_of_system_sizes)
     else:
-        print("No positional arguments orivuded.  None are required but you may provide no_of_system_sizes, which must "
-              "be an integer greater than 0 and less than 8 (default value is 7).")
+        print("No positional arguments provided.  None are required but you may provide no_of_system_sizes, which must "
+              "be an integer greater than 0 and less than 8 (default value is 6).")
         main()
