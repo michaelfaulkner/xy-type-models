@@ -24,8 +24,8 @@ def main(no_of_system_sizes=6):
     base_config_file_low_temp_local = f"config_files/twist_figs/4x4_low_temp_local.txt"
     """n.b., the following mid- and high-temps sims are part of the CvM figure; we also use them here for the 
         twist-prob figure"""
-    base_config_file_mid_temps = f"config_files/cvm_fig/4x4_metrop_low_temps.txt"
-    base_config_file_high_temps = f"config_files/cvm_fig/4x4_metrop_high_temps.txt"
+    base_config_file_mid_temps = f"config_files/cvm_figs/4x4_metrop_low_temps.txt"
+    base_config_file_high_temps = f"config_files/cvm_figs/4x4_metrop_high_temps.txt"
 
     (algorithm_name, sample_directory_4x4_low_temp_all, _, _, no_of_equilibration_sweeps_low_temp,
      no_of_observations_low_temp, temperatures_low_temp, _, external_global_moves_string_all, no_of_jobs_low_temp, _,

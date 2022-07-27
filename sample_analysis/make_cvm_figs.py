@@ -19,9 +19,9 @@ run_script = importlib.import_module("run")
 def main(no_of_system_sizes=6):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
-    base_config_file_metrop_low_temps = f"config_files/cvm_fig/4x4_metrop_low_temps.txt"
-    base_config_file_metrop_high_temps = f"config_files/cvm_fig/4x4_metrop_high_temps.txt"
-    base_config_file_ecmc = f"config_files/cvm_fig/4x4_ecmc.txt"
+    base_config_file_metrop_low_temps = f"config_files/cvm_figs/4x4_metrop_low_temps.txt"
+    base_config_file_metrop_high_temps = f"config_files/cvm_figs/4x4_metrop_high_temps.txt"
+    base_config_file_ecmc = f"config_files/cvm_figs/4x4_ecmc.txt"
 
     """temperatures_ecmc = [*temperatures_metrop_low_temps, *temperatures_metrop_high_temps] in the following lines"""
     (algorithm_name_metrop, sample_directory_4x4_metrop_low_temps, _, _, no_of_equilibration_sweeps_metrop_low_temps,
