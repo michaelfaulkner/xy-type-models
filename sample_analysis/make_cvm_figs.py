@@ -63,10 +63,12 @@ def main(no_of_system_sizes=6):
         axis.tick_params(which='major', length=5, labelsize=18, pad=5)
         axis.tick_params(which='minor', length=4)
 
-    inset_axis = plt.axes([0.345, 0.66, 0.1525, 0.275])
+    inset_axis = plt.axes([0.6, 0.65, 0.16, 0.275])
     inset_axis.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
-    inset_axis.set_xlim([0.86, 1.325])
-    inset_axis.set_ylim([2.0, 5.0 * 10 ** 3])
+    inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
+    inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12, labelpad=-0.5)
+    inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=12, labelpad=-0.5)
+    inset_axis.set_xlim([0.86, 1.325]), inset_axis.set_ylim([2.0, 5.0 * 10 ** 3])
     inset_axis.set_yscale('log')
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
@@ -98,13 +100,13 @@ def main(no_of_system_sizes=6):
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc,
             external_global_moves_string, no_of_jobs_ecmc, pool, length)
 
-        axes[0].errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps, marker=".",
-                         markersize=10, color=colors[system_size_index], linestyle="None",
-                         label=fr"$N$ = {length}x{length}")
+        axes[0].errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
+                         marker=".", markersize=10, color=colors[system_size_index], linestyle="None",
+                         label=fr"$N$ = {length}x{length} Metrop.")
         axes[0].errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
                          marker=".", markersize=10, color=colors[system_size_index], linestyle="None")
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
-                         color=colors[system_size_index], linestyle="None")
+                         color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
         inset_axis.errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
                             marker=".", markersize=8, color=colors[system_size_index], linestyle="None")
         inset_axis.errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
@@ -112,7 +114,7 @@ def main(no_of_system_sizes=6):
 
     inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
 
-    legends = [axes[0].legend(loc="center left", fontsize=10)]  #, axes[1].legend(loc="upper left", fontsize=10)]
+    legends = [axes[0].legend(loc="upper right", fontsize=9)]  #, axes[1].legend(loc="upper left", fontsize=10)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
