@@ -68,7 +68,7 @@ def main(no_of_system_sizes=6):
 
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
-        print(f"No of sites, N = {length}x{length}")
+        print(f"Number of sites, N = {length}x{length}")
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string_all, output_directory,
             sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
