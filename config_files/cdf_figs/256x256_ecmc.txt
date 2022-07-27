@@ -1,5 +1,5 @@
 'xy-ecmc'                                       algorithm_name
-'../bc4-output/cdf_figure/256x256_ecmc'         output_directory
+'../bc4-output/cdf_figs/256x256_ecmc'           output_directory
 256                                             integer_lattice_length
 10000                                           no_of_equilibration_sweeps
 10000                                           no_of_observations
