@@ -1,0 +1,20 @@
+'xy-gaussian-noise-metropolis'                          algorithm_name
+'../bc4-output/prelim_cvm_figs/16x16_low_temp_all'           output_directory
+16                                                      integer_lattice_length
+100000                                                  no_of_equilibration_sweeps
+1000000                                                 no_of_observations
+0.1d0                                                   initial_temperature
+0.1d0                                                   final_temperature
+0                                                       no_of_temperature_increments
+1.0d0    	                                            width_of_proposal_interval (initial)
+0.6d0 		                                            target_acceptance_rate_of_field_rotations
+.true.                                                  randomise_initial_field_configuration
+.true.                                                  use_external_global_moves
+.true.                                                  measure_magnetisation
+.false.                                                 measure_helicity
+.false.                                                 measure_potential
+.false.                                                 measure_potential_minimising_twists
+.false.                                                 measure_external_global_moves
+5600                                                    no_of_jobs
+0                                                       initial_job_index
+28                                                      max_no_of_cpus
