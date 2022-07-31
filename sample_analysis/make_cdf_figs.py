@@ -147,7 +147,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                         f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
                         f"temp_eq_{temperature:.4f}_job_{job_index}.npy")
-                    if subplot_index == 1:
+                    if subplot_index == 0:
                         inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
                                         linestyle=linestyles[job_index], linewidth=2)
     except IOError:
@@ -176,7 +176,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                             f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
                             f"temp_eq_{temperature:.4f}_job_{job_index}.npy",
                             cdfs_of_magnetisation_phase_ecmc[job_index])
-                    if subplot_index == 1:
+                    if subplot_index == 0:
                         inset_axis.plot(*cdfs_of_magnetisation_phase_ecmc[job_index], color=colors[temperature_index],
                                         linestyle=linestyles[job_index], linewidth=2)
 
