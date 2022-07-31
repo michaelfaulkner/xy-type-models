@@ -16,15 +16,26 @@ sys.path.insert(0, directory_containing_run_script)
 run_script = importlib.import_module("run")
 
 
-def main():
+def main(symmetry_breaking_paper=True):
+    """For General symmetry breaking at a topological phase transition, set symmetry_breaking_paper=True;
+        for Sampling algorithms in statistical physics..., set symmetry_breaking_paper=False."""
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    config_file_16x16_metrop = "config_files/mag_evolution_figures/16x16_metrop.txt"
-    config_file_64x64_metrop = "config_files/mag_evolution_figures/64x64_metrop.txt"
-    config_file_256x256_metrop = "config_files/mag_evolution_figures/256x256_metrop.txt"
-    config_file_16x16_ecmc = "config_files/mag_evolution_figures/16x16_ecmc.txt"
-    config_file_64x64_ecmc = "config_files/mag_evolution_figures/64x64_ecmc.txt"
-    config_file_256x256_ecmc = "config_files/mag_evolution_figures/256x256_ecmc.txt"
-    config_file_256x256_metrop_with_twists = "config_files/mag_evolution_figures/256x256_metrop_with_twists.txt"
+    if symmetry_breaking_paper:
+        config_file_16x16_metrop = "config_files/mag_evolution_figures/16x16_metrop.txt"
+        config_file_64x64_metrop = "config_files/mag_evolution_figures/64x64_metrop.txt"
+        config_file_256x256_metrop = "config_files/mag_evolution_figures/256x256_metrop.txt"
+        config_file_16x16_ecmc = "config_files/mag_evolution_figures/16x16_ecmc.txt"
+        config_file_64x64_ecmc = "config_files/mag_evolution_figures/64x64_ecmc.txt"
+        config_file_256x256_ecmc = "config_files/mag_evolution_figures/256x256_ecmc.txt"
+        config_file_256x256_metrop_with_twists = "config_files/mag_evolution_figures/256x256_metrop_with_twists.txt"
+    else:
+        config_file_16x16_metrop = "config_files/sampling_algos_xy_figs/16x16_metrop.txt"
+        config_file_64x64_metrop = "config_files/sampling_algos_xy_figs/64x64_metrop.txt"
+        config_file_256x256_metrop = "config_files/sampling_algos_xy_figs/256x256_metrop.txt"
+        config_file_16x16_ecmc = "config_files/sampling_algos_xy_figs/16x16_ecmc.txt"
+        config_file_64x64_ecmc = "config_files/sampling_algos_xy_figs/64x64_ecmc.txt"
+        config_file_256x256_ecmc = "config_files/sampling_algos_xy_figs/256x256_ecmc.txt"
+        config_file_256x256_metrop_with_twists = None
 
     (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
@@ -41,10 +52,6 @@ def main():
      ) = run_script.get_config_data(config_file_16x16_ecmc)
     sample_directory_64x64_ecmc = run_script.get_config_data(config_file_64x64_ecmc)[1]
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
-    (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
-     temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
-     external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _, _
-     ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
 
     output_directory = sample_directory_16x16_metrop.replace("/16x16_metrop", "")
     alphabetic_label_16x16_metrop = "a"
@@ -60,27 +67,30 @@ def main():
     make_subplot(axes[0, 0], algorithm_name_metrop, output_directory, sample_directory_16x16_metrop,
                  no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_metrop,
                  no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
-                 external_global_moves_string_16x16_metrop, alphabetic_label_16x16_metrop, None)
+                 external_global_moves_string_16x16_metrop, alphabetic_label_16x16_metrop, None,
+                 symmetry_breaking_paper)
     make_subplot(axes[0, 1], algorithm_name_metrop, output_directory, sample_directory_64x64_metrop,
                  no_of_sites_64x64, no_of_sites_string_64x64, no_of_equilibration_sweeps_metrop,
                  no_of_observations_metrop, temperatures, use_external_global_moves_64x64_metrop,
-                 external_global_moves_string_64x64_metrop, alphabetic_label_64x64_metrop, None)
+                 external_global_moves_string_64x64_metrop, alphabetic_label_64x64_metrop, None,
+                 symmetry_breaking_paper)
     make_subplot(axes[0, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop,
                  no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
                  no_of_observations_metrop, temperatures, use_external_global_moves_256x256_metrop,
-                 external_global_moves_string_256x256_metrop, alphabetic_label_256x256_metrop, None)
+                 external_global_moves_string_256x256_metrop, alphabetic_label_256x256_metrop, None,
+                 symmetry_breaking_paper)
     make_subplot(axes[1, 0], algorithm_name_ecmc, output_directory, sample_directory_16x16_ecmc,
                  no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_ecmc,
                  no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
-                 external_global_moves_string_ecmc, alphabetic_label_16x16_ecmc, None)
+                 external_global_moves_string_ecmc, alphabetic_label_16x16_ecmc, None, symmetry_breaking_paper)
     make_subplot(axes[1, 1], algorithm_name_ecmc, output_directory, sample_directory_64x64_ecmc,
                  no_of_sites_64x64, no_of_sites_string_64x64, no_of_equilibration_sweeps_ecmc,
                  no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
-                 external_global_moves_string_ecmc, alphabetic_label_64x64_ecmc, None)
+                 external_global_moves_string_ecmc, alphabetic_label_64x64_ecmc, None, symmetry_breaking_paper)
     make_subplot(axes[1, 2], algorithm_name_ecmc, output_directory, sample_directory_256x256_ecmc,
                  no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_ecmc,
                  no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
-                 external_global_moves_string_ecmc, alphabetic_label_256x256_ecmc, None)
+                 external_global_moves_string_ecmc, alphabetic_label_256x256_ecmc, None, symmetry_breaking_paper)
 
     # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
     plt.subplots_adjust(wspace=0.125, hspace=0.05)
@@ -95,24 +105,29 @@ def main():
                    f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.png",
                    bbox_inches="tight")
 
-    for job_index in range(no_of_jobs_metrop_with_twists):
-        figure.clear()
-        figure, axis = plt.subplots(1)
-        make_subplot(axis, algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
-                     no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
-                     no_of_observations_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
-                     use_external_global_moves_256x256_metrop_with_twists,
-                     external_global_moves_string_256x256_metrop_with_twists, None, job_index)
-        figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_"
-                       f"twists_{no_of_observations_256x256_metrop_with_twists}_metrop_obs_job_{job_index}.png",
-                       bbox_inches="tight")
+    if symmetry_breaking_paper:
+        (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
+         temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
+         external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _, _
+         ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
+        for job_index in range(no_of_jobs_metrop_with_twists):
+            figure.clear()
+            figure, axis = plt.subplots(1)
+            make_subplot(axis, algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
+                         no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
+                         no_of_observations_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
+                         use_external_global_moves_256x256_metrop_with_twists,
+                         external_global_moves_string_256x256_metrop_with_twists, None, job_index, True)
+            figure.savefig(
+                f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_twists_"
+                f"{no_of_observations_256x256_metrop_with_twists}_metrop_obs_job_{job_index}.png", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_sites_string,
                  no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
-                 external_global_moves_string, alphabetic_label, job_index):
+                 external_global_moves_string, alphabetic_label, job_index, symmetry_breaking_paper):
     axis.axis('square')
     if alphabetic_label is None:
         axis.text(-0.04, 0.9625, "e", fontsize=22, transform=axis.transAxes, weight='bold')
@@ -122,7 +137,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.tick_params(which='both', length=5.333, width=3)
         axis.tick_params(which='minor', length=4)
     else:
-        axis.text(-0.0325, 0.97, f"{alphabetic_label}", fontsize=40, transform=axis.transAxes, weight='bold')
+        if symmetry_breaking_paper:
+            axis.text(-0.0325, 0.97, f"{alphabetic_label}", fontsize=40, transform=axis.transAxes, weight='bold')
+        else:
+            axis.text(-0.0325, 0.97, f"({alphabetic_label})", fontsize=40, transform=axis.transAxes)
         if alphabetic_label == "c" or alphabetic_label == "f":
             axis.text(0.692, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                       fontsize=25, transform=axis.transAxes,
@@ -230,7 +248,15 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        raise Exception("InterfaceError: no positional arguments allowed.")
+    if len(sys.argv) > 2:
+        raise Exception("InterfaceError: At most one positional argument permitted.  None are required but you may "
+                        "provide symmetry_breaking_paper, a Boolean (default value is True, corresponding to the "
+                        "symmetry-breaking paper (see docstring of main()).")
+    if len(sys.argv) == 2:
+        print("One positional argument provided.  This must be symmetry_breaking_paper, a Boolean (default value is "
+              "True, corresponding to the symmetry-breaking paper (see docstring of main()).")
+        main(bool(sys.argv[1]))
     else:
+        print("No positional arguments provided.  None are required but you may provide symmetry_breaking_paper, a "
+              "Boolean (default value is True, corresponding to the symmetry-breaking paper (see docstring of main()).")
         main()
