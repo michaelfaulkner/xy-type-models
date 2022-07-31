@@ -1099,8 +1099,8 @@ def get_reduced_sample(entire_sample, no_of_equilibration_sweeps=None, thinning_
             return entire_sample
         return entire_sample[::thinning_level]
     if thinning_level is None:
-        return entire_sample[no_of_equilibration_sweeps + 1:]
-    return entire_sample[no_of_equilibration_sweeps + 1::thinning_level]
+        return entire_sample[no_of_equilibration_sweeps:]
+    return entire_sample[no_of_equilibration_sweeps::thinning_level]
 
 
 def get_phase_in_polar_coordinates(two_dimensional_cartesian_vector):
