@@ -255,7 +255,13 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         print("One positional argument provided.  This must be symmetry_breaking_paper, a Boolean (default value is "
               "True, corresponding to the symmetry-breaking paper (see docstring of main()).")
-        main(bool(sys.argv[1]))
+        if sys.argv[1] == "True":
+            main(True)
+        elif sys.argv[1] == "False":
+            main(False)
+        else:
+            Exception("InterfaceError: The provided value of symmetry_breaking_paper is neither True nor False (see "
+                      "docstring of main()).")
     else:
         print("No positional arguments provided.  None are required but you may provide symmetry_breaking_paper, a "
               "Boolean (default value is True, corresponding to the symmetry-breaking paper (see docstring of main()).")
