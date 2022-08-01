@@ -140,7 +140,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         if symmetry_breaking_paper:
             axis.text(-0.0325, 0.97, f"{alphabetic_label}", fontsize=40, transform=axis.transAxes, weight='bold')
         else:
-            axis.text(-0.0325, 0.97, f"({alphabetic_label})", fontsize=40, transform=axis.transAxes)
+            axis.text(-0.046, 0.9675, f"({alphabetic_label})", fontsize=40, transform=axis.transAxes)
         if alphabetic_label == "c" or alphabetic_label == "f":
             axis.text(0.692, 0.965, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                       fontsize=25, transform=axis.transAxes,
