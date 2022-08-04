@@ -1,4 +1,5 @@
 from cramer_von_mises import get_cvm_mag_phase_vs_temperature
+from make_twist_figs import get_twist_probabilities_and_errors
 from sample_getter import get_physical_time_step
 from setup_scripts import setup_pool
 import importlib
@@ -20,6 +21,8 @@ def main(no_of_system_sizes=6):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
     base_config_file_metrop_low_temps = f"config_files/cvm_figs/4x4_metrop_low_temps.txt"
+    base_config_file_metrop_lower_trans = f"config_files/cvm_figs/4x4_metrop_lower_trans.txt"
+    base_config_file_metrop_upper_trans = f"config_files/cvm_figs/4x4_metrop_upper_trans.txt"
     base_config_file_metrop_high_temps = f"config_files/cvm_figs/4x4_metrop_high_temps.txt"
     base_config_file_ecmc = f"config_files/cvm_figs/4x4_ecmc.txt"
 
@@ -27,6 +30,12 @@ def main(no_of_system_sizes=6):
     (algorithm_name_metrop, sample_directory_4x4_metrop_low_temps, _, _, no_of_equilibration_sweeps_metrop_low_temps,
      no_of_observations_metrop_low_temps, temperatures_metrop_low_temps, _, external_global_moves_string,
      no_of_jobs_metrop_low_temps, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop_low_temps)
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
+     temperatures_metrop_lower_trans, _, _, no_of_jobs_metrop_lower_trans, _, _) = run_script.get_config_data(
+        base_config_file_metrop_lower_trans)
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
+     temperatures_metrop_upper_trans, _, _, no_of_jobs_metrop_upper_trans, _, _) = run_script.get_config_data(
+        base_config_file_metrop_upper_trans)
     (_, _, _, _, no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
      temperatures_metrop_high_temps, _, _, no_of_jobs_metrop_high_temps, _, _) = run_script.get_config_data(
         base_config_file_metrop_high_temps)
@@ -36,16 +45,19 @@ def main(no_of_system_sizes=6):
     output_directory = sample_directory_4x4_metrop_low_temps.replace("/4x4_metrop_low_temps", "")
     sample_directories_metrop_low_temps = [f"{output_directory}/{length}x{length}_metrop_low_temps" for length in
                                            linear_system_sizes]
+    sample_directories_metrop_lower_trans = [f"{output_directory}/{length}x{length}_metrop_lower_trans" for length in
+                                             linear_system_sizes]
+    sample_directories_metrop_upper_trans = [f"{output_directory}/{length}x{length}_metrop_upper_trans" for length in
+                                             linear_system_sizes]
     sample_directories_metrop_high_temps = [f"{output_directory}/{length}x{length}_metrop_high_temps" for length in
                                             linear_system_sizes]
     sample_directories_ecmc = [f"{output_directory}/{length}x{length}_ecmc" for length in linear_system_sizes]
     pool = setup_pool(no_of_jobs_metrop_low_temps, max_no_of_cpus)
 
+    temperatures_metrop = [*temperatures_metrop_low_temps, *temperatures_metrop_lower_trans,
+                           *temperatures_metrop_upper_trans, *temperatures_metrop_high_temps]
     approx_transition_temperature = 0.887
-    reduced_temperatures_metrop_low_temps = [temperature / approx_transition_temperature for temperature in
-                                             temperatures_metrop_low_temps]
-    reduced_temperatures_metrop_high_temps = [temperature / approx_transition_temperature for temperature in
-                                              temperatures_metrop_high_temps]
+    reduced_temperatures_metrop = [temperature / approx_transition_temperature for temperature in temperatures_metrop]
     reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
 
     fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.0), gridspec_kw={'width_ratios': [1.2, 1.0]})
@@ -78,19 +90,57 @@ def main(no_of_system_sizes=6):
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"Number of sites, N = {length}x{length}")
+        """compute non-used physical time steps for our records"""
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
             no_of_observations_metrop_low_temps, no_of_jobs_metrop_low_temps, pool)
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string, output_directory,
+            sample_directories_metrop_lower_trans[system_size_index], temperatures_metrop_lower_trans, length,
+            no_of_observations_metrop_lower_trans, no_of_jobs_metrop_lower_trans, pool)
+        compute_physical_time_steps(
+            algorithm_name_metrop, external_global_moves_string, output_directory,
+            sample_directories_metrop_upper_trans[system_size_index], temperatures_metrop_upper_trans, length,
+            no_of_observations_metrop_upper_trans, no_of_jobs_metrop_upper_trans, pool)
+        compute_physical_time_steps(
+            algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
             no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps, pool)
+
+        """compute non-used (in this script) twist probabilities for later use in make_twist_figs -- this optimises 
+            our usage of the scratch space on BlueCrystal 4, ACRC, University of Bristol"""
+        _, _ = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
+            temperatures_metrop_low_temps, length, no_of_observations_metrop_low_temps, no_of_jobs_metrop_low_temps,
+            pool)
+        _, _ = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_lower_trans[system_size_index],
+            temperatures_metrop_lower_trans, length, no_of_observations_metrop_lower_trans,
+            no_of_jobs_metrop_lower_trans, pool)
+
+        _, _ = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_upper_trans[system_size_index],
+            temperatures_metrop_upper_trans, length, no_of_observations_metrop_upper_trans,
+            no_of_jobs_metrop_upper_trans, pool)
+
+        _, _ = get_twist_probabilities_and_errors(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
+            temperatures_metrop_high_temps, length, no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps,
+            pool)
 
         cvms_metrop_low_temps, cvm_errors_metrop_low_temps = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
             no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps,
             temperatures_metrop_low_temps, external_global_moves_string, no_of_jobs_metrop_low_temps, pool, length)
+        cvms_metrop_lower_trans, cvm_errors_metrop_lower_trans = get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_lower_trans[system_size_index],
+            no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
+            temperatures_metrop_lower_trans, external_global_moves_string, no_of_jobs_metrop_lower_trans, pool, length)
+        cvms_metrop_upper_trans, cvm_errors_metrop_upper_trans = get_cvm_mag_phase_vs_temperature(
+            algorithm_name_metrop, output_directory, sample_directories_metrop_upper_trans[system_size_index],
+            no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
+            temperatures_metrop_upper_trans, external_global_moves_string, no_of_jobs_metrop_upper_trans, pool, length)
         cvms_metrop_high_temps, cvm_errors_metrop_high_temps = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
             no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
@@ -100,23 +150,22 @@ def main(no_of_system_sizes=6):
             no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc,
             external_global_moves_string, no_of_jobs_ecmc, pool, length)
 
-        axes[0].errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
-                         marker=".", markersize=10, color=colors[system_size_index], linestyle="None",
-                         label=fr"$N$ = {length}x{length} Metrop.")
-        axes[0].errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
-                         marker=".", markersize=10, color=colors[system_size_index], linestyle="None")
+        cvms_metrop = [*cvms_metrop_low_temps, *cvms_metrop_lower_trans, *cvms_metrop_upper_trans,
+                       *cvms_metrop_high_temps]
+        cvm_errors_metrop = [*cvm_errors_metrop_low_temps, *cvm_errors_metrop_lower_trans,
+                             *cvm_errors_metrop_upper_trans, *cvm_errors_metrop_high_temps]
+
+        axes[0].errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
+                         color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} Metrop.")
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
-        inset_axis.errorbar(reduced_temperatures_metrop_low_temps, cvms_metrop_low_temps, cvm_errors_metrop_low_temps,
-                            marker=".", markersize=8, color=colors[system_size_index], linestyle="None")
-        inset_axis.errorbar(reduced_temperatures_metrop_high_temps, cvms_metrop_high_temps, cvm_errors_metrop_high_temps,
-                            marker=".", markersize=8, color=colors[system_size_index], linestyle="None")
+        inset_axis.errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
+                            color=colors[system_size_index], linestyle="None")
 
     inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
 
-    legends = [axes[0].legend(loc="upper right", fontsize=9)]  #, axes[1].legend(loc="upper left", fontsize=10)]
-    [legend.get_frame().set_edgecolor("k") for legend in legends]
-    [legend.get_frame().set_lw(3) for legend in legends]
+    legend = axes[0].legend(loc="upper right", fontsize=9)
+    legend.get_frame().set_edgecolor("k"), legend.get_frame().set_lw(3)
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
 

@@ -22,9 +22,11 @@ def main(no_of_system_sizes=6):
     linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
     base_config_file_low_temp_all = f"config_files/twist_figs/4x4_low_temp_all.txt"
     base_config_file_low_temp_local = f"config_files/twist_figs/4x4_low_temp_local.txt"
-    """n.b., the following mid- and high-temps sims are part of the CvM figure; we also use them here for the 
-        twist-prob figure"""
+    """n.b., the following mid-temps, lower-trans, upper-trans and high-temps sims are part of the CvM figure; we also 
+        use them here for the twist-prob figure"""
     base_config_file_mid_temps = f"config_files/cvm_figs/4x4_metrop_low_temps.txt"
+    base_config_file_lower_trans = f"config_files/cvm_figs/4x4_metrop_lower_trans.txt"
+    base_config_file_upper_trans = f"config_files/cvm_figs/4x4_metrop_upper_trans.txt"
     base_config_file_high_temps = f"config_files/cvm_figs/4x4_metrop_high_temps.txt"
 
     (algorithm_name, sample_directory_4x4_low_temp_all, _, _, no_of_equilibration_sweeps_low_temp,
@@ -34,9 +36,14 @@ def main(no_of_system_sizes=6):
     (_, sample_directory_4x4_mid_temps, _, _, no_of_equilibration_sweeps_mid_temps,
      no_of_observations_mid_temps, temperatures_mid_temps, _, _, no_of_jobs_mid_temps, _, _
      ) = run_script.get_config_data(base_config_file_mid_temps)
+    (_, _, _, _, no_of_equilibration_sweeps_lower_trans, no_of_observations_lower_trans, temperatures_lower_trans, _, _,
+     no_of_jobs_lower_trans, _, _) = run_script.get_config_data(base_config_file_lower_trans)
+    (_, _, _, _, no_of_equilibration_sweeps_upper_trans, no_of_observations_upper_trans, temperatures_upper_trans, _, _,
+     no_of_jobs_upper_trans, _, _) = run_script.get_config_data(base_config_file_upper_trans)
     (_, _, _, _, no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, temperatures_high_temps, _, _,
      no_of_jobs_high_temps, _, _) = run_script.get_config_data(base_config_file_high_temps)
-    temperatures = [*temperatures_low_temp, *temperatures_mid_temps, *temperatures_high_temps]
+    temperatures = [*temperatures_low_temp, *temperatures_mid_temps, *temperatures_lower_trans,
+                    *temperatures_upper_trans, *temperatures_high_temps]
     approx_transition_temperature = 0.887
     reduced_temperatures = [temperature / approx_transition_temperature for temperature in temperatures]
 
@@ -48,6 +55,10 @@ def main(no_of_system_sizes=6):
     output_directory_higher_temps = sample_directory_4x4_mid_temps.replace("/4x4_metrop_low_temps", "")
     sample_directories_mid_temps = [f"{output_directory_higher_temps}/{length}x{length}_metrop_low_temps" for length in
                                     linear_system_sizes]
+    sample_directories_lower_trans = [f"{output_directory_higher_temps}/{length}x{length}_metrop_lower_trans"
+                                      for length in linear_system_sizes]
+    sample_directories_upper_trans = [f"{output_directory_higher_temps}/{length}x{length}_metrop_upper_trans"
+                                      for length in linear_system_sizes]
     sample_directories_high_temps = [f"{output_directory_higher_temps}/{length}x{length}_metrop_high_temps"
                                      for length in linear_system_sizes]
     pool = setup_pool(no_of_jobs_low_temp, max_no_of_cpus)
@@ -81,6 +92,7 @@ def main(no_of_system_sizes=6):
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"Number of sites, N = {length}x{length}")
+        """compute non-used physical time steps for our records"""
         compute_physical_time_steps(algorithm_name, external_global_moves_string_all, output_directory_low_temp,
                                     sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
                                     no_of_observations_low_temp, no_of_jobs_low_temp, pool)
@@ -89,14 +101,22 @@ def main(no_of_system_sizes=6):
             algorithm_name, output_directory_low_temp, sample_directories_low_temp_all[system_size_index],
             temperatures_low_temp, length, no_of_observations_low_temp, no_of_jobs_low_temp, pool)
         twist_probabilities_mid_temps, twist_probability_errors_mid_temps = get_twist_probabilities_and_errors(
-            algorithm_name, output_directory_low_temp, sample_directories_mid_temps[system_size_index],
+            algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
             temperatures_mid_temps, length, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool)
+        twist_probabilities_lower_trans, twist_probability_errors_lower_trans = get_twist_probabilities_and_errors(
+            algorithm_name, output_directory_higher_temps, sample_directories_lower_trans[system_size_index],
+            temperatures_lower_trans, length, no_of_observations_lower_trans, no_of_jobs_lower_trans, pool)
+        twist_probabilities_upper_trans, twist_probability_errors_upper_trans = get_twist_probabilities_and_errors(
+            algorithm_name, output_directory_higher_temps, sample_directories_upper_trans[system_size_index],
+            temperatures_upper_trans, length, no_of_observations_upper_trans, no_of_jobs_upper_trans, pool)
         twist_probabilities_high_temps, twist_probability_errors_high_temps = get_twist_probabilities_and_errors(
-            algorithm_name, output_directory_low_temp, sample_directories_high_temps[system_size_index],
+            algorithm_name, output_directory_higher_temps, sample_directories_high_temps[system_size_index],
             temperatures_high_temps, length, no_of_observations_high_temps, no_of_jobs_high_temps, pool)
         twist_probabilities = [*twist_probabilities_low_temp, *twist_probabilities_mid_temps,
+                               *twist_probabilities_lower_trans, *twist_probabilities_upper_trans,
                                *twist_probabilities_high_temps]
         twist_probability_errors = [*twist_probability_errors_low_temp, *twist_probability_errors_mid_temps,
+                                    *twist_probability_errors_lower_trans, *twist_probability_errors_upper_trans,
                                     *twist_probability_errors_high_temps]
 
         """n.b., the 1 / (math.pi ** 2 / 3.0) factors below divide the sample variances by their expected value"""
@@ -112,16 +132,23 @@ def main(no_of_system_sizes=6):
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
             no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
+        """estimate non-used sample variances for our records"""
         _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_low_temp,
+            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
             sample_directories_mid_temps[system_size_index], temperatures_mid_temps, length,
-            no_of_equilibration_sweeps_mid_temps, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool)) / (
-                math.pi ** 2 / 3.0)
+            no_of_equilibration_sweeps_mid_temps, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool))
         _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_low_temp,
+            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
+            sample_directories_lower_trans[system_size_index], temperatures_lower_trans, length,
+            no_of_equilibration_sweeps_lower_trans, no_of_observations_lower_trans, no_of_jobs_lower_trans, pool))
+        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
+            sample_directories_upper_trans[system_size_index], temperatures_upper_trans, length,
+            no_of_equilibration_sweeps_upper_trans, no_of_observations_upper_trans, no_of_jobs_upper_trans, pool))
+        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
             sample_directories_high_temps[system_size_index], temperatures_high_temps, length,
-            no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, no_of_jobs_high_temps, pool)) / (
-                math.pi ** 2 / 3.0)
+            no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, no_of_jobs_high_temps, pool))
 
         low_temp_sample_variance_vs_system_size_local.append(low_temp_sample_variances_local[0])
         low_temp_sample_variance_error_vs_system_size_local.append(low_temp_sample_variance_errors_local[0])
