@@ -1,10 +1,10 @@
 'xy-gaussian-noise-metropolis'                              algorithm_name
-'../bc4-output/cvm_figs/16x16_metrop_high_temps'            output_directory
+'../bc4-output/cvm_figs/16x16_metrop_upper_trans'           output_directory
 16                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
 1000000                                                     no_of_observations
-1.5d0                                                       initial_temperature
-2.7d0                                                       final_temperature
+1.1d0                                                       initial_temperature
+1.34d0                                                      final_temperature
 6                                                           no_of_temperature_increments
 1.0d0    	                                                width_of_proposal_interval (initial)
 0.6d0 		                                                target_acceptance_rate_of_field_rotations
