@@ -1,5 +1,4 @@
-from make_cvm_figs import compute_physical_time_steps
-from sample_getter import get_acceptance_rates, get_magnetisation_phase
+from sample_getter import get_acceptance_rates, get_magnetisation_phase, get_physical_time_step
 from setup_scripts import setup_pool
 import importlib
 import math
@@ -174,6 +173,29 @@ def main(no_of_system_sizes=6):
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
+
+
+def compute_physical_time_steps(algorithm_name, external_global_moves_string, output_directory, sample_directory,
+                                temperatures, length, no_of_observations, no_of_jobs, pool):
+    try:
+        with open(f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_"
+                  f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
+                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as _:
+            pass
+    except IOError:
+        physical_time_step_file = open(
+            f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
+            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_"
+            f"obs_{no_of_jobs}_jobs.tsv", "w")
+        physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
+        for temperature_index, temperature in enumerate(temperatures):
+            physical_time_step_vs_job = pool.starmap(get_physical_time_step, [
+                (algorithm_name, f"{sample_directory}/job_{job_index}", temperature_index) for job_index in
+                range(no_of_jobs)])
+            physical_time_step_file.write(
+                f"{temperature:.14e}".ljust(30) + f"{np.mean(physical_time_step_vs_job):.14e}".ljust(30) +
+                f"{np.std(physical_time_step_vs_job) / len(physical_time_step_vs_job) ** 0.5:.14e}" + "\n")
+        physical_time_step_file.close()
 
 
 def get_twist_probabilities_and_errors(algorithm_name, output_directory, sample_directory, temperatures, length,
