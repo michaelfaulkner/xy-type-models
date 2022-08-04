@@ -298,8 +298,8 @@ optimising simulation time and ensuring larger system sizes fall within the time
 0.5d0                                   initial_temperature
 0.5d0                                   final_temperature
 0                                       no_of_temperature_increments
-1.0d0    	                            width_of_proposal_interval (initial)
-0.44d0		                            target_acceptance_rate_of_field_rotations
+1.0d0                                   width_of_proposal_interval (initial)
+0.44d0                                  target_acceptance_rate_of_field_rotations
 .false.                                 randomise_initial_field_configuration
 .false.                                 use_external_global_moves
 .true.                                  measure_magnetisation
@@ -326,8 +326,8 @@ didn't have time to create any.
 
 The structure of the Fortran 90 code is very much non-beautiful! This is because Fortran 90 does not lend itself well 
 to object-oriented programming. However, Fortran is a very fast language, so xy-type-models is useful for numerical 
-experiments that require large system and sample sizes, e.g., the analysis of nonergodic correlations in the 
-Berezinskii-Kosterlitz-Thouless phase.
+experiments that require large system and sample sizes, e.g., the analysis of both ergodicity breaking and general 
+symmetry breaking at the Berezinskii-Kosterlitz-Thouless phase transition.
 
 While xy-type-models does not use classes, it is still relatively modular. The main program scripts are [
 `ecmc_algorithm.f90`](src/ecmc_algorithm.f90) and [`metropolis_algorithm.f90`](src/metropolis_algorithm.f90). Each main 
@@ -370,3 +370,18 @@ directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-nois
 
 If you use xy-type-models in published work, please cite "Phys. Rev. B 91, 155412 (2015)" [\[Faulkner2015\]](
 https://doi.org/10.1103/PhysRevB.91.155412).
+
+
+## Generation of the XY figures included in Sampling algorithms in statistical physics
+
+To make figure 7 of *Sampling algorithms in statistical physics: a guide for statistics and machine 
+learning*, first run each configuration file in [`config_files/sampling_algos_xy_figs`](
+config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
+ etc.  
+
+Then, once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py False`.
+
+To make figures 2, 4, 5 and 6, go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
+integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
