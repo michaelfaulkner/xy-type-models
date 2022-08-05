@@ -374,7 +374,7 @@ https://doi.org/10.1103/PhysRevB.91.155412).
 
 ## Generation of the XY figures included in Sampling algorithms in statistical physics
 
-To make figure 7 of *Sampling algorithms in statistical physics: a guide for statistics and machine 
+To make figure 9 of *Sampling algorithms in statistical physics: a guide for statistics and machine 
 learning*, first run each configuration file in [`config_files/sampling_algos_xy_figs`](
 config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
  etc.  
@@ -382,6 +382,6 @@ config_files/sampling_algos_xy_figs) via the command `python run.py config_files
 Then, once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_magnetisation_evolution_figs.py False`.
 
-To make figures 2, 4, 5 and 6, go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+To make figures 2, 6, 7 and 8, go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
 instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
 integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
