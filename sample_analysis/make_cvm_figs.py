@@ -1,9 +1,11 @@
 from cramer_von_mises import get_cvm_mag_phase_vs_temperature
 from make_twist_figs import compute_physical_time_steps, get_twist_probabilities_and_errors
+from sample_getter import get_no_of_events
 from setup_scripts import setup_pool
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import sys
 import time
@@ -105,6 +107,10 @@ def main(no_of_system_sizes=6):
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
             no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps, pool)
+        """compute non-used event rates for our records"""
+        compute_event_rates(algorithm_name_ecmc, external_global_moves_string, output_directory,
+                            sample_directories_ecmc[system_size_index], temperatures_ecmc, length,
+                            no_of_observations_ecmc, no_of_jobs_ecmc, pool)
 
         """compute non-used (in this script) twist probabilities for later use in make_twist_figs -- this optimises 
             our usage of the scratch space on BlueCrystal 4, ACRC, University of Bristol"""
@@ -169,6 +175,28 @@ def main(no_of_system_sizes=6):
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
+
+
+def compute_event_rates(algorithm_name, external_global_moves_string, output_directory, sample_directory, temperatures,
+                        length, no_of_observations, no_of_jobs, pool):
+    try:
+        with open(f"{output_directory}/event_rates_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
+                  f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_"
+                  f"{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as _:
+            pass
+    except IOError:
+        event_rates_file = open(
+            f"{output_directory}/event_rates_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
+            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_"
+            f"obs_{no_of_jobs}_jobs.tsv", "w")
+        event_rates_file.write("# temperature".ljust(30) + "event rate".ljust(30) + "event-rate error" + "\n")
+        for temperature_index, temperature in enumerate(temperatures):
+            event_rate_vs_job = np.array(pool.starmap(get_no_of_events,
+                                                      [(f"{sample_directory}/job_{job_index}", temperature_index)
+                                                       for job_index in range(no_of_jobs)])) / no_of_observations
+            event_rates_file.write(f"{temperature:.14e}".ljust(30) + f"{np.mean(event_rate_vs_job):.14e}".ljust(30) +
+                                   f"{np.std(event_rate_vs_job) / len(event_rate_vs_job) ** 0.5:.14e}" + "\n")
+        event_rates_file.close()
 
 
 if __name__ == "__main__":
