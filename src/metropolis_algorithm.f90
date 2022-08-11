@@ -23,7 +23,9 @@ do temperature_index = 0, no_of_temperature_increments
             acceptance_rate_of_field_rotations = 1.0d-2 * dfloat(no_of_accepted_field_rotations) / dfloat(no_of_sites) &
                                                     / (1.0d0 - charge_hop_proportion)
             if (acceptance_rate_of_field_rotations > target_acceptance_rate_of_field_rotations + 5.0d-2) then
-                width_of_proposal_interval = 1.1d0 * width_of_proposal_interval
+                if (width_of_proposal_interval < 10.0d0) then ! to avoid huge step sizes at high temperature
+                    width_of_proposal_interval = 1.1d0 * width_of_proposal_interval
+                end if
             else if (acceptance_rate_of_field_rotations < target_acceptance_rate_of_field_rotations - 5.0d-2) then
                 width_of_proposal_interval = 9.0d-1 * width_of_proposal_interval
             end if
