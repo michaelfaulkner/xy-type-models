@@ -71,26 +71,36 @@ file as the first positional argument, but there are some exceptions.
 ## Configuration files
 
 Configuration files are located in the [`config_files`](config_files) directory. Their contents must follow the 
-strict algorithm-dependent orders given in the subsections below. All floats must be given in non-exponential form to 
-14 significant figures and with the suffix `d0`. All strings must be enclosed between two apostrophes, e.g., 
-`'string'`. Typically, the value of `output_directory` starts with `'output/`, i.e., the entire value is of the form 
-`'output/rest_of_string'`, but this is not a requirement ([`output`](output) is the xy-type-models output 
-directory, but we often replace this with `../bc4-output` – the relative location of the output directory on our 
-cluster machine). For the value of `output_directory`, i) refrain from giving long strings, as this can lead to Fortran 
-runtime errors, and ii) ensure three tabbed spaces between the value of `output_directory` and the word 
-`output_directory` itself, as this avoids Fortran errors when performing multiple runs of the same simulation (the 
-number of runs is set by the value of `no_of_jobs`). The minimum / maximum value of `no_of_temperature_increments` is 
-0 / 99. The values of `no_of_jobs` and `max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, 
-we recommend giving half the number of CPUs available on your personal machine, e.g., for a four-core machine with two 
+strict algorithm-dependent orders given in the subsections below. 
+
+All floats must be given in non-exponential form to 14 significant figures and with the suffix `d0`. 
+
+All strings must be enclosed between two apostrophes, e.g., `'string'`. Typically, the value of `output_directory` 
+starts with `'output/`, i.e., the entire value is of the form `'output/rest_of_string'`, but this is not a requirement 
+([`output`](output) is the xy-type-models output directory, but we often replace this with `../bc4-output` – the 
+relative location of the output directory on our cluster machine). For the value of `output_directory`, i) refrain from 
+giving long strings, as this can lead to Fortran runtime errors, and ii) ensure three tabbed spaces between the value 
+of `output_directory` and the word `output_directory` itself, as this avoids Fortran errors when performing multiple 
+runs of the same simulation (the number of runs is set by the value of `no_of_jobs`). 
+
+The minimum / maximum value of `no_of_temperature_increments` is 0 / 99. 
+
+The values of `no_of_jobs` and `max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, we 
+recommend giving half the number of CPUs available on your personal machine, e.g., for a four-core machine with two 
 threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four 
-parallel runs of the same simulation, and similarly for certain sample-analysis processes.
+parallel runs of the same simulation, and similarly for certain sample-analysis processes.  
+
+In the case of the 
+uniform-noise distribution, the value of `width_of_proposal_interval` corresponds to the volume of the support; for the 
+Gaussian-noise distribution, it corresponds to the standard deviation of the noise distribution. 
 
 Note that each configuration file whose name is suffixed with a letter is a Markov-process configuration file, where 
-the configuration file with no suffix must be used for the sample analysis.  For example, in the [`cvm_figure`](
-config_files/cvm_figure) configuration-file directory, `64x64_metrop_a.txt`, `64x64_metrop_b.txt`, `64x64_metrop_c.txt`, 
- `64x64_metrop_d.txt` and `64x64_metrop_e.txt` are the five Markov-process configuration files that generate the 
-samples for `64x64_metrop.txt`.  This allows us to submit four separate Markov-process jobs to the cluster, thus 
-optimising simulation time and ensuring larger system sizes fall within the time limit. 
+the configuration file with no suffix must be used for the sample analysis.  For example, in the [`cvm_figs`](
+config_files/cvm_figs) configuration-file directory, `64x64_metrop_low_temps_a.txt`, `64x64_metrop_low_temps_b.txt`, 
+`64x64_metrop_low_temps_c.txt`, `64x64_metrop_low_temps_d.txt` and `64x64_metrop_low_temps_e.txt` are the five 
+Markov-process configuration files that generate the samples for `64x64_metrop_low_temps.txt`.  This allows us to 
+submit five separate Markov-process jobs to the cluster, thus optimising simulation time and ensuring larger system 
+sizes fall within the time limit. 
 
 ### hxy-ecmc configuration file (an example)
 
