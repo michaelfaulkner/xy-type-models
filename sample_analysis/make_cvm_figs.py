@@ -122,12 +122,10 @@ def main(no_of_system_sizes=6):
             algorithm_name_metrop, output_directory, sample_directories_metrop_lower_trans[system_size_index],
             temperatures_metrop_lower_trans, length, no_of_observations_metrop_lower_trans,
             no_of_jobs_metrop_lower_trans, pool)
-
         _, _ = get_twist_probabilities_and_errors(
             algorithm_name_metrop, output_directory, sample_directories_metrop_upper_trans[system_size_index],
             temperatures_metrop_upper_trans, length, no_of_observations_metrop_upper_trans,
             no_of_jobs_metrop_upper_trans, pool)
-
         _, _ = get_twist_probabilities_and_errors(
             algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
             temperatures_metrop_high_temps, length, no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps,
