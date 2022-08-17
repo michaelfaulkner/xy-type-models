@@ -283,7 +283,7 @@ def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, te
         The sample variance of the magnetisation phase.  A float.
     """
     return np.var(get_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites)[
-                  no_of_equilibration_sweeps:])
+                  no_of_equilibration_sweeps:], ddof=1)
 
 
 if __name__ == "__main__":

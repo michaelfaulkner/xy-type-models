@@ -73,7 +73,8 @@ def main(observable_string="rotated_magnetisation_phase"):
                 if not sample_is_one_dimensional:
                     sample_2d = sample_2d.transpose()[0]
                 running_mean_2d = np.array([np.mean(sample_2d[:index + 1]) for index in range(len(sample_2d))])
-                running_variance_2d = np.array([np.var(sample_2d[:index + 1]) for index in range(len(sample_2d))])
+                running_variance_2d = np.array([np.var(sample_2d[:index + 1], ddof=1) for index in
+                                                range(len(sample_2d))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_"
                         f"{no_of_sites_string_2d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
@@ -139,7 +140,8 @@ def main(observable_string="rotated_magnetisation_phase"):
                 if not sample_is_one_dimensional:
                     sample_3d = sample_3d.transpose()[0]
                 running_mean_3d = np.array([np.mean(sample_3d[:index + 1]) for index in range(len(sample_3d))])
-                running_variance_3d = np.array([np.var(sample_3d[:index + 1]) for index in range(len(sample_3d))])
+                running_variance_3d = np.array([np.var(sample_3d[:index + 1], ddof=1) for index in
+                                                range(len(sample_3d))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
                         f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
