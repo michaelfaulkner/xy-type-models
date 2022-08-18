@@ -182,9 +182,9 @@ def main(no_of_system_sizes=6):
             intersect_index = np.argwhere(np.diff(np.sign(previous_polynomial_fit(continuous_temperatures) -
                                                           current_polynomial_fit(continuous_temperatures)))).flatten()
             intersect_temperature = continuous_temperatures[intersect_index]
-            print(intersect_temperature, intersect_temperature / approx_transition_temperature)
-            # plt.vlines(intersect_temperature / approx_transition_temperature, 0.0, ymax, colors="black", linestyles='solid')
-            plt.vlines(intersect_temperature / approx_transition_temperature, 0.75, 2.0 * 10 ** 4, colors="black", linestyles='solid')
+            intersect_value = current_polynomial_fit(continuous_temperatures[intersect_index])
+            plt.vlines(intersect_temperature / approx_transition_temperature, 0.75, intersect_value, colors="black",
+                       linestyles='solid')
         fitting_temps = temperatures_around_transition[8:12]
         previous_fitting_cvms = cvms_metrop_around_transition[8:12]
         previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, previous_fitting_cvms, 2))
