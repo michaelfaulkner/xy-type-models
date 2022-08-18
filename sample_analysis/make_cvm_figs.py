@@ -71,24 +71,24 @@ def main(no_of_system_sizes=6):
     axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
     axes[1].set_xlabel(r"$N^{-1}$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
-    axes[1].set_ylim([0.99, 1.65])
+    axes[1].set_ylim([0.99, 1.5])
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=5)
         axis.tick_params(which='minor', direction='in', width=1.5, length=4)
 
-    inset_axis = plt.axes([0.6, 0.64, 0.16, 0.29])
-    inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12)
+    inset_axis = plt.axes([0.73, 0.1125, 0.235, 0.42])
+    inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=1.5)
     inset_axis.tick_params(which='minor', direction='in', width=0.25, length=3)
-    inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
-    inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12, labelpad=-0.5)
-    inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=12, labelpad=-0.5)
+    inset_axis.xaxis.set_label_position("top"), inset_axis.xaxis.tick_top()
+    inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=14, labelpad=3.5)
+    inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=14, labelpad=1.5)
     inset_axis.set_xlim([0.96, 1.55]), inset_axis.set_ylim([0.75, 2.0 * 10 ** 4])
     inset_axis.set_yscale('log')
     inset_axis.set_yticks([1.0, 10.0, 1.0e2, 1.0e3, 1.0e4])
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
-    colors = ["black", "red", "blue", "green", "tab:brown", "magenta", "indigo"][:no_of_system_sizes]
+    colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
 
     reduced_intersect_temperatures, intersect_values = [], []
@@ -187,7 +187,7 @@ def main(no_of_system_sizes=6):
             intersect_value = current_polynomial_fit(continuous_temperatures[intersect_index])
             plt.vlines(intersect_temperature / approx_transition_temperature, 0.75, intersect_value, colors="gray",
                        linestyles='solid')
-            reduced_intersect_temperatures.append(intersect_temperature / approx_transition_temperature)
+            reduced_intersect_temperatures.append(intersect_temperature[0] / approx_transition_temperature)
             intersect_values.append(intersect_value)
 
         if system_size_index == 0:
@@ -206,8 +206,16 @@ def main(no_of_system_sizes=6):
         inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                         polynomial_model(continuous_temperatures), color=colors[system_size_index], linestyle="--")'''
 
-    inverse_linear_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
-    axes[1].plot(inverse_linear_system_sizes[0:4], reduced_intersect_temperatures, marker=".", markersize=8, color="black")
+    inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
+    inverse_system_sizes.pop()
+    # inverse_system_sizes.append(0.0), reduced_intersect_temperatures.append(1.0)
+    inverse_system_sizes.reverse(), reduced_intersect_temperatures.reverse()
+    axes[1].plot(inverse_system_sizes, reduced_intersect_temperatures, marker=".", markersize=8, color="black",
+                 linestyle="None")
+    continuous_reduced_intersect_temperatures = np.linspace(1.0, reduced_intersect_temperatures[-1], 100)
+    polynomial_fit = np.poly1d(np.polyfit(reduced_intersect_temperatures, inverse_system_sizes, 2))
+    axes[1].plot(polynomial_fit(continuous_reduced_intersect_temperatures), continuous_reduced_intersect_temperatures,
+                 linestyle="--")
 
     legend = axes[0].legend(loc="upper right", fontsize=8.5)
     legend.get_frame().set_edgecolor("k"), legend.get_frame().set_lw(3)
