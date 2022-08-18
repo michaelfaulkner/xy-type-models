@@ -69,8 +69,9 @@ def main(no_of_system_sizes=6):
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
     axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
-    axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=4)
+    axes[1].set_xlabel(r"$N^{-1}$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
+    axes[1].set_ylim([0.99, 1.65])
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=5)
@@ -90,6 +91,7 @@ def main(no_of_system_sizes=6):
     colors = ["black", "red", "blue", "green", "tab:brown", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
 
+    reduced_intersect_temperatures, intersect_values = [], []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"Number of sites, N = {length}x{length}")
@@ -169,8 +171,8 @@ def main(no_of_system_sizes=6):
 
         cvms_metrop_around_transition = cvms_metrop[3:15]
         cvm_errors_metrop_around_transition = cvm_errors_metrop[3:15]
-        if system_size_index == 1:
-            current_fitting_cvms = cvms_metrop_around_transition[8:12]
+        if 0 < system_size_index < 5:
+            current_fitting_cvms = cvms_metrop_around_transition[lower_fitting_index:upper_fitting_index]
             current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, current_fitting_cvms, 2))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
             inset_axis.plot(continuous_temperatures / approx_transition_temperature,
@@ -183,17 +185,29 @@ def main(no_of_system_sizes=6):
                                                           current_polynomial_fit(continuous_temperatures)))).flatten()
             intersect_temperature = continuous_temperatures[intersect_index]
             intersect_value = current_polynomial_fit(continuous_temperatures[intersect_index])
-            plt.vlines(intersect_temperature / approx_transition_temperature, 0.75, intersect_value, colors="black",
+            plt.vlines(intersect_temperature / approx_transition_temperature, 0.75, intersect_value, colors="gray",
                        linestyles='solid')
-        fitting_temps = temperatures_around_transition[8:12]
-        previous_fitting_cvms = cvms_metrop_around_transition[8:12]
+            reduced_intersect_temperatures.append(intersect_temperature / approx_transition_temperature)
+            intersect_values.append(intersect_value)
+
+        if system_size_index == 0:
+            lower_fitting_index, upper_fitting_index = 8, 12
+        if system_size_index == 1:
+            lower_fitting_index, upper_fitting_index = 4, 8
+        if system_size_index == 2:
+            lower_fitting_index, upper_fitting_index = 1, 5
+        if system_size_index == 3:
+            lower_fitting_index, upper_fitting_index = 1, 4
+        fitting_temps = temperatures_around_transition[lower_fitting_index:upper_fitting_index]
+        previous_fitting_cvms = cvms_metrop_around_transition[lower_fitting_index:upper_fitting_index]
         previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, previous_fitting_cvms, 2))
 
         '''polynomial_model = np.poly1d(np.polyfit(temperatures_around_transition, cvms_metrop_around_transition, 11))
         inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                         polynomial_model(continuous_temperatures), color=colors[system_size_index], linestyle="--")'''
 
-    inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
+    inverse_linear_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
+    axes[1].plot(inverse_linear_system_sizes[0:4], reduced_intersect_temperatures, marker=".", markersize=8, color="black")
 
     legend = axes[0].legend(loc="upper right", fontsize=8.5)
     legend.get_frame().set_edgecolor("k"), legend.get_frame().set_lw(3)
