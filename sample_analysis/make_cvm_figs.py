@@ -56,11 +56,13 @@ def main(no_of_system_sizes=6):
 
     temperatures_metrop = [*temperatures_metrop_low_temps, *temperatures_metrop_lower_trans,
                            *temperatures_metrop_upper_trans, *temperatures_metrop_high_temps]
+    temperatures_around_transition = temperatures_metrop[3:19]
+    continuous_temperatures = np.linspace(temperatures_metrop[3], temperatures_metrop[14], 100)
     approx_transition_temperature = 0.887
     reduced_temperatures_metrop = [temperature / approx_transition_temperature for temperature in temperatures_metrop]
     reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.0), gridspec_kw={'width_ratios': [1.2, 1.0]})
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.2), gridspec_kw={'width_ratios': [1.2, 1.0]})
     fig.text(0.0025, 0.925, "d", fontsize=20, weight='bold')
     fig.text(0.52, 0.925, "e", fontsize=20, weight='bold')
     fig.tight_layout(w_pad=3.0)
@@ -71,17 +73,18 @@ def main(no_of_system_sizes=6):
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
-        axis.tick_params(which='both', direction='in', width=3)
-        axis.tick_params(which='major', length=5, labelsize=18, pad=5)
-        axis.tick_params(which='minor', length=4)
+        axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=5)
+        axis.tick_params(which='minor', direction='in', width=1.5, length=4)
 
-    inset_axis = plt.axes([0.6, 0.65, 0.16, 0.275])
-    inset_axis.tick_params(which='both', direction='in', length=4, width=2, labelsize=12)
+    inset_axis = plt.axes([0.6, 0.64, 0.16, 0.29])
+    inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12)
+    inset_axis.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
     inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12, labelpad=-0.5)
     inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=12, labelpad=-0.5)
-    inset_axis.set_xlim([0.89, 1.31]), inset_axis.set_ylim([2.0, 5.0 * 10 ** 3])
+    inset_axis.set_xlim([0.96, 1.55]), inset_axis.set_ylim([0.75, 2.0 * 10 ** 4])
     inset_axis.set_yscale('log')
+    inset_axis.set_yticks([1.0, 10.0, 1.0e2, 1.0e3, 1.0e4])
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
 
     colors = ["black", "red", "blue", "green", "tab:brown", "magenta", "indigo"][:no_of_system_sizes]
@@ -164,9 +167,15 @@ def main(no_of_system_sizes=6):
         inset_axis.errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
                             color=colors[system_size_index], linestyle="None")
 
+        cvms_metrop_around_transition = cvms_metrop[3:19]
+        cvm_errors_metrop_around_transition = cvm_errors_metrop[3:19]
+        polynomial_model = np.poly1d(np.polyfit(temperatures_around_transition, cvms_metrop_around_transition, 11))
+        inset_axis.plot(continuous_temperatures / approx_transition_temperature,
+                        polynomial_model(continuous_temperatures), color=colors[system_size_index], linestyle="--")
+
     inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
 
-    legend = axes[0].legend(loc="upper right", fontsize=9)
+    legend = axes[0].legend(loc="upper right", fontsize=8.5)
     legend.get_frame().set_edgecolor("k"), legend.get_frame().set_lw(3)
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
