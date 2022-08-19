@@ -63,19 +63,32 @@ def main(no_of_system_sizes=6):
     reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
 
     fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.2), gridspec_kw={'width_ratios': [1.2, 1.0]})
-    fig.text(0.0025, 0.925, "d", fontsize=20, weight='bold')
-    fig.text(0.52, 0.925, "e", fontsize=20, weight='bold')
+    fig.text(-0.015, 0.9, "d", fontsize=20, weight='bold')
+    fig.text(0.535, 0.9, "e", fontsize=20, weight='bold')
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
     axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
-    axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=4)
+    axes[0].set_ylim([2.0e-4, 2.5e5])
+    axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
+    axes[1].set_xlabel(r"$\left( \ln N \right)^{-2}$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
-    axes[1].set_xlim([0.0, 0.13]), axes[1].set_ylim([0.99, 1.75])
+    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.975, 1.75])
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
-        axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=5)
+        axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=2.5)
         axis.tick_params(which='minor', direction='in', width=1.5, length=4)
+
+    twinned_axis = axes[1].twinx()
+    twinned_axis.set_ylabel(r"$1 / \left(n \omega_{\phi_m,n}^2 \right) \left(\beta = \beta_{\rm int} \right)$",
+                            fontsize=20, labelpad=-0.5, color="red")
+    twinned_axis.set_yticks([0.0, 0.1, 0.2])
+    twinned_axis.set_ylim([-0.0068, 0.205])
+    plt.hlines(0.0, 0.001125, 0.06, colors="red", linestyles='--')
+    twinned_axis.tick_params(which='major', direction='in', width=3, length=5, labelsize=14, pad=2.5, colors="red")
+    twinned_axis.tick_params(which='minor', direction='in', width=1.5, length=4)
+    twinned_axis.tick_params(axis='y', labelcolor='red')
+    twinned_axis.spines["right"].set_color("red"), twinned_axis.spines["right"].set_linewidth(3)
 
     inset_axis = plt.axes([0.6, 0.56, 0.21, 0.37])
     inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
@@ -83,7 +96,7 @@ def main(no_of_system_sizes=6):
     inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
     inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=14, labelpad=1.0)
     inset_axis.set_ylabel(r"$\left(n \omega_{\phi_m,n}^2 \right)^{-1}$", fontsize=14, labelpad=1.5)
-    inset_axis.set_xlim([0.98, 1.54]), inset_axis.set_ylim([5.0 * 10 ** (-5), 1.5])
+    inset_axis.set_xlim([0.98, 1.54]), inset_axis.set_ylim([2.0 * 10 ** (-5), 1.5])
     inset_axis.set_yscale('log')
     inset_axis.set_yticks([1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1, 1.0])
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
@@ -159,45 +172,54 @@ def main(no_of_system_sizes=6):
 
         cvms_metrop = np.array([*cvms_metrop_low_temps, *cvms_metrop_lower_trans, *cvms_metrop_upper_trans,
                                 *cvms_metrop_high_temps])
-        cvm_errors_metrop = [*cvm_errors_metrop_low_temps, *cvm_errors_metrop_lower_trans,
-                             *cvm_errors_metrop_upper_trans, *cvm_errors_metrop_high_temps]
+        cvm_errors_metrop = np.array([*cvm_errors_metrop_low_temps, *cvm_errors_metrop_lower_trans,
+                                      *cvm_errors_metrop_upper_trans, *cvm_errors_metrop_high_temps])
 
-        axes[0].errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
-                         color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} Metrop.")
+        if system_size_index == 5:
+            axes[0].errorbar(reduced_temperatures_metrop[1:], cvms_metrop[1:], cvm_errors_metrop[1:], marker=".",
+                             markersize=10, color=colors[system_size_index], linestyle="None",
+                             label=fr"$N$ = {length}x{length} Metrop.")
+        else:
+            axes[0].errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
+                             color=colors[system_size_index], linestyle="None",
+                             label=fr"$N$ = {length}x{length} Metrop.")
+        inset_axis.plot(reduced_temperatures_metrop, 1.0 / cvms_metrop, marker=".", markersize=10,
+                        color=colors[system_size_index], linestyle="None")
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
-        inset_axis.plot(reduced_temperatures_metrop, 1.0 / cvms_metrop, marker=".", markersize=10,
-                            color=colors[system_size_index], linestyle="None")
 
         inverse_cvms_around_transition = 1.0 / cvms_metrop[3:15]
         # cvm_errors_metrop_around_transition = np.array(cvm_errors_metrop[3:15])
-        if 0 < system_size_index < 5:
+        if system_size_index > 0:
             current_fitting_inverse_cvms = inverse_cvms_around_transition[lower_fitting_index:upper_fitting_index]
             current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_inverse_cvms), 2))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
-            inset_axis.plot(continuous_temperatures / approx_transition_temperature,
+            '''inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(previous_polynomial_fit(continuous_temperatures)), color=colors[system_size_index - 1],
                             linestyle="-")
             inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(current_polynomial_fit(continuous_temperatures)), color=colors[system_size_index],
-                            linestyle="-")
-            intersect_index = np.argwhere(np.diff(np.sign(previous_polynomial_fit(continuous_temperatures) -
-                                                          current_polynomial_fit(continuous_temperatures)))).flatten()
+                            linestyle="-")'''
+            intersect_index = np.argwhere(np.diff(
+                np.sign(previous_polynomial_fit(continuous_temperatures) -
+                        current_polynomial_fit(continuous_temperatures)))).flatten()[0]
             intersect_temperature = continuous_temperatures[intersect_index]
-            intersect_value = current_polynomial_fit(continuous_temperatures[intersect_index])
-            plt.vlines(intersect_temperature / approx_transition_temperature, 1.0e-5, np.exp(intersect_value),
+            intersect_value = np.exp(current_polynomial_fit(continuous_temperatures[intersect_index]))
+            plt.vlines(intersect_temperature / approx_transition_temperature, 1.0e-5, intersect_value,
                        colors="gray", linestyles='solid')
-            reduced_intersect_temperatures.append(intersect_temperature[0] / approx_transition_temperature)
+            reduced_intersect_temperatures.append(intersect_temperature / approx_transition_temperature)
             intersect_values.append(intersect_value)
 
         if system_size_index == 0:
-            lower_fitting_index, upper_fitting_index = 8, 12
+            lower_fitting_index, upper_fitting_index = 9, 12
         if system_size_index == 1:
-            lower_fitting_index, upper_fitting_index = 4, 8
+            lower_fitting_index, upper_fitting_index = 5, 8
         if system_size_index == 2:
             lower_fitting_index, upper_fitting_index = 2, 5
         if system_size_index == 3:
             lower_fitting_index, upper_fitting_index = 1, 4
+        if system_size_index == 4:
+            lower_fitting_index, upper_fitting_index = 0, 3
         fitting_temps = temperatures_around_transition[lower_fitting_index:upper_fitting_index]
         previous_fitting_inverse_cvms = inverse_cvms_around_transition[lower_fitting_index:upper_fitting_index]
         previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_inverse_cvms), 2))
@@ -207,18 +229,19 @@ def main(no_of_system_sizes=6):
         inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                         polynomial_model(continuous_temperatures), color=colors[system_size_index], linestyle="--")'''
 
-    inverse_system_sizes = [1.0 / length for length in linear_system_sizes]
+    inverse_system_sizes = [1.0 / np.log(length ** 2) ** 2 for length in linear_system_sizes]
     # inverse_system_sizes.append(0.0), reduced_intersect_temperatures.append(1.0)
     inverse_system_sizes.reverse(), reduced_intersect_temperatures.reverse(), intersect_values.reverse()
     inverse_system_sizes.pop()
     axes[1].plot(inverse_system_sizes, reduced_intersect_temperatures, marker=".", markersize=8, color="black",
                  linestyle="None")
-    continuous_reduced_intersect_temperatures = np.linspace(1.0, reduced_intersect_temperatures[-1], 100)
+    continuous_reduced_intersect_temperatures = np.linspace(1.0, reduced_intersect_temperatures[-1] + 0.1, 100)
     polynomial_fit = np.poly1d(np.polyfit(reduced_intersect_temperatures, inverse_system_sizes, 1))
     axes[1].plot(polynomial_fit(continuous_reduced_intersect_temperatures), continuous_reduced_intersect_temperatures,
-                 linestyle="--", color='black')
+                 linestyle="--", color="black")
+    twinned_axis.plot(inverse_system_sizes, intersect_values, marker=".", markersize=8, color="red", linestyle="None")
 
-    legend = axes[0].legend(loc="upper right", fontsize=8.5)
+    legend = axes[0].legend(loc="upper right", fontsize=8.11)
     legend.get_frame().set_edgecolor("k"), legend.get_frame().set_lw(3)
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
