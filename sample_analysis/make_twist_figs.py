@@ -131,23 +131,6 @@ def main(no_of_system_sizes=6):
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
             no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
-        """estimate non-used sample variances for our records"""
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
-            sample_directories_mid_temps[system_size_index], temperatures_mid_temps, length,
-            no_of_equilibration_sweeps_mid_temps, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
-            sample_directories_lower_trans[system_size_index], temperatures_lower_trans, length,
-            no_of_equilibration_sweeps_lower_trans, no_of_observations_lower_trans, no_of_jobs_lower_trans, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
-            sample_directories_upper_trans[system_size_index], temperatures_upper_trans, length,
-            no_of_equilibration_sweeps_upper_trans, no_of_observations_upper_trans, no_of_jobs_upper_trans, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
-            algorithm_name, external_global_moves_string_all, output_directory_higher_temps,
-            sample_directories_high_temps[system_size_index], temperatures_high_temps, length,
-            no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, no_of_jobs_high_temps, pool))
 
         low_temp_sample_variance_vs_system_size_local.append(low_temp_sample_variances_local[0])
         low_temp_sample_variance_error_vs_system_size_local.append(low_temp_sample_variance_errors_local[0])
