@@ -57,7 +57,7 @@ def main():
             axis.yaxis.set_major_formatter('{x:.1f}')
         else:
             axis.axes.yaxis.set_ticklabels([])
-        [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+        [axis.spines[spine].set_linewidth(3.75) for spine in ["top", "bottom", "left", "right"]]
 
     axes[0].text(0.7253, 0.32, r"$N = 64 \! \times \! 64$", fontsize=14.25, transform=axes[0].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
