@@ -130,10 +130,16 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index, symmetry_breaking_paper):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.04, 0.9625, "e", fontsize=22, transform=axis.transAxes, weight='bold')
-        axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+        axis.text(-0.05, 0.9735, "e", fontsize=21, transform=axis.transAxes, weight='bold')
+        '''axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                   fontsize=14, transform=axis.transAxes,
-                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))'''
+        axis.text(0.69, 0.94, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+                  fontsize=15, transform=axis.transAxes,
+                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3.0, boxstyle='round, pad=0.5'))
+        """add text box to pad the bottom of plot - aids formatting when placed next to twist-prob fig"""
+        axis.text(1.0, -0.06, " ", fontsize=16, transform=axis.transAxes,
+                  bbox=dict(facecolor='none', edgecolor='none', linewidth=1.0, boxstyle='round, pad=0.5'))
         axis.tick_params(which='both', length=5.333, width=3)
         axis.tick_params(which='minor', length=4)
     else:
@@ -152,7 +158,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.tick_params(which='both', length=8, width=4.5)
         axis.tick_params(which='minor', length=6)
     if alphabetic_label is None:
-        axis.tick_params(which='major', labelsize=18, pad=5)
+        axis.tick_params(which='major', labelsize=21, pad=2.5)
     elif alphabetic_label == "a":
         axis.tick_params(which='major', labelsize=24, pad=10)
     else:
@@ -176,17 +182,17 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.set_xticks(minor_ticks, minor=True)
     axis.yaxis.set_major_formatter('{x:.1f}')
     if alphabetic_label is None:
-        axis.set_ylim([-0.18, 1.0])
-        axis.set_yticks(np.arange(0.0, 1.0, 0.25), minor=True)
+        axis.set_ylim([-0.72, 1.0])
+        axis.set_yticks(np.arange(-0.5, 1.0, 0.25), minor=True)
         axis.set_yticks([1.0])
-        axis.set_xlabel(r"$m_x$", fontsize=20), axis.set_ylabel(r"$m_y$", fontsize=20, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.005, 0.26), axis.yaxis.set_label_coords(0.56, 0.93)
+        axis.set_xlabel(r"$m_x$", fontsize=21), axis.set_ylabel(r"$m_y$", fontsize=21, rotation="horizontal")
+        axis.xaxis.set_label_coords(1.0, 0.505), axis.yaxis.set_label_coords(0.57, 0.94)
     else:
         axis.set_ylim([-1.0, 1.0])
         axis.set_yticks(minor_ticks, minor=True)
         axis.set_yticks([-1.0, 1.0])
         axis.set_xlabel(r"$m_x$", fontsize=35), axis.set_ylabel(r"$m_y$", fontsize=32.5, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.005, 0.575), axis.yaxis.set_label_coords(0.565, 0.96)
+        axis.xaxis.set_label_coords(1.005, 0.625), axis.yaxis.set_label_coords(0.565, 0.96)
 
     colors = ["black", "red"]
     for temperature_index, temperature in reverse_enumerate(temperatures):
@@ -217,7 +223,8 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
                         f"{temperature:.4f}.npy", cartesian_magnetisation)
         if alphabetic_label is None:
-            rotation = -0.15
+            # rotation = -0.15
+            rotation = 0.0
             axis.plot(cartesian_magnetisation[:, 0] * math.cos(rotation) +
                       cartesian_magnetisation[:, 1] * math.sin(rotation),
                       cartesian_magnetisation[:, 1] * math.cos(rotation) -
@@ -228,8 +235,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                       color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
     handles, labels = axis.get_legend_handles_labels()
     if alphabetic_label is None:
-        legend = axis.legend(reversed(handles), reversed(labels), loc='upper right', bbox_to_anchor=(1.065, 1.065),
-                             fontsize=14)
+        '''legend = axis.legend(reversed(handles), reversed(labels), loc='upper right', bbox_to_anchor=(1.065, 1.065),
+                             fontsize=14)'''
+        legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.07, -0.0325),
+                             fontsize=15)
     elif alphabetic_label == "a":
         legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.06, -0.05),
                              fontsize=17)

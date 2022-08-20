@@ -63,25 +63,25 @@ def main(no_of_system_sizes=6):
     pool = setup_pool(no_of_jobs_low_temp, max_no_of_cpus)
 
     fig, axes = plt.subplots(2, 1, figsize=(5.0, 4.5))
-    fig.text(0.0025, 0.925, "f", fontsize=20, weight='bold')
-    fig.text(0.0025, 0.4625, "g", fontsize=20, weight='bold')
-    fig.tight_layout(h_pad=2.5)
+    fig.text(0.115, 0.8875, "f", fontsize=20, weight='bold')
+    fig.text(0.115, 0.405, "g", fontsize=20, weight='bold')
+    fig.tight_layout(h_pad=1.75)
 
-    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-6)
+    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-9)
     axes[0].set_yscale('log')
-    axes[0].set_ylim([9.0 * 10 ** (-8), 0.7])
+    axes[0].set_ylim([8.0 * 10 ** (-8), 1.5])
     axes[0].set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
-    axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=20, labelpad=4)
-    axes[1].set_xlabel(r"$N^{-1 / 2}$", fontsize=20, labelpad=3)
-    axes[1].set_ylabel(r"$\frac{s_{\phi_m, n=10^6}^2(\beta J = 10)}{{\rm Var}\left[ \phi_m \right]}$", fontsize=20,
-                       labelpad=1)
-    [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
+    axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=22, labelpad=1)
+    axes[1].set_ylim([-0.1, 1.1])
+    axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-2)
+    axes[1].set_ylabel(r"$\frac{s_{\phi_m}^2 \left(\beta J \! = \! 10, \! \tau \! = \! 10^6 \Delta t_{\rm phys} "
+                       r"\right)}{{\rm Var}\left[ \phi_m \right]}$", fontsize=21.5, labelpad=1)
+    [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis in axes:
-        axis.tick_params(which='both', direction='in', width=3)
-        axis.tick_params(which='major', length=5, labelsize=18, pad=5)
-        axis.tick_params(which='minor', length=4)
+        axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
+        axis.tick_params(which='minor', direction='in', width=1.5, length=4)
 
-    colors = ["black", "red", "blue", "green", "tab:brown", "magenta", "indigo"][:no_of_system_sizes]
+    colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
 
     low_temp_sample_variance_vs_system_size_local = []
@@ -137,22 +137,22 @@ def main(no_of_system_sizes=6):
         low_temp_sample_variance_vs_system_size_all.append(low_temp_sample_variances_all[0])
         low_temp_sample_variance_error_vs_system_size_all.append(low_temp_sample_variance_errors_all[0])
 
-        axes[0].errorbar(reduced_temperatures, twist_probabilities, twist_probability_errors, marker=".", markersize=10,
+        axes[0].errorbar(reduced_temperatures, twist_probabilities, twist_probability_errors, marker=".", markersize=11,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
 
-    inverse_linear_system_sizes = [1.0 / length for length in linear_system_sizes]
+    inverse_linear_system_sizes = [1.0 / np.log(length ** 2) for length in linear_system_sizes]
     axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_local,
-                     low_temp_sample_variance_error_vs_system_size_local, marker=".", markersize=8, color="black",
-                     linestyle='None', label="local dynamics only")
+                     low_temp_sample_variance_error_vs_system_size_local, marker="*", markersize=11, color="black",
+                     linestyle='None', label="local Metropolis dynamics")
     axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_all,
-                     low_temp_sample_variance_error_vs_system_size_all, marker="*", markersize=8, color="red",
-                     linestyle='None', label="local dynamics with twists")
+                     low_temp_sample_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
+                     linestyle='None', label="local Metropolis dynamics with twists")
 
-    legends = [axes[0].legend(loc="lower right", fontsize=10), axes[1].legend(loc="lower right", fontsize=10)]
+    legends = [axes[0].legend(loc="lower right", fontsize=10.5), axes[1].legend(loc="lower right", fontsize=10.5)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
     fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_sample_variance_"
-                f"vs_system_size_xy_gaussian_noise_metropolis_and_ecmc.pdf", bbox_inches="tight")
+                f"vs_system_size_xy_gaussian_noise_metropolis.pdf", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
