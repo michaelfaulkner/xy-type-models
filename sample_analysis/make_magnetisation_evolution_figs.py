@@ -131,9 +131,10 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
     axis.axis('square')
     if alphabetic_label is None:
         axis.text(-0.05, 0.9735, "e", fontsize=21, transform=axis.transAxes, weight='bold')
-        '''axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
-                  fontsize=14, transform=axis.transAxes,
-                  bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))'''
+        """left old code in comment below as the bbox=dict() part may be useful"""
+        # axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
+        #           fontsize=14, transform=axis.transAxes,
+        #           bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
         axis.text(0.69, 0.94, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
                   fontsize=15, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3.0, boxstyle='round, pad=0.5'))
@@ -223,8 +224,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
                         f"{temperature:.4f}.npy", cartesian_magnetisation)
         if alphabetic_label is None:
-            # rotation = -0.15
-            rotation = 0.0
+            rotation = 0.0  # previously set rotation = -0.15
             axis.plot(cartesian_magnetisation[:, 0] * math.cos(rotation) +
                       cartesian_magnetisation[:, 1] * math.sin(rotation),
                       cartesian_magnetisation[:, 1] * math.cos(rotation) -
@@ -235,8 +235,6 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                       color=colors[temperature_index], label=fr"$1 / (\beta J)$ = {temperature:.2f}")
     handles, labels = axis.get_legend_handles_labels()
     if alphabetic_label is None:
-        '''legend = axis.legend(reversed(handles), reversed(labels), loc='upper right', bbox_to_anchor=(1.065, 1.065),
-                             fontsize=14)'''
         legend = axis.legend(reversed(handles), reversed(labels), loc='lower right', bbox_to_anchor=(1.07, -0.0325),
                              fontsize=15)
     elif alphabetic_label == "a":
