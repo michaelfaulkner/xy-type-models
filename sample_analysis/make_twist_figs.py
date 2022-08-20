@@ -74,8 +74,8 @@ def main(no_of_system_sizes=6):
     axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=22, labelpad=1)
     axes[1].set_ylim([-0.1, 1.1])
     axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-2)
-    axes[1].set_ylabel(r"$\frac{s_{\phi_m}^2 \left(\beta J \! = \! 10, \! \tau \! = \! 10^6 \Delta t_{\rm phys} "
-                       r"\right)}{{\rm Var}\left[ \phi_m \right]}$", fontsize=21.5, labelpad=1)
+    axes[1].set_ylabel(r"$\frac{s_{\phi_m}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right)}{{\rm Var}\left[ "
+                       r"\phi_m \right]}$", fontsize=21.5, labelpad=1)
     [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis in axes:
         axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
