@@ -174,19 +174,23 @@ def main(no_of_system_sizes=6):
         cvm_errors_metrop = np.array([*cvm_errors_metrop_low_temps, *cvm_errors_metrop_lower_trans,
                                       *cvm_errors_metrop_upper_trans, *cvm_errors_metrop_high_temps])
 
-        """estimate intercept temperatures"""
+        """estimate intercept temperatures - we fit a 2nd-order polynomial to log(1 / CvM) as this was the smoothest 
+            fitting we found - ***NOTE THAT*** using three temperature values with this 2nd-order polynomial fit meant  
+            np.polyfit could not estimate errors of the fitting parameters"""
         inverse_cvms_around_transition = 1.0 / cvms_metrop[3:15]
         inverse_cvm_errors_around_transition = cvm_errors_metrop[3:15] * inverse_cvms_around_transition ** 2
         if system_size_index > 0:
             current_fitting_inverse_cvms = inverse_cvms_around_transition[lower_fitting_index:upper_fitting_index]
             current_fitting_inverse_cvm_errors = inverse_cvm_errors_around_transition[lower_fitting_index:
                                                                                       upper_fitting_index]
-            current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_inverse_cvms), 2,
-                                                          w=np.log(current_fitting_inverse_cvm_errors)))
+            current_polynomial_fit = np.poly1d(np.polyfit(
+                fitting_temps, np.log(current_fitting_inverse_cvms), 2,
+                w=current_fitting_inverse_cvm_errors / np.abs(current_fitting_inverse_cvms)))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
+            """the following commented-out code plots the fittings on top of the data in the inset figure"""
             '''inset_axis.plot(continuous_temperatures / approx_transition_temperature,
-                            np.exp(previous_polynomial_fit(continuous_temperatures)), color=colors[system_size_index - 1],
-                            linestyle="-")
+                            np.exp(previous_polynomial_fit(continuous_temperatures)), 
+                            color=colors[system_size_index - 1], linestyle="-")
             inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(current_polynomial_fit(continuous_temperatures)), color=colors[system_size_index],
                             linestyle="-")'''
@@ -216,7 +220,8 @@ def main(no_of_system_sizes=6):
                                                                                    upper_fitting_index]
         previous_polynomial_fit = np.poly1d(np.polyfit(
             fitting_temps, np.log(previous_fitting_inverse_cvms), 2,
-            w=previous_fitting_inverse_cvm_errors / previous_fitting_inverse_cvms))
+            w=previous_fitting_inverse_cvm_errors / np.abs(previous_fitting_inverse_cvms)))
+        """the following commented-out code was an attempt at using scipy.optimize.curve_fit()"""
         '''popt, pcov = curve_fit(quadratic_fit, fitting_temps, np.log(previous_fitting_inverse_cvms),
                                        sigma=previous_fitting_inverse_cvm_errors / previous_fitting_inverse_cvms)'''
 
@@ -248,11 +253,27 @@ def main(no_of_system_sizes=6):
     polyfit_params, polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures, 1,
                                              cov=True)
     polyfit_errors = np.sqrt(np.diag(polyfit_cov))
-    print(f"Reduced intercept temperature = {polyfit_params[1]} +- {polyfit_errors[1]}")
+    print(f"Thermodynamic reduced intercept temperature = {polyfit_params[1]} +- {polyfit_errors[1]}")
     polynomial_fit = np.poly1d(polyfit_params)
     left_legend_2 = axes[1].plot(continuous_inverse_log_squared_system_sizes,
                                  polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--",
                                  color="black", label="temp. fit")
+
+    """output reduced intercept temperatures, inverse intercept values & thermodynamic reduced intercept temperature"""
+    intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_inverse_values_xy_gaussian_"
+                                f"noise_metropolis_w_twists.tsv", "w")
+    intercept_temps_file.write("# system size, N".ljust(30) + "reduced intercept temp.".ljust(40) +
+                               "inverse intercept value" + "\n")
+    linear_system_sizes.reverse()
+    linear_system_sizes.pop()
+    linear_system_sizes.reverse(), reduced_intersect_temperatures.reverse(), intersect_values.reverse()
+    for system_size_index, length in enumerate(linear_system_sizes):
+        intercept_temps_file.write(f"{length}x{length}".ljust(30) +
+                                   f"{reduced_intersect_temperatures[system_size_index]:.14e}".ljust(40) +
+                                   f"{intersect_values[system_size_index]:.14e}" + "\n")
+    intercept_temps_file.write("\n\n" + f"# Thermodynamic reduced intercept temperature = {polyfit_params[1]} +- "
+                                        f"{polyfit_errors[1]}")
+    intercept_temps_file.close()
 
     combined_legends_data = left_legend_1 + left_legend_2 + right_legend
     combined_legends_labels = [legend.get_label() for legend in combined_legends_data]
