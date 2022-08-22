@@ -130,7 +130,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index, symmetry_breaking_paper):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.05, 0.9735, "e", fontsize=21, transform=axis.transAxes, weight='bold')
+        axis.text(-0.05, 0.9735, "e", fontsize=22, transform=axis.transAxes, weight='bold')
         """left old code in comment below as the bbox=dict() part may be useful"""
         # axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
         #           fontsize=14, transform=axis.transAxes,
@@ -139,7 +139,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                   fontsize=15, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='black', linewidth=3.0, boxstyle='round, pad=0.5'))
         """add text box to pad the bottom of plot - aids formatting when placed next to twist-prob fig"""
-        axis.text(1.0, -0.06, " ", fontsize=16, transform=axis.transAxes,
+        axis.text(1.0, -0.12, " ", fontsize=16, transform=axis.transAxes,
                   bbox=dict(facecolor='none', edgecolor='none', linewidth=1.0, boxstyle='round, pad=0.5'))
         axis.tick_params(which='both', length=5.333, width=3)
         axis.tick_params(which='minor', length=4)

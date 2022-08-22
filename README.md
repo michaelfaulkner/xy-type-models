@@ -376,22 +376,72 @@ directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-nois
 `executables` directory.
 
 
+## Make figures for *General symmetry breaking at a topological phase transition*
+
+### Figures 1 and 2e
+
+1. Run each configuration file in [`config_files/mag_evolution_figs`](
+config_files/mag_evolution_figs) via the command `python run.py config_files/mag_evolution_figs/16x16_ecmc.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py`.
+
+### Figures 2a-d
+
+Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
+
+### Figures 2f-g
+
+1. Run each configuration file in [`config_files/twist_figs`](
+config_files/twist_figs) via the command `python run.py config_files/twist_figs/4x4_low_temp_all.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_twist_figs.py`.
+
+Simulations for figures 2f-g require around 4TB of scratch space.
+
+### Figures 3a-c
+
+1. Run each configuration file in [`config_files/cdf_figs`](
+config_files/cdf_figs) via the command `python run.py config_files/cdf_figs/64x64_ecmc.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_cdf_figs.py`.
+
+### Figures 3d-e
+
+1. Run each configuration file in [`config_files/cvm_figs`](
+config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_ecmc.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_cvm_figs.py`. 
+
+Simulations for figures 3d-e require around 16TB of scratch space.
+
+
+## Make XY figures for *Sampling algorithms in statistical physics*
+
+### Figure 9
+
+- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
+config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
+ etc.  
+
+- Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py False`.
+
+### Figure 2, 6, 7 and 8
+
+Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
+integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
+
+
 ## Citation
 
 If you use xy-type-models in published work, please cite "Phys. Rev. B 91, 155412 (2015)" [\[Faulkner2015\]](
 https://doi.org/10.1103/PhysRevB.91.155412).
-
-
-## Generation of the XY figures included in Sampling algorithms in statistical physics
-
-To make figure 9 of *Sampling algorithms in statistical physics: a guide for statistics and machine 
-learning*, first run each configuration file in [`config_files/sampling_algos_xy_figs`](
-config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
- etc.  
-
-Then, once all simulations are complete, run the relevant sample-analysis script via the command 
-`python sample_analysis/make_magnetisation_evolution_figs.py False`.
-
-To make figures 2, 6, 7 and 8, go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
-instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
-integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).

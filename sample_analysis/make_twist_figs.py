@@ -1,3 +1,4 @@
+from matplotlib.ticker import MultipleLocator
 from sample_getter import get_acceptance_rates, get_magnetisation_phase, get_physical_time_step
 from setup_scripts import setup_pool
 import importlib
@@ -62,20 +63,22 @@ def main(no_of_system_sizes=6):
                                      for length in linear_system_sizes]
     pool = setup_pool(no_of_jobs_low_temp, max_no_of_cpus)
 
-    fig, axes = plt.subplots(2, 1, figsize=(5.0, 4.5))
-    fig.text(0.115, 0.8875, "f", fontsize=20, weight='bold')
-    fig.text(0.115, 0.405, "g", fontsize=20, weight='bold')
+    fig, axes = plt.subplots(2, 1, figsize=(5.0 * 5.75 / 5, 4.5 * 5 / 5.75))
+    fig.text(0.115, 0.875, "f", fontsize=20, weight='bold')
+    fig.text(0.115, 0.3925, "g", fontsize=20, weight='bold')
     fig.tight_layout(h_pad=1.75)
 
-    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-9)
+    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-12)
+    axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=20, labelpad=1)
     axes[0].set_yscale('log')
     axes[0].set_ylim([8.0 * 10 ** (-8), 1.5])
     axes[0].set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
-    axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=22, labelpad=1)
-    axes[1].set_ylim([-0.1, 1.1])
-    axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-2)
+    axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-0)
     axes[1].set_ylabel(r"$\frac{s_{\phi_m}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right)}{{\rm Var}\left[ "
-                       r"\phi_m \right]}$", fontsize=21.5, labelpad=1)
+                       r"\phi_m \right]}$", fontsize=20, labelpad=6)
+    axes[1].set_ylim([-0.1, 1.1])
+    axes[1].yaxis.set_minor_locator(MultipleLocator(base=0.5))
+
     [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis in axes:
         axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
@@ -148,7 +151,7 @@ def main(no_of_system_sizes=6):
                      low_temp_sample_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
                      linestyle='None', label="local Metropolis dynamics with twists")
 
-    legends = [axes[0].legend(loc="lower right", fontsize=10.5), axes[1].legend(loc="lower right", fontsize=10.5)]
+    legends = [axes[0].legend(loc="lower right", ncol=2, fontsize=10.5), axes[1].legend(loc="lower right", fontsize=10.5)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
     fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_sample_variance_"
