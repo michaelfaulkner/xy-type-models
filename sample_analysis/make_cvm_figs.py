@@ -250,14 +250,22 @@ def main(no_of_system_sizes=6):
 
     """fit reduced intercept temperatures"""
     continuous_inverse_log_squared_system_sizes = np.linspace(0.0, inverse_log_squared_system_sizes[-1] + 0.1, 100)
-    polyfit_params, polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures, 1,
-                                             cov=True)
-    polyfit_errors = np.sqrt(np.diag(polyfit_cov))
-    print(f"Thermodynamic reduced intercept temperature = {polyfit_params[1]} +- {polyfit_errors[1]}")
-    polynomial_fit = np.poly1d(polyfit_params)
+    temp_polyfit_params, temp_polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures,
+                                                       1, cov=True)
+    temp_polyfit_errors = np.sqrt(np.diag(temp_polyfit_cov))
+    print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
+    polynomial_fit = np.poly1d(temp_polyfit_params)
     left_legend_2 = axes[1].plot(continuous_inverse_log_squared_system_sizes,
                                  polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--",
                                  color="black", label="temp. fit")
+
+    """fit values"""
+    inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
+    inverse_system_sizes.reverse()
+    inverse_system_sizes.pop()
+    value_polyfit_params, value_polyfit_cov = np.polyfit(inverse_system_sizes, intersect_values, 1, cov=True)
+    value_polyfit_errors = np.sqrt(np.diag(value_polyfit_cov))
+    print(f"Thermodynamic intercept inverse values = {value_polyfit_params[1]} +- {value_polyfit_errors[1]}")
 
     """output reduced intercept temperatures, inverse intercept values & thermodynamic reduced intercept temperature"""
     intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_inverse_values_xy_gaussian_"
@@ -271,8 +279,10 @@ def main(no_of_system_sizes=6):
         intercept_temps_file.write(f"{length}x{length}".ljust(30) +
                                    f"{reduced_intersect_temperatures[system_size_index]:.14e}".ljust(40) +
                                    f"{intersect_values[system_size_index]:.14e}" + "\n")
-    intercept_temps_file.write("\n\n" + f"# Thermodynamic reduced intercept temperature = {polyfit_params[1]} +- "
-                                        f"{polyfit_errors[1]}")
+    intercept_temps_file.write("\n\n" + f"# Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- "
+                                        f"{temp_polyfit_errors[1]}")
+    intercept_temps_file.write("\n" + f"# Thermodynamic intercept inverse values = {value_polyfit_params[1]} +- "
+                                      f"{value_polyfit_errors[1]}")
     intercept_temps_file.close()
 
     combined_legends_data = left_legend_1 + left_legend_2 + right_legend
