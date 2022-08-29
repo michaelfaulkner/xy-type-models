@@ -5,6 +5,7 @@ from setup_scripts import setup_pool
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tckr
 import numpy as np
 import os
 import sys
@@ -99,6 +100,29 @@ def main(no_of_system_sizes=6):
     inset_axis.set_yscale('log')
     inset_axis.set_yticks([1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1, 1.0])
     [inset_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+
+    supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
+    supplementary_fig.tight_layout()
+    supplementary_axis.set_xlabel(r"$\left( 1 / N \right) \times 10^2$", fontsize=20, labelpad=-0.5)
+    supplementary_axis.set_ylabel(r"$1 / \left(n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right) \right)$",
+                                  fontsize=20, labelpad=-0.5)
+    supplementary_axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
+    supplementary_axis.tick_params(which='minor', direction='in', width=1.5, length=4)
+    [supplementary_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+    supplementary_axis.set_xlim([-0.05, 1.65]), supplementary_axis.set_ylim([-0.01, 0.25])
+    supplementary_axis.set_xticks([0.0, 0.5, 1.0, 1.5])
+
+    supplementary_inset_axis = plt.axes([0.1, 0.55, 0.4, 0.37])
+    supplementary_inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
+    supplementary_inset_axis.tick_params(which='minor', direction='in', width=0.25, length=3)
+    supplementary_inset_axis.yaxis.set_label_position("right"), supplementary_inset_axis.yaxis.tick_right()
+    supplementary_inset_axis.set_xlabel(r"$\left( 1 / N \right) \times 10^3$", fontsize=14, labelpad=1.0)
+    supplementary_inset_axis.set_ylabel(
+        r"$1 / \left(n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right) \right)$", fontsize=12, labelpad=1.5)
+    supplementary_inset_axis.set_xlim([0.0, 0.001])
+    [supplementary_inset_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+    supplementary_inset_axis.set_xlim([-0.02, 1.05]), supplementary_inset_axis.set_ylim([-0.0005, 0.011])
+    supplementary_inset_axis.set_xticks([0.0, 0.5, 1.0])
 
     colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
@@ -240,20 +264,19 @@ def main(no_of_system_sizes=6):
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
 
+    """fit reduced intercept temperatures"""
     inverse_log_squared_system_sizes = [1.0 / np.log(length ** 2) ** 2 for length in linear_system_sizes]
     inverse_log_squared_system_sizes.reverse(), reduced_intersect_temperatures.reverse(), intersect_values.reverse()
     inverse_log_squared_system_sizes.pop()
-    left_legend_1 = axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".",
-                                 markersize=10, color="black", linestyle="None", label="intercept temps")
-    right_legend = twinned_axis.plot(inverse_log_squared_system_sizes, intersect_values, marker="*", markersize=10,
-                                     color="red", linestyle="-.", label="intercept values")
-
-    """fit reduced intercept temperatures"""
     continuous_inverse_log_squared_system_sizes = np.linspace(0.0, inverse_log_squared_system_sizes[-1] + 0.1, 100)
     temp_polyfit_params, temp_polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures,
                                                        1, cov=True)
     temp_polyfit_errors = np.sqrt(np.diag(temp_polyfit_cov))
     print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
+    left_legend_1 = axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".",
+                                 markersize=10, color="black", linestyle="None", label="intercept temps")
+    right_legend = twinned_axis.plot(inverse_log_squared_system_sizes, intersect_values, marker="*", markersize=10,
+                                     color="red", linestyle="-.", label="intercept values")
     polynomial_fit = np.poly1d(temp_polyfit_params)
     left_legend_2 = axes[1].plot(continuous_inverse_log_squared_system_sizes,
                                  polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--",
@@ -263,9 +286,22 @@ def main(no_of_system_sizes=6):
     inverse_system_sizes = [1.0 / length ** 2 for length in linear_system_sizes]
     inverse_system_sizes.reverse()
     inverse_system_sizes.pop()
-    value_polyfit_params, value_polyfit_cov = np.polyfit(inverse_system_sizes, intersect_values, 1, cov=True)
+    continuous_inverse_system_sizes = np.linspace(0.0, inverse_system_sizes[-1] + 0.1, 100)
+    # linear fit only to four largest system sizes as the fit isn't quite linear and large N is more important
+    value_polyfit_params, value_polyfit_cov = np.polyfit(inverse_system_sizes[0:4], intersect_values[0:4], 1, cov=True)
     value_polyfit_errors = np.sqrt(np.diag(value_polyfit_cov))
     print(f"Thermodynamic intercept inverse values = {value_polyfit_params[1]} +- {value_polyfit_errors[1]}")
+    supplementary_legend_1 = supplementary_axis.plot(100. * np.array(inverse_system_sizes), intersect_values,
+                                                     marker=".", markersize=10, color="black", linestyle="None",
+                                                     label="intercept values")
+    supplementary_inset_axis.plot(1000.0 * np.array(inverse_system_sizes), intersect_values, marker=".", markersize=10,
+                                  color="black", linestyle="None")
+    polynomial_fit = np.poly1d(value_polyfit_params)
+    supplementary_legend_2 = supplementary_axis.plot(100.0 * continuous_inverse_system_sizes,
+                                                     polynomial_fit(continuous_inverse_system_sizes), linestyle="--",
+                                                     color="black", label=r"linear fit to four largest $N$ values")
+    supplementary_inset_axis.plot(1000.0 * continuous_inverse_system_sizes,
+                                  polynomial_fit(continuous_inverse_system_sizes), linestyle="--", color="black")
 
     """output reduced intercept temperatures, inverse intercept values & thermodynamic reduced intercept temperature"""
     intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_inverse_values_xy_gaussian_"
@@ -281,8 +317,8 @@ def main(no_of_system_sizes=6):
                                    f"{intersect_values[system_size_index]:.14e}" + "\n")
     intercept_temps_file.write("\n\n" + f"# Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- "
                                         f"{temp_polyfit_errors[1]}")
-    intercept_temps_file.write("\n" + f"# Thermodynamic intercept inverse values = {value_polyfit_params[1]} +- "
-                                      f"{value_polyfit_errors[1]}")
+    intercept_temps_file.write("\n" + f"# Thermodynamic intercept inverse values (linear fit to four largest N values) "
+                                      f"= {value_polyfit_params[1]} +- {value_polyfit_errors[1]}")
     intercept_temps_file.close()
 
     combined_legends_data = left_legend_1 + left_legend_2 + right_legend
@@ -293,6 +329,14 @@ def main(no_of_system_sizes=6):
     [legend.get_frame().set_lw(3.0) for legend in legends]
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
+
+    combined_supplementary_legends_data = supplementary_legend_1 + supplementary_legend_2
+    combined_supplementary_legends_labels = [legend.get_label() for legend in combined_supplementary_legends_data]
+    supplementary_legend = supplementary_axis.legend(
+        combined_supplementary_legends_data, combined_supplementary_legends_labels, loc="lower right", fontsize=12)
+    supplementary_legend.get_frame().set_edgecolor("k"), supplementary_legend.get_frame().set_lw(3.0)
+    supplementary_fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_"
+                              f"intercept_values.pdf", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
