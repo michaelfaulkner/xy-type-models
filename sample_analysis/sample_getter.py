@@ -59,8 +59,8 @@ def get_physical_time_step(algorithm_name, output_directory, temperature_index):
     """
     acceptance_rates = get_acceptance_rates(output_directory, temperature_index)
     if algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis":
-        return 2.0 * acceptance_rates[1] * acceptance_rates[0] ** 2  # emergent Langevin diffusivity for Gaussian noise
-    return acceptance_rates[1] * acceptance_rates[0] ** 2 / 6.0  # emergent Langevin diffusivity for uniform noise
+        return 0.5 * acceptance_rates[1] * acceptance_rates[0] ** 2  # emergent Brownian diffusivity for Gaussian noise
+    return acceptance_rates[1] * acceptance_rates[0] ** 2 / 24.0  # emergent Brownian diffusivity for uniform noise
 
 
 def get_acceptance_rates(output_directory, temperature_index):
