@@ -233,8 +233,8 @@ def get_mag_phase_sample_variances_and_errors(algorithm_name, external_global_mo
         sample_variances, sample_variance_errors = [], []
         for temperature_index, temperature in enumerate(temperatures):
             sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
-                (f"{sample_directory}/job_{job_index}", temperature, 0, length ** 2, no_of_equilibration_sweeps)
-                for job_index in range(no_of_jobs)])
+                (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
+                 no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
             sample_variance, sample_variance_error = np.mean(sample_variance_vs_job), np.std(
                 sample_variance_vs_job) / len(sample_variance_vs_job) ** 0.5
             sample_variances.append(sample_variance)
