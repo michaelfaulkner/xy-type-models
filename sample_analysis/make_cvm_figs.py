@@ -73,34 +73,23 @@ def main(no_of_system_sizes=6):
     axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
     axes[1].set_xlabel(r"$1 / \left( \ln N \right)^2$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
-    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.985, 1.95])
+    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.975, 1.73])
     [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
         axis.tick_params(which='minor', direction='in', width=1.5, length=4)
 
-    inset_axis = plt.axes([0.6, 0.55, 0.21, 0.37])
+    inset_axis = plt.axes([0.6, 0.52, 0.23, 0.4])
     inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
     inset_axis.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
     inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=14, labelpad=1.0)
     inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=14, labelpad=1.5)
-    inset_axis.set_xlim([0.98, 1.54]), inset_axis.set_ylim([0.75, 5.0 * 10 ** 4])
+    inset_axis.set_xlim([0.97, 1.555]), inset_axis.set_ylim([0.625, 7.0 * 10 ** 4])
+    inset_axis.set_xticks([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
     inset_axis.set_yscale('log')
     inset_axis.set_yticks([1.0, 1.0e1, 1.0e2, 1.0e3, 1.0e4])
     [inset_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
-
-    twinned_axis = axes[1].twiny().twinx()
-    twinned_axis.set_xlabel(r"$N$", fontsize=16, labelpad=-0.5, color="red")
-    twinned_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=16,
-                            labelpad=-0.5, color="red")
-    # twinned_axis.set_yticks([0.0, 0.1, 0.2, 0.3])
-    twinned_axis.set_xlim([50.0, 2.25e4]), twinned_axis.set_ylim([1.5, 4.0e4])
-    twinned_axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5, colors="red")
-    twinned_axis.tick_params(which='minor', direction='in', width=1.5, length=4, colors="red")
-    twinned_axis.tick_params(axis='both', labelcolor='red')
-    twinned_axis.spines["right"].set_color("red"), twinned_axis.spines["right"].set_linewidth(3.0)
-    twinned_axis.spines["top"].set_color("red"), twinned_axis.spines["top"].set_linewidth(3.0)
 
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
     supplementary_fig.tight_layout()
@@ -220,12 +209,17 @@ def main(no_of_system_sizes=6):
         if system_size_index > 0:
             current_fitting_cvms = cvms_around_transition[lower_fitting_index:upper_fitting_index]
             current_fitting_cvm_errors = cvm_errors_around_transition[lower_fitting_index:upper_fitting_index]
-            current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 2,
-                                                          w=current_fitting_cvm_errors / np.abs(current_fitting_cvms)))
+            if system_size_index == 5:
+                current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 1,
+                                                              w=current_fitting_cvm_errors / np.abs(current_fitting_cvms)))
+            else:
+                current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 2,
+                                                              w=current_fitting_cvm_errors / np.abs(
+                                                                  current_fitting_cvms)))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
             """the following commented-out code plots the fittings on top of the data in the inset figure"""
             '''inset_axis.plot(continuous_temperatures / approx_transition_temperature,
-                            np.exp(previous_polynomial_fit(continuous_temperatures)), 
+                            np.exp(previous_polynomial_fit(continuous_temperatures)),
                             color=colors[system_size_index - 1], linestyle="-")
             inset_axis.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(current_polynomial_fit(continuous_temperatures)), color=colors[system_size_index],
@@ -249,15 +243,17 @@ def main(no_of_system_sizes=6):
         if system_size_index == 3:
             lower_fitting_index, upper_fitting_index = 1, 4
         if system_size_index == 4:
-            lower_fitting_index, upper_fitting_index = 0, 3
+            lower_fitting_index, upper_fitting_index = 1, 3
         fitting_temps = temperatures_around_transition[lower_fitting_index:upper_fitting_index]
         previous_fitting_cvms = cvms_around_transition[lower_fitting_index:upper_fitting_index]
         previous_fitting_cvm_errors = cvm_errors_around_transition[lower_fitting_index:upper_fitting_index]
-        previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 2,
-                                                       w=previous_fitting_cvm_errors / np.abs(previous_fitting_cvms)))
-        """the following commented-out code was an attempt at using scipy.optimize.curve_fit()"""
-        '''popt, pcov = curve_fit(quadratic_fit, fitting_temps, np.log(previous_fitting_cvms),
-                               sigma=previous_fitting_cvm_errors / previous_fitting_cvms)'''
+        if system_size_index == 4:
+            previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 1,
+                                                           w=previous_fitting_cvm_errors / np.abs(previous_fitting_cvms)))
+        else:
+            previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 2,
+                                                           w=previous_fitting_cvm_errors / np.abs(
+                                                               previous_fitting_cvms)))
 
         """plot CvM data"""
         if system_size_index == 5:
@@ -274,7 +270,7 @@ def main(no_of_system_sizes=6):
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
 
-    """fit reduced intercept temperatures"""
+    """fit reduced intercept temperatures..."""
     inverse_log_squared_system_sizes = [1.0 / np.log(length ** 2) ** 2 for index, length in
                                         enumerate(linear_system_sizes) if index > 0]
     inverse_log_squared_system_sizes.reverse(), reduced_intersect_temperatures.reverse()
@@ -282,70 +278,71 @@ def main(no_of_system_sizes=6):
     temp_polyfit_params, temp_polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures,
                                                        1, cov=True)
     temp_polyfit_errors = np.sqrt(np.diag(temp_polyfit_cov))
-    print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
-    left_legend_1 = axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".",
-                                 markersize=10, color="black", linestyle="None", label="intercept temps")
     temp_polynomial_fit = np.poly1d(temp_polyfit_params)
-    left_legend_2 = axes[1].plot(continuous_inverse_log_squared_system_sizes,
-                                 temp_polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--",
-                                 color="black", label="temp. fit")
+    print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
 
-    """fit intercept values to power law"""
+    """...then plot the data and fitting function"""
+    axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".", markersize=10,
+                 color="black", linestyle="None", label="intercept temperatures")
+    axes[1].plot(continuous_inverse_log_squared_system_sizes,
+                 temp_polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--", color="black",
+                 label=fr"$A + B / (\ln N)^2$ fit gives" + "\n" +
+                       fr"$A =$ {temp_polyfit_params[1]:.3f} $\pm$ {temp_polyfit_errors[1]:.3f}")
+
+    """fit intercept values to power law..."""
     system_sizes = [length ** 2 for index, length in enumerate(linear_system_sizes) if index > 0]
     continuous_system_sizes = np.linspace(0.5 * system_sizes[0], 2.0 * system_sizes[-1], 100)
     value_polyfit_params, value_polyfit_cov = np.polyfit(np.log(system_sizes), np.log(intersect_values), 1, cov=True)
     value_polyfit_errors = np.sqrt(np.diag(value_polyfit_cov))
-    print(f"Intercept-value power law = {np.exp(value_polyfit_params[1])} x N^a, where a = {value_polyfit_params[0]} "
-          f"+- {value_polyfit_errors[0]}")
-    '''right_legend_1 = twinned_axis.loglog(system_sizes, intersect_values, marker="*", markersize=10, color="red",
-                                         linestyle="None", label="intercept values")
-    right_legend_2 = axes[1].loglog(continuous_system_sizes, np.exp(value_polyfit_params[1]) *
-                                    continuous_system_sizes ** value_polyfit_params[0], linestyle="--", color="red",
-                                    label=rf"\sim N^{value_polyfit_params[0]:.3f}")'''
+    print(f"Intercept-value power law = C . N^alpha, where "
+          f"alpha = {value_polyfit_params[0]} +- {value_polyfit_errors[0]} and "
+          f"C = {np.exp(value_polyfit_params[1])} +- {np.exp(value_polyfit_params[1]) * value_polyfit_errors[1]}")
 
-    supplementary_legend_1 = supplementary_axis.loglog(system_sizes, intersect_values, marker=".", markersize=10,
-                                                       color="black", linestyle="None", label="intercept values")
-    supplementary_legend_2 = supplementary_axis.loglog(
-        continuous_system_sizes, np.exp(value_polyfit_params[1]) * continuous_system_sizes ** value_polyfit_params[0],
-        linestyle="--", color="black", label=fr"$\sim N^\alpha$, $\alpha = {value_polyfit_params[0]:.3f}$")
+    """...then plot the data and fitting function"""
+    supplementary_axis.loglog(system_sizes, intersect_values, marker=".", markersize=10, color="black",
+                              linestyle="None", label="intercept values")
+    supplementary_axis.loglog(continuous_system_sizes, np.exp(value_polyfit_params[1]) *
+                              continuous_system_sizes ** value_polyfit_params[0], linestyle="--", color="black",
+                              label=fr"$C N^\alpha$ fit gives" + "\n" +
+                                    fr"$\alpha =$ {value_polyfit_params[0]:.3f} $\pm$ {value_polyfit_errors[0]:.3f} " +
+                                    "and" + "\n" + fr"$C =$ {np.exp(value_polyfit_params[1]):.3f} $\pm$ "
+                                    fr"{np.exp(value_polyfit_params[1]) * value_polyfit_errors[1]:.3f}")
 
-    right_legend_1 = twinned_axis.loglog(system_sizes, intersect_values, marker="*", markersize=10, color="red",
-                                         linestyle="None", label="intercept values")
-    right_legend_2 = twinned_axis.loglog(
-        continuous_system_sizes, np.exp(value_polyfit_params[1]) * continuous_system_sizes ** value_polyfit_params[0],
-        linestyle="--", color="red", label=fr"$\sim N^\alpha$, $\alpha = {value_polyfit_params[0]:.3f}$")
-
-    """output reduced intercept temperatures, inverse intercept values & thermodynamic reduced intercept temperature"""
-    intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_inverse_values_xy_gaussian_"
-                                f"noise_metropolis_w_twists.tsv", "w")
-    intercept_temps_file.write("# system size, N".ljust(30) + "reduced intercept temp.".ljust(40) +
-                               "inverse intercept value" + "\n")
-    linear_system_sizes.reverse()
-    linear_system_sizes.pop()
-    linear_system_sizes.reverse(), reduced_intersect_temperatures.reverse(), intersect_values.reverse()
+    """print reduced intercept temperatures and intercept values to file..."""
+    intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_values_xy_gaussian_noise_"
+                                f"metropolis_w_twists.tsv", "w")
+    intercept_temps_file.write("# system size, N".ljust(30) + "reduced intercept temp.".ljust(40) + "intercept value" +
+                               "\n")
+    linear_system_sizes.reverse(), linear_system_sizes.pop(), linear_system_sizes.reverse()
+    reduced_intersect_temperatures.reverse()
     for system_size_index, length in enumerate(linear_system_sizes):
         intercept_temps_file.write(f"{length}x{length}".ljust(30) +
                                    f"{reduced_intersect_temperatures[system_size_index]:.14e}".ljust(40) +
                                    f"{intersect_values[system_size_index]:.14e}" + "\n")
+
+    """...then print fitting parameters to file"""
     intercept_temps_file.write("\n\n" + f"# Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- "
                                         f"{temp_polyfit_errors[1]}")
-    intercept_temps_file.write("\n" + f"# Intercept-value power law = {np.exp(value_polyfit_params[1])} x N^a, "
-                                      f"where a = {value_polyfit_params[0]} +- {value_polyfit_errors[0]}")
+    intercept_temps_file.write("\n" +
+                               "# This is a result of fitting A + B / (ln N)^2 to the reduced intercept temps, which "
+                               "gives " + f"A = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]} and "
+                               f"B = {temp_polyfit_params[0]} +- {temp_polyfit_errors[0]}")
+    intercept_temps_file.write(
+        "\n\n" + f"# Intercept-value power law = C . N^alpha, where "
+                 f"alpha = {value_polyfit_params[0]} +- {value_polyfit_errors[0]} and C = "
+                 f"{np.exp(value_polyfit_params[1])} +- {np.exp(value_polyfit_params[1]) * value_polyfit_errors[1]}" +
+        "\n" + "# NOTE THAT this power-law fit isn't that good - this is likely to be due to the predicted critical "
+               "slowing down in the phase of the U(1) order parameter")
     intercept_temps_file.close()
 
-    combined_legends_data = left_legend_1 + left_legend_2 + right_legend_1 + right_legend_2
-    combined_legends_labels = [legend.get_label() for legend in combined_legends_data]
     legends = [axes[0].legend(loc="upper right", ncol=2, fontsize=7.625),
-               axes[1].legend(combined_legends_data, combined_legends_labels, loc=[0.625, 0.05], fontsize=8.5)]
+               axes[1].legend(loc="lower right", fontsize=10.0)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3.0) for legend in legends]
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
 
-    combined_supplementary_legends_data = supplementary_legend_1 + supplementary_legend_2
-    combined_supplementary_legends_labels = [legend.get_label() for legend in combined_supplementary_legends_data]
-    supplementary_legend = supplementary_axis.legend(
-        combined_supplementary_legends_data, combined_supplementary_legends_labels, loc="lower right", fontsize=12)
+    supplementary_legend = supplementary_axis.legend(loc="lower right", fontsize=12)
     supplementary_legend.get_frame().set_edgecolor("k"), supplementary_legend.get_frame().set_lw(3.0)
     supplementary_fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_"
                               f"intercept_values.pdf", bbox_inches="tight")
@@ -374,14 +371,6 @@ def compute_event_rates(algorithm_name, external_global_moves_string, output_dir
             event_rates_file.write(f"{temperature:.14e}".ljust(30) + f"{np.mean(event_rate_vs_job):.14e}".ljust(30) +
                                    f"{np.std(event_rate_vs_job) / len(event_rate_vs_job) ** 0.5:.14e}" + "\n")
         event_rates_file.close()
-
-
-def power_law_fit(one_dimensional_array, alpha, beta):
-    return alpha * one_dimensional_array ** beta
-
-
-def quadratic_fit(one_dimensional_array, a, b, c):
-    return a * one_dimensional_array ** 2 + b * one_dimensional_array + c
 
 
 if __name__ == "__main__":
