@@ -62,7 +62,7 @@ def main(no_of_system_sizes=6):
     reduced_temperatures_metrop = [temperature / approx_transition_temperature for temperature in temperatures_metrop]
     reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.75), gridspec_kw={'width_ratios': [1.2, 1.0]})
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.85), gridspec_kw={'width_ratios': [1.2, 1.0]})
     fig.text(-0.025, 0.9, "d", fontsize=20, weight='bold')
     fig.text(0.525, 0.9, "e", fontsize=20, weight='bold')
     fig.tight_layout(w_pad=3.0)
@@ -73,23 +73,30 @@ def main(no_of_system_sizes=6):
     axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
     axes[1].set_xlabel(r"$1 / \left( \ln N \right)^2$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
-    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.975, 1.73])
+    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.925, 1.65])
     [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
         axis.tick_params(which='minor', direction='in', width=1.5, length=4)
 
-    inset_axis = plt.axes([0.6, 0.52, 0.23, 0.4])
-    inset_axis.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
-    inset_axis.tick_params(which='minor', direction='in', width=0.25, length=3)
-    inset_axis.yaxis.set_label_position("right"), inset_axis.yaxis.tick_right()
-    inset_axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=14, labelpad=1.0)
-    inset_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=14, labelpad=1.5)
-    inset_axis.set_xlim([0.97, 1.555]), inset_axis.set_ylim([0.625, 7.0 * 10 ** 4])
-    inset_axis.set_xticks([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
-    inset_axis.set_yscale('log')
-    inset_axis.set_yticks([1.0, 1.0e1, 1.0e2, 1.0e3, 1.0e4])
-    [inset_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+    inset_axis_1 = plt.axes([0.28725, 0.5675, 0.2125, 0.3625])
+    inset_axis_1.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
+    inset_axis_1.tick_params(which='minor', direction='in', width=0.25, length=3)
+    inset_axis_1.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12.5, labelpad=1.0)
+    inset_axis_1.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=12.5, labelpad=1.5)
+    inset_axis_1.set_xlim([0.975, 1.535]), inset_axis_1.set_ylim([0.9, 5.0 * 10 ** 4])
+    inset_axis_1.set_xticks([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
+    inset_axis_1.set_yscale('log')
+    inset_axis_1.set_yticks([1.0, 1.0e1, 1.0e2, 1.0e3, 1.0e4])
+    [inset_axis_1.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+
+    inset_axis_2 = plt.axes([0.6, 0.58, 0.2, 0.35])
+    inset_axis_2.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
+    inset_axis_2.tick_params(which='minor', direction='in', width=0.25, length=3)
+    inset_axis_2.yaxis.set_label_position("right"), inset_axis_2.yaxis.tick_right()
+    inset_axis_2.set_xlabel(r"$N$", fontsize=14, labelpad=1.0)
+    inset_axis_2.set_ylabel(r"$n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=12.5, labelpad=1.5)
+    [inset_axis_2.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
 
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
     supplementary_fig.tight_layout()
@@ -213,10 +220,10 @@ def main(no_of_system_sizes=6):
                                                           w=current_fitting_cvm_errors / np.abs(current_fitting_cvms)))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
             """the following commented-out code plots the fittings on top of the data in the inset figure"""
-            '''inset_axis.plot(continuous_temperatures / approx_transition_temperature,
+            '''inset_axis_1.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(previous_polynomial_fit(continuous_temperatures)),
                             color=colors[system_size_index - 1], linestyle="-")
-            inset_axis.plot(continuous_temperatures / approx_transition_temperature,
+            inset_axis_1.plot(continuous_temperatures / approx_transition_temperature,
                             np.exp(current_polynomial_fit(continuous_temperatures)), color=colors[system_size_index],
                             linestyle="-")'''
             intersect_index = np.argwhere(np.diff(
@@ -224,7 +231,7 @@ def main(no_of_system_sizes=6):
                         current_polynomial_fit(continuous_temperatures)))).flatten()[0]
             intersect_temperature = continuous_temperatures[intersect_index]
             intersect_value = np.exp(current_polynomial_fit(continuous_temperatures[intersect_index]))
-            inset_axis.vlines(intersect_temperature / approx_transition_temperature, intersect_value, 5.0e5,
+            inset_axis_1.vlines(intersect_temperature / approx_transition_temperature, intersect_value, 5.0e5,
                               colors="gray", linestyles='solid')
             reduced_intersect_temperatures.append(intersect_temperature / approx_transition_temperature)
             intersect_values.append(intersect_value)
@@ -255,7 +262,7 @@ def main(no_of_system_sizes=6):
             axes[0].errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
                              color=colors[system_size_index], linestyle="None",
                              label=fr"$N$ = {length}x{length} Metrop.")
-        inset_axis.errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
+        inset_axis_1.errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
                             color=colors[system_size_index], linestyle="None")
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
@@ -272,12 +279,12 @@ def main(no_of_system_sizes=6):
     print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
 
     """...then plot the data and fitting function"""
-    axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".", markersize=10,
-                 color="black", linestyle="None", label="intercept temperatures")
-    axes[1].plot(continuous_inverse_log_squared_system_sizes,
-                 temp_polynomial_fit(continuous_inverse_log_squared_system_sizes), linestyle="--", color="black",
-                 label=fr"$A + B / (\ln N)^2$ fit gives" + "\n" +
-                       fr"$A =$ {temp_polyfit_params[1]:.3f} $\pm$ {temp_polyfit_errors[1]:.3f}")
+    main_legend_1 = axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".",
+                                 markersize=10, color="black", linestyle="None", label="intercept temperatures")
+    main_legend_2 = axes[1].plot(
+        continuous_inverse_log_squared_system_sizes, temp_polynomial_fit(continuous_inverse_log_squared_system_sizes),
+        linestyle="--", color="black", label=r"$A + B / (\ln N)^2$ fit $\Rightarrow $ " +
+                                             fr"$A =$ {temp_polyfit_params[1]:.3f} $\pm$ {temp_polyfit_errors[1]:.3f}")
 
     """fit intercept values to power law..."""
     system_sizes = [length ** 2 for index, length in enumerate(linear_system_sizes) if index > 0]
@@ -289,6 +296,12 @@ def main(no_of_system_sizes=6):
           f"C = {np.exp(value_polyfit_params[1])} +- {np.exp(value_polyfit_params[1]) * value_polyfit_errors[1]}")
 
     """...then plot the data and fitting function"""
+    inset_legend_1 = inset_axis_2.loglog(system_sizes, intersect_values, marker="*", markersize=10, color="red",
+                                         linestyle="None", label="intercept values")
+    inset_legend_2 = inset_axis_2.loglog(
+        continuous_system_sizes, np.exp(value_polyfit_params[1]) * continuous_system_sizes ** value_polyfit_params[0],
+        linestyle="--", color="red", label=fr"$C . N^\alpha$ fit $\Rightarrow \alpha =$ {value_polyfit_params[0]:.3f}"
+                                           fr"$\pm$ {value_polyfit_errors[0]:.3f}")
     supplementary_axis.loglog(system_sizes, intersect_values, marker=".", markersize=10, color="black",
                               linestyle="None", label="intercept values")
     supplementary_axis.loglog(continuous_system_sizes, np.exp(value_polyfit_params[1]) *
@@ -321,14 +334,16 @@ def main(no_of_system_sizes=6):
         "\n\n" + f"# Intercept-value power law = C . N^alpha, where "
                  f"alpha = {value_polyfit_params[0]} +- {value_polyfit_errors[0]} and C = "
                  f"{np.exp(value_polyfit_params[1])} +- {np.exp(value_polyfit_params[1]) * value_polyfit_errors[1]}" +
-        "\n" + "# NOTE THAT this power-law fit isn't that good - this is likely to be due to the predicted critical "
-               "slowing down in the phase of the U(1) order parameter")
+        "\n" + "# NOTE THAT this power-law fit is OK but not amazing - maybe due to the predicted critical slowing "
+               "down in the phase of the U(1) order parameter")
     intercept_temps_file.close()
 
-    legends = [axes[0].legend(loc="upper right", ncol=2, fontsize=7.625),
-               axes[1].legend(loc="lower right", fontsize=10.0)]
+    combined_legends_data = main_legend_1 + inset_legend_1 + main_legend_2 + inset_legend_2
+    combined_legends_labels = [legend.get_label() for legend in combined_legends_data]
+    legends = [axes[0].legend(loc="lower right", ncol=2, fontsize=6.3),
+               axes[1].legend(combined_legends_data, combined_legends_labels, loc="lower right", fontsize=8.75)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
-    [legend.get_frame().set_lw(3.0) for legend in legends]
+    [legend.get_frame().set_lw(2.4) for legend in legends]
     fig.savefig(f"{output_directory}/magnetisation_phase_cramervonmises_xy_gaussian_noise_metropolis_and_ecmc.pdf",
                 bbox_inches="tight")
 
