@@ -73,7 +73,7 @@ def main(no_of_system_sizes=6):
     axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
     axes[1].set_xlabel(r"$1 / \left( \ln N \right)^2$", fontsize=20, labelpad=4)
     axes[1].set_ylabel(r"$\widetilde{\beta}_{\rm BKT} / \beta_{\rm int}$", fontsize=20, labelpad=-0.5)
-    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.975, 1.65])
+    axes[1].set_xlim([0.0, 0.06]), axes[1].set_ylim([0.985, 1.95])
     [axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
@@ -89,6 +89,18 @@ def main(no_of_system_sizes=6):
     inset_axis.set_yscale('log')
     inset_axis.set_yticks([1.0, 1.0e1, 1.0e2, 1.0e3, 1.0e4])
     [inset_axis.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
+
+    twinned_axis = axes[1].twiny().twinx()
+    twinned_axis.set_xlabel(r"$N$", fontsize=16, labelpad=-0.5, color="red")
+    twinned_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=16,
+                            labelpad=-0.5, color="red")
+    # twinned_axis.set_yticks([0.0, 0.1, 0.2, 0.3])
+    twinned_axis.set_xlim([50.0, 2.25e4]), twinned_axis.set_ylim([1.5, 4.0e4])
+    twinned_axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5, colors="red")
+    twinned_axis.tick_params(which='minor', direction='in', width=1.5, length=4, colors="red")
+    twinned_axis.tick_params(axis='both', labelcolor='red')
+    twinned_axis.spines["right"].set_color("red"), twinned_axis.spines["right"].set_linewidth(3.0)
+    twinned_axis.spines["top"].set_color("red"), twinned_axis.spines["top"].set_linewidth(3.0)
 
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
     supplementary_fig.tight_layout()
@@ -280,7 +292,7 @@ def main(no_of_system_sizes=6):
 
     """fit intercept values to power law"""
     system_sizes = [length ** 2 for index, length in enumerate(linear_system_sizes) if index > 0]
-    continuous_system_sizes = np.linspace(system_sizes[0], system_sizes[-1], 100)
+    continuous_system_sizes = np.linspace(0.5 * system_sizes[0], 2.0 * system_sizes[-1], 100)
     value_polyfit_params, value_polyfit_cov = np.polyfit(np.log(system_sizes), np.log(intersect_values), 1, cov=True)
     value_polyfit_errors = np.sqrt(np.diag(value_polyfit_cov))
     print(f"Intercept-value power law = {np.exp(value_polyfit_params[1])} x N^a, where a = {value_polyfit_params[0]} "
@@ -293,10 +305,15 @@ def main(no_of_system_sizes=6):
 
     supplementary_legend_1 = supplementary_axis.loglog(system_sizes, intersect_values, marker=".", markersize=10,
                                                        color="black", linestyle="None", label="intercept values")
-    supplementary_legend_2 = supplementary_axis.loglog(continuous_system_sizes, np.exp(value_polyfit_params[1]) *
-                                                       continuous_system_sizes ** value_polyfit_params[0],
-                                                       linestyle="--", color="red",
-                                                       label=rf"\sim N^{value_polyfit_params[0]:.3f}")
+    supplementary_legend_2 = supplementary_axis.loglog(
+        continuous_system_sizes, np.exp(value_polyfit_params[1]) * continuous_system_sizes ** value_polyfit_params[0],
+        linestyle="--", color="black", label=fr"$\sim N^\alpha$, $\alpha = {value_polyfit_params[0]:.3f}$")
+
+    right_legend_1 = twinned_axis.loglog(system_sizes, intersect_values, marker="*", markersize=10, color="red",
+                                         linestyle="None", label="intercept values")
+    right_legend_2 = twinned_axis.loglog(
+        continuous_system_sizes, np.exp(value_polyfit_params[1]) * continuous_system_sizes ** value_polyfit_params[0],
+        linestyle="--", color="red", label=fr"$\sim N^\alpha$, $\alpha = {value_polyfit_params[0]:.3f}$")
 
     """output reduced intercept temperatures, inverse intercept values & thermodynamic reduced intercept temperature"""
     intercept_temps_file = open(f"{output_directory}/cramer_von_mises_intercept_temps_and_inverse_values_xy_gaussian_"
@@ -316,7 +333,7 @@ def main(no_of_system_sizes=6):
                                       f"where a = {value_polyfit_params[0]} +- {value_polyfit_errors[0]}")
     intercept_temps_file.close()
 
-    combined_legends_data = left_legend_1 + left_legend_2  # + right_legend_1 + right_legend_2
+    combined_legends_data = left_legend_1 + left_legend_2 + right_legend_1 + right_legend_2
     combined_legends_labels = [legend.get_label() for legend in combined_legends_data]
     legends = [axes[0].legend(loc="upper right", ncol=2, fontsize=7.625),
                axes[1].legend(combined_legends_data, combined_legends_labels, loc=[0.625, 0.05], fontsize=8.5)]
