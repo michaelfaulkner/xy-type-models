@@ -132,13 +132,14 @@ def main(no_of_system_sizes=6):
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
             no_of_observations_metrop_high_temps, no_of_jobs_metrop_high_temps, pool)
+
         """compute non-used event rates for our records"""
         compute_event_rates(algorithm_name_ecmc, external_global_moves_string, output_directory,
                             sample_directories_ecmc[system_size_index], temperatures_ecmc, length,
                             no_of_observations_ecmc, no_of_jobs_ecmc, pool)
 
         """compute non-used sample variances for our records"""
-        '''_, _ = np.array(get_mag_phase_sample_variances_and_errors(
+        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
             no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps,
@@ -161,7 +162,7 @@ def main(no_of_system_sizes=6):
         _, _ = np.array(get_mag_phase_sample_variances_and_errors(
             algorithm_name_ecmc, external_global_moves_string, output_directory,
             sample_directories_ecmc[system_size_index], temperatures_ecmc, length, no_of_equilibration_sweeps_ecmc,
-            no_of_observations_ecmc, no_of_jobs_ecmc, pool))'''
+            no_of_observations_ecmc, no_of_jobs_ecmc, pool))
 
         """compute non-used (in this script) twist probabilities for later use in make_twist_figs -- this optimises 
             our usage of the scratch space on BlueCrystal 4, ACRC, University of Bristol"""
@@ -232,7 +233,7 @@ def main(no_of_system_sizes=6):
             intersect_temperature = continuous_temperatures[intersect_index]
             intersect_value = np.exp(current_polynomial_fit(continuous_temperatures[intersect_index]))
             inset_axis_1.vlines(intersect_temperature / approx_transition_temperature, intersect_value, 5.0e5,
-                              colors="gray", linestyles='solid')
+                                colors="gray", linestyles='solid')
             reduced_intersect_temperatures.append(intersect_temperature / approx_transition_temperature)
             intersect_values.append(intersect_value)
 
