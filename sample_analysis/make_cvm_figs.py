@@ -209,13 +209,8 @@ def main(no_of_system_sizes=6):
         if system_size_index > 0:
             current_fitting_cvms = cvms_around_transition[lower_fitting_index:upper_fitting_index]
             current_fitting_cvm_errors = cvm_errors_around_transition[lower_fitting_index:upper_fitting_index]
-            if system_size_index == 5:
-                current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 1,
-                                                              w=current_fitting_cvm_errors / np.abs(current_fitting_cvms)))
-            else:
-                current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 2,
-                                                              w=current_fitting_cvm_errors / np.abs(
-                                                                  current_fitting_cvms)))
+            current_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(current_fitting_cvms), 2,
+                                                          w=current_fitting_cvm_errors / np.abs(current_fitting_cvms)))
             continuous_temperatures = np.linspace(fitting_temps[0], fitting_temps[-1], 100)
             """the following commented-out code plots the fittings on top of the data in the inset figure"""
             '''inset_axis.plot(continuous_temperatures / approx_transition_temperature,
@@ -243,17 +238,12 @@ def main(no_of_system_sizes=6):
         if system_size_index == 3:
             lower_fitting_index, upper_fitting_index = 1, 4
         if system_size_index == 4:
-            lower_fitting_index, upper_fitting_index = 1, 3
+            lower_fitting_index, upper_fitting_index = 1, 4
         fitting_temps = temperatures_around_transition[lower_fitting_index:upper_fitting_index]
         previous_fitting_cvms = cvms_around_transition[lower_fitting_index:upper_fitting_index]
         previous_fitting_cvm_errors = cvm_errors_around_transition[lower_fitting_index:upper_fitting_index]
-        if system_size_index == 4:
-            previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 1,
-                                                           w=previous_fitting_cvm_errors / np.abs(previous_fitting_cvms)))
-        else:
-            previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 2,
-                                                           w=previous_fitting_cvm_errors / np.abs(
-                                                               previous_fitting_cvms)))
+        previous_polynomial_fit = np.poly1d(np.polyfit(fitting_temps, np.log(previous_fitting_cvms), 2,
+                                                       w=previous_fitting_cvm_errors / np.abs(previous_fitting_cvms)))
 
         """plot CvM data"""
         if system_size_index == 5:
