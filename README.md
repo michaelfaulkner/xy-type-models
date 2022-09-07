@@ -378,7 +378,7 @@ directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-nois
 
 ## Make figures for *General symmetry breaking at a topological phase transition*
 
-### Figures 1 and 2e
+### Figures 1 and 2a
 
 1. Run each configuration file in [`config_files/mag_evolution_figs`](
 config_files/mag_evolution_figs) via the command `python run.py config_files/mag_evolution_figs/16x16_ecmc.txt`,
@@ -387,11 +387,7 @@ config_files/mag_evolution_figs) via the command `python run.py config_files/mag
 2. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_magnetisation_evolution_figs.py`.
 
-### Figures 2a-d
-
-Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
-
-### Figures 2f-g
+### Figures 2b-c
 
 1. Run each configuration file in [`config_files/twist_figs`](
 config_files/twist_figs) via the command `python run.py config_files/twist_figs/4x4_low_temp_all.txt`,
@@ -421,6 +417,10 @@ config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_
 `python sample_analysis/make_cvm_figs.py`. 
 
 Simulations for figures 3d-e require around 16TB of scratch space.
+
+### Figure 4
+
+Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
 
 
 ## Make XY figures for *Sampling algorithms in statistical physics*
