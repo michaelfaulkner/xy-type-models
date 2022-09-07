@@ -64,8 +64,8 @@ def main(no_of_system_sizes=6):
     pool = setup_pool(no_of_jobs_low_temp, max_no_of_cpus)
 
     fig, axes = plt.subplots(2, 1, figsize=(5.0 * 5.75 / 5, 4.5 * 5 / 5.75))
-    fig.text(0.115, 0.875, "f", fontsize=20, weight='bold')
-    fig.text(0.115, 0.3925, "g", fontsize=20, weight='bold')
+    fig.text(0.115, 0.875, "b", fontsize=20, weight='bold')
+    fig.text(0.115, 0.3925, "c", fontsize=20, weight='bold')
     fig.tight_layout(h_pad=1.75)
 
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-12)

@@ -130,7 +130,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                  external_global_moves_string, alphabetic_label, job_index, symmetry_breaking_paper):
     axis.axis('square')
     if alphabetic_label is None:
-        axis.text(-0.05, 0.9735, "e", fontsize=22, transform=axis.transAxes, weight='bold')
+        axis.text(-0.05, 0.9735, "a", fontsize=22, transform=axis.transAxes, weight='bold')
         """left old code in comment below as the bbox=dict() part may be useful"""
         # axis.text(0.76125, 0.78, fr"$N = {int(no_of_sites ** 0.5)} \! \times \! {int(no_of_sites ** 0.5)}$",
         #           fontsize=14, transform=axis.transAxes,
