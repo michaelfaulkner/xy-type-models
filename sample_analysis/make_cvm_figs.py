@@ -53,8 +53,13 @@ def main(no_of_system_sizes=6):
     sample_directories_metrop_high_temps = [f"{output_directory}/{length}x{length}_metrop_high_temps" for length in
                                             linear_system_sizes]
     sample_directories_ecmc = [f"{output_directory}/{length}x{length}_ecmc" for length in linear_system_sizes]
-    pool = setup_pool(no_of_jobs_metrop_low_temps, max_no_of_cpus)
+    """The following line defines an additional 'lowest-temps' directory for L = 128.  This is because we split the 
+        lowest four temperatures into two directories in this case.  This keeps within the two-week time limit on 
+        BlueCrystal 4, as this larger system size uses more CPU time at fixed simulation timescale, but also requires 
+        longer simulation timescales for CvM convergence."""
+    sample_directory_128x128_metrop_lowest_temps = f"{output_directory}/128x128_metrop_lowest_temps"
 
+    pool = setup_pool(no_of_jobs_metrop_low_temps, max_no_of_cpus)
     temperatures_metrop = [*temperatures_metrop_low_temps, *temperatures_metrop_lower_trans,
                            *temperatures_metrop_upper_trans, *temperatures_metrop_high_temps]
     temperatures_around_transition = temperatures_metrop[3:15]
