@@ -376,7 +376,29 @@ directory and enter `make xy-ecmc`, `make xy-metropolis`, `make xy-gaussian-nois
 `executables` directory.
 
 
-## Make figures for *General symmetry breaking at a topological phase transition*
+## *Sampling algorithms in statistical physics* [\[Faulkner2022a\]](https://arxiv.org/abs/2208.04751)
+
+This details how to make its XY figures.
+
+### Figure 9
+
+- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
+config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
+ etc.  
+
+- Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py False`.
+
+### Figure 2, 6, 7 and 8
+
+Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
+integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
+
+
+## *General symmetry breaking at a topological phase transition* [\[Faulkner2022b\]](https://arxiv.org/abs/2209.03699)
+
+This details how to make its figures.
 
 ### Figures 1 and 2a
 
@@ -421,24 +443,6 @@ Simulations for figures 3d-e require around 16TB of scratch space.
 ### Figure 4
 
 Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
-
-
-## Make XY figures for *Sampling algorithms in statistical physics*
-
-### Figure 9
-
-- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
-config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
- etc.  
-
-- Once all simulations are complete, run the relevant sample-analysis script via the command 
-`python sample_analysis/make_magnetisation_evolution_figs.py False`.
-
-### Figure 2, 6, 7 and 8
-
-Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
-instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
-integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
 
 
 ## Citation
