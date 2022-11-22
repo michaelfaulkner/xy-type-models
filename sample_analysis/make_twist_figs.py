@@ -34,7 +34,7 @@ def main(no_of_system_sizes=6):
      max_no_of_cpus) = run_script.get_config_data(base_config_file_low_temp_all)
     external_global_moves_string_local = run_script.get_config_data(base_config_file_low_temp_local)[8]
     (_, sample_directory_4x4_mid_temps, _, _, no_of_equilibration_sweeps_mid_temps,
-     no_of_observations_mid_temps, temperatures_mid_temps, _, _, no_of_jobs_mid_temps, _, _
+     no_of_observations_small_systems_mid_temps, temperatures_mid_temps, _, _, no_of_jobs_mid_temps, _, _
      ) = run_script.get_config_data(base_config_file_mid_temps)
     (_, _, _, _, no_of_equilibration_sweeps_lower_trans, no_of_observations_lower_trans, temperatures_lower_trans, _, _,
      no_of_jobs_lower_trans, _, _) = run_script.get_config_data(base_config_file_lower_trans)
@@ -46,6 +46,20 @@ def main(no_of_system_sizes=6):
                     *temperatures_upper_trans, *temperatures_high_temps]
     approx_transition_temperature = 0.887
     reduced_temperatures = [temperature / approx_transition_temperature for temperature in temperatures]
+
+    """For L = 128, we split the four low-temperature CvM simulations (mid_temps for twist analysis) into two 
+        two-temperature directories.  This kept the CvM simulations within the two-week time limit on BlueCrystal 4, as 
+        this larger system size uses more CPU time at fixed simulation timescale, but also requires longer simulation 
+        timescales for CvM convergence.  Due to these longer required simulation timescales, L = 64 and 128 both 
+        require the additional field no_of_observations_large_systems_mid_temps."""
+    base_config_file_128x128_mid_temps_lower = f"config_files/cvm_figs/128x128_metrop_lowest_temps.txt"
+    base_config_file_128x128_mid_temps_upper = f"config_files/cvm_figs/128x128_metrop_low_temps.txt"
+    temperatures_128x128_mid_temps_lower = run_script.get_config_data(base_config_file_128x128_mid_temps_lower)[6]
+    (_, _, _, _, _, no_of_observations_large_systems_mid_temps, temperatures_128x128_mid_temps_upper, _, _, _,
+     _, _) = run_script.get_config_data(base_config_file_128x128_mid_temps_upper)
+    no_of_observations_mid_temps = [no_of_observations_small_systems_mid_temps if index < 4 else
+                                    no_of_observations_large_systems_mid_temps for index in
+                                    range(len(linear_system_sizes))]
 
     output_directory_low_temp = sample_directory_4x4_low_temp_all.replace("/4x4_low_temp_all", "")
     sample_directories_low_temp_all = [f"{output_directory_low_temp}/{length}x{length}_low_temp_all" for length in
@@ -61,6 +75,11 @@ def main(no_of_system_sizes=6):
                                       for length in linear_system_sizes]
     sample_directories_high_temps = [f"{output_directory_higher_temps}/{length}x{length}_metrop_high_temps"
                                      for length in linear_system_sizes]
+    """The following line defines an additional sample directory for L = 128, as the L = 128 CvM simulations 
+        were split into two two-temperature directories.  This kept CvM simulations within the two-week time limit on 
+        BlueCrystal 4, as this larger system size uses more CPU time at fixed simulation timescale, but also requires 
+        longer simulation timescales for CvM convergence."""
+    sample_directory_128x128_mid_temps_lower = f"{output_directory_higher_temps}/128x128_metrop_lowest_temps"
     pool = setup_pool(no_of_jobs_low_temp, max_no_of_cpus)
 
     fig, axes = plt.subplots(2, 1, figsize=(5.0 * 5.75 / 5, 4.5 * 5 / 5.75))
@@ -102,9 +121,23 @@ def main(no_of_system_sizes=6):
         twist_probabilities_low_temp, twist_probability_errors_low_temp = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_low_temp, sample_directories_low_temp_all[system_size_index],
             temperatures_low_temp, length, no_of_observations_low_temp, no_of_jobs_low_temp, pool)
-        twist_probabilities_mid_temps, twist_probability_errors_mid_temps = get_twist_probabilities_and_errors(
-            algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
-            temperatures_mid_temps, length, no_of_observations_mid_temps, no_of_jobs_mid_temps, pool)
+        if length < 128:
+            twist_probabilities_mid_temps, twist_probability_errors_mid_temps = get_twist_probabilities_and_errors(
+                algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
+                temperatures_mid_temps, length, no_of_observations_mid_temps[system_size_index], no_of_jobs_mid_temps,
+                pool)
+        else:
+            twist_probs_mid_temps_lower, twist_prob_errors_mid_temps_lower = get_twist_probabilities_and_errors(
+                algorithm_name, output_directory_higher_temps, sample_directory_128x128_mid_temps_lower,
+                temperatures_128x128_mid_temps_lower, length, no_of_observations_mid_temps[system_size_index],
+                no_of_jobs_mid_temps, pool)
+            twist_probs_mid_temps_upper, twist_prob_errors_mid_temps_upper = get_twist_probabilities_and_errors(
+                algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
+                temperatures_128x128_mid_temps_upper, length, no_of_observations_mid_temps[system_size_index],
+                no_of_jobs_mid_temps, pool)
+            twist_probabilities_mid_temps = [*twist_probs_mid_temps_lower, *twist_probs_mid_temps_upper]
+            twist_probability_errors_mid_temps = [*twist_prob_errors_mid_temps_lower,
+                                                  *twist_prob_errors_mid_temps_upper]
         twist_probabilities_lower_trans, twist_probability_errors_lower_trans = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_higher_temps, sample_directories_lower_trans[system_size_index],
             temperatures_lower_trans, length, no_of_observations_lower_trans, no_of_jobs_lower_trans, pool)
@@ -151,7 +184,8 @@ def main(no_of_system_sizes=6):
                      low_temp_sample_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
                      linestyle='None', label="local Metropolis dynamics with twists")
 
-    legends = [axes[0].legend(loc="lower right", ncol=2, fontsize=10.5), axes[1].legend(loc="lower right", fontsize=10.5)]
+    legends = [axes[0].legend(loc="lower right", ncol=2, fontsize=10.5),
+               axes[1].legend(loc="lower right", fontsize=10.5)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
     fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_sample_variance_"
