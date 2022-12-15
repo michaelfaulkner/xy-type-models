@@ -16,7 +16,8 @@ OBJECTS = random_number_generator.o multivalued_electrolyte_variables.o multival
 			electrolyte_attempt_single_external_global_move.o multivalued_electrolyte_attempt_charge_hop.o \
 			electrolyte_metropolis_sweep.o electrolyte_output_metropolis_acceptance_rates.o \
 			electrolyte_reset_metropolis_acceptance_counters.o pre_simulation_processes.o \
-			attempt_external_global_moves.o metropolis_algorithm.o
+			multivalued_electrolyte_do_checkpointing.o multivalued_electrolyte_get_checkpoint.o \
+			delete_last_checkpoint.o trim_existing_sample_file.o attempt_external_global_moves.o metropolis_algorithm.o
 
 create-executable : $(OBJECTS)
 	$(OFLAGS) multivalued_electrolyte_algorithm.exe $(OBJECTS) -lm

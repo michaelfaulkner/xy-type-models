@@ -36,6 +36,24 @@ call initialise_field_configuration(.true.)
 ! opens new directory in which to save the sample files
 call system('mkdir -p ' // trim(output_directory))
 
+! search for checkpoint
+time_between_checkpoints = 1.0
+previous_checkpointing_time = 0.0
+write(checkpoint_filename, '(A, "/checkpoint.csv")') trim(output_directory)
+inquire(file=checkpoint_filename, exist=start_from_checkpoint)
+if (start_from_checkpoint) then
+    call get_checkpoint
+    if (initial_observation_index == no_of_equilibration_sweeps + no_of_observations - 1) then
+        ! the last checkpoint was taken at the end of the recorded temperature index
+        initial_temperature_index = initial_temperature_index + 1
+    end if
+    initial_observation_index = initial_observation_index + 1 ! restart at next observation
+else
+    initial_temperature_index = 0
+    initial_observation_index = 0
+end if
+temperature = temperature + initial_temperature_index * magnitude_of_temperature_increments
+
 ! message informing the start of the Markov process
 if (algorithm_name == '3dxy-gaussian-noise-metropolis') then
     write(6, '(A, A, A, I4.4, A, I4.4, A, I4.4, A)') 'Starting the ', trim(algorithm_name), ' simulation on ', &

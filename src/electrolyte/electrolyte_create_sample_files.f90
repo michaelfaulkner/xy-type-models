@@ -10,20 +10,32 @@ call system('mkdir -p ' // temperature_directory)
 
 if (measure_electric_field_sum) then
     write(filename, '(A, "/temp_", I2.2, "/electric_field_sum.csv")') trim(output_directory), temperature_index
-    open(unit=30, file=filename)
-    call print_file_header(30)
+    if (start_from_checkpoint) then
+        call trim_existing_sample_file(filename, 30, temperature_index)
+    else
+        open(unit=30, file=filename)
+        call print_file_header(30)
+    end if
 end if
 
 if (measure_potential) then
     write(filename, '(A, "/temp_", I2.2, "/potential.csv")') trim(output_directory), temperature_index
-    open(unit=40, file=filename)
-    call print_file_header(40)
+    if (start_from_checkpoint) then
+        call trim_existing_sample_file(filename, 40, temperature_index)
+    else
+        open(unit=40, file=filename)
+        call print_file_header(40)
+    end if
 end if
 
 if (measure_external_global_moves) then
     write(filename, '(A, "/temp_", I2.2, "/external_global_moves.csv")') trim(output_directory), temperature_index
-    open(unit=50, file=filename)
-    call print_file_header(50)
+    if (start_from_checkpoint) then
+        call trim_existing_sample_file(filename, 50, temperature_index)
+    else
+        open(unit=50, file=filename)
+        call print_file_header(50)
+    end if
 end if
 
 return

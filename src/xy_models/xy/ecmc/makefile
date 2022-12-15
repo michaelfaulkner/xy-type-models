@@ -10,10 +10,11 @@ OFLAGS = gfortran -O -o
 
 all: create-executable clean move-executable
 
-OBJECTS = random_number_generator.o xy_ecmc_variables.o xy_ecmc_read_config_file.o setup_periodic_boundaries.o \
-			xy_initialise_field_configuration.o xy_models_create_sample_files.o get_spin_difference.o \
-			xy_get_and_print_observation.o xy_attempt_single_external_global_move.o single_xy_event_chain.o \
-			pre_simulation_processes.o attempt_external_global_moves.o ecmc_algorithm.o
+OBJECTS = random_number_generator.o xy_ecmc_variables.o xy_ecmc_read_config_file.o pre_simulation_processes.o \
+			xy_ecmc_do_checkpointing.o xy_ecmc_get_checkpoint.o delete_last_checkpoint.o trim_existing_sample_file.o \
+			setup_periodic_boundaries.o xy_initialise_field_configuration.o xy_models_create_sample_files.o \
+			xy_get_and_print_observation.o attempt_external_global_moves.o xy_attempt_single_external_global_move.o \
+			single_xy_event_chain.o get_spin_difference.o ecmc_algorithm.o
 
 create-executable: $(OBJECTS)
 	$(OFLAGS) xy_ecmc_algorithm.exe $(OBJECTS) -lm

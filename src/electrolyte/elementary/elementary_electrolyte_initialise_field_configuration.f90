@@ -2,13 +2,13 @@ subroutine initialise_field_configuration(pre_simulation)
 use variables
 implicit none
 logical :: pre_simulation
-integer :: i
+integer :: site_index
 
 if (pre_simulation) then
-    do i = 1, no_of_sites
-        electric_field(i, 1) = 0.0
-        electric_field(i, 2) = 0.0
-        charge_configuration(i) = 0
+    do site_index = 1, no_of_sites
+        electric_field(site_index, 1) = 0.0
+        electric_field(site_index, 2) = 0.0
+        charge_configuration(site_index) = 0
     end do
     net_charge_displacement = (/ 0, 0 /)
     external_global_moves = (/ 0, 0 /)
