@@ -59,7 +59,7 @@ if (measure_potential_minimising_twists) then
     write(70, 300) no_of_external_twists_to_minimise_potential(1), no_of_external_twists_to_minimise_potential(2)
 end if
 
-if (use_external_global_moves) then
+if (measure_external_global_moves) then
     write(80, 300) external_global_moves(1), external_global_moves(2)
 end if
 
