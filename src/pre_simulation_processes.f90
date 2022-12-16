@@ -37,7 +37,7 @@ call initialise_field_configuration(.true.)
 call system('mkdir -p ' // trim(output_directory))
 
 ! search for checkpoint
-time_between_checkpoints = 1.0
+time_between_checkpoints = 3600.0 ! one hour between checkpoints
 previous_checkpointing_time = 0.0
 write(checkpoint_filename, '(A, "/checkpoint.csv")') trim(output_directory)
 inquire(file=checkpoint_filename, exist=start_from_checkpoint)
