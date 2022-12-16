@@ -10,7 +10,7 @@ read(90, 200) width_of_proposal_interval
 do site_index = 1, no_of_sites
     read(90, 200) electric_field(site_index, 1)
     read(90, 200) electric_field(site_index, 2)
-    read(90, 200) charge_configuration(site_index)
+    read(90, 100) charge_configuration(site_index)
 end do
 read(90, 100) net_charge_displacement(1)
 read(90, 100) net_charge_displacement(2)

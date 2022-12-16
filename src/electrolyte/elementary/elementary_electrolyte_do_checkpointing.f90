@@ -18,7 +18,7 @@ if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     do site_index = 1, no_of_sites
         write(90, 200) electric_field(site_index, 1)
         write(90, 200) electric_field(site_index, 2)
-        write(90, 200) charge_configuration(site_index)
+        write(90, 100) charge_configuration(site_index)
     end do
     write(90, 100) net_charge_displacement(1)
     write(90, 100) net_charge_displacement(2)
