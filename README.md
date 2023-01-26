@@ -389,7 +389,7 @@ config_files/sampling_algos_xy_figs) via the command `python run.py config_files
 - Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_magnetisation_evolution_figs.py False`.
 
-### Figure 2, 6, 7 and 8
+### Figures 2, 6, 7 and 8
 
 Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
 instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
@@ -411,14 +411,15 @@ config_files/mag_evolution_figs) via the command `python run.py config_files/mag
 
 ### Figures 2b-c
 
-1. Run each configuration file in [`config_files/twist_figs`](
+1. Complete Figures 3a-c (as their analysed data is used in this figure).
+2. Run each configuration file in [`config_files/twist_figs`](
 config_files/twist_figs) via the command `python run.py config_files/twist_figs/4x4_low_temp_all.txt`,
  etc.  
 
-2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+3. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_twist_figs.py`.
 
-Simulations for figures 2f-g require around 4TB of scratch space.
+Simulations for Figures 2b-c require approximately 3.6TB of scratch space.
 
 ### Figures 3a-c
 
@@ -436,9 +437,37 @@ config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_
  etc.  
 
 2. Once all simulations are complete, run the relevant sample-analysis script via the command 
-`python sample_analysis/make_cvm_figs.py`. 
+`python sample_analysis/make_cvm_figs.py`.
 
-Simulations for figures 3d-e require around 16TB of scratch space.
+As the Cramér-von Mises statistic converges on long simulation timescales, these simulations require significant 
+amounts of temporary scratch space to store the samples before analysis.  Simulations of each system composed of *N* <= 32x32 
+sites require approximately 2.45TB of scratch space.  Simulations of the *N* = 64x64 system require approximately 
+12.35TB of scratch space.  Simulations of the *N* = 128x128 system require approximately 17.85TB of scratch space. (NB, 
+the required scratch space increases with system size because the symmetry-restoring timescale increases with system 
+size at low temperature.)
+
+If you are limited to 20TB of scratch space, we suggest running all simulations for systems composed of *N* <= 32x32 
+sites and then running `python sample_analysis/make_cvm_figs.py 4` (where the `4` restricts the script to analysing the 
+four smallest system sizes).  Then delete the samples and run the simulations of the *N* = 64x64 system before running 
+`python sample_analysis/make_cvm_figs.py 5` and then deleting the samples.  Then run the simulations of the *N* = 
+128x128 system before finally running `python sample_analysis/make_cvm_figs.py`.
+
+For clarity, we detail the required space below in terms of each configuration file. 
+
+For each Metropolis configuration file with the suffix `low_temps`:
+  1. Those for systems composed of *N* <= 32x32 sites require approximately 1.1TB of scratch space.
+  2. Those for systems composed of *N* = 64x64 sites require approximately 11TB of scratch space.
+
+Each *N* = 128x128 Metropolis configuration file with the suffix `low_temp_1`, `low_temp_2` or `low_temp_3` requires 
+approximately 5.5TB of scratch space.
+  
+Each Metropolis configuration file with the suffix `lower_trans` requires approximately 1.1TB of scratch space.
+
+Each Metropolis configuration file with the suffix `upper_trans` or `high_temps` requires approximately 210GB of 
+scratch space.
+
+Each ECMC configuration file requires approximately 40GB of scratch space.  
+
 
 ### Figure 4
 
