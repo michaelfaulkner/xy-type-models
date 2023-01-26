@@ -450,17 +450,17 @@ def compute_event_rates(algorithm_name, external_global_moves_string, output_dir
 if __name__ == "__main__":
     if len(sys.argv) > 2:
         raise Exception("InterfaceError: At most one positional arguments permitted.  None are required but you may "
-                        "provide no_of_system_sizes, which must be an integer greater than 0 and less than 8 (default "
+                        "provide no_of_system_sizes, which must be an integer greater than 0 and less than 7 (default "
                         "value is 6).")
     if len(sys.argv) == 2:
         print("One positional argument provided.  This must be no_of_system_sizes - which must be an integer greater "
-              "than 0 and less than 8 (default value is 6).")
+              "than 0 and less than 7 (default value is 6).")
         chosen_no_of_system_sizes = int(sys.argv[1])
-        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 7:
-            raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 8 "
+        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 6:
+            raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 7 "
                             "(default value is 6).")
         main(chosen_no_of_system_sizes)
     else:
         print("No positional arguments provided.  None are required but you may provide no_of_system_sizes, which must "
-              "be an integer greater than 0 and less than 8 (default value is 6).")
+              "be an integer greater than 0 and less than 7 (default value is 6).")
         main()
