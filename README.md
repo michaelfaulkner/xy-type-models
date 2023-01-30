@@ -444,7 +444,8 @@ amounts of temporary scratch space to store the samples before analysis.  Simula
 sites require approximately 2.45TB of scratch space.  Simulations of the *N* = 64x64 system require approximately 
 12.35TB of scratch space.  Simulations of the *N* = 128x128 system require approximately 17.85TB of scratch space. (NB, 
 the required scratch space increases with system size because the symmetry-restoring timescale increases with system 
-size at low temperature.)
+size at low temperature.  Due to this large required scratch space at *N* = 128x128, we do not estimate the *N* = 
+128x128 CvM statistic at beta J = 1 / 0.3 (the lowest value of the temperature for all *N* <= 64x64).
 
 If you are limited to 20TB of scratch space, we suggest running all simulations for systems composed of *N* <= 32x32 
 sites and then running `python sample_analysis/make_cvm_figs.py 4` (where the `4` restricts the script to analysing the 
