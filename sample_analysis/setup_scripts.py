@@ -59,9 +59,9 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
         raise SystemExit
     """Raise an error if a Maggs-electrolyte observable has been given as the second positional argument for an XY or 
         HXY model."""
-    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-metropolis" or
-         algorithm_name == "hxy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
-         algorithm_name == "hxy-gaussian-noise-metropolis") and (
+    if ((algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc" or algorithm_name == "xy-uniform-noise-metropolis"
+         or algorithm_name == "hxy-uniform-noise-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"
+         or algorithm_name == "hxy-gaussian-noise-metropolis") and (
             observable_string == "electric_field_zero_mode" or observable_string == "inverse_permittivity"
             or observable_string == "topological_sector" or observable_string == "topological_susceptibility")):
         print("ConfigurationError: This is an XY or HXY model: do not give either electric_field_zero_mode, "
@@ -70,7 +70,7 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
         raise SystemExit
     """Raise an error if hxy_topological_sector has been given as the second positional argument for a non-HXY model."""
     if (observable_string == "hxy_topological_sector"
-            and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis"
+            and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-uniform-noise-metropolis"
                      or algorithm_name == "hxy-gaussian-noise-metropolis")):
         print("ConfigurationError: This is not the HXY model: do not give hxy_topological_sector as the second "
               "positional argument.")

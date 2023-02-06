@@ -25,9 +25,9 @@ def main(config_file):
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         sample = get_potential(output_directory, temperatures[0], 0, no_of_sites, no_of_equilibration_sweeps)
-    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
+    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-uniform-noise-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
-          algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
+          algorithm_name == "xy-uniform-noise-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis" or
           algorithm_name == "3dxy-gaussian-noise-metropolis"):
         sample = get_magnetisation_norm(output_directory, temperatures[0], 0, no_of_sites, no_of_equilibration_sweeps)
     else:
@@ -39,11 +39,11 @@ def main(config_file):
     elif algorithm_name == "multivalued-electrolyte":
         reference_sample = np.load("permanent_data/reference_data/multivalued_electrolyte_8x8_sites_temp_1_point_5_"
                                    "potential_reference_sample.npy")
-    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
+    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-uniform-noise-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis"):
         reference_sample = np.load("permanent_data/reference_data/hxy_8x8_sites_temp_1_point_3_magnetisation_norm_"
                                    "reference_sample.npy")
-    elif (algorithm_name == "xy-ecmc" or algorithm_name == "xy-metropolis" or
+    elif (algorithm_name == "xy-ecmc" or algorithm_name == "xy-uniform-noise-metropolis" or
           algorithm_name == "xy-gaussian-noise-metropolis"):
         reference_sample = np.load("permanent_data/reference_data/xy_8x8_sites_temp_0_point_8_magnetisation_norm_"
                                    "reference_sample.npy")

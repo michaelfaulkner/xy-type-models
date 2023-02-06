@@ -21,9 +21,9 @@ def main(config_file_1, config_file_2):
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         sample_1 = get_potential(output_directory_1, temperature, 0, no_of_sites, no_of_equilibration_sweeps_1)
         sample_2 = get_potential(output_directory_2, temperature, 0, no_of_sites, no_of_equilibration_sweeps_2)
-    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-metropolis" or
+    elif (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-uniform-noise-metropolis" or
           algorithm_name == "hxy-gaussian-noise-metropolis" or algorithm_name == "xy-ecmc" or
-          algorithm_name == "xy-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
+          algorithm_name == "xy-uniform-noise-metropolis" or algorithm_name == "xy-gaussian-noise-metropolis"):
         sample_1 = get_magnetisation_norm(output_directory_1, temperature, 0, no_of_sites, no_of_equilibration_sweeps_1)
         sample_2 = get_magnetisation_norm(output_directory_2, temperature, 0, no_of_sites, no_of_equilibration_sweeps_2)
     else:
@@ -74,13 +74,13 @@ def get_required_config_data_and_error_check(config_file_1, config_file_2):
         print("ConfigurationError: Set the value of no_of_jobs to 1 and the value of initial_job_index to 0 in both "
               "configuration files.")
         raise SystemExit
-    if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-metropolis" or
+    if (((algorithm_name_1 == "hxy-ecmc" or algorithm_name_1 == "hxy-uniform-noise-metropolis" or
           algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not
-         (algorithm_name_2 == "hxy-ecmc" or algorithm_name_2 == "hxy-metropolis" or
+         (algorithm_name_2 == "hxy-ecmc" or algorithm_name_2 == "hxy-uniform-noise-metropolis" or
           algorithm_name_2 == "hxy-gaussian-noise-metropolis")) or
-            ((algorithm_name_1 == "xy-ecmc" or algorithm_name_1 == "xy-metropolis" or
+            ((algorithm_name_1 == "xy-ecmc" or algorithm_name_1 == "xy-uniform-noise-metropolis" or
               algorithm_name_1 == "hxy-gaussian-noise-metropolis") and not
-             (algorithm_name_2 == "xy-ecmc" or algorithm_name_2 == "xy-metropolis" or
+             (algorithm_name_2 == "xy-ecmc" or algorithm_name_2 == "xy-uniform-noise-metropolis" or
               algorithm_name_2 == "xy-gaussian-noise-metropolis")) or
             (algorithm_name_1 == "elementary-electrolyte" and algorithm_name_2 != "elementary-electrolyte") or
             (algorithm_name_1 == "multivalued-electrolyte" and algorithm_name_2 != "multivalued-electrolyte")):
