@@ -36,7 +36,8 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
     else
         charge_configuration(get_north_neighbour(lattice_site)) = proposed_neighbouring_integer_charge_value
     end if
-    no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
+    ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+    no_of_accepted_charge_hops_per_site = no_of_accepted_charge_hops_per_site + 1.0d0 / dfloat(no_of_sites)
 end if
 
 return

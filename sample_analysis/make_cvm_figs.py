@@ -1,7 +1,7 @@
 from cramer_von_mises import get_cvm_mag_phase_vs_temperature
 from make_twist_figs import compute_physical_time_steps, get_mag_phase_sample_variances_and_errors, \
     get_twist_probabilities_and_errors
-from sample_getter import get_no_of_events
+from sample_getter import get_event_rate
 from setup_scripts import setup_pool
 import importlib
 import matplotlib
@@ -439,9 +439,9 @@ def compute_event_rates(algorithm_name, external_global_moves_string, output_dir
             f"obs_{no_of_jobs}_jobs.tsv", "w")
         event_rates_file.write("# temperature".ljust(30) + "event rate".ljust(30) + "event-rate error" + "\n")
         for temperature_index, temperature in enumerate(temperatures):
-            event_rate_vs_job = np.array(pool.starmap(get_no_of_events,
+            event_rate_vs_job = np.array(pool.starmap(get_event_rate,
                                                       [(f"{sample_directory}/job_{job_index}", temperature_index)
-                                                       for job_index in range(no_of_jobs)])) / no_of_observations
+                                                       for job_index in range(no_of_jobs)]))
             event_rates_file.write(f"{temperature:.14e}".ljust(30) + f"{np.mean(event_rate_vs_job):.14e}".ljust(30) +
                                    f"{np.std(event_rate_vs_job) / len(event_rate_vs_job) ** 0.5:.14e}" + "\n")
         event_rates_file.close()

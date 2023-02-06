@@ -6,12 +6,11 @@ integer :: temperature_index
 double precision :: acceptance_rate_of_field_rotations, acceptance_rate_of_charge_hops
 double precision :: acceptance_rate_of_external_global_moves
 
-acceptance_rate_of_field_rotations = dfloat(no_of_accepted_field_rotations) / dfloat(no_of_observations) &
-                                        / dfloat(no_of_sites) / (1.0d0 - charge_hop_proportion)
-acceptance_rate_of_charge_hops = dfloat(no_of_accepted_charge_hops) / dfloat(no_of_observations) &
-                                        / dfloat(no_of_sites) / charge_hop_proportion
-acceptance_rate_of_external_global_moves = 0.5d0 * dfloat(no_of_accepted_external_global_moves) &
-                                            / dfloat(no_of_observations)
+acceptance_rate_of_field_rotations = no_of_accepted_field_rotations_per_site / dfloat(no_of_observations) / &
+                                        (1.0d0 - charge_hop_proportion)
+acceptance_rate_of_charge_hops = no_of_accepted_charge_hops_per_site / dfloat(no_of_observations) / &
+                                        charge_hop_proportion
+acceptance_rate_of_external_global_moves = 0.5d0 * no_of_accepted_external_global_moves / dfloat(no_of_observations)
 
 write(filename, '(A, "/temp_", I2.2, "/acceptance_rates.csv")') trim(output_directory), temperature_index
 open(unit=20, file = filename)

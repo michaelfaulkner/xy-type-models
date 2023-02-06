@@ -14,7 +14,8 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
     electric_field(lattice_site, cartesian_component) = candidate_electric_field_component
     net_charge_displacement(cartesian_component) = net_charge_displacement(cartesian_component) &
                                                     - sign_of_proposed_integer_field_increment
-    no_of_accepted_charge_hops = no_of_accepted_charge_hops + 1
+    ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+    no_of_accepted_charge_hops_per_site = no_of_accepted_charge_hops_per_site + 1.0d0 / dfloat(no_of_sites)
 end if
 
 return

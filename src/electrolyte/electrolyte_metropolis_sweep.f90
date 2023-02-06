@@ -45,7 +45,8 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
     electric_field(lattice_site, 2) = candidate_electric_field_component(2)
     electric_field(get_north_neighbour(lattice_site), 1) = candidate_electric_field_component(3)
     electric_field(get_east_neighbour(lattice_site), 2) = candidate_electric_field_component(4)
-    no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
+    ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+    no_of_accepted_field_rotations_per_site = no_of_accepted_field_rotations_per_site + 1.0d0 / dfloat(no_of_sites)
 end if
   
 return

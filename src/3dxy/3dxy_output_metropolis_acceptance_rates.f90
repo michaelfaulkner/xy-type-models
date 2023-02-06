@@ -5,8 +5,7 @@ character(100) :: filename
 integer :: temperature_index
 double precision :: acceptance_rate_of_field_rotations, acceptance_rate_of_external_global_moves
 
-acceptance_rate_of_field_rotations = dfloat(no_of_accepted_field_rotations) / dfloat(no_of_observations) &
-                                        / dfloat(no_of_sites)
+acceptance_rate_of_field_rotations = no_of_accepted_field_rotations_per_site / dfloat(no_of_observations)
 
 write(filename, '(A, "/temp_", I2.2, "/acceptance_rates.csv")') trim(output_directory), temperature_index
 open(unit=20, file = filename)

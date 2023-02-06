@@ -63,7 +63,9 @@ do
         distance_left_before_next_observation = distance_left_before_next_observation - &
                                                     shortest_distance_to_next_factor_event
         active_spin_index = vetoeing_spin_index
-        no_of_events = no_of_events + 1
+        ! we count events in double precision (float) to avoid upper integer bound on long timescales
+        no_of_events_per_unit_spin_space_distance = no_of_events_per_unit_spin_space_distance + &
+                                                        1.0d0 / spin_space_distance_between_observations
     end if
 end do
 

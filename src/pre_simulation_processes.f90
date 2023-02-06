@@ -1,7 +1,7 @@
 subroutine pre_simulation_processes
 use variables
 implicit none
-character(100) :: config_file, seed_character_string
+character(100) :: config_file, seed_character_string, end_of_simulation_filename
 integer :: seed
 
 ! verify that the something has been passed to the exectuable
@@ -28,7 +28,8 @@ temperature = initial_temperature
 if (no_of_temperature_increments == 0) then
     magnitude_of_temperature_increments = 0.0
 else
-    magnitude_of_temperature_increments = (final_temperature - initial_temperature) / no_of_temperature_increments
+    magnitude_of_temperature_increments = (final_temperature - initial_temperature) / &
+                                            dfloat(no_of_temperature_increments)
 end if
 call setup_periodic_boundaries
 call initialise_field_configuration(.true.)
@@ -37,7 +38,7 @@ call initialise_field_configuration(.true.)
 call system('mkdir -p ' // trim(output_directory))
 
 ! search for checkpoint
-time_between_checkpoints = 3600.0 ! one hour between checkpoints
+time_between_checkpoints = 1.0 ! one hour between checkpoints
 previous_checkpointing_time = 0.0
 write(checkpoint_filename, '(A, "/checkpoint.csv")') trim(output_directory)
 inquire(file=checkpoint_filename, exist=start_from_checkpoint)
@@ -46,22 +47,33 @@ if (start_from_checkpoint) then
     if (initial_observation_index == no_of_equilibration_sweeps + no_of_observations - 1) then
         ! the last checkpoint was taken at the end of the recorded temperature index
         initial_temperature_index = initial_temperature_index + 1
+        initial_observation_index = 0
+    else
+        initial_observation_index = initial_observation_index + 1 ! restart at next observation
     end if
-    initial_observation_index = initial_observation_index + 1 ! restart at next observation
 else
     initial_temperature_index = 0
     initial_observation_index = 0
 end if
 temperature = temperature + initial_temperature_index * magnitude_of_temperature_increments
+write(end_of_simulation_filename, '(A, "/end_of_simulation.csv")') trim(output_directory)
+inquire(file=end_of_simulation_filename, exist=simulation_complete)
 
-! message informing the start of the Markov process
-if (algorithm_name == '3dxy-gaussian-noise-metropolis') then
-    write(6, '(A, A, A, I4.4, A, I4.4, A, I4.4, A)') 'Starting the ', trim(algorithm_name), ' simulation on ', &
-                                                        integer_lattice_length, 'x', integer_lattice_length, 'x', &
-                                                        integer_lattice_length, ' lattice sites.'
+if (.not.simulation_complete) then
+    ! message informing the start of the Markov process
+    if (algorithm_name == '3dxy-gaussian-noise-metropolis') then
+        write(6, '(A, A, A, I4.4, A, I4.4, A, I4.4, A, I2, A, I10, A)') 'Starting the ', trim(algorithm_name), &
+                ' simulation on ', integer_lattice_length, 'x', integer_lattice_length, 'x', integer_lattice_length, &
+                ' lattice sites, from temperature index ', initial_temperature_index, ' and observation_index ', &
+                initial_observation_index, ' (where both indices start from 0).'
+    else
+        write(6, '(A, A, A, I4.4, A, I4.4, A, I2, A, I10, A)') 'Starting the ', trim(algorithm_name), &
+                ' simulation on ', integer_lattice_length, 'x', integer_lattice_length,  &
+                ' lattice sites, from temperature index ', initial_temperature_index, ' and observation_index ', &
+                initial_observation_index, ' (where both indices start from 0).'
+    end if
 else
-    write(6, '(A, A, A, I4.4, A, I4.4, A)') 'Starting the ', trim(algorithm_name), ' simulation on ', &
-                                                integer_lattice_length, 'x', integer_lattice_length, ' lattice sites.'
+    write(6, '(A)') 'Simulation has already been completed.  Delete end_of_simulation.csv to re-run it.'
 end if
 
 return

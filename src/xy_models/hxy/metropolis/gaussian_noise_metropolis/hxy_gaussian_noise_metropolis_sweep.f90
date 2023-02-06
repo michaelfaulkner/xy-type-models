@@ -31,7 +31,8 @@ do n = 1, no_of_sites
         emergent_field(i, 2) = candidate_emergent_field(2)
         emergent_field(get_north_neighbour(i), 1) = candidate_emergent_field(3)
         emergent_field(get_east_neighbour(i), 2) = candidate_emergent_field(4)
-        no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
+        ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+        no_of_accepted_field_rotations_per_site = no_of_accepted_field_rotations_per_site + 1.0d0 / dfloat(no_of_sites)
     end if
 end do
 

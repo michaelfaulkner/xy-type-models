@@ -1,4 +1,4 @@
-from sample_getter import get_acceptance_rates, get_no_of_events
+from sample_getter import get_acceptance_rates, get_event_rate
 from setup_scripts import check_initial_job_index, check_for_observable_vs_model_error
 from markov_chain_diagnostics import get_sample_mean_and_error
 import importlib
@@ -54,15 +54,15 @@ def main(config_file, observable_string):
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "acceptance rate (field rotations)".ljust(40) +
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
-        elif observable_string == "no_of_events":
+        elif observable_string == "event_rate":
             if no_of_jobs == 1:
-                no_of_events = get_no_of_events(output_directory, 0)
+                event_rate = get_event_rate(output_directory, 0)
             else:
-                no_of_events = get_no_of_events(output_directory + "/job_1", 0)
-            if len(no_of_events) == 1:
-                output_file.write("# temperature".ljust(30) + "number of events (field rotations)" + "\n")
+                event_rate = get_event_rate(output_directory + "/job_1", 0)
+            if len(event_rate) == 1:
+                output_file.write("# temperature".ljust(30) + "event rate (field rotations)" + "\n")
             else:
-                output_file.write("# temperature".ljust(30) + "number of events (field rotations)".ljust(40) +
+                output_file.write("# temperature".ljust(30) + "event rate (field rotations)".ljust(40) +
                                   "acceptance rate (external global moves)" + "\n")
         else:
             output_file.write("# temperature".ljust(30) + observable_string.ljust(35) + observable_string + " error" +
@@ -79,32 +79,32 @@ def main(config_file, observable_string):
         start_time = time.time()
         for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
-            if observable_string == "acceptance_rates" or observable_string == "no_of_events":
+            if observable_string == "acceptance_rates" or observable_string == "event_rate":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
-                    acceptance_rates_or_no_of_events = get_sample_method(output_directory, temperature_index)
+                    acceptance_rates_or_event_rate = get_sample_method(output_directory, temperature_index)
                 else:
-                    acceptance_rates_or_no_of_events = np.mean([
+                    acceptance_rates_or_event_rate = np.mean([
                         get_sample_method(output_directory + "/job_" + str(job_number), temperature_index)
                         for job_number in range(no_of_jobs)], axis=0)
-                if len(acceptance_rates_or_no_of_events) == 1:
+                if len(acceptance_rates_or_event_rate) == 1:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
-                                      f"{acceptance_rates_or_no_of_events[0]:.14e}" + "\n")
-                elif len(acceptance_rates_or_no_of_events) == 2:
+                                      f"{acceptance_rates_or_event_rate[0]:.14e}" + "\n")
+                elif len(acceptance_rates_or_event_rate) == 2:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
-                                      f"{acceptance_rates_or_no_of_events[0]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[1]:.14e}" + "\n")
-                elif len(acceptance_rates_or_no_of_events) == 3:
+                                      f"{acceptance_rates_or_event_rate[0]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[1]:.14e}" + "\n")
+                elif len(acceptance_rates_or_event_rate) == 3:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
-                                      f"{acceptance_rates_or_no_of_events[0]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[1]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[2]:.14e}" + "\n")
+                                      f"{acceptance_rates_or_event_rate[0]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[1]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[2]:.14e}" + "\n")
                 else:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
-                                      f"{acceptance_rates_or_no_of_events[0]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[1]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[2]:.14e}".ljust(40) +
-                                      f"{acceptance_rates_or_no_of_events[3]:.14e}" + "\n")
+                                      f"{acceptance_rates_or_event_rate[0]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[1]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[2]:.14e}".ljust(40) +
+                                      f"{acceptance_rates_or_event_rate[3]:.14e}" + "\n")
             else:
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_jobs == 1:
@@ -136,9 +136,9 @@ def main(config_file, observable_string):
 
 
 def check_for_observable_error(algorithm_name, observable_string):
-    # Check to ensure that either acceptance_rates, no_of_events or a one-dimensional observable has been given as the 
+    # Check to ensure that either acceptance_rates, event_rate or a one-dimensional observable has been given as the
     # second positional argument
-    if (observable_string != "acceptance_rates" and observable_string != "no_of_events" 
+    if (observable_string != "acceptance_rates" and observable_string != "event_rate"
             and observable_string != "potential" and observable_string != "specific_heat" 
             and observable_string != "magnetisation_norm" and observable_string != "magnetisation_phase"
             and observable_string != "rotated_magnetisation_phase" and observable_string != "magnetisation_squared"
@@ -147,7 +147,7 @@ def check_for_observable_error(algorithm_name, observable_string):
             and observable_string != "hxy_topological_susceptibility"
             and observable_string != "potential_minimising_twist_susceptibility"
             and observable_string != "inverse_permittivity" and observable_string != "topological_susceptibility"):
-        print("ConfigurationError: Give one of acceptance_rates, no_of_events, potential, specific_heat, "
+        print("ConfigurationError: Give one of acceptance_rates, event_rate, potential, specific_heat, "
               "magnetisation_norm, magnetisation_phase, rotated_magnetisation_phase, magnetisation_squared, "
               "magnetic_susceptibility, relative_magnetisation_norm, inverse_vacuum_permittivity, helicity_modulus, "
               "hxy_topological_susceptibility, potential_minimising_twist_susceptibility, inverse_permittivity or "
@@ -157,16 +157,16 @@ def check_for_observable_error(algorithm_name, observable_string):
     # ECMC algorithm
     if (algorithm_name == "xy-ecmc" or algorithm_name == "hxy-ecmc") and observable_string == "acceptance_rates":
         print("ConfigurationError: These samples were generated by an event-chain Monte Carlo algorithm: rather than "
-              "acceptance_rates, give no_of_events as the second positional argument.")
+              "acceptance_rates, give event_rate as the second positional argument.")
         raise SystemExit
-    # Raise an error if no_of_events has been given as the second positional argument for sample generated by a 
+    # Raise an error if event_rate has been given as the second positional argument for sample generated by a
     # Metropolis algorithm
     if ((algorithm_name == "xy-metropolis" or algorithm_name == "hxy-metropolis" or
          algorithm_name == "xy-gaussian-noise-metropolis" or algorithm_name == "hxy-gaussian-noise-metropolis" or
          algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte") and
-            observable_string == "no_of_events"):
+            observable_string == "event_rate"):
         print("ConfigurationError: These samples were generated by a Metropolis algorithm: rather than "
-              "no_of_events, give acceptance_rates as the second positional argument.")
+              "event_rate, give acceptance_rates as the second positional argument.")
         raise SystemExit
     check_for_observable_vs_model_error(algorithm_name, observable_string)
 

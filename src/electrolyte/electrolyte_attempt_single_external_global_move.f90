@@ -17,7 +17,8 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_differenc
                 + dfloat(sign_of_topological_sector_change) * two_pi / dfloat(integer_lattice_length)
     end do
     net_charge_displacement(cartesian_component) = candidate_net_charge_displacement
-    no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
+    ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+    no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1.0d0
     external_global_moves(cartesian_component) = sign_of_topological_sector_change
 else
     external_global_moves(cartesian_component) = 0

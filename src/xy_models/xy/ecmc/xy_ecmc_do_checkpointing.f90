@@ -19,7 +19,7 @@ if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     end do
     write(90, 100) external_global_moves(1)
     write(90, 100) external_global_moves(2)
-    write(90, 100) no_of_events
+    write(90, 100) no_of_events_per_unit_spin_space_distance
     write(90, 100) no_of_accepted_external_global_moves
     close(90)
 

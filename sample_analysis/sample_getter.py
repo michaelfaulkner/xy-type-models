@@ -91,7 +91,7 @@ def get_acceptance_rates(output_directory, temperature_index):
                                     dtype=float, delimiter=","))
 
 
-def get_no_of_events(output_directory, temperature_index):
+def get_event_rate(output_directory, temperature_index):
     """
     Returns the number of ECMC events.  If external global Metropolis moves (the externally applied global spin twists)
     are chosen, this method also returns the acceptance rates of these moves.
@@ -107,12 +107,12 @@ def get_no_of_events(output_directory, temperature_index):
     Returns
     -------
     numpy.ndarray
-        The number of events and the acceptance rate of the external global Metropolis moves (if chosen).  A
-        one-dimensional numpy array of length 1 or 2.  The first element is the number of ECMC events and has type int.
-        If the length of the array is 2, external global Metropolis moves (the global spin twists) have been chosen and
-        the second element is the acceptance rate of these moves and has type float.
+        The event rate and the acceptance rate of the external global Metropolis moves (if chosen).  A one-dimensional
+        numpy array of length 1 or 2.  The first element is the rate of ECMC events and has type float.  If the length
+        of the array is 2, external global Metropolis moves (the global spin twists) have been chosen and the second
+        element is the acceptance rate of these moves and has type float.
     """
-    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/no_of_events.csv", dtype=float,
+    return np.atleast_1d(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/event_rate.csv", dtype=float,
                                     delimiter=","))
 
 

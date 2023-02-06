@@ -10,7 +10,7 @@ read(90, 200) width_of_proposal_interval
 do site_index = 1, no_of_sites
     read(90, 200) spin_field(site_index)
 end do
-read(90, 100) no_of_accepted_field_rotations
+read(90, 200) no_of_accepted_field_rotations_per_site
 close(90)
 
 100 format(I12)

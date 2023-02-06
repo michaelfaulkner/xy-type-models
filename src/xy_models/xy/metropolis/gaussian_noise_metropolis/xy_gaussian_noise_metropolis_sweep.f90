@@ -21,7 +21,8 @@ do n = 1, no_of_sites
 
     if ((potential_difference < 0.0d0).or.(rand() < exp(- beta * potential_difference))) then
         spin_field(i) = candidate_spin_value
-        no_of_accepted_field_rotations = no_of_accepted_field_rotations + 1
+        ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+        no_of_accepted_field_rotations_per_site = no_of_accepted_field_rotations_per_site + 1.0d0 / dfloat(no_of_sites)
     end if
 end do
 

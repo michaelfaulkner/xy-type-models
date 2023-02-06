@@ -16,9 +16,9 @@ read(90, 100) net_charge_displacement(1)
 read(90, 100) net_charge_displacement(2)
 read(90, 100) external_global_moves(1)
 read(90, 100) external_global_moves(2)
-read(90, 100) no_of_accepted_charge_hops
-read(90, 100) no_of_accepted_field_rotations
-read(90, 100) no_of_accepted_external_global_moves
+read(90, 200) no_of_accepted_charge_hops_per_site
+read(90, 200) no_of_accepted_field_rotations_per_site
+read(90, 200) no_of_accepted_external_global_moves
 close(90)
 
 100 format(I12)

@@ -18,7 +18,7 @@ if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     do site_index = 1, no_of_sites
         write(90, 200) spin_field(site_index)
     end do
-    write(90, 100) no_of_accepted_field_rotations
+    write(90, 200) no_of_accepted_field_rotations_per_site
     close(90)
 
     call system('mv ' // trim(temporary_filename) // ' ' // trim(checkpoint_filename))

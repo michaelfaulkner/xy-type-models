@@ -44,7 +44,8 @@ if ((potential_difference < 0.0d0).or.(rand() < exp(-beta * potential_difference
     do i = 1, no_of_sites
         spin_field(i) = candidate_spin_field(i)
     end do
-    no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1
+    ! we count accepted Metropolis moves in double precision (float) to avoid upper integer bound on long timescales
+    no_of_accepted_external_global_moves = no_of_accepted_external_global_moves + 1.0d0
     external_global_moves(cartesian_component) = sign_of_twist
 else
     external_global_moves(cartesian_component) = 0

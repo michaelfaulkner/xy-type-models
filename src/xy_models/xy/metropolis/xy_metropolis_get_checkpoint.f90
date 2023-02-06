@@ -12,8 +12,8 @@ do site_index = 1, no_of_sites
 end do
 read(90, 100) external_global_moves(1)
 read(90, 100) external_global_moves(2)
-read(90, 100) no_of_accepted_field_rotations
-read(90, 100) no_of_accepted_external_global_moves
+read(90, 200) no_of_accepted_field_rotations_per_site
+read(90, 200) no_of_accepted_external_global_moves
 close(90)
 
 100 format(I12)
