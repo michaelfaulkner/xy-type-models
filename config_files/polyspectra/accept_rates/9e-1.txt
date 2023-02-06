@@ -1,4 +1,4 @@
-'hxy-metropolis'                                        algorithm_name
+'hxy-uniform-noise-metropolis'                          algorithm_name
 '../bc4-output/polyspectra/accept_rates/9e-1'           output_directory
 32                                                      integer_lattice_length
 10000                                                   no_of_equilibration_sweeps

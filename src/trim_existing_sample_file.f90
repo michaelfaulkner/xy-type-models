@@ -11,7 +11,7 @@ write(temporary_filename, '(A, "/temp_", I2.2, "/temporary.csv")') trim(output_d
 open(file_index + 1, file=temporary_filename)
 do observation_index = 0, initial_observation_index
     read(file_index, '(A)') store_observation
-    write(file_index + 1, *) store_observation
+    write(file_index + 1, '(A)') store_observation
 end do
 close(file_index)
 close(file_index + 1)

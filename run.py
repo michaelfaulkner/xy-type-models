@@ -165,14 +165,14 @@ def get_executable(algorithm_name):
     """
     if algorithm_name == "hxy-ecmc":
         executable_location = "executables/hxy_ecmc_algorithm.exe"
-    elif algorithm_name == "hxy-metropolis":
-        executable_location = "executables/hxy_metropolis_algorithm.exe"
+    elif algorithm_name == "hxy-uniform-noise-metropolis":
+        executable_location = "executables/hxy_uniform_noise_metropolis_algorithm.exe"
     elif algorithm_name == "hxy-gaussian-noise-metropolis":
         executable_location = "executables/hxy_gaussian_noise_metropolis_algorithm.exe"
     elif algorithm_name == "xy-ecmc":
         executable_location = "executables/xy_ecmc_algorithm.exe"
-    elif algorithm_name == "xy-metropolis":
-        executable_location = "executables/xy_metropolis_algorithm.exe"
+    elif algorithm_name == "xy-uniform-noise-metropolis":
+        executable_location = "executables/xy_uniform_noise_metropolis_algorithm.exe"
     elif algorithm_name == "xy-gaussian-noise-metropolis":
         executable_location = "executables/xy_gaussian_noise_metropolis_algorithm.exe"
     elif algorithm_name == "3dxy-gaussian-noise-metropolis":
@@ -182,9 +182,10 @@ def get_executable(algorithm_name):
     elif algorithm_name == "multivalued-electrolyte":
         executable_location = "executables/multivalued_electrolyte_algorithm.exe"
     else:
-        raise Exception("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, hxy-metropolis, "
-                        "hxy-gaussian-noise-metropolis, xy-ecmc, xy-metropolis, xy-gaussian-noise-metropolis, "
-                        "3dxy-gaussian-noise-metropolis, elementary-electrolyte or multivalued-electrolyte.")
+        raise Exception("ConfigurationError: For the value of algorithm_name, give one of hxy-ecmc, "
+                        "hxy-uniform-noise-metropolis, hxy-gaussian-noise-metropolis, xy-ecmc, "
+                        "xy-uniform-noise-metropolis, xy-gaussian-noise-metropolis, 3dxy-gaussian-noise-metropolis, "
+                        "elementary-electrolyte or multivalued-electrolyte.")
     if not os.path.isfile(executable_location):
         raise Exception(f"Executable for the {algorithm_name} algorithm does not exist.  Run 'make' or 'make "
                         f"{algorithm_name}' then try again.")

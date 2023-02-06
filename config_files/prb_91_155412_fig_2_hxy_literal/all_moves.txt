@@ -1,4 +1,4 @@
-'hxy-metropolis'                                                    algorithm_name
+'hxy-uniform-noise-metropolis'                                      algorithm_name
 '../bc4-output/prb_91_155412_fig_2_hxy_literal/all_moves'           output_directory
 64                                                                  integer_lattice_length
 100000                                                              no_of_equilibration_sweeps

@@ -21,8 +21,8 @@ read(10, *) measure_potential
 read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
 
-if ((algorithm_name /= 'xy-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
-   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-metropolis or &
+if ((algorithm_name /= 'xy-uniform-noise-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
+   write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-uniform-noise-metropolis or &
                     xy-gaussian-noise-metropolis.'
    stop
 end if

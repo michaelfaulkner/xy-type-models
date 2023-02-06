@@ -1,4 +1,4 @@
-'hxy-metropolis'                                            algorithm_name
+'hxy-uniform-noise-metropolis'                              algorithm_name
 'output/polyspectra/broad_temp_range_prelim/64x64'          output_directory
 64                                                          integer_lattice_length
 10000                                                       no_of_equilibration_sweeps

@@ -1,4 +1,4 @@
-'hxy-metropolis'                                            algorithm_name
+'hxy-uniform-noise-metropolis'                              algorithm_name
 'output/polyspectra/trispectrum_estimator_comparisons'      output_directory
 32                                                          integer_lattice_length
 10000                                                       no_of_equilibration_sweeps

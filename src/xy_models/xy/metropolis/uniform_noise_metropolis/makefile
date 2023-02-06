@@ -16,10 +16,10 @@ OBJECTS = random_number_generator.o xy_metropolis_variables.o xy_metropolis_read
 			setup_periodic_boundaries.o xy_initialise_field_configuration.o xy_models_create_sample_files.o \
 			xy_models_reset_metropolis_acceptance_counters.o xy_get_and_print_observation.o \
 			xy_models_output_metropolis_acceptance_rates.o attempt_external_global_moves.o \
-			xy_attempt_single_external_global_move.o xy_metropolis_sweep.o metropolis_algorithm.o
+			xy_attempt_single_external_global_move.o xy_uniform_noise_metropolis_sweep.o metropolis_algorithm.o
 
 create-executable: $(OBJECTS)
-	$(OFLAGS) xy_metropolis_algorithm.exe $(OBJECTS) -lm
+	$(OFLAGS) xy_uniform_noise_metropolis_algorithm.exe $(OBJECTS) -lm
 
 clean:
 	rm *.o *.mod
