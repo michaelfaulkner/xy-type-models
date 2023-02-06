@@ -5,6 +5,9 @@ integer :: temperature_index, observation_index
 real :: start_time, end_time
 
 call pre_simulation_processes
+if (.not.start_from_checkpoint) then
+    call reset_event_counters
+end if
 
 if (.not.simulation_complete) then
     spin_space_distance_between_observations = 1.0d0 * dfloat(no_of_sites)
@@ -23,11 +26,9 @@ if (.not.simulation_complete) then
                 call get_and_print_observation
                 call do_checkpointing(temperature_index, observation_index)
             end do
+            call reset_event_counters
             initial_observation_index = no_of_equilibration_sweeps
         end if
-
-        no_of_events_per_unit_spin_space_distance = 0.0d0
-        no_of_accepted_external_global_moves = 0.0d0
 
         do observation_index = initial_observation_index, no_of_equilibration_sweeps + no_of_observations - 1
             if (use_external_global_moves) then
@@ -39,6 +40,7 @@ if (.not.simulation_complete) then
         end do
 
         call output_event_rate(temperature_index)
+        call reset_event_counters
         start_from_checkpoint = .false.
         initial_observation_index = 0
         temperature = temperature + magnitude_of_temperature_increments

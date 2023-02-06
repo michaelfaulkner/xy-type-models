@@ -6,6 +6,9 @@ real :: start_time, end_time
 double precision :: acceptance_rate_of_field_rotns
 
 call pre_simulation_processes
+if (.not.start_from_checkpoint) then
+    call reset_metropolis_acceptance_counters
+end if
 
 if (.not.simulation_complete) then
     call cpu_time(start_time)
@@ -15,7 +18,6 @@ if (.not.simulation_complete) then
         call create_sample_files(temperature_index)
 
         if (initial_observation_index < no_of_equilibration_sweeps) then
-            call reset_metropolis_acceptance_counters
             do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
                 if (use_external_global_moves) then
                     call attempt_external_global_moves
@@ -37,10 +39,10 @@ if (.not.simulation_complete) then
                 call get_and_print_observation
                 call do_checkpointing(temperature_index, observation_index)
             end do
+            call reset_metropolis_acceptance_counters
             initial_observation_index = no_of_equilibration_sweeps
         end if
 
-        call reset_metropolis_acceptance_counters
         do observation_index = initial_observation_index, no_of_equilibration_sweeps + no_of_observations - 1
             if (use_external_global_moves) then
                 call attempt_external_global_moves
@@ -51,6 +53,7 @@ if (.not.simulation_complete) then
         end do
 
         call output_metropolis_acceptance_rates(temperature_index)
+        call reset_metropolis_acceptance_counters
         start_from_checkpoint = .false.
         initial_observation_index = 0
         temperature = temperature + magnitude_of_temperature_increments
