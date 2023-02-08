@@ -860,10 +860,10 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
                                                                                          no_of_sites ** 0.5)
 
 
-def get_hxy_topological_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
-                                       no_of_equilibration_sweeps=None, thinning_level=None):
+def get_hxy_internal_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                          no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the HXY topological susceptibility chi_w^H(x; temperature, no_of_sites) =
+    Returns the sample of the HXY internal-twist susceptibility chi_w^H(x; temperature, no_of_sites) =
     no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the topological sector w \in Z^2, an integer-valued vector field whose
     components are fixed such that the minimal toroidal vortex polarisation vector
@@ -871,9 +871,9 @@ def get_hxy_topological_susceptibility(output_directory, temperature, temperatur
     mode of the emergent electric field, as defined in J. Phys. Condens. Matter 29, 085402 (2017).  This method is only
     valid for the HXY model.
 
-    In Phys. Rev. B 91, 155412 (2015), the HXY topological susceptibility was called the HXY winding-field
-    susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of the system; in
-    the return line below, this corresponds to the first np.mean() -> np.sum().
+    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
+    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
+    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
 
     Parameters
     ----------
@@ -895,8 +895,8 @@ def get_hxy_topological_susceptibility(output_directory, temperature, temperatur
     Returns
     -------
     numpy.ndarray
-        The sample of the topological susceptibility.  A one-dimensional numpy array of length no_of_observations.  The
-        nth element is a float corresponding to the topological susceptibility measured at observation n.
+        The sample of the internal-twist susceptibility.  A one-dimensional numpy array of length no_of_observations.
+        The nth element is a float corresponding to the internal-twist susceptibility measured at observation n.
     """
     topological_sector_sample = get_hxy_topological_sector(output_directory, temperature, temperature_index,
                                                            no_of_sites, no_of_equilibration_sweeps, thinning_level)
