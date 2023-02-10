@@ -61,5 +61,76 @@ def make_single_plot(spin_phases, zero_temp_spin_phases, output_directory, outpu
     fig.clear()
 
 
+def get_quenched_spin_field(spin_field, integer_lattice_length=20, quench_with_xy_potential=True):
+    for _ in range(2000):
+        for i in range(integer_lattice_length ** 2):
+            spin_perturbation = 0.01 * (np.random.uniform(0.0, 1.0) - 0.5)
+
+            initial_spin_difference_1 = get_spin_difference(spin_field[i], spin_field[get_south_neighbour(i)])
+            initial_spin_difference_2 = get_spin_difference(spin_field[get_west_neighbour(i)], spin_field[i])
+            initial_spin_difference_3 = get_spin_difference(spin_field[get_north_neighbour(i)], spin_field[i])
+            initial_spin_difference_4 = get_spin_difference(spin_field[i], spin_field[get_east_neighbour(i)])
+
+            perturbed_spin_difference_1 = initial_spin_difference_1 + spin_perturbation
+            perturbed_spin_difference_2 = initial_spin_difference_2 - spin_perturbation
+            perturbed_spin_difference_3 = initial_spin_difference_3 - spin_perturbation
+            perturbed_spin_difference_4 = initial_spin_difference_4 + spin_perturbation
+
+            if ((abs(perturbed_spin_difference_1) < math.pi) and (abs(perturbed_spin_difference_2) < math.pi) and
+                    (abs(perturbed_spin_difference_3) < math.pi) and (abs(perturbed_spin_difference_4) < math.pi)):
+                # we may continue as candidate move does not alter the topological-defect configuration
+                candidate_spin_value = (spin_field[i] + spin_perturbation) % (2.0 * math.pi)
+                potential_difference = get_potential_difference(candidate_spin_value, spin_field, i,
+                                                                quench_with_xy_potential)
+                if potential_difference < 0.0:
+                    spin_field[i] = candidate_spin_value
+    return spin_field
+
+
+def get_potential_difference(candidate_spin_value, spin_field, site_index, quench_with_xy_potential=True):
+    if quench_with_xy_potential:
+        return (- math.cos(spin_field[get_east_neighbour(site_index)] - candidate_spin_value) -
+                math.cos(spin_field[get_north_neighbour(site_index)] - candidate_spin_value) -
+                math.cos(candidate_spin_value - spin_field[get_west_neighbour(site_index)]) -
+                math.cos(candidate_spin_value - spin_field[get_south_neighbour(site_index)]) +
+                math.cos(spin_field[get_east_neighbour(site_index)] - spin_field[site_index]) +
+                math.cos(spin_field[get_north_neighbour(site_index)] - spin_field[site_index]) +
+                math.cos(spin_field[site_index] - spin_field[get_west_neighbour(site_index)]) +
+                math.cos(spin_field[site_index] - spin_field[get_south_neighbour(site_index)]))
+    # else, quench with HXY potential
+    return 0.5 * (get_spin_difference(spin_field[get_east_neighbour(site_index)], candidate_spin_value) ** 2 +
+                  get_spin_difference(spin_field[get_north_neighbour(site_index)], candidate_spin_value) ** 2 +
+                  get_spin_difference(candidate_spin_value, spin_field[get_west_neighbour(site_index)]) ** 2 +
+                  get_spin_difference(candidate_spin_value, spin_field[get_south_neighbour(site_index)]) ** 2 -
+                  get_spin_difference(spin_field[get_east_neighbour(site_index)], spin_field[site_index]) ** 2 -
+                  get_spin_difference(spin_field[get_north_neighbour(site_index)], spin_field[site_index]) ** 2 -
+                  get_spin_difference(spin_field[site_index], spin_field[get_west_neighbour(site_index)]) ** 2 -
+                  get_spin_difference(spin_field[site_index], spin_field[get_south_neighbour(site_index)]) ** 2)
+
+
+def get_spin_difference(spin_value_one, spin_value_two):
+    return (spin_value_one - spin_value_two + math.pi) % (2.0 * math.pi) - math.pi
+
+
+def get_north_neighbour(i, integer_lattice_length=20):
+    return i + ((int(i / integer_lattice_length) + 1) % integer_lattice_length -
+                (int(i / integer_lattice_length)) % integer_lattice_length) * integer_lattice_length
+
+
+def get_south_neighbour(i, integer_lattice_length=20):
+    return i + ((int(i / integer_lattice_length) + integer_lattice_length - 1) % integer_lattice_length -
+                (int(i / integer_lattice_length) + integer_lattice_length) % integer_lattice_length
+                ) * integer_lattice_length
+
+
+def get_east_neighbour(i, integer_lattice_length=20):
+    return i + (i + 1) % integer_lattice_length - i % integer_lattice_length
+
+
+def get_west_neighbour(i, integer_lattice_length=20):
+    return i + (i - 1 + integer_lattice_length) % integer_lattice_length - (i + integer_lattice_length
+                                                                            ) % integer_lattice_length
+
+
 if __name__ == "__main__":
     main()
