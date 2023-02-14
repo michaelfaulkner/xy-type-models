@@ -11,23 +11,23 @@ real :: current_time
 write(temporary_filename, '(A, "/temporary_checkpoint.csv")') trim(output_directory)
 call cpu_time(current_time)
 if (current_time - previous_checkpointing_time > time_between_checkpoints) then
-    open(unit=90, file=temporary_filename)
-    write(90, 100) temperature_index
-    write(90, 100) observation_index
-    write(90, 200) width_of_proposal_interval
+    open(unit=11, file=temporary_filename)
+    write(11, 100) temperature_index
+    write(11, 100) observation_index
+    write(11, 200) width_of_proposal_interval
     do site_index = 1, no_of_sites
-        write(90, 200) electric_field(site_index, 1)
-        write(90, 200) electric_field(site_index, 2)
-        write(90, 100) charge_configuration(site_index)
+        write(11, 200) electric_field(site_index, 1)
+        write(11, 200) electric_field(site_index, 2)
+        write(11, 100) charge_configuration(site_index)
     end do
-    write(90, 100) net_charge_displacement(1)
-    write(90, 100) net_charge_displacement(2)
-    write(90, 100) external_global_moves(1)
-    write(90, 100) external_global_moves(2)
-    write(90, 200) no_of_accepted_charge_hops_per_site
-    write(90, 200) no_of_accepted_field_rotations_per_site
-    write(90, 200) no_of_accepted_external_global_moves
-    close(90)
+    write(11, 100) net_charge_displacement(1)
+    write(11, 100) net_charge_displacement(2)
+    write(11, 100) external_global_moves(1)
+    write(11, 100) external_global_moves(2)
+    write(11, 200) no_of_accepted_charge_hops_per_site
+    write(11, 200) no_of_accepted_field_rotations_per_site
+    write(11, 200) no_of_accepted_external_global_moves
+    close(11)
 
     call system('mv ' // trim(temporary_filename) // ' ' // trim(checkpoint_filename))
     previous_checkpointing_time = current_time

@@ -17,6 +17,7 @@ read(10, *) measure_helicity
 read(10, *) measure_potential
 read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
+read(10, *) measure_twist_relaxations
 
 if (algorithm_name /= 'xy-ecmc') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-ecmc.'

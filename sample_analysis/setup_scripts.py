@@ -25,15 +25,16 @@ def check_for_observable_error(algorithm_name, observable_string):
             and observable_string != "inverse_vacuum_permittivity" and observable_string != "total_vortex_polarisation"
             and observable_string != "helicity_modulus" and observable_string != "hxy_topological_sector"
             and observable_string != "hxy_internal_twist_susceptibility"
+            and observable_string != "xy_twist_relaxation_susceptibility"
             and observable_string != "electric_field_zero_mode" and observable_string != "inverse_permittivity"
             and observable_string != "topological_sector" and observable_string != "topological_susceptibility"):
         print("ConfigurationError: Give one of potential, specific_heat, magnetisation_norm, magnetisation_phase, "
               "rotated_magnetisation_phase, magnetisation_squared, cartesian_magnetisation, "
               "absolute_cartesian_magnetisation, magnetic_susceptibility, cartesian_relative_magnetisation, "
               "relative_magnetisation_norm, inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus, "
-              "hxy_topological_sector, hxy_internal_twist_susceptibility, electric_field_zero_mode, "
-              "inverse_permittivity, topological_sector or topological_susceptibility as the second positional "
-              "argument.")
+              "hxy_topological_sector, hxy_internal_twist_susceptibility, xy_twist_relaxation_susceptibility, "
+              "electric_field_zero_mode, inverse_permittivity, topological_sector or topological_susceptibility as the "
+              "second positional argument.")
         raise SystemExit
     check_for_observable_vs_model_error(algorithm_name, observable_string)
 
@@ -51,12 +52,14 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
              or observable_string == "relative_magnetisation_norm" or observable_string == "inverse_vacuum_permittivity"
              or observable_string == "total_vortex_polarisation" or observable_string == "helicity_modulus"
              or observable_string == "hxy_topological_sector"
-             or observable_string == "hxy_internal_twist_susceptibility")):
+             or observable_string == "hxy_internal_twist_susceptibility"
+             or observable_string == "xy_twist_relaxation_susceptibility")):
         print("ConfigurationError: This is a Maggs-electrolyte model: do not give either magnetisation_norm, "
               "magnetisation_phase, rotated_magnetisation_phase, magnetisation_squared, cartesian_magnetisation, "
               "absolute_cartesian_magnetisation, magnetic_susceptibility, cartesian_relative_magnetisation, "
               "relative_magnetisation_norm, inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus, "
-              "hxy_topological_sector or hxy_internal_twist_susceptibility as the second positional argument.")
+              "hxy_topological_sector, hxy_internal_twist_susceptibility or xy_twist_relaxation_susceptibility as the "
+              "second positional argument.")
         raise SystemExit
     """Raise an error if a Maggs-electrolyte observable has been given as the second positional argument for an XY or 
         HXY model."""
@@ -69,12 +72,21 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
               "inverse_permittivity, topological_sector or topological_susceptibility as the second positional "
               "argument.")
         raise SystemExit
-    """Raise an error if hxy_topological_sector has been given as the second positional argument for a non-HXY model."""
-    if (observable_string == "hxy_topological_sector"
+    """Raise an error if hxy_topological_sector or hxy_internal_twist_susceptibility has been given as the second 
+        positional argument for a non-HXY model."""
+    if ((observable_string == "hxy_topological_sector" or observable_string == "hxy_internal_twist_susceptibility")
             and not (algorithm_name == "hxy-ecmc" or algorithm_name == "hxy-uniform-noise-metropolis"
                      or algorithm_name == "hxy-gaussian-noise-metropolis")):
-        print("ConfigurationError: This is not the HXY model: do not give hxy_topological_sector as the second "
-              "positional argument.")
+        print("ConfigurationError: This is not the HXY model: do not give hxy_topological_sector or "
+              "hxy_internal_twist_susceptibility as the second positional argument.")
+        raise SystemExit
+    """Raise an error if xy_twist_relaxation_field or xy_twist_relaxation_susceptibility has been given as the second 
+            positional argument for a non-XY model."""
+    if ((observable_string == "xy_twist_relaxation_field" or observable_string == "xy_twist_relaxation_susceptibility")
+            and not (algorithm_name == "xy-ecmc" or algorithm_name == "xy-uniform-noise-metropolis"
+                     or algorithm_name == "xy-gaussian-noise-metropolis")):
+        print("ConfigurationError: This is not the XY model: do not give xy_twist_relaxation_field or "
+              "xy_twist_relaxation_susceptibility as the second positional argument.")
         raise SystemExit
 
 
@@ -118,7 +130,8 @@ def get_sample_is_one_dimensional(observable_string):
             or observable_string == "rotated_magnetisation_phase" or observable_string == "magnetisation_squared"
             or observable_string == "magnetic_susceptibility" or observable_string == "relative_magnetisation_norm"
             or observable_string == "inverse_vacuum_permittivity" or observable_string == "helicity_modulus"
-            or observable_string == "hxy_internal_twist_susceptibility" or observable_string == "inverse_permittivity"
+            or observable_string == "hxy_internal_twist_susceptibility"
+            or observable_string == "xy_twist_relaxation_susceptibility" or observable_string == "inverse_permittivity"
             or observable_string == "topological_susceptibility"):
         return True
     else:

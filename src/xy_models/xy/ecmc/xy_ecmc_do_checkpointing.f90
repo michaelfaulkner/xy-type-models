@@ -11,17 +11,17 @@ real :: current_time
 write(temporary_filename, '(A, "/temporary_checkpoint.csv")') trim(output_directory)
 call cpu_time(current_time)
 if (current_time - previous_checkpointing_time > time_between_checkpoints) then
-    open(unit=90, file=temporary_filename)
-    write(90, 100) temperature_index
-    write(90, 100) observation_index
+    open(unit=11, file=temporary_filename)
+    write(11, 100) temperature_index
+    write(11, 100) observation_index
     do site_index = 1, no_of_sites
-        write(90, 200) spin_field(site_index)
+        write(11, 200) spin_field(site_index)
     end do
-    write(90, 100) external_global_moves(1)
-    write(90, 100) external_global_moves(2)
-    write(90, 200) no_of_events_per_unit_spin_space_distance
-    write(90, 200) no_of_accepted_external_global_moves
-    close(90)
+    write(11, 100) external_global_moves(1)
+    write(11, 100) external_global_moves(2)
+    write(11, 200) no_of_events_per_unit_spin_space_distance
+    write(11, 200) no_of_accepted_external_global_moves
+    close(11)
 
     call system('mv ' // trim(temporary_filename) // ' ' // trim(checkpoint_filename))
     previous_checkpointing_time = current_time

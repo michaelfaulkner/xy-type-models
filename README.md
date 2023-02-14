@@ -196,6 +196,7 @@ sizes fall within the time limit.
 .false.                                     measure_potential
 .false.                                     measure_potential_minimising_twists
 .false.                                     measure_external_global_moves
+.false.                                     measure_twist_relaxations
 1                                           no_of_jobs
 0                                           initial_job_index
 1                                           max_no_of_cpus
@@ -221,6 +222,7 @@ sizes fall within the time limit.
 .false.                                                         measure_potential
 .false.                                                         measure_potential_minimising_twists
 .false.                                                         measure_external_global_moves
+.false.                                                         measure_twist_relaxations
 1                                                               no_of_jobs
 0                                                               initial_job_index
 1                                                               max_no_of_cpus
@@ -246,6 +248,7 @@ sizes fall within the time limit.
 .false.                                                         measure_potential
 .false.                                                         measure_potential_minimising_twists
 .false.                                                         measure_external_global_moves
+.false.                                                         measure_twist_relaxations
 1                                                               no_of_jobs
 0                                                               initial_job_index
 1                                                               max_no_of_cpus

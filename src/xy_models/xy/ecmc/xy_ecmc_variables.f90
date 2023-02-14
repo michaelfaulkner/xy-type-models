@@ -1,8 +1,8 @@
 module variables
 character(100) :: output_directory, algorithm_name, checkpoint_filename
 logical :: use_external_global_moves, randomise_initial_field_configuration, measure_magnetisation, measure_helicity
-logical :: measure_potential, measure_potential_minimising_twists, measure_external_global_moves, start_from_checkpoint
-logical :: simulation_complete
+logical :: measure_potential, measure_potential_minimising_twists, measure_external_global_moves
+logical :: measure_twist_relaxations, start_from_checkpoint, simulation_complete
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer, allocatable, dimension(:) :: get_up_neighbour, get_down_neighbour
 integer(kind=8) :: no_of_observations ! kind=8 to avoid upper integer bound on long timescales

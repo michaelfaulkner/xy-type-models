@@ -904,6 +904,77 @@ def get_hxy_internal_twist_susceptibility(output_directory, temperature, tempera
                                         axis=1) / temperature
 
 
+def get_xy_twist_relaxation_field(output_directory, temperature, temperature_index, no_of_sites,
+                                  no_of_equilibration_sweeps=None, thinning_level=None):
+    r"""
+    Returns the sample of the XY global twist-relaxation field -- an integer-valued two-dimensional vector field whose
+    x / y component corresponds to the number of externally applied global spin twists required (along the x / y
+    dimension) to minimise the XY-annealed potential.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+    no_of_equilibration_sweeps : None or int, optional
+        The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the XY internal global twists.  A two-dimensional numpy array of shape (no_of_observations, 2).
+        The nth sub-array is the internal global twists measured at observation n; its first / second element is an
+        int corresponding to the x / y component of the internal global twists measured at observation n.
+    """
+    return get_reduced_sample(np.loadtxt(
+        f"{output_directory}/temp_{temperature_index:02d}/internal_global_twists.csv", dtype=float, delimiter=","),
+        no_of_equilibration_sweeps, thinning_level)
+
+
+def get_xy_twist_relaxation_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                           no_of_equilibration_sweeps=None, thinning_level=None):
+    r"""
+    Returns the sample of the XY global twist-relaxation susceptibility.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+    no_of_equilibration_sweeps : None or int, optional
+        The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the global twist-relaxation susceptibility.  A one-dimensional numpy array of length
+        no_of_observations.  The nth element is a float corresponding to the global twist-relaxation susceptibility
+        measured at observation n.
+    """
+    internal_twists_sample = get_xy_twist_relaxation_field(output_directory, temperature, temperature_index,
+                                                           no_of_sites, no_of_equilibration_sweeps, thinning_level)
+    return 4.0 * math.pi ** 2 * np.mean((internal_twists_sample - np.mean(internal_twists_sample, axis=0)) ** 2,
+                                        axis=1) / temperature
+
+
 """Maggs-electrolyte methods"""
 
 

@@ -1,5 +1,5 @@
 'xy-uniform-noise-metropolis'                       algorithm_name
-'output/prb_91_155412_fig_2_xy/all_moves'           output_directory
+'output/prb_91_155412_fig_2_xy/local_moves'         output_directory
 8                                                   integer_lattice_length
 100000                                              no_of_equilibration_sweeps
 1000000                                             no_of_observations
@@ -15,6 +15,7 @@
 .false.                                             measure_potential
 .true.                                              measure_potential_minimising_twists
 .false.                                             measure_external_global_moves
+.false.                                             measure_twist_relaxations
 16                                                  no_of_jobs
 0                                                   initial_job_index
 4                                                   max_no_of_cpus

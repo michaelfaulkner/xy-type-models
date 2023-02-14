@@ -36,8 +36,16 @@ def main(model):
         config_file_all_moves = "config_files/prb_91_155412_fig_2_xy/all_moves.txt"
         get_sample_methods = [getattr(sample_getter, "get_potential_minimising_twist_susceptibility"),
                               getattr(sample_getter, "get_helicity_modulus")]
+    elif model == "xy_with_twist_relaxations":
+        approx_transition_temperature = 0.887
+        config_file_local_moves = "config_files/prb_91_155412_fig_2_xy/local_moves.txt"
+        config_file_all_moves = "config_files/prb_91_155412_fig_2_xy/all_moves.txt"
+        get_sample_methods = [getattr(sample_getter, "get_potential_minimising_twist_susceptibility"),
+                              getattr(sample_getter, "get_helicity_modulus"),
+                              getattr(sample_getter, "get_xy_twist_relaxation_susceptibility")]
     else:
-        raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy or xy.")
+        raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy, xy or "
+                        "xy_with_twist_relaxations.")
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _,
      temperatures, _, _, no_of_jobs, _, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
@@ -58,20 +66,29 @@ def main(model):
 
     accept_rates_file_string = (f"{output_directory}/acceptance_rates_{algorithm_name.replace('-', '_')}_"
                                 f"{no_of_sites_string}.tsv")
-    output_file_strings = [f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_topological_"
-                           f"susceptibility_ratio.tsv"]
-    figure_file_strings = [f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_topological_"
-                           f"susceptibility_ratio.pdf"]
-    if model != "electrolyte":
-        output_file_strings.append(f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_"
-                                   f"helicity_ratio.tsv")
-        figure_file_strings.append(f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_"
-                                   f"helicity_ratio.pdf")
-    if model == "hxy":
-        output_file_strings.append(f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_"
-                                   f"internal_twist_susceptibility_ratio.tsv")
-        figure_file_strings.append(f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_"
-                                   f"internal_twist_susceptibility_ratio.pdf")
+    if model == "electrolyte":
+        output_file_strings = [
+            f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_topological_"
+            f"susceptibility_ratio"]
+    elif model == "hxy":
+        output_file_strings = [f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_non_"
+                               f"annealed_twist_relaxation_susceptibility_ratio",
+                               f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_helicity_"
+                               f"ratio",
+                               f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_internal_"
+                               f"twist_susceptibility_ratio"]
+    elif model == "xy":
+        output_file_strings = [f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_non_"
+                               f"annealed_twist_relaxation_susceptibility_ratio",
+                               f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_helicity_"
+                               f"ratio"]
+    else:
+        output_file_strings = [f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_non_"
+                               f"annealed_twist_relaxation_susceptibility_ratio",
+                               f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_helicity_"
+                               f"ratio",
+                               f"{output_directory}/{algorithm_name.replace('-', '_')}_{no_of_sites_string}_twist_"
+                               f"relaxation_susceptibility_ratio"]
 
     no_of_cpus = mp.cpu_count()
     pool = mp.Pool(no_of_cpus)
@@ -123,12 +140,12 @@ def main(model):
         # in the following code, chi represents the observable corresponding to observable_index
         get_sample_method = get_sample_methods[observable_index]
         try:
-            with open(output_file_string, "r") as output_file:
+            with open(f"{output_file_string}.tsv", "r") as output_file:
                 output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                     if not line.startswith('#')]).transpose()
                 chi_ratios = output_file_sans_header[1]
         except IOError:
-            output_file = open(output_file_string, "w")
+            output_file = open(f"{output_file_string}.tsv", "w")
             output_file.write("# *** NB, chi represents the observable in the file name ***" + "\n")
             output_file.write("# temperature".ljust(30) + "chi ratio".ljust(30) + "chi ratio error".ljust(30) +
                               "chi (local only)".ljust(30) + "chi error (local only)".ljust(30) +
@@ -166,7 +183,7 @@ def main(model):
         plt.ylabel(r"$\chi_{\rm{local}}$ / $\chi_{\rm{all}}$", fontsize=15, labelpad=10)
         plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
         plt.ylim([-0.05, 1.05])
-        plt.savefig(figure_file_strings[observable_index], bbox_inches="tight")
+        plt.savefig(f"{output_file_string}.pdf", bbox_inches="tight")
         plt.clf()
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
