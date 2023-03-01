@@ -379,11 +379,12 @@ directory and enter `make xy-ecmc`, `make xy-uniform-noise-metropolis`, `make xy
 executable and store it in the `executables` directory.
 
 
+
 ## *Sampling algorithms in statistical physics* [\[Faulkner2022a\]](https://arxiv.org/abs/2208.04751)
 
 This details how to make its XY figures.
 
-### Figure 9
+### Figure 12
 
 - Run each configuration file in [`config_files/sampling_algos_xy_figs`](
 config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
@@ -392,7 +393,7 @@ config_files/sampling_algos_xy_figs) via the command `python run.py config_files
 - Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_magnetisation_evolution_figs.py False`.
 
-### Figures 2, 6, 7 and 8
+### Figures 2, 9, 10 and 11
 
 Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
 instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
