@@ -48,6 +48,7 @@ if (start_from_checkpoint) then
         ! the last checkpoint was taken at the end of the recorded temperature index
         initial_temperature_index = initial_temperature_index + 1
         initial_observation_index = 0
+        call initialise_field_configuration(.false.)
     else
         initial_observation_index = initial_observation_index + 1 ! restart at next observation
     end if
