@@ -444,28 +444,30 @@ config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_
 `python sample_analysis/make_cvm_figs.py`.
 
 As the Cramér-von Mises statistic converges on long simulation timescales, these simulations require significant 
-amounts of temporary scratch space to store the samples before analysis.  Simulations of each system composed of *N* <= 32x32 
-sites require approximately 2.45TB of scratch space.  Simulations of the *N* = 64x64 system require approximately 
+amounts of temporary scratch space to store the samples before analysis.  Simulations of each system composed of *N* <= 
+32x32 sites require approximately 2.45TB of scratch space.  Simulations of the *N* = 64x64 system require approximately 
 12.35TB of scratch space.  Simulations of the *N* = 128x128 system require approximately 17.85TB of scratch space. (NB, 
-the required scratch space increases with system size because the symmetry-restoring timescale increases with system 
-size at low temperature.  Due to this large required scratch space at *N* = 128x128, we do not estimate the *N* = 
+the required scratch space increases with system size because the symmetric-mixing timescale increases with system 
+size at low temperature.)  Due to this large required scratch space at *N* = 128x128, we do not estimate the *N* = 
 128x128 CvM statistic at beta J = 1 / 0.3 (the lowest value of the temperature for all *N* <= 64x64).
 
 If you are limited to 20TB of scratch space, we suggest running all simulations for systems composed of *N* <= 32x32 
 sites and then running `python sample_analysis/make_cvm_figs.py 4` (where the `4` restricts the script to analysing the 
 four smallest system sizes).  Then delete the samples and run the simulations of the *N* = 64x64 system before running 
 `python sample_analysis/make_cvm_figs.py 5` and then deleting the samples.  Then run the simulations of the *N* = 
-128x128 system before finally running `python sample_analysis/make_cvm_figs.py`.
+128x128 system before finally running `python sample_analysis/make_cvm_figs.py`.  Analysis including the *N* = 64x64 
+and *N* = 128x128 systems requires (respectively) 8GB and 16GB of memory per processor.  For the smaller systems, we 
+request 2GB of memory per processor.
 
 For clarity, we detail the required space below in terms of each configuration file. 
 
 For each Metropolis configuration file with the suffix `low_temps`:
   1. Those for systems composed of *N* <= 32x32 sites require approximately 1.1TB of scratch space.
-  2. Those for systems composed of *N* = 64x64 sites require approximately 11TB of scratch space.
+  2. Those for systems composed of *N* = 64x64 sites require approximately 12TB of scratch space.
 
 Each *N* = 128x128 Metropolis configuration file with the suffix `low_temp_1`, `low_temp_2` or `low_temp_3` requires 
-approximately 5.5TB of scratch space.
-  
+approximately 5.5TB (or 8.8TB?) of scratch space.
+
 Each Metropolis configuration file with the suffix `lower_trans` requires approximately 1.1TB of scratch space.
 
 Each Metropolis configuration file with the suffix `upper_trans` or `high_temps` requires approximately 210GB of 
