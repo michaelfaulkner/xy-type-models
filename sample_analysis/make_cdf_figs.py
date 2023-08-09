@@ -53,7 +53,7 @@ def main():
         axis.set_ylim(0.0, 1.0)
         axis.yaxis.set_major_locator(ticker.MultipleLocator(base=0.5))
         if axis_index == 0:
-            axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=25, labelpad=-1.0)
+            axis.set_ylabel(r"$F_{\phi_{\mathbf{m}}, n}(x)$", fontsize=25, labelpad=-1.0)
             axis.yaxis.set_major_formatter('{x:.1f}')
         else:
             axis.axes.yaxis.set_ticklabels([])
@@ -75,7 +75,7 @@ def main():
     inset_axis.set_ylim(0.0, 1.0)
     inset_axis.yaxis.set_label_position("right")
     inset_axis.yaxis.tick_right()
-    inset_axis.set_ylabel(r"$F_{\phi_m, n}(x)$", fontsize=14, labelpad=-11)
+    inset_axis.set_ylabel(r"$F_{\phi_{\mathbf{m}}, n}(x)$", fontsize=14, labelpad=-11)
     inset_axis.yaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
     inset_axis.yaxis.set_major_formatter('{x:.1f}')
     inset_axis.yaxis.set_minor_locator(ticker.MultipleLocator(base=0.5))

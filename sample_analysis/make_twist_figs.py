@@ -93,8 +93,8 @@ def main(no_of_system_sizes=6):
     axes[0].set_ylim([8.0 * 10 ** (-8), 1.5])
     axes[0].set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
     axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-0)
-    axes[1].set_ylabel(r"$\frac{s_{\phi_m}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right)}{{\rm Var}\left[ "
-                       r"\phi_m \right]}$", fontsize=20, labelpad=6)
+    axes[1].set_ylabel(r"$\frac{s_{\phi_{\mathbf{m}}}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right)}"
+                       r"{{\rm Var}\left[\phi_{\mathbf{m}} \right]}$", fontsize=20, labelpad=6)
     axes[1].set_ylim([-0.1, 1.1])
     axes[1].yaxis.set_minor_locator(MultipleLocator(base=0.5))
 

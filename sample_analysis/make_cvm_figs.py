@@ -88,7 +88,7 @@ def main(no_of_system_sizes=6):
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
-    axes[0].set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=20, labelpad=-7.5)
+    axes[0].set_ylabel(r"$n \omega_{\phi_{\mathbf{m}},n}^2$", fontsize=20, labelpad=-7.5)
     axes[0].set_ylim([2.0e-4, 2.5e5])
     axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
     axes[1].set_xlabel(r"$1 / \left( \ln N \right)^2$", fontsize=20, labelpad=4)
@@ -103,7 +103,7 @@ def main(no_of_system_sizes=6):
     inset_axis_1.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
     inset_axis_1.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis_1.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12.5, labelpad=1.0)
-    inset_axis_1.set_ylabel(r"$n \omega_{\phi_m,n}^2$", fontsize=12.5, labelpad=1.5)
+    inset_axis_1.set_ylabel(r"$n \omega_{\phi_{\mathbf{m}},n}^2$", fontsize=12.5, labelpad=1.5)
     inset_axis_1.set_xlim([0.975, 1.535]), inset_axis_1.set_ylim([0.9, 5.0 * 10 ** 4])
     inset_axis_1.set_xticks([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
     inset_axis_1.set_yscale('log')
@@ -115,15 +115,15 @@ def main(no_of_system_sizes=6):
     inset_axis_2.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis_2.yaxis.set_label_position("right"), inset_axis_2.yaxis.tick_right()
     inset_axis_2.set_xlabel(r"$N$", fontsize=14, labelpad=1.0)
-    inset_axis_2.set_ylabel(r"$n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=12.5,
+    inset_axis_2.set_ylabel(r"$n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=12.5,
                             labelpad=1.5)
     [inset_axis_2.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
 
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
     supplementary_fig.tight_layout()
     supplementary_axis.set_xlabel(r"$N$", fontsize=20, labelpad=-0.5)
-    supplementary_axis.set_ylabel(r"$n \omega_{\phi_m,n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=20,
-                                  labelpad=-0.5)
+    supplementary_axis.set_ylabel(r"$n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right)$",
+                                  fontsize=20, labelpad=-0.5)
     supplementary_axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
     supplementary_axis.tick_params(which='major', axis='x', pad=5)
     supplementary_axis.tick_params(which='minor', direction='in', width=1.5, length=4)
