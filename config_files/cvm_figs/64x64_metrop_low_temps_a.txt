@@ -2,7 +2,7 @@
 '../bc4-output/cvm_figs/64x64_metrop_low_temps'         output_directory
 64                                                      integer_lattice_length
 100000                                                  no_of_equilibration_sweeps
-100000000                                               no_of_observations
+30000000                                                no_of_observations
 0.3d0                                                   initial_temperature
 0.9d0                                                   final_temperature
 3                                                       no_of_temperature_increments
@@ -16,6 +16,6 @@
 .false.                                                 measure_potential_minimising_twists
 .false.                                                 measure_external_global_moves
 .false.                                                 measure_twist_relaxations
-56                                                      no_of_jobs
+112                                                     no_of_jobs
 0                                                       initial_job_index
 28                                                      max_no_of_cpus
