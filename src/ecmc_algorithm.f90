@@ -18,9 +18,6 @@ if (.not.simulation_complete) then
         call create_sample_files(temperature_index)
 
         if (initial_observation_index < no_of_equilibration_sweeps) then
-            if (initial_observation_index == 0) then
-                call reset_event_counters ! reset here in case checkpoint is at end of some temperature index
-            end if
             do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
                 if (use_external_global_moves) then
                     call attempt_external_global_moves
@@ -43,6 +40,7 @@ if (.not.simulation_complete) then
         end do
 
         call output_event_rate(temperature_index)
+        call reset_event_counters
         start_from_checkpoint = .false.
         initial_observation_index = 0
         temperature = temperature + magnitude_of_temperature_increments

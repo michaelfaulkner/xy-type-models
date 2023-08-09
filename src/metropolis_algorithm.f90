@@ -18,9 +18,6 @@ if (.not.simulation_complete) then
         call create_sample_files(temperature_index)
 
         if (initial_observation_index < no_of_equilibration_sweeps) then
-            if (initial_observation_index == 0) then
-                call reset_metropolis_acceptance_counters ! reset here in case checkpoint at end of a temperature index
-            end if
             do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
                 if (use_external_global_moves) then
                     call attempt_external_global_moves
@@ -56,6 +53,7 @@ if (.not.simulation_complete) then
         end do
 
         call output_metropolis_acceptance_rates(temperature_index)
+        call reset_metropolis_acceptance_counters
         start_from_checkpoint = .false.
         initial_observation_index = 0
         temperature = temperature + magnitude_of_temperature_increments

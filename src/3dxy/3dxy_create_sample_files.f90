@@ -10,7 +10,7 @@ call system('mkdir -p ' // temperature_directory)
 
 if (measure_magnetisation) then
     write(filename, '(A, "/temp_", I2.2, "/magnetisation.csv")') trim(output_directory), temperature_index
-    if ((start_from_checkpoint).and.(initial_observation_index > 0)) then
+    if (start_from_checkpoint) then
         call trim_existing_sample_file(filename, 30, temperature_index)
     else
         open(unit=30, file=filename)
@@ -20,7 +20,7 @@ end if
 
 if (measure_potential) then
     write(filename, '(A, "/temp_", I2.2, "/potential.csv")') trim(output_directory), temperature_index
-    if ((start_from_checkpoint).and.(initial_observation_index > 0)) then
+    if (start_from_checkpoint) then
         call trim_existing_sample_file(filename, 40, temperature_index)
     else
         open(unit=40, file=filename)
