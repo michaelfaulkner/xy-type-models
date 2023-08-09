@@ -13,7 +13,7 @@ call cpu_time(current_time)
 if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     open(unit=11, file=temporary_filename)
     write(11, 100) temperature_index
-    write(11, 100) observation_index
+    write(11, 100) observation_index + 1
     write(11, 200) width_of_proposal_interval
     do site_index = 1, no_of_sites
         write(11, 200) electric_field(site_index, 1)

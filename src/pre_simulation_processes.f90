@@ -44,13 +44,6 @@ write(checkpoint_filename, '(A, "/checkpoint.csv")') trim(output_directory)
 inquire(file=checkpoint_filename, exist=start_from_checkpoint)
 if (start_from_checkpoint) then
     call get_checkpoint
-    if (initial_observation_index == no_of_equilibration_sweeps + no_of_observations - 1) then
-        ! the last checkpoint was taken at the end of the recorded temperature index
-        initial_temperature_index = initial_temperature_index + 1
-        initial_observation_index = 0
-    else
-        initial_observation_index = initial_observation_index + 1 ! restart at next observation
-    end if
 else
     initial_temperature_index = 0
     initial_observation_index = 0

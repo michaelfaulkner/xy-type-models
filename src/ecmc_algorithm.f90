@@ -36,7 +36,9 @@ if (.not.simulation_complete) then
             end if
             call single_event_chain
             call get_and_print_observation
-            call do_checkpointing(temperature_index, observation_index)
+            if (observation_index < no_of_equilibration_sweeps + no_of_observations - 1) then
+                call do_checkpointing(temperature_index, observation_index) ! we don't checkpoint at end of temp index
+            end if
         end do
 
         call output_event_rate(temperature_index)
