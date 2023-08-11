@@ -1,5 +1,5 @@
 from cramer_von_mises import get_cvm_mag_phase_vs_temperature
-from make_twist_figs import compute_physical_time_steps, get_mag_phase_sample_variances_and_errors, \
+from make_twist_figs import compute_physical_time_steps, get_mag_phase_simulation_variances_and_errors, \
     get_twist_probabilities_and_errors
 from sample_getter import get_event_rate
 from setup_scripts import setup_pool
@@ -169,40 +169,40 @@ def main(no_of_system_sizes=6):
                             sample_directories_ecmc[system_size_index], temperatures_ecmc, length,
                             no_of_observations_ecmc, no_of_jobs_ecmc, pool)
 
-        """compute non-used sample variances for our records"""
+        """compute non-used simulation variances for our records"""
         if length < 128:
-            _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+            _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
                 no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
                 no_of_jobs_metrop_low_temps, pool))
         else:
-            _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+            _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directory_128x128_metrop_low_temps_lower, temperatures_128x128_metrop_low_temps_lower, length,
                 no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
                 no_of_jobs_metrop_low_temps, pool))
-            _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+            _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_128x128_metrop_low_temps_upper,
                 length, no_of_equilibration_sweeps_metrop_low_temps,
                 no_of_observations_metrop_low_temps[system_size_index], no_of_jobs_metrop_low_temps, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+        _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_lower_trans[system_size_index], temperatures_metrop_lower_trans, length,
             no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
             no_of_jobs_metrop_lower_trans, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+        _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_upper_trans[system_size_index], temperatures_metrop_upper_trans, length,
             no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
             no_of_jobs_metrop_upper_trans, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+        _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
             no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
             no_of_jobs_metrop_high_temps, pool))
-        _, _ = np.array(get_mag_phase_sample_variances_and_errors(
+        _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_ecmc, external_global_moves_string, output_directory,
             sample_directories_ecmc[system_size_index], temperatures_ecmc, length, no_of_equilibration_sweeps_ecmc,
             no_of_observations_ecmc, no_of_jobs_ecmc, pool))

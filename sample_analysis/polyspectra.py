@@ -1441,8 +1441,8 @@ def get_power_spectrum_means_and_std_errors(power_spectra):
     -------
     numpy.ndarray
         The power spectrum frequencies, means and standard errors.  A two-dimensional numpy array of shape (3, N).  The
-        standard error at frequency f is the square root of the ratio of the sample variance to M, where the sample is
-        the dynamical sample (at f) whose observations are the repeated simulations.
+        standard error at frequency f is the square root of the ratio of the simulation variance to M, where the sample
+        is the dynamical sample (at f) whose observations are the repeated simulations.
     """
     power_spectra = np.array(power_spectra)
     return np.concatenate([np.mean(power_spectra, axis=0).flatten(),

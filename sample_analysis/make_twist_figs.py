@@ -106,10 +106,10 @@ def main(no_of_system_sizes=6):
     colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     colors.reverse()
 
-    low_temp_sample_variance_vs_system_size_local = []
-    low_temp_sample_variance_error_vs_system_size_local = []
-    low_temp_sample_variance_vs_system_size_all = []
-    low_temp_sample_variance_error_vs_system_size_all = []
+    low_temp_simulation_variance_vs_system_size_local = []
+    low_temp_simulation_variance_error_vs_system_size_local = []
+    low_temp_simulation_variance_vs_system_size_all = []
+    low_temp_simulation_variance_error_vs_system_size_all = []
     start_time = time.time()
     for system_size_index, length in enumerate(linear_system_sizes):
         print(f"Number of sites, N = {length}x{length}")
@@ -154,42 +154,42 @@ def main(no_of_system_sizes=6):
                                     *twist_probability_errors_lower_trans, *twist_probability_errors_upper_trans,
                                     *twist_probability_errors_high_temps]
 
-        """n.b., the 1 / (math.pi ** 2 / 3.0) factors below divide the sample variances by their expected value"""
-        (low_temp_sample_variances_local,
-         low_temp_sample_variance_errors_local) = np.array(get_mag_phase_sample_variances_and_errors(
+        """n.b., the 1 / (math.pi ** 2 / 3.0) factors below divide the simulation variances by their expected value"""
+        (low_temp_simulation_variances_local,
+         low_temp_simulation_variance_errors_local) = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name, external_global_moves_string_local, output_directory_low_temp,
             sample_directories_low_temp_local[system_size_index], temperatures_low_temp, length,
             no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
-        (low_temp_sample_variances_all,
-         low_temp_sample_variance_errors_all) = np.array(get_mag_phase_sample_variances_and_errors(
+        (low_temp_simulation_variances_all,
+         low_temp_simulation_variance_errors_all) = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name, external_global_moves_string_all, output_directory_low_temp,
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
             no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_jobs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
 
-        low_temp_sample_variance_vs_system_size_local.append(low_temp_sample_variances_local[0])
-        low_temp_sample_variance_error_vs_system_size_local.append(low_temp_sample_variance_errors_local[0])
-        low_temp_sample_variance_vs_system_size_all.append(low_temp_sample_variances_all[0])
-        low_temp_sample_variance_error_vs_system_size_all.append(low_temp_sample_variance_errors_all[0])
+        low_temp_simulation_variance_vs_system_size_local.append(low_temp_simulation_variances_local[0])
+        low_temp_simulation_variance_error_vs_system_size_local.append(low_temp_simulation_variance_errors_local[0])
+        low_temp_simulation_variance_vs_system_size_all.append(low_temp_simulation_variances_all[0])
+        low_temp_simulation_variance_error_vs_system_size_all.append(low_temp_simulation_variance_errors_all[0])
 
         axes[0].errorbar(reduced_temperatures, twist_probabilities, twist_probability_errors, marker=".", markersize=11,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
 
     inverse_log_system_sizes = [1.0 / np.log(length ** 2) for length in linear_system_sizes]
-    axes[1].errorbar(inverse_log_system_sizes, low_temp_sample_variance_vs_system_size_local,
-                     low_temp_sample_variance_error_vs_system_size_local, marker="*", markersize=11, color="black",
+    axes[1].errorbar(inverse_log_system_sizes, low_temp_simulation_variance_vs_system_size_local,
+                     low_temp_simulation_variance_error_vs_system_size_local, marker="*", markersize=11, color="black",
                      linestyle='None', label="local Metropolis dynamics")
-    axes[1].errorbar(inverse_log_system_sizes, low_temp_sample_variance_vs_system_size_all,
-                     low_temp_sample_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
+    axes[1].errorbar(inverse_log_system_sizes, low_temp_simulation_variance_vs_system_size_all,
+                     low_temp_simulation_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
                      linestyle='None', label="local Metropolis dynamics with twists")
 
     legends = [axes[0].legend(loc="lower right", ncol=2, fontsize=10.5),
                axes[1].legend(loc="lower right", fontsize=10.5)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
-    fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_sample_variance_"
-                f"vs_system_size_xy_gaussian_noise_metropolis.pdf", bbox_inches="tight")
+    fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_simulation_"
+                f"variance_vs_system_size_xy_gaussian_noise_metropolis.pdf", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
@@ -247,42 +247,42 @@ def get_twist_probabilities_and_errors(algorithm_name, output_directory, sample_
     return twist_probabilities, twist_probability_errors
 
 
-def get_mag_phase_sample_variances_and_errors(algorithm_name, external_global_moves_string, output_directory,
-                                              sample_directory, temperatures, length, no_of_equilibration_sweeps,
-                                              no_of_observations, no_of_jobs, pool):
+def get_mag_phase_simulation_variances_and_errors(algorithm_name, external_global_moves_string, output_directory,
+                                                  sample_directory, temperatures, length, no_of_equilibration_sweeps,
+                                                  no_of_observations, no_of_jobs, pool):
     try:
-        with open(f"{output_directory}/magnetisation_phase_sample_variance_{algorithm_name.replace('-', '_')}_"
+        with open(f"{output_directory}/magnetisation_phase_simulation_variance_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
                   f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            sample_variances, sample_variance_errors = output_file_sans_header[1], output_file_sans_header[2]
+            simulation_variances, simulation_variance_errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
-        sample_variance_file = open(
-            f"{output_directory}/magnetisation_phase_sample_variance_{algorithm_name.replace('-', '_')}_"
+        simulation_variance_file = open(
+            f"{output_directory}/magnetisation_phase_simulation_variance_{algorithm_name.replace('-', '_')}_"
             f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
             f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "w")
-        sample_variance_file.write("# temperature".ljust(30) + "sample variance".ljust(30) + "sample variance error" +
-                                   "\n")
-        sample_variances, sample_variance_errors = [], []
+        simulation_variance_file.write("# temperature".ljust(30) + "simulation variance".ljust(30) +
+                                       "simulation variance error" + "\n")
+        simulation_variances, simulation_variance_errors = [], []
         for temperature_index, temperature in enumerate(temperatures):
-            sample_variance_vs_job = pool.starmap(get_sample_variance_of_magnetisation_phase, [
+            simulation_variance_vs_job = pool.starmap(get_simulation_variance_of_magnetisation_phase, [
                 (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
                  no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
-            sample_variance, sample_variance_error = np.mean(sample_variance_vs_job), np.std(
-                sample_variance_vs_job) / len(sample_variance_vs_job) ** 0.5
-            sample_variances.append(sample_variance)
-            sample_variance_errors.append(sample_variance_error)
-            sample_variance_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_variance:.14e}".ljust(30) +
-                                       f"{sample_variance_error:.14e}" + "\n")
-        sample_variance_file.close()
-    return sample_variances, sample_variance_errors
+            simulation_variance, simulation_variance_error = np.mean(simulation_variance_vs_job), np.std(
+                simulation_variance_vs_job) / len(simulation_variance_vs_job) ** 0.5
+            simulation_variances.append(simulation_variance)
+            simulation_variance_errors.append(simulation_variance_error)
+            simulation_variance_file.write(f"{temperature:.14e}".ljust(30) + f"{simulation_variance:.14e}".ljust(30) +
+                                           f"{simulation_variance_error:.14e}" + "\n")
+        simulation_variance_file.close()
+    return simulation_variances, simulation_variance_errors
 
 
-def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
-                                               no_of_equilibration_sweeps):
+def get_simulation_variance_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
+                                                   no_of_equilibration_sweeps):
     r"""
-    Returns the sample variance of the magnetisation phase.
+    Returns the simulation variance of the magnetisation phase.
 
     Parameters
     ----------
@@ -300,7 +300,7 @@ def get_sample_variance_of_magnetisation_phase(sample_directory, temperature, te
     Returns
     -------
     numpy.ndarray
-        The sample variance of the magnetisation phase.  A float.
+        The simulation variance of the magnetisation phase.  A float.
     """
     return np.var(get_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites)[
                   no_of_equilibration_sweeps:], ddof=1)
