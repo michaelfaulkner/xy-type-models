@@ -93,8 +93,8 @@ def main(no_of_system_sizes=6):
     axes[0].set_ylim([8.0 * 10 ** (-8), 1.5])
     axes[0].set_yticks([10 ** (-7), 10 ** (-5), 10 ** (-3), 10 ** (-1)])
     axes[1].set_xlabel(r"$1 / \ln N$", fontsize=20, labelpad=-0)
-    axes[1].set_ylabel(r"$\frac{s_{\phi_{\mathbf{m}}}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right)}"
-                       r"{{\rm Var}\left[\phi_{\mathbf{m}} \right]}$", fontsize=20, labelpad=6)
+    axes[1].set_ylabel(r"$\frac{\langle s_{\phi_{\mathbf{m}}}^2 \left(\beta J \! = \! 10, \! n \! = \! 10^6 \right) "
+                       r"\rangle}{{\rm Var}\left[\phi_{\mathbf{m}} \right]}$", fontsize=20, labelpad=6)
     axes[1].set_ylim([-0.1, 1.1])
     axes[1].yaxis.set_minor_locator(MultipleLocator(base=0.5))
 
@@ -176,11 +176,11 @@ def main(no_of_system_sizes=6):
         axes[0].errorbar(reduced_temperatures, twist_probabilities, twist_probability_errors, marker=".", markersize=11,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length}")
 
-    inverse_linear_system_sizes = [1.0 / np.log(length ** 2) for length in linear_system_sizes]
-    axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_local,
+    inverse_log_system_sizes = [1.0 / np.log(length ** 2) for length in linear_system_sizes]
+    axes[1].errorbar(inverse_log_system_sizes, low_temp_sample_variance_vs_system_size_local,
                      low_temp_sample_variance_error_vs_system_size_local, marker="*", markersize=11, color="black",
                      linestyle='None', label="local Metropolis dynamics")
-    axes[1].errorbar(inverse_linear_system_sizes, low_temp_sample_variance_vs_system_size_all,
+    axes[1].errorbar(inverse_log_system_sizes, low_temp_sample_variance_vs_system_size_all,
                      low_temp_sample_variance_error_vs_system_size_all, marker=".", markersize=11, color="red",
                      linestyle='None', label="local Metropolis dynamics with twists")
 

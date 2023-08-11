@@ -88,7 +88,7 @@ def main(no_of_system_sizes=6):
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
-    axes[0].set_ylabel(r"$n \omega_{\phi_{\mathbf{m}},n}^2$", fontsize=20, labelpad=-7.5)
+    axes[0].set_ylabel(r"$\langle n \omega_{\phi_{\mathbf{m}},n}^2 \rangle$", fontsize=20, labelpad=-7.5)
     axes[0].set_ylim([2.0e-4, 2.5e5])
     axes[0].set_yticks([10.0 ** index for index in range(-3, 6)])
     axes[1].set_xlabel(r"$1 / \left( \ln N \right)^2$", fontsize=20, labelpad=4)
@@ -103,7 +103,7 @@ def main(no_of_system_sizes=6):
     inset_axis_1.tick_params(which='major', direction='in', width=2, length=4, labelsize=12, pad=3.5)
     inset_axis_1.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis_1.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=12.5, labelpad=1.0)
-    inset_axis_1.set_ylabel(r"$n \omega_{\phi_{\mathbf{m}},n}^2$", fontsize=12.5, labelpad=1.5)
+    inset_axis_1.set_ylabel(r"$\langle n \omega_{\phi_{\mathbf{m}},n}^2 \rangle$", fontsize=12.5, labelpad=1.5)
     inset_axis_1.set_xlim([0.975, 1.535]), inset_axis_1.set_ylim([0.9, 5.0 * 10 ** 4])
     inset_axis_1.set_xticks([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
     inset_axis_1.set_yscale('log')
@@ -115,8 +115,8 @@ def main(no_of_system_sizes=6):
     inset_axis_2.tick_params(which='minor', direction='in', width=0.25, length=3)
     inset_axis_2.yaxis.set_label_position("right"), inset_axis_2.yaxis.tick_right()
     inset_axis_2.set_xlabel(r"$N$", fontsize=14, labelpad=1.0)
-    inset_axis_2.set_ylabel(r"$n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right)$", fontsize=12.5,
-                            labelpad=1.5)
+    inset_axis_2.set_ylabel(r"$\langle n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right) \rangle$",
+                            fontsize=11.5, labelpad=1.5)
     [inset_axis_2.spines[spine].set_linewidth(3.0) for spine in ["top", "bottom", "left", "right"]]
 
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
@@ -332,26 +332,26 @@ def main(no_of_system_sizes=6):
                              color=colors[system_size_index], linestyle="None",
                              label=fr"$N$ = {length}x{length} Metrop.")
         inset_axis_1.errorbar(reduced_temperatures_metrop, cvms_metrop, cvm_errors_metrop, marker=".", markersize=10,
-                            color=colors[system_size_index], linestyle="None")
+                              color=colors[system_size_index], linestyle="None")
         axes[0].errorbar(reduced_temperatures_ecmc, cvms_ecmc, cvm_errors_ecmc, marker="*", markersize=8,
                          color=colors[system_size_index], linestyle="None", label=fr"$N$ = {length}x{length} ECMC")
 
     """fit reduced intercept temperatures..."""
-    inverse_log_squared_system_sizes = [1.0 / np.log(length ** 2) ** 2 for index, length in
+    inverse_squared_log_system_sizes = [1.0 / np.log(length ** 2) ** 2 for index, length in
                                         enumerate(linear_system_sizes) if index > 0]
-    inverse_log_squared_system_sizes.reverse(), reduced_intersect_temperatures.reverse()
-    continuous_inverse_log_squared_system_sizes = np.linspace(0.0, inverse_log_squared_system_sizes[-1] + 0.1, 100)
-    temp_polyfit_params, temp_polyfit_cov = np.polyfit(inverse_log_squared_system_sizes, reduced_intersect_temperatures,
+    inverse_squared_log_system_sizes.reverse(), reduced_intersect_temperatures.reverse()
+    continuous_inverse_squared_log_system_sizes = np.linspace(0.0, inverse_squared_log_system_sizes[-1] + 0.1, 100)
+    temp_polyfit_params, temp_polyfit_cov = np.polyfit(inverse_squared_log_system_sizes, reduced_intersect_temperatures,
                                                        1, cov=True)
     temp_polyfit_errors = np.sqrt(np.diag(temp_polyfit_cov))
     temp_polynomial_fit = np.poly1d(temp_polyfit_params)
     print(f"Thermodynamic reduced intercept temperature = {temp_polyfit_params[1]} +- {temp_polyfit_errors[1]}")
 
     """...then plot the data and fitting function"""
-    main_legend_1 = axes[1].plot(inverse_log_squared_system_sizes, reduced_intersect_temperatures, marker=".",
+    main_legend_1 = axes[1].plot(inverse_squared_log_system_sizes, reduced_intersect_temperatures, marker=".",
                                  markersize=10, color="black", linestyle="None", label="intercept temperatures")
     main_legend_2 = axes[1].plot(
-        continuous_inverse_log_squared_system_sizes, temp_polynomial_fit(continuous_inverse_log_squared_system_sizes),
+        continuous_inverse_squared_log_system_sizes, temp_polynomial_fit(continuous_inverse_squared_log_system_sizes),
         linestyle="--", color="black", label=r"$A + B / (\ln N)^2$ fit $\Rightarrow $ " +
                                              fr"$A =$ {temp_polyfit_params[1]:.3f} $\pm$ {temp_polyfit_errors[1]:.3f}")
 
