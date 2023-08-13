@@ -122,8 +122,8 @@ def main(no_of_system_sizes=6):
     supplementary_fig, supplementary_axis = plt.subplots(1, figsize=(6.25, 4.0))
     supplementary_fig.tight_layout()
     supplementary_axis.set_xlabel(r"$N$", fontsize=20, labelpad=-0.5)
-    supplementary_axis.set_ylabel(r"$n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right)$",
-                                  fontsize=20, labelpad=-0.5)
+    supplementary_axis.set_ylabel(r"$\langle n \omega_{\phi_\mathbf{m},n}^2 \left(\beta = \beta_{\rm int} \right) "
+                                  r"\rangle$", fontsize=20, labelpad=-0.5)
     supplementary_axis.tick_params(which='major', direction='in', width=2.5, length=5, labelsize=18, pad=2.5)
     supplementary_axis.tick_params(which='major', axis='x', pad=5)
     supplementary_axis.tick_params(which='minor', direction='in', width=1.5, length=4)
