@@ -282,7 +282,7 @@ def get_mag_phase_simulation_variances_and_errors(algorithm_name, external_globa
 def get_simulation_variance_of_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites,
                                                    no_of_equilibration_sweeps):
     r"""
-    Returns the simulation variance of the magnetisation phase.
+    Returns the (unbiased) simulation variance of the magnetisation phase.
 
     Parameters
     ----------
@@ -300,7 +300,7 @@ def get_simulation_variance_of_magnetisation_phase(sample_directory, temperature
     Returns
     -------
     numpy.ndarray
-        The simulation variance of the magnetisation phase.  A float.
+        The (unbiased) simulation variance of the magnetisation phase.  A float.
     """
     return np.var(get_magnetisation_phase(sample_directory, temperature, temperature_index, no_of_sites)[
                   no_of_equilibration_sweeps:], ddof=1)
