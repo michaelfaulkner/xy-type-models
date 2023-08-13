@@ -16,6 +16,6 @@
 .false.                                                     measure_potential_minimising_twists
 .false.                                                     measure_external_global_moves
 .false.                                                     measure_twist_relaxations
-56                                                          no_of_jobs
-392                                                         initial_job_index
+56                                                          no_of_runs
+392                                                         initial_run_index
 28                                                          max_no_of_cpus

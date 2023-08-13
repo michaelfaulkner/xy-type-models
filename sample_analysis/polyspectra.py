@@ -12,7 +12,7 @@ import statistics
 
 
 def get_power_spectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                       no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                       no_of_sites_string, external_global_moves_string, no_of_runs, pool,
                        no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_X(f) := lim_{T -> inf} {E[| \Delta \tilde{X}_T(f) | ** 2] / T} (with a
@@ -51,7 +51,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -73,7 +73,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
         the power spectrum.  If N is even, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
-        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_runs is 1, a numpy
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
@@ -82,22 +82,22 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
                        f"{external_global_moves_string}_{no_of_sites_string}_temp_eq_{temperature:.4f}.npy")
     except IOError:
         # ...then if the file does not exists, compute the estimate of the spectrum
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             power_spectrum = get_single_observation_of_power_spectrum(algorithm_name, observable_string,
                                                                       output_directory, temperature, temperature_index,
                                                                       no_of_sites, no_of_equilibration_sweeps,
                                                                       thinning_level, sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            # append np.ones() to create the same shape array as for no_of_runs > 1 (where errors are the 3rd element)
             power_spectrum = np.concatenate([power_spectrum.flatten(),
                                              np.ones(len(power_spectrum[0]))]).reshape((3, -1))
         else:
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
+            # no_of_runs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation...
             power_spectra = pool.starmap(get_single_observation_of_power_spectrum,
                                          [(algorithm_name, observable_string,
-                                           f"{output_directory}/job_{job_number}", temperature, temperature_index,
+                                           f"{output_directory}/run_{run_number}", temperature, temperature_index,
                                            no_of_sites, no_of_equilibration_sweeps, thinning_level)
-                                          for job_number in range(no_of_jobs)])
+                                          for run_number in range(no_of_runs)])
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             power_spectrum = get_power_spectrum_means_and_std_errors(power_spectra)
         # finally, save the estimated spectrum to file
@@ -107,7 +107,7 @@ def get_power_spectrum(algorithm_name, observable_string, output_directory, temp
 
 
 def get_second_spectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                        no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                        no_of_sites, no_of_sites_string, external_global_moves_string, no_of_runs, pool,
                         no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the second spectrum (minus its Gaussian contribution)
@@ -149,7 +149,7 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -171,18 +171,18 @@ def get_second_spectrum(algorithm_name, observable_string, output_directory, tem
         standard errors of the second spectrum.  If N is even, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
-        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_runs is 1, a numpy
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     return get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
                                             temperature_index, no_of_sites, no_of_sites_string,
-                                            external_global_moves_string, no_of_jobs, pool, 0,
+                                            external_global_moves_string, no_of_runs, pool, 0,
                                             no_of_equilibration_sweeps, thinning_level, sampling_frequency)
 
 
 def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_directory, temperature,
                                      temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
-                                     no_of_jobs, pool, time_period_shift=10, no_of_equilibration_sweeps=None,
+                                     no_of_runs, pool, time_period_shift=10, no_of_equilibration_sweeps=None,
                                      thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the power spectrum S_Y(f, s) := lim_{T -> inf} {E[| \Delta \tilde{Y}_T(f, s) | ** 2] / T}
@@ -222,7 +222,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -247,7 +247,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
         standard errors of the power spectrum of the correlator.  If N is even, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency spectrum is reduced to
         f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the power spectrum is symmetric
-        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_jobs is 1, a numpy
+        about f = 0 and its f = 0 value is invalid for a finite-time stationary signal.  If no_of_runs is 1, a numpy
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     try:
@@ -257,21 +257,21 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
                        f"_{temperature:.4f}_time_shift_eq_{time_period_shift}_delta_t.npy")
     except IOError:
         # ...then if the file does not exists, compute the estimate of the spectrum
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             correlator_power_spectrum = get_single_observation_of_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 time_period_shift, no_of_equilibration_sweeps, thinning_level, sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            # append np.ones() to create the same shape array as for no_of_runs > 1 (where errors are the 3rd element)
             correlator_power_spectrum = np.concatenate([correlator_power_spectrum.flatten(),
                                                         np.ones(len(correlator_power_spectrum[0]))]).reshape((3, -1))
         else:
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
+            # no_of_runs > 1, so use the multiprocessing pool to compute the estimate of the spectrum corresponding to
             # each repeated simulation...
             correlator_power_spectra = pool.starmap(
                 get_single_observation_of_power_spectrum_of_correlator,
-                [(algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
+                [(algorithm_name, observable_string, f"{output_directory}/run_{run_number}", temperature,
                   temperature_index, no_of_sites, time_period_shift, no_of_equilibration_sweeps, thinning_level)
-                 for job_number in range(no_of_jobs)])
+                 for run_number in range(no_of_runs)])
             # ...then compute the means and estimate the standard errors (wrt to the repeated simulations)
             correlator_power_spectrum = get_power_spectrum_means_and_std_errors(correlator_power_spectra)
         # finally, save the estimated spectrum to file
@@ -282,7 +282,7 @@ def get_power_spectrum_of_correlator(algorithm_name, observable_string, output_d
 
 
 def get_power_trispectrum(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                          no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                          no_of_sites, no_of_sites_string, external_global_moves_string, no_of_runs, pool,
                           no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                           no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
@@ -332,7 +332,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -364,7 +364,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
         component is a two-dimensional numpy array (of floats) of shape
         (no_of_auxiliary_frequency_octaves + 1, N / 2 - 1) [(no_of_auxiliary_frequency_octaves + 1, (N - 1) / 2)] for N
         even [odd].  The nth sub-array of the third / fourth component is the trispectrum / trispectrum standard errors
-        at the auxiliary-frequency value given by the nth element of the first component.  If no_of_jobs is 1, a numpy
+        at the auxiliary-frequency value given by the nth element of the first component.  If no_of_runs is 1, a numpy
         array of 1.0 floats is returned (as padding) for the standard errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
@@ -384,22 +384,22 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
                 np.array([npz_file[f"arr_{index}"][2] for index in range(no_of_auxiliary_frequency_octaves + 1)])]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             power_trispectrum = get_single_observation_of_power_trispectrum(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 no_of_auxiliary_frequency_octaves, base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
                 sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
+            # append np.ones() to create the same shape array as for no_of_runs > 1 (where errors are the 4th element)
             power_trispectrum.append(np.ones(np.shape(power_trispectrum[2])))
         else:
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
+            # no_of_runs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
             # to each repeated simulation...
             power_trispectra = pool.starmap(get_single_observation_of_power_trispectrum,
                                             [(algorithm_name, observable_string,
-                                              f"{output_directory}/job_{job_number}", temperature,
+                                              f"{output_directory}/run_{run_number}", temperature,
                                               temperature_index, no_of_sites, no_of_auxiliary_frequency_octaves,
                                               base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
-                                              sampling_frequency) for job_number in range(no_of_jobs)])
+                                              sampling_frequency) for run_number in range(no_of_runs)])
             # ...then extract the frequencies and spectra...
             auxiliary_frequencies = np.mean([simulation[0] for simulation in power_trispectra], axis=0)
             frequencies = np.mean(np.array([simulation[1] for simulation in power_trispectra]), axis=0)
@@ -421,7 +421,7 @@ def get_power_trispectrum(algorithm_name, observable_string, output_directory, t
 
 
 def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_directory, temperature, temperature_index,
-                                    no_of_sites, no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                                    no_of_sites, no_of_sites_string, external_global_moves_string, no_of_runs, pool,
                                     no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                     no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
@@ -464,7 +464,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -492,7 +492,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
         spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N / 2 - 1) / (N \Delta t)}; if N is odd, the frequency
         spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because the
         correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
-        stationary signal.  If no_of_jobs is 1, a numpy array of 1.0 floats is returned (as padding) for the standard
+        stationary signal.  If no_of_runs is 1, a numpy array of 1.0 floats is returned (as padding) for the standard
         errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
@@ -505,24 +505,24 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
                        f"{base_time_period_shift}_delta_t.npy")
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum zero mode
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             power_trispectrum_zero_mode = get_single_observation_of_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 no_of_auxiliary_frequency_octaves, base_time_period_shift, no_of_equilibration_sweeps, thinning_level,
                 sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 3rd element)
+            # append np.ones() to create the same shape array as for no_of_runs > 1 (where errors are the 3rd element)
             power_trispectrum_zero_mode = np.concatenate(
                 [power_trispectrum_zero_mode.flatten(), np.ones(len(power_trispectrum_zero_mode[0]))]).reshape((3, -1))
         else:
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum zero mode
+            # no_of_runs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum zero mode
             # corresponding to each repeated simulation...
             power_trispectra_zero_modes = pool.starmap(get_single_observation_of_power_trispectrum_zero_mode,
                                                        [(algorithm_name, observable_string,
-                                                         f"{output_directory}/job_{job_number}",
+                                                         f"{output_directory}/run_{run_number}",
                                                          temperature, temperature_index, no_of_sites,
                                                          no_of_auxiliary_frequency_octaves, base_time_period_shift,
                                                          no_of_equilibration_sweeps, thinning_level, sampling_frequency)
-                                                        for job_number in range(no_of_jobs)])
+                                                        for run_number in range(no_of_runs)])
             # ...then extract the frequencies and spectra...
             frequencies = np.mean(np.array([simulation[0] for simulation in power_trispectra_zero_modes]), axis=0)
             trispectra_sans_frequencies = np.array([simulation[1] for simulation in power_trispectra_zero_modes])
@@ -540,7 +540,7 @@ def get_power_trispectrum_zero_mode(algorithm_name, observable_string, output_di
 
 def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output_directory, temperature,
                                        temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
-                                       no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                       no_of_runs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                        target_auxiliary_frequency=None, no_of_equilibration_sweeps=None,
                                        thinning_level=None, sampling_frequency=None):
     r"""
@@ -590,7 +590,7 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -623,7 +623,7 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         frequency spectrum is reduced to f_k \in {1 / (N \Delta t), ..., (N - 1) / 2 / (N \Delta t)}.  This is because
         the correlator power spectra are symmetric about f = 0 and their f = 0 values are invalid for a finite-time
         stationary signal.  The third / fourth component is the trispectrum / trispectrum standard errors at the
-        auxiliary-frequency value given by the first component.  If no_of_jobs is 1, a numpy array of 1.0 floats is
+        auxiliary-frequency value given by the first component.  If no_of_runs is 1, a numpy array of 1.0 floats is
         returned (as padding) for the standard errors.
     """
     if no_of_auxiliary_frequency_octaves <= 0:
@@ -642,22 +642,22 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
         return [auxiliary_frequency, frequencies, spectrum, errors]
     except IOError:
         # ...then if the files do not exist, compute the estimate of the nonzero mode of the trispectrum
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             power_trispectrum_nonzero_mode = get_single_observation_of_power_trispectrum_nonzero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
                 no_of_auxiliary_frequency_octaves, base_time_period_shift, target_auxiliary_frequency,
                 no_of_equilibration_sweeps, thinning_level, sampling_frequency)
-            # append np.ones() to create the same shape array as for no_of_jobs > 1 (where errors are the 4th element)
+            # append np.ones() to create the same shape array as for no_of_runs > 1 (where errors are the 4th element)
             power_trispectrum_nonzero_mode.append(np.ones(np.shape(power_trispectrum_nonzero_mode[2])))
         else:
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
+            # no_of_runs > 1, so use the multiprocessing pool to compute the estimate of the trispectrum corresponding
             # to each repeated simulation...
             power_trispectra_nonzero_mode = pool.starmap(
                 get_single_observation_of_power_trispectrum_nonzero_mode,
-                [(algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
+                [(algorithm_name, observable_string, f"{output_directory}/run_{run_number}", temperature,
                   temperature_index, no_of_sites, no_of_auxiliary_frequency_octaves, base_time_period_shift,
                   target_auxiliary_frequency, no_of_equilibration_sweeps, thinning_level, sampling_frequency)
-                 for job_number in range(no_of_jobs)])
+                 for run_number in range(no_of_runs)])
             # ...then extract the frequencies and spectra...
             auxiliary_frequency = statistics.mean([simulation[0] for simulation in power_trispectra_nonzero_mode])
             frequencies = np.mean(np.array([simulation[1] for simulation in power_trispectra_nonzero_mode]), axis=0)
@@ -681,7 +681,7 @@ def get_power_trispectrum_nonzero_mode(algorithm_name, observable_string, output
 
 def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_directory, temperature,
                                      temperature_index, no_of_sites, no_of_sites_string, external_global_moves_string,
-                                     no_of_jobs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
+                                     no_of_runs, pool, no_of_auxiliary_frequency_octaves=6, base_time_period_shift=1,
                                      no_of_equilibration_sweeps=None, thinning_level=None, sampling_frequency=None):
     r"""
     Returns an estimate of the complex norm (as defined) of the power trispectrum
@@ -730,7 +730,7 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
         The string describing the number of lattice sites.
     external_global_moves_string : str
         A string that describes whether or not global topological-sector or twist moves were employed in Markov process.
-    no_of_jobs : int
+    no_of_runs : int
         The number of repeated simulations.
     pool : multiprocessing.Pool() or None
         The multiprocessing pool (for multiple repeated simulations) or None (for a single simulation).
@@ -782,7 +782,7 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                 np.array([npz_file[f"arr_{index}"][1] for index in range(no_of_auxiliary_frequency_octaves + 1)])]
     except IOError:
         # ...then if the file does not exists, compute the estimate of the trispectrum
-        if no_of_jobs == 1:
+        if no_of_runs == 1:
             sampling_frequency = get_sampling_frequency(algorithm_name, output_directory, sampling_frequency,
                                                         temperature_index)
             power_spectra_of_correlators = get_power_spectra_of_trispectrum_correlators(
@@ -790,14 +790,14 @@ def get_power_trispectrum_as_defined(algorithm_name, observable_string, output_d
                 base_time_period_shift, no_of_auxiliary_frequency_octaves, no_of_equilibration_sweeps, thinning_level,
                 sampling_frequency)
         else:
-            sampling_frequency = get_sampling_frequency(algorithm_name, f"{output_directory}/job_1", sampling_frequency,
+            sampling_frequency = get_sampling_frequency(algorithm_name, f"{output_directory}/run_1", sampling_frequency,
                                                         temperature_index)
-            # no_of_jobs > 1, so use the multiprocessing pool to compute the set of estimates of the spectra of the
+            # no_of_runs > 1, so use the multiprocessing pool to compute the set of estimates of the spectra of the
             # correlators corresponding to each repeated simulation...
             power_spectra_of_correlators = pool.starmap(get_power_spectra_of_trispectrum_correlators, [
-                (algorithm_name, observable_string, f"{output_directory}/job_{job_number}", temperature,
+                (algorithm_name, observable_string, f"{output_directory}/run_{run_number}", temperature,
                  temperature_index, no_of_sites, base_time_period_shift, no_of_auxiliary_frequency_octaves,
-                 no_of_equilibration_sweeps, thinning_level, sampling_frequency) for job_number in range(no_of_jobs)])
+                 no_of_equilibration_sweeps, thinning_level, sampling_frequency) for run_number in range(no_of_runs)])
             # ...then average over the set
             power_spectra_of_correlators = np.mean(np.array(power_spectra_of_correlators, dtype=object), axis=0)
         transposed_power_spectra = power_spectra_of_correlators[:, 1].transpose()

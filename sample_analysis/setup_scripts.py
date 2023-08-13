@@ -93,18 +93,18 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
 def setup_polyspectra_script(config_file, observable_string):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
-     external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
+     external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
     check_for_observable_error(algorithm_name, observable_string)
-    check_initial_job_index(initial_job_index)
+    check_initial_run_index(initial_run_index)
     return (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-            external_global_moves_string, no_of_jobs, setup_pool(no_of_jobs, max_no_of_cpus))
+            external_global_moves_string, no_of_runs, setup_pool(no_of_runs, max_no_of_cpus))
 
 
-def setup_pool(no_of_jobs, max_no_of_cpus):
-    if no_of_jobs < 1:
-        raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
-    elif no_of_jobs == 1:
+def setup_pool(no_of_runs, max_no_of_cpus):
+    if no_of_runs < 1:
+        raise Exception("ConfigurationError: For the value of no_of_runs, give an integer not less than one.")
+    elif no_of_runs == 1:
         print("Running a single sample-analysis process.")
         pool = None
     else:
@@ -113,12 +113,12 @@ def setup_pool(no_of_jobs, max_no_of_cpus):
             no_of_cpus = max_no_of_cpus
         else:
             no_of_cpus = no_of_available_cpus
-        if no_of_jobs < no_of_cpus:
-            print(f"Running {no_of_jobs} sample-analysis processes in parallel on {no_of_jobs} CPUs, "
+        if no_of_runs < no_of_cpus:
+            print(f"Running {no_of_runs} sample-analysis processes in parallel on {no_of_runs} CPUs, "
                   f"where {no_of_available_cpus} CPUs are available.")
-            pool = mp.Pool(no_of_jobs)
+            pool = mp.Pool(no_of_runs)
         else:
-            print(f"Running {no_of_jobs} sample-analysis processes in parallel on {no_of_cpus} CPUs, where "
+            print(f"Running {no_of_runs} sample-analysis processes in parallel on {no_of_cpus} CPUs, where "
                   f"{no_of_available_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
     return pool
@@ -143,7 +143,7 @@ def reverse_enumerate(iterable_object):
             enumerate(list(reversed(iterable_object)))]
 
 
-def check_initial_job_index(initial_job_index):
-    if initial_job_index != 0:
-        warnings.warn("Warning: The value of initial_job_index is not equal to zero.  Configuration files of this type "
+def check_initial_run_index(initial_run_index):
+    if initial_run_index != 0:
+        warnings.warn("Warning: The value of initial_run_index is not equal to zero.  Configuration files of this type "
                       "are designed for running Fortran code only.")

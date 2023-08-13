@@ -6,27 +6,27 @@ import numpy as np
 
 
 def get_cvm_mag_phase_vs_temperature(algorithm_name, output_directory, sample_directory, no_of_equilibration_sweeps,
-                                     no_of_observations, temperatures, external_global_moves_string, no_of_jobs, pool,
+                                     no_of_observations, temperatures, external_global_moves_string, no_of_runs, pool,
                                      length):
     try:
         with open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}"
                   f"_{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
-                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "r") as output_file:
+                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_runs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             cvms, cvm_errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
         cvm_file = open(f"{output_directory}/magnetisation_phase_cramervonmises_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
-                        f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_jobs}_jobs.tsv", "w")
+                        f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_runs.tsv", "w")
         cvm_file.write("# temperature".ljust(30) + "n omega_n^2".ljust(30) + "n omega_n^2 error" + "\n")
         cvms, cvm_errors = [], []
         for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
-            cvm_vs_job = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
-                (f"{sample_directory}/job_{job_index}", temperature, temperature_index, length ** 2,
-                 no_of_equilibration_sweeps) for job_index in range(no_of_jobs)])
-            cvm, cvm_error = np.mean(cvm_vs_job), np.std(cvm_vs_job) / len(cvm_vs_job) ** 0.5
+            cvm_vs_run = pool.starmap(get_cramervonmises_of_magnetisation_phase, [
+                (f"{sample_directory}/run_{run_index}", temperature, temperature_index, length ** 2,
+                 no_of_equilibration_sweeps) for run_index in range(no_of_runs)])
+            cvm, cvm_error = np.mean(cvm_vs_run), np.std(cvm_vs_run) / len(cvm_vs_run) ** 0.5
             cvms.append(cvm), cvm_errors.append(cvm_error)
             cvm_file.write(f"{temperature:.14e}".ljust(30) + f"{cvm:.14e}".ljust(30) + f"{cvm_error:.14e}" + "\n")
         cvm_file.close()

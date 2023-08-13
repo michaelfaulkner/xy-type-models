@@ -81,13 +81,13 @@ starts with `'output/`, i.e., the entire value is of the form `'output/rest_of_s
 relative location of the output directory on our cluster machine). For the value of `output_directory`, i) refrain from 
 giving long strings, as this can lead to Fortran runtime errors, and ii) ensure three tabbed spaces between the value 
 of `output_directory` and the word `output_directory` itself, as this avoids Fortran errors when performing multiple 
-runs of the same simulation (the number of runs is set by the value of `no_of_jobs`). 
+runs of the same simulation (the number of runs is set by the value of `no_of_runs`). 
 
 The minimum / maximum value of `no_of_temperature_increments` is 0 / 99. 
 
-The values of `no_of_jobs` and `max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, we 
+The values of `no_of_runs` and `max_no_of_cpus` must be positive integers. For the value of `max_no_of_cpus`, we 
 recommend giving half the number of CPUs available on your personal machine, e.g., for a four-core machine with two 
-threads per core, we set `max_no_of_cpus = 4`; if `no_of_jobs = 8`, xy-type-models will perform two sets of four 
+threads per core, we set `max_no_of_cpus = 4`; if `no_of_runs = 8`, xy-type-models will perform two sets of four 
 parallel runs of the same simulation, and similarly for certain sample-analysis processes.  
 
 In the case of the 
@@ -99,7 +99,7 @@ the configuration file with no suffix must be used for the sample analysis.  For
 config_files/cvm_figs) configuration-file directory, `64x64_metrop_low_temps_a.txt`, `64x64_metrop_low_temps_b.txt`, 
 `64x64_metrop_low_temps_c.txt`, `64x64_metrop_low_temps_d.txt` and `64x64_metrop_low_temps_e.txt` are the five 
 Markov-process configuration files that generate the samples for `64x64_metrop_low_temps.txt`.  This allows us to 
-submit five separate Markov-process jobs to the cluster, thus optimising simulation time and ensuring larger system 
+submit five separate Markov-process runs to the cluster, thus optimising simulation time and ensuring larger system 
 sizes fall within the time limit. 
 
 ### hxy-ecmc configuration file (an example)
@@ -121,8 +121,8 @@ sizes fall within the time limit.
 .false.                                     measure_potential
 .false.                                     measure_potential_minimising_twists
 .false.                                     measure_external_global_moves
-1                                           no_of_jobs
-0                                           initial_job_index
+1                                           no_of_runs
+0                                           initial_run_index
 1                                           max_no_of_cpus
 ```
 
@@ -147,8 +147,8 @@ sizes fall within the time limit.
 .false.                                                         measure_potential
 .false.                                                         measure_potential_minimising_twists
 .false.                                                         measure_external_global_moves
-1                                                               no_of_jobs
-0                                                               initial_job_index
+1                                                               no_of_runs
+0                                                               initial_run_index
 1                                                               max_no_of_cpus
 ```
 
@@ -173,8 +173,8 @@ sizes fall within the time limit.
 .false.                                                             measure_potential
 .false.                                                             measure_potential_minimising_twists
 .false.                                                             measure_external_global_moves
-1                                                                   no_of_jobs
-0                                                                   initial_job_index
+1                                                                   no_of_runs
+0                                                                   initial_run_index
 1                                                                   max_no_of_cpus
 ```
 
@@ -197,8 +197,8 @@ sizes fall within the time limit.
 .false.                                     measure_potential_minimising_twists
 .false.                                     measure_external_global_moves
 .false.                                     measure_twist_relaxations
-1                                           no_of_jobs
-0                                           initial_job_index
+1                                           no_of_runs
+0                                           initial_run_index
 1                                           max_no_of_cpus
 ```
 
@@ -223,8 +223,8 @@ sizes fall within the time limit.
 .false.                                                         measure_potential_minimising_twists
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
-1                                                               no_of_jobs
-0                                                               initial_job_index
+1                                                               no_of_runs
+0                                                               initial_run_index
 1                                                               max_no_of_cpus
 ```
 
@@ -249,8 +249,8 @@ sizes fall within the time limit.
 .false.                                                         measure_potential_minimising_twists
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
-1                                                               no_of_jobs
-0                                                               initial_job_index
+1                                                               no_of_runs
+0                                                               initial_run_index
 1                                                               max_no_of_cpus
 ```
 
@@ -272,8 +272,8 @@ sizes fall within the time limit.
 .false.                                                     measure_electric_field_sum
 .true.                                                      measure_potential
 .false.                                                     measure_external_global_moves
-1                                                           no_of_jobs
-0                                                           initial_job_index
+1                                                           no_of_runs
+0                                                           initial_run_index
 1                                                           max_no_of_cpus
 ```
 
@@ -295,8 +295,8 @@ sizes fall within the time limit.
 .false.                                                     measure_electric_field_sum
 .true.                                                      measure_potential
 .false.                                                     measure_external_global_moves
-1                                                           no_of_jobs
-0                                                           initial_job_index
+1                                                           no_of_runs
+0                                                           initial_run_index
 1                                                           max_no_of_cpus
 ```
 
@@ -317,8 +317,8 @@ sizes fall within the time limit.
 .false.                                 use_external_global_moves
 .true.                                  measure_magnetisation
 .false.                                 measure_potential
-1                                       no_of_jobs
-0                                       initial_job_index
+1                                       no_of_runs
+0                                       initial_run_index
 1                                       max_no_of_cpus
 ```
 

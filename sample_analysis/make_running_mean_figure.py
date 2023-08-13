@@ -21,7 +21,7 @@ def main(observable_string="rotated_magnetisation_phase"):
     config_file_2d = "config_files/running_mean_figure/2dxy.txt"
     config_file_3d = "config_files/running_mean_figure/3dxy.txt"
     (algorithm_name_2d, sample_directory_2d, no_of_sites_2d, no_of_sites_string_2d, no_of_equilibration_sweeps_2d, _,
-     temperatures_2d, _, external_global_moves_string_2d, no_of_jobs, _, _) = run_script.get_config_data(config_file_2d)
+     temperatures_2d, _, external_global_moves_string_2d, no_of_runs, _, _) = run_script.get_config_data(config_file_2d)
     (algorithm_name_3d, sample_directory_3d, no_of_sites_3d, no_of_sites_string_3d, no_of_equilibration_sweeps_3d, _,
      temperatures_3d, _, external_global_moves_string_3d, _, _, _) = run_script.get_config_data(config_file_3d)
     output_directory = sample_directory_2d.replace("/2dxy", "")
@@ -53,22 +53,22 @@ def main(observable_string="rotated_magnetisation_phase"):
                 delimiter=",")
         except IOError:
             physical_time_step_2d = sum([
-                get_physical_time_step(algorithm_name_2d, f"{sample_directory_2d}/job_{job_index}", temperature_index)
-                for job_index in range(no_of_jobs)]) / no_of_jobs
+                get_physical_time_step(algorithm_name_2d, f"{sample_directory_2d}/run_{run_index}", temperature_index)
+                for run_index in range(no_of_runs)]) / no_of_runs
             np.savetxt(f"{output_directory}/physical_time_step_{algorithm_name_2d.replace('-', '_')}_"
                        f"{external_global_moves_string_2d}_{no_of_sites_string_2d}_temp_eq_{temperature:.4f}.csv",
                        np.atleast_1d(physical_time_step_2d), delimiter=",")
 
-        for job_index in range(no_of_jobs):
+        for run_index in range(no_of_runs):
             try:
                 # first, attempt to open file containing the sample, running mean and running variance...
                 sample_2d, running_mean_2d, running_variance_2d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                     f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_{no_of_sites_string_2d}_"
-                    f"temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    f"temp_eq_{temperature:.4f}_run_{run_index}.npy")
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
-                sample_2d = get_sample_method(f"{sample_directory_2d}/job_{job_index}", temperature, temperature_index,
+                sample_2d = get_sample_method(f"{sample_directory_2d}/run_{run_index}", temperature, temperature_index,
                                               no_of_sites_2d, no_of_equilibration_sweeps_2d)
                 if not sample_is_one_dimensional:
                     sample_2d = sample_2d.transpose()[0]
@@ -77,7 +77,7 @@ def main(observable_string="rotated_magnetisation_phase"):
                                                 range(len(sample_2d))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_2d.replace('-', '_')}_{external_global_moves_string_2d}_"
-                        f"{no_of_sites_string_2d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        f"{no_of_sites_string_2d}_temp_eq_{temperature:.4f}_run_{run_index}.npy",
                         np.array([sample_2d, running_mean_2d, running_variance_2d]))
 
             """Previous versions converted MC time to physical time, using the following commented-out code.  I then 
@@ -87,26 +87,26 @@ def main(observable_string="rotated_magnetisation_phase"):
             finding the optimal temperatures to compares physical time across all fours phases that encompass the 2D 
             and 3D systems."""
 
-            '''if temperature_index == 0 and job_index == 0:
+            '''if temperature_index == 0 and run_index == 0:
                 max_total_physical_time = physical_time_step_2d * (len(sample_2d) - 1)
             reduced_running_variance_2d = running_variance_2d[:int(max_total_physical_time / physical_time_step_2d) + 1]
             reduced_running_mean_2d = (running_mean_2d[:int(max_total_physical_time / physical_time_step_2d) + 1] /
                                        reduced_running_variance_2d[-1])
-            if job_index == 0:
+            if run_index == 0:
                 axes[0].plot(np.arange(len(reduced_running_mean_2d)) * physical_time_step_2d, reduced_running_mean_2d,
-                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[run_index],
                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
                 axes[0].plot(np.arange(len(reduced_running_mean_2d)) * physical_time_step_2d, reduced_running_mean_2d,
-                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])'''
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[run_index])'''
 
-            if job_index == 0:
+            if run_index == 0:
                 axes[0].plot(np.arange(len(running_mean_2d)), running_mean_2d / running_variance_2d[-1],
-                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[job_index],
+                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[run_index],
                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
                 axes[0].plot(np.arange(len(running_mean_2d)), running_mean_2d / running_variance_2d[-1],
-                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[job_index])
+                             color=colors[temperature_index],  linewidth=2, linestyle=linestyles[run_index])
 
     for temperature_index, temperature in enumerate(temperatures_3d):
         observable_string = "rotated_magnetisation_phase"
@@ -119,23 +119,23 @@ def main(observable_string="rotated_magnetisation_phase"):
                 delimiter=",")
         except IOError:
             physical_time_step_3d = sum([
-                get_physical_time_step(algorithm_name_3d, f"{sample_directory_3d}/job_{job_index}", temperature_index)
-                for job_index in range(no_of_jobs)]) / no_of_jobs
+                get_physical_time_step(algorithm_name_3d, f"{sample_directory_3d}/run_{run_index}", temperature_index)
+                for run_index in range(no_of_runs)]) / no_of_runs
             np.savetxt(
                 f"{output_directory}/physical_time_step_{algorithm_name_3d.replace('-', '_')}_"
                 f"{external_global_moves_string_3d}_{no_of_sites_string_3d}_temp_eq_{temperature:.4f}.csv",
                 np.atleast_1d(physical_time_step_3d), delimiter=",")
 
-        for job_index in range(no_of_jobs):
+        for run_index in range(no_of_runs):
             try:
                 # first, attempt to open file containing the sample, running mean and running variance...
                 sample_3d, running_mean_3d, running_variance_3d = np.load(
                     f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                     f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                    f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy")
+                    f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_run_{run_index}.npy")
             except IOError:
                 # ...then compute the sample, running mean and running variance if the file does not exist
-                sample_3d = get_sample_method(f"{sample_directory_3d}/job_{job_index}", temperature, temperature_index,
+                sample_3d = get_sample_method(f"{sample_directory_3d}/run_{run_index}", temperature, temperature_index,
                                               no_of_sites_3d, no_of_equilibration_sweeps_3d)
                 if not sample_is_one_dimensional:
                     sample_3d = sample_3d.transpose()[0]
@@ -144,16 +144,16 @@ def main(observable_string="rotated_magnetisation_phase"):
                                                 range(len(sample_3d))])
                 np.save(f"{output_directory}/{observable_string}_sample_and_running_mean_and_variance_"
                         f"{algorithm_name_3d.replace('-', '_')}_{external_global_moves_string_3d}_"
-                        f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_job_{job_index}.npy",
+                        f"{no_of_sites_string_3d}_temp_eq_{temperature:.4f}_run_{run_index}.npy",
                         np.array([sample_3d, running_mean_3d, running_variance_3d]))
 
-            if job_index == 0:
+            if run_index == 0:
                 axes[1].plot(np.arange(len(running_mean_3d)), running_mean_3d / running_variance_3d[-1],
-                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index],
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[run_index],
                              label=fr"$1 / (\beta J)$ = {temperature:.2f}")
             else:
                 axes[1].plot(np.arange(len(running_mean_3d)), running_mean_3d / running_variance_3d[-1],
-                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[job_index])
+                             color=colors[temperature_index], linewidth=2, linestyle=linestyles[run_index])
 
     figure.tight_layout()
     legends = [axes[0].legend(loc="upper left", fontsize=12),

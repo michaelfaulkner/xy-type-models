@@ -13,6 +13,6 @@ output/prb_91_155412_fig_2/local_moves'         output_directory
 .true.                                          measure_electric_field_sum
 .false.                                         measure_potential
 .false.                                         measure_external_global_moves
-16                                              no_of_jobs
-0                                               initial_job_index
+16                                              no_of_runs
+0                                               initial_run_index
 4                                               max_no_of_cpus

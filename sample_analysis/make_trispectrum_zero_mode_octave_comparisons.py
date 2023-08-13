@@ -8,7 +8,7 @@ import time
 
 def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispectrum_base_period_shift=1):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
+     external_global_moves_string, no_of_runs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     start_time = time.time()
     for temperature_index, temperature in reverse_enumerate(temperatures):
@@ -25,7 +25,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             current_color = next(colors)
             power_trispectrum_zero_mode = get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, external_global_moves_string, no_of_jobs, pool, no_of_trispectrum_octaves,
+                no_of_sites_string, external_global_moves_string, no_of_runs, pool, no_of_trispectrum_octaves,
                 trispectrum_base_period_shift, no_of_equilibration_sweeps)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
@@ -37,7 +37,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
             current_color = next(colors)
             power_trispectrum_zero_mode = get_power_trispectrum_zero_mode(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+                no_of_sites_string, external_global_moves_string, no_of_runs, pool,
                 no_of_trispectrum_octaves, trispectrum_base_period_shift, no_of_equilibration_sweeps)
             # normalise power trispectrum with respect to its low-frequency values
             power_trispectrum_zero_mode[1] /= power_trispectrum_zero_mode[1, 0]
@@ -56,7 +56,7 @@ def main(config_file, observable_string, max_no_of_trispectrum_octaves=8, trispe
         figure.clf()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
-    if no_of_jobs > 1:
+    if no_of_runs > 1:
         pool.close()
 
 

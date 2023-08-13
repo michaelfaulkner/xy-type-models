@@ -13,7 +13,7 @@ import warnings
 def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_octaves=6,
          trispectrum_base_period_shift=1, target_auxiliary_frequency=None):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
+     external_global_moves_string, no_of_runs, pool) = setup_polyspectra_script(config_file, observable_string)
 
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(temperatures) + 1)))
     figure, axes = plt.subplots(3, figsize=(10, 10))
@@ -30,14 +30,14 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         current_color = next(colors)
         power_spectrum = get_power_spectrum(algorithm_name, observable_string, output_directory, temperature,
                                             temperature_index, no_of_sites, no_of_sites_string,
-                                            external_global_moves_string, no_of_jobs, pool, no_of_equilibration_sweeps)
+                                            external_global_moves_string, no_of_runs, pool, no_of_equilibration_sweeps)
         second_spectrum = get_second_spectrum(algorithm_name, observable_string, output_directory, temperature,
                                               temperature_index, no_of_sites, no_of_sites_string,
-                                              external_global_moves_string, no_of_jobs, pool,
+                                              external_global_moves_string, no_of_runs, pool,
                                               no_of_equilibration_sweeps)
         power_trispectrum = get_power_trispectrum_nonzero_mode(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, external_global_moves_string, no_of_jobs, pool,
+            no_of_sites_string, external_global_moves_string, no_of_runs, pool,
             no_of_trispectrum_auxiliary_frequency_octaves, trispectrum_base_period_shift, target_auxiliary_frequency,
             no_of_equilibration_sweeps)
 
@@ -65,7 +65,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         final_frequency = 1.0e-2
         (lorentzian_model_parameters, lorentzian_model_errors, lorentzian_model_frequency_values,
          lorentzian_model_spectrum_values) = fit_lorentzian_model_to_spectrum(power_spectrum, final_frequency,
-                                                                              no_of_jobs)
+                                                                              no_of_runs)
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color,
                        label=fr"temperature = {temperature:.4f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
@@ -77,7 +77,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         final_frequency = 1.0e-2
         (lorentzian_model_parameters, lorentzian_model_errors, lorentzian_model_frequency_values,
          lorentzian_model_spectrum_values) = fit_lorentzian_model_to_spectrum(second_spectrum, final_frequency,
-                                                                              no_of_jobs)
+                                                                              no_of_runs)
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
                        color=current_color,
                        label=fr"temperature = {temperature:.4f}; $f_c$ = {lorentzian_model_parameters[1]:.2e} $\pm$ "
@@ -88,7 +88,7 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
         """fit 1/f model to trispectrum"""
         (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
          one_over_f_model_spectrum_values) = fit_one_over_f_model_to_trispectrum(power_trispectrum, "upper", 10.0,
-                                                                                 no_of_sites, no_of_jobs)
+                                                                                 no_of_sites, no_of_runs)
         axes[2].loglog(power_trispectrum[1][:max_power_trispectrum_index],
                        power_trispectrum[2][:max_power_trispectrum_index], color=current_color,
                        label=fr"temperature = {temperature:.4f}; f' = {power_trispectrum[0]:.2e}; "
@@ -116,11 +116,11 @@ def main(config_file, observable_string, no_of_trispectrum_auxiliary_frequency_o
                    f"{external_global_moves_string}_{no_of_sites_string}_max_trispectrum_shift_eq_"
                    f"{2 ** no_of_trispectrum_auxiliary_frequency_octaves}_x_{trispectrum_base_period_shift}_"
                    f"delta_t.pdf", bbox_inches="tight")
-    if no_of_jobs > 1:
+    if no_of_runs > 1:
         pool.close()
 
 
-def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_jobs):
+def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_runs):
     initial_frequency = spectrum[0, 0]
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10))
     final_frequency_index = np.argmax(spectrum[0] > final_frequency) - 1
@@ -128,7 +128,7 @@ def fit_lorentzian_model_to_spectrum(spectrum, final_frequency, no_of_jobs):
         warnings.simplefilter("error", OptimizeWarning)
         try:
             # attempt to fit a Lorentzian to the spectrum...
-            if no_of_jobs > 1:
+            if no_of_runs > 1:
                 parameter_values_and_errors = curve_fit(lorentzian_model, spectrum[0, :final_frequency_index],
                                                         spectrum[1, :final_frequency_index],
                                                         sigma=spectrum[2, :final_frequency_index],
@@ -155,7 +155,7 @@ def lorentzian_model(frequencies, zero_frequency_value, characteristic_frequency
 
 
 def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_model_exponent, no_of_sites,
-                                        no_of_jobs):
+                                        no_of_runs):
     """fit one-over-f model to power trispectrum"""
     if frequency_range == "lower":
         if no_of_sites >= 64 ** 2:
@@ -181,8 +181,8 @@ def fit_one_over_f_model_to_trispectrum(power_trispectrum, frequency_range, max_
         warnings.simplefilter("error", OptimizeWarning)
         try:
             # attempt to fit a f^{-alpha} model to the trispectrum...
-            if no_of_jobs > 32:
-                """n.b., no_of_jobs > 32 as we found worse results using trispectrum error bars for no_of_jobs = 8."""
+            if no_of_runs > 32:
+                """n.b., no_of_runs > 32 as we found worse results using trispectrum error bars for no_of_runs = 8."""
                 parameter_values_and_errors = curve_fit(
                     one_over_f_model, power_trispectrum[1][initial_frequency_index:final_frequency_index],
                     power_trispectrum[2][initial_frequency_index:final_frequency_index],

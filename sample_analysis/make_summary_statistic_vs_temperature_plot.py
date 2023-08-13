@@ -1,5 +1,5 @@
 from sample_getter import get_acceptance_rates, get_event_rate
-from setup_scripts import check_initial_job_index, check_for_observable_vs_model_error
+from setup_scripts import check_initial_run_index, check_for_observable_vs_model_error
 from markov_chain_diagnostics import get_sample_mean_and_error
 import importlib
 import matplotlib.pyplot as plt
@@ -19,10 +19,10 @@ run_script = importlib.import_module("run")
 
 def main(config_file, observable_string):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
-     external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus) = run_script.get_config_data(
+     external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
     check_for_observable_error(algorithm_name, observable_string)
-    check_initial_job_index(initial_job_index)
+    check_initial_run_index(initial_run_index)
 
     try:
         with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
@@ -34,10 +34,10 @@ def main(config_file, observable_string):
         output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
         if observable_string == "acceptance_rates":
-            if no_of_jobs == 1:
+            if no_of_runs == 1:
                 acceptance_rates = get_acceptance_rates(output_directory, 0)
             else:
-                acceptance_rates = get_acceptance_rates(output_directory + "/job_1", 0)
+                acceptance_rates = get_acceptance_rates(output_directory + "/run_1", 0)
             if len(acceptance_rates) == 2:
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "rotational acceptance rate" + "\n")
@@ -55,10 +55,10 @@ def main(config_file, observable_string):
                                   "acceptance rate (field rotations)".ljust(40) +
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
         elif observable_string == "event_rate":
-            if no_of_jobs == 1:
+            if no_of_runs == 1:
                 event_rate = get_event_rate(output_directory, 0)
             else:
-                event_rate = get_event_rate(output_directory + "/job_1", 0)
+                event_rate = get_event_rate(output_directory + "/run_1", 0)
             if len(event_rate) == 1:
                 output_file.write("# temperature".ljust(30) + "event rate (field rotations)" + "\n")
             else:
@@ -68,7 +68,7 @@ def main(config_file, observable_string):
             output_file.write("# temperature".ljust(30) + observable_string.ljust(35) + observable_string + " error" +
                               "\n")
 
-        if no_of_jobs > 1:
+        if no_of_runs > 1:
             no_of_cpus = mp.cpu_count()
             pool = mp.Pool(no_of_cpus)
         else:
@@ -81,12 +81,12 @@ def main(config_file, observable_string):
             print(f"Temperature = {temperature:.4f}")
             if observable_string == "acceptance_rates" or observable_string == "event_rate":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
-                if no_of_jobs == 1:
+                if no_of_runs == 1:
                     acceptance_rates_or_event_rate = get_sample_method(output_directory, temperature_index)
                 else:
                     acceptance_rates_or_event_rate = np.mean([
-                        get_sample_method(output_directory + "/job_" + str(job_number), temperature_index)
-                        for job_number in range(no_of_jobs)], axis=0)
+                        get_sample_method(output_directory + "/run_" + str(run_number), temperature_index)
+                        for run_number in range(no_of_runs)], axis=0)
                 if len(acceptance_rates_or_event_rate) == 1:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
                                       f"{acceptance_rates_or_event_rate[0]:.14e}" + "\n")
@@ -107,14 +107,14 @@ def main(config_file, observable_string):
                                       f"{acceptance_rates_or_event_rate[3]:.14e}" + "\n")
             else:
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
-                if no_of_jobs == 1:
+                if no_of_runs == 1:
                     sample_mean, sample_error = get_sample_mean_and_error(get_sample_method(
                         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
                 else:
                     sample_means_and_errors = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
-                        get_sample_method(output_directory + "/job_" + str(job_number), temperature, temperature_index,
+                        get_sample_method(output_directory + "/run_" + str(run_number), temperature, temperature_index,
                                           no_of_sites, no_of_equilibration_sweeps)]
-                        for job_number in range(no_of_jobs)])))
+                        for run_number in range(no_of_runs)])))
                     sample_mean = np.mean(sample_means_and_errors[0])
                     sample_error = np.linalg.norm(sample_means_and_errors[1])
                 output_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_mean:.14e}".ljust(35) +
@@ -123,7 +123,7 @@ def main(config_file, observable_string):
                 errors.append(sample_error)
 
         print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
-        if no_of_jobs > 1:
+        if no_of_runs > 1:
             pool.close()
         output_file.close()
 

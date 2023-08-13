@@ -29,12 +29,12 @@ def main(config_file_location):
     None
     """
     config_data = get_config_data(config_file_location)
-    algorithm_name, no_of_jobs, initial_job_index, max_no_of_cpus = (config_data[0], config_data[9], config_data[10],
+    algorithm_name, no_of_runs, initial_run_index, max_no_of_cpus = (config_data[0], config_data[9], config_data[10],
                                                                      config_data[11])
     executable_location = get_executable(algorithm_name)
-    if no_of_jobs < 1:
-        raise Exception("ConfigurationError: For the value of no_of_jobs, give an integer not less than one.")
-    elif no_of_jobs == 1:
+    if no_of_runs < 1:
+        raise Exception("ConfigurationError: For the value of no_of_runs, give an integer not less than one.")
+    elif no_of_runs == 1:
         print("Running a single Markov process.")
         random_seed = random.randint(100000000, 999999999)
         run_single_simulation(executable_location, random_seed, config_file_location)
@@ -44,29 +44,29 @@ def main(config_file_location):
             no_of_cpus = max_no_of_cpus
         else:
             no_of_cpus = no_of_available_cpus
-        if no_of_jobs < no_of_cpus:
-            print(f"Running {no_of_jobs} Markov processes in parallel on {no_of_jobs} CPUs, where",
+        if no_of_runs < no_of_cpus:
+            print(f"Running {no_of_runs} Markov processes in parallel on {no_of_runs} CPUs, where",
                   f"{no_of_available_cpus} CPUs are available.")
-            pool = mp.Pool(no_of_jobs)
+            pool = mp.Pool(no_of_runs)
         else:
-            print(f"Running {no_of_jobs} Markov processes in parallel on {no_of_cpus} CPUs, where "
+            print(f"Running {no_of_runs} Markov processes in parallel on {no_of_cpus} CPUs, where "
                   f"{no_of_available_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
         # create directory in which to store temporary copies of the parent config file
         os.system(f"mkdir -p {config_file_location.replace('.txt', '')}")
-        random_seeds = [random.randint(100000000, 999999999) for _ in range(no_of_jobs)]
-        config_file_copies = [config_file_location.replace(".txt", f"/job_{job_number + initial_job_index}.txt")
-                              for job_number in range(no_of_jobs)]
-        for job_number, config_file_copy in enumerate(config_file_copies):
+        random_seeds = [random.randint(100000000, 999999999) for _ in range(no_of_runs)]
+        config_file_copies = [config_file_location.replace(".txt", f"/run_{run_number + initial_run_index}.txt")
+                              for run_number in range(no_of_runs)]
+        for run_number, config_file_copy in enumerate(config_file_copies):
             # create temporary copies of parent config file
             os.system(f"cp {config_file_location} {config_file_copy}")
             for line in fileinput.input(config_file_copy, inplace=True):
                 if "output_directory" in line:
-                    print(line.replace("' ", f"/job_{job_number + initial_job_index}'"), end="")
+                    print(line.replace("' ", f"/run_{run_number + initial_run_index}'"), end="")
                 else:
                     print(line, end="")
-        pool.starmap(run_single_simulation, [(executable_location, random_seeds[job_number], config_file_copy)
-                                             for job_number, config_file_copy in enumerate(config_file_copies)])
+        pool.starmap(run_single_simulation, [(executable_location, random_seeds[run_number], config_file_copy)
+                                             for run_number, config_file_copy in enumerate(config_file_copies)])
         pool.close()
         # delete temporary copies of parent config file
         os.system(f"rm -r {config_file_location.replace('.txt', '')}")
@@ -129,15 +129,15 @@ def get_config_data(config_file_location):
                         external_global_moves_string = "sans_global_moves"
                     else:
                         external_global_moves_string = "sans_twists"
-            if 'no_of_jobs' in row[0]:
-                no_of_jobs = int(row[0].replace("no_of_jobs", "").replace(" ", ""))
-            if 'initial_job_index' in row[0]:
-                initial_job_index = int(row[0].replace("initial_job_index", "").replace(" ", ""))
+            if 'no_of_runs' in row[0]:
+                no_of_runs = int(row[0].replace("no_of_runs", "").replace(" ", ""))
+            if 'initial_run_index' in row[0]:
+                initial_run_index = int(row[0].replace("initial_run_index", "").replace(" ", ""))
             if 'max_no_of_cpus' in row[0]:
                 max_no_of_cpus = int(row[0].replace("max_no_of_cpus", "").replace(" ", ""))
     return (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
             no_of_observations, get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments),
-            use_external_global_moves, external_global_moves_string, no_of_jobs, initial_job_index, max_no_of_cpus)
+            use_external_global_moves, external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus)
 
 
 def get_temperatures(initial_temperature, final_temperature, no_of_temperature_increments):

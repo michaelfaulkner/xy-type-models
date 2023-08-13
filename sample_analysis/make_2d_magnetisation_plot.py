@@ -1,6 +1,6 @@
 from markov_chain_diagnostics import get_cumulative_distribution
 from sample_getter import get_cartesian_magnetisation, get_external_global_move, get_phase_in_polar_coordinates
-from setup_scripts import check_initial_job_index, setup_pool
+from setup_scripts import check_initial_run_index, setup_pool
 import importlib
 import math
 import matplotlib
@@ -21,37 +21,37 @@ run_script = importlib.import_module("run")
 def main(config_file, no_of_histogram_bins=100):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
-     temperatures, use_external_global_moves, external_global_moves_string, no_of_jobs, initial_job_index,
+     temperatures, use_external_global_moves, external_global_moves_string, no_of_runs, initial_run_index,
      max_no_of_cpus) = run_script.get_config_data(config_file)
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
         print("ConfigurationError: The configuration file corresponds to a Maggs-electrolyte model but this script "
               "requires the XY of HXY model.")
         raise SystemExit
-    check_initial_job_index(initial_job_index)
+    check_initial_run_index(initial_run_index)
 
     start_time = time.time()
-    if no_of_jobs == 1:
+    if no_of_runs == 1:
         make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
                    temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
-                   no_of_histogram_bins, job_index=None)
+                   no_of_histogram_bins, run_index=None)
     else:
-        pool = setup_pool(no_of_jobs, max_no_of_cpus)
+        pool = setup_pool(no_of_runs, max_no_of_cpus)
         pool.starmap(make_plots, [
             (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
              temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
-             no_of_histogram_bins, job_index) for job_index in range(no_of_jobs)])
+             no_of_histogram_bins, run_index) for run_index in range(no_of_runs)])
         pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
                temperatures, use_external_global_moves, external_global_moves_string, no_of_observations,
-               no_of_histogram_bins, job_index):
-    if job_index is None:
-        job_index = 0
+               no_of_histogram_bins, run_index):
+    if run_index is None:
+        run_index = 0
         sample_directory = output_directory
     else:
-        sample_directory = f"{output_directory}/job_{job_index}"
+        sample_directory = f"{output_directory}/run_{run_index}"
 
     for temperature_index, temperature in enumerate(temperatures):
         print(f"Temperature = {temperature:.4f}")
@@ -69,7 +69,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
         axes[1].hist(magnetisation_phase[:10000], bins=no_of_histogram_bins, density=True, color="red", edgecolor="k")
         figure.savefig(f"{output_directory}/magnetisation_evolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
-                       f"{temperature:.4f}_job_{job_index}_first_1e4_steps.pdf", bbox_inches="tight")
+                       f"{temperature:.4f}_run_{run_index}_first_1e4_steps.pdf", bbox_inches="tight")
         [axis.cla() for axis in axes]
 
         cartesian_magnetisation = cartesian_magnetisation[:, no_of_equilibration_sweeps:]
@@ -100,7 +100,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
                                  bins=no_of_histogram_bins, density=True, color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_evolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_"
-                                   f"eq_{temperature:.4f}_job_{job_index}_around_global_twist_at_time_step_{index}.pdf",
+                                   f"eq_{temperature:.4f}_run_{run_index}_around_global_twist_at_time_step_{index}.pdf",
                                    bbox_inches="tight")
 
                     [axis.cla() for axis in axes]
@@ -117,7 +117,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
                                  color="red", edgecolor="black")
                     figure.savefig(f"{output_directory}/magnetisation_evolution_{algorithm_name.replace('-', '_')}_"
                                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_"
-                                   f"eq_{temperature:.4f}_job_{job_index}_up_to_global_twist_at_time_step_{index}.pdf",
+                                   f"eq_{temperature:.4f}_run_{run_index}_up_to_global_twist_at_time_step_{index}.pdf",
                                    bbox_inches="tight")
                     [axis.cla() for axis in axes]
 
@@ -136,7 +136,7 @@ def make_plots(algorithm_name, output_directory, no_of_sites, no_of_sites_string
         cdf_axis.yaxis.set_major_formatter('{x:.1f}')
         figure.savefig(f"{output_directory}/magnetisation_evolution_{algorithm_name.replace('-', '_')}_"
                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
-                       f"{temperature:.4f}_job_{job_index}.pdf", bbox_inches="tight")
+                       f"{temperature:.4f}_run_{run_index}.pdf", bbox_inches="tight")
         figure.clear()
 
         plt.close()

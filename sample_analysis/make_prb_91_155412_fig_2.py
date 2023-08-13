@@ -47,16 +47,16 @@ def main(model):
         raise Exception("InterfaceError: If provided, the single positional argument must be electrolyte, hxy, xy or "
                         "xy_with_twist_relaxations.")
     (algorithm_name, output_directory_local_moves, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _,
-     temperatures, _, _, no_of_jobs, _, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
+     temperatures, _, _, no_of_runs, _, max_no_of_cpus) = run_script.get_config_data(config_file_local_moves)
     output_directory_all_moves = run_script.get_config_data(config_file_all_moves)[1]
 
     try:
-        get_acceptance_rates(f"{output_directory_local_moves}/job_0", 0)
+        get_acceptance_rates(f"{output_directory_local_moves}/run_0", 0)
     except OSError:
         raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_local_moves}' "
                         f"in the top directory.")
     try:
-        get_acceptance_rates(f"{output_directory_all_moves}/job_0", 0)
+        get_acceptance_rates(f"{output_directory_all_moves}/run_0", 0)
     except OSError:
         raise Exception(f"Local-move simulations have not been run - enter 'python run.py {config_file_all_moves}' in "
                         f"the top directory.")
@@ -113,11 +113,11 @@ def main(model):
                                 "acceptance rate (external global moves)" + "\n")
     for temperature_index, temperature in enumerate(temperatures):
         acceptance_rates_local_moves = np.mean(
-            [get_acceptance_rates(output_directory_local_moves + f"/job_{job_number}", temperature_index) for
-             job_number in range(no_of_jobs)], axis=0)
+            [get_acceptance_rates(output_directory_local_moves + f"/run_{run_number}", temperature_index) for
+             run_number in range(no_of_runs)], axis=0)
         acceptance_rates_all_moves = np.mean(
-            [get_acceptance_rates(output_directory_all_moves + f"/job_{job_number}", temperature_index) for
-             job_number in range(no_of_jobs)], axis=0)
+            [get_acceptance_rates(output_directory_all_moves + f"/run_{run_number}", temperature_index) for
+             run_number in range(no_of_runs)], axis=0)
         if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":
             accept_rates_file.write(f"{temperature:.14e}".ljust(30) +
                                     f"{acceptance_rates_local_moves[0]:.14e}".ljust(50) +
@@ -155,11 +155,11 @@ def main(model):
                 print(f"Temperature = {temperature:.4f}")
                 sample_means_and_errors_local_moves = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
                     get_sample_method(
-                        output_directory_local_moves + f"/job_{job_number}", temperature, temperature_index,
-                        no_of_sites, no_of_equilibration_sweeps)] for job_number in range(no_of_jobs)])))
+                        output_directory_local_moves + f"/run_{run_number}", temperature, temperature_index,
+                        no_of_sites, no_of_equilibration_sweeps)] for run_number in range(no_of_runs)])))
                 sample_means_and_errors_all_moves = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
-                    get_sample_method(output_directory_all_moves + f"/job_{job_number}", temperature, temperature_index,
-                                      no_of_sites, no_of_equilibration_sweeps)] for job_number in range(no_of_jobs)])))
+                    get_sample_method(output_directory_all_moves + f"/run_{run_number}", temperature, temperature_index,
+                                      no_of_sites, no_of_equilibration_sweeps)] for run_number in range(no_of_runs)])))
 
                 sample_mean_local_moves = np.mean(sample_means_and_errors_local_moves[0])
                 sample_error_local_moves = np.linalg.norm(sample_means_and_errors_local_moves[1])

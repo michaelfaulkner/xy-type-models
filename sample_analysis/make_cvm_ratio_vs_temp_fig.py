@@ -25,13 +25,13 @@ def main():
                                  linear_system_sizes]
 
     (algorithm_name_metrop, sample_directory_8x8_metrop_all, _, _, no_of_equilibration_sweeps_metrop,
-     no_of_observations_metrop, temperatures, _, external_global_moves_string_all, no_of_jobs_metrop, _,
+     no_of_observations_metrop, temperatures, _, external_global_moves_string_all, no_of_runs_metrop, _,
      max_no_of_cpus) = run_script.get_config_data(config_files_metrop[0])
     (_, sample_directory_8x8_metrop_local, _, _, _, _, _, _, external_global_moves_string_local, _, _, _
      ) = run_script.get_config_data(config_files_metrop_local[0])
     main_cvm_output_directory = sample_directory_8x8_metrop_all.replace("/8x8_metrop", "")
     cvm_ratio_output_directory = sample_directory_8x8_metrop_local.replace("/8x8_metrop_local", "")
-    pool = setup_pool(no_of_jobs_metrop, max_no_of_cpus)
+    pool = setup_pool(no_of_runs_metrop, max_no_of_cpus)
 
     figure, axis = plt.subplots(1)
     figure.tight_layout()
@@ -62,12 +62,12 @@ def main():
             cvm_metrop_alls, cvm_metrop_all_errors = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, main_cvm_output_directory,
                 f"{main_cvm_output_directory}/{length}x{length}_metrop", no_of_equilibration_sweeps_metrop,
-                no_of_observations_metrop, temperatures, external_global_moves_string_all, no_of_jobs_metrop, pool,
+                no_of_observations_metrop, temperatures, external_global_moves_string_all, no_of_runs_metrop, pool,
                 length)
             cvm_metrop_locals, cvm_metrop_local_errors = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, cvm_ratio_output_directory,
                 f"{cvm_ratio_output_directory}/{length}x{length}_metrop_local_moves", no_of_equilibration_sweeps_metrop,
-                no_of_observations_metrop, temperatures, external_global_moves_string_local, no_of_jobs_metrop, pool,
+                no_of_observations_metrop, temperatures, external_global_moves_string_local, no_of_runs_metrop, pool,
                 length)
             cvm_ratios = [cvm_metrop_alls[temperature_index] / cvm_metrop_locals[temperature_index]
                           for temperature_index in range(len(temperatures))]

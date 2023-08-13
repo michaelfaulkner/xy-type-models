@@ -16,11 +16,11 @@ run_script = importlib.import_module("run")
 
 def main(config_file):
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
-    (algorithm_name, output_directory, no_of_sites, _, no_of_equilibration_sweeps, _, temperatures, _, _, no_of_jobs,
-     initial_job_index, max_no_of_cpus) = run_script.get_config_data(config_file)
-    if no_of_jobs != 1 or initial_job_index != 0:
-        print("ConfigurationError: Give a configuration file whose value of no_of_jobs is equal to one and value of "
-              "initial_job_index is equal to zero.")
+    (algorithm_name, output_directory, no_of_sites, _, no_of_equilibration_sweeps, _, temperatures, _, _, no_of_runs,
+     initial_run_index, max_no_of_cpus) = run_script.get_config_data(config_file)
+    if no_of_runs != 1 or initial_run_index != 0:
+        print("ConfigurationError: Give a configuration file whose value of no_of_runs is equal to one and value of "
+              "initial_run_index is equal to zero.")
         raise SystemExit
 
     if algorithm_name == "elementary-electrolyte" or algorithm_name == "multivalued-electrolyte":

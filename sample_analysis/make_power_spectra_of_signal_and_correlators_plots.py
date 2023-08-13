@@ -10,7 +10,7 @@ import time
 
 def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_power_10_correlators=4):
     (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, temperatures,
-     external_global_moves_string, no_of_jobs, pool) = setup_polyspectra_script(config_file, observable_string)
+     external_global_moves_string, no_of_runs, pool) = setup_polyspectra_script(config_file, observable_string)
     figure, axes = plt.subplots(2 + no_of_power_2_correlators + no_of_power_10_correlators, figsize=(10, 20))
     plt.xlabel(r"frequency, $f$ $(t^{-1})$", fontsize=10, labelpad=10)
     plt.tick_params(axis="both", which="major", labelsize=10, pad=10)
@@ -21,13 +21,13 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         print(f"Temperature = {temperature:.4f}")
         power_spectrum = get_power_spectrum(algorithm_name, observable_string, output_directory, temperature,
                                             temperature_index, no_of_sites, no_of_sites_string,
-                                            external_global_moves_string, no_of_jobs, pool, no_of_equilibration_sweeps)
+                                            external_global_moves_string, no_of_runs, pool, no_of_equilibration_sweeps)
         # normalise power spectrum with respect to its low-frequency values
         power_spectrum[1] /= power_spectrum[1, 0]
 
         second_spectrum = get_second_spectrum(
             algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-            no_of_sites_string, external_global_moves_string, no_of_jobs, pool, no_of_equilibration_sweeps)
+            no_of_sites_string, external_global_moves_string, no_of_runs, pool, no_of_equilibration_sweeps)
         # normalise second spectrum spectrum with respect to its low-frequency value
         second_spectrum[1] /= second_spectrum[1, 0]
 
@@ -35,7 +35,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         for index in range(no_of_power_2_correlators):
             power_spectrum_of_correlator = get_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, external_global_moves_string, no_of_jobs, pool, 2 ** index,
+                no_of_sites_string, external_global_moves_string, no_of_runs, pool, 2 ** index,
                 no_of_equilibration_sweeps)
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
@@ -43,7 +43,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         for index in range(no_of_power_10_correlators):
             power_spectrum_of_correlator = get_power_spectrum_of_correlator(
                 algorithm_name, observable_string, output_directory, temperature, temperature_index, no_of_sites,
-                no_of_sites_string, external_global_moves_string, no_of_jobs, pool, 10 ** (index + 1),
+                no_of_sites_string, external_global_moves_string, no_of_runs, pool, 10 ** (index + 1),
                 no_of_equilibration_sweeps)
             # normalise power spectrum with respect to its low-frequency value
             power_spectrum_of_correlator[1] /= power_spectrum_of_correlator[1, 0]
@@ -52,7 +52,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         current_color = next(colors)
 
         (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
-         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(power_spectrum, 10.0, no_of_jobs)
+         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(power_spectrum, 10.0, no_of_runs)
         max_power_spectrum_index = np.argmax(power_spectrum[0] > 1.0e-1) - 1
         axes[0].loglog(power_spectrum[0, :max_power_spectrum_index], power_spectrum[1, :max_power_spectrum_index],
                        color=current_color,
@@ -61,7 +61,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
         axes[0].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
 
         (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
-         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(second_spectrum, 10.0, no_of_jobs)
+         one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(second_spectrum, 10.0, no_of_runs)
         max_second_spectrum_index = np.argmax(second_spectrum[0] > 1.0e-1) - 1
         axes[1].loglog(second_spectrum[0, :max_second_spectrum_index], second_spectrum[1, :max_second_spectrum_index],
                        color=current_color,
@@ -71,7 +71,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
 
         for index, spectrum in enumerate(power_spectra_of_correlators):
             (one_over_f_model_parameters, one_over_f_model_errors, one_over_f_model_frequency_values,
-             one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(spectrum, 10.0, no_of_jobs)
+             one_over_f_model_spectrum_values) = fit_one_over_f_model_to_spectrum(spectrum, 10.0, no_of_runs)
             max_spectrum_index = np.argmax(spectrum[0] > 1.0e-1) - 1
             axes[index + 2].loglog(spectrum[0, :max_spectrum_index], spectrum[1, :max_spectrum_index],
                                    color=current_color,
@@ -82,7 +82,7 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
             axes[index + 2].loglog(one_over_f_model_frequency_values, one_over_f_model_spectrum_values, color='k')
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
-    if no_of_jobs > 1:
+    if no_of_runs > 1:
         pool.close()
 
     axes[0].set_ylabel(r"$S_X(f)$ / $S_X(f_0)$", fontsize=10, labelpad=10)
@@ -106,14 +106,14 @@ def main(config_file, observable_string, no_of_power_2_correlators=3, no_of_powe
                    bbox_inches="tight")
 
 
-def fit_one_over_f_model_to_spectrum(spectrum, max_model_exponent, no_of_jobs):
+def fit_one_over_f_model_to_spectrum(spectrum, max_model_exponent, no_of_runs):
     """fit one-over-f model to power spectrum"""
     initial_frequency, final_frequency = 5.0e-4, 3.0e-3
     increment = 10.0 ** math.floor(math.log(initial_frequency, 10)) / 2.0
     initial_frequency_index = np.argmax(spectrum[0] > initial_frequency) - 1
     final_frequency_index = np.argmax(spectrum[0] > final_frequency) - 1
-    if no_of_jobs > 32:
-        """n.b., no_of_jobs > 32 as we found worse results using the trispectrum error bars for no_of_jobs = 8."""
+    if no_of_runs > 32:
+        """n.b., no_of_runs > 32 as we found worse results using the trispectrum error bars for no_of_runs = 8."""
         parameter_values_and_errors = curve_fit(
             one_over_f_model, spectrum[0, initial_frequency_index:final_frequency_index],
             spectrum[1, initial_frequency_index:final_frequency_index],

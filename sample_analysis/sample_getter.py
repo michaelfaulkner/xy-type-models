@@ -1,5 +1,5 @@
 """This module contains methods that convert the entire sample [stored (by the Fortran code) in the sample.csv file at
-    each temperature and repeated job] into sample observables.  The number of ECMC events and rate of Metropolis
+    each temperature and repeated run] into sample observables.  The number of ECMC events and rate of Metropolis
     acceptances are retrieved by other methods; the sampling frequency and emergent-Langevin physical timescale are
     computed by further methods."""
 import math

@@ -12,6 +12,6 @@
 .false.                                 use_external_global_moves
 .true.                                  measure_magnetisation
 .false.                                 measure_potential
-1                                       no_of_jobs
-0                                       initial_job_index
+1                                       no_of_runs
+0                                       initial_run_index
 1                                       max_no_of_cpus

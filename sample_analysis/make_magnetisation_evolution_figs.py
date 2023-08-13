@@ -39,7 +39,7 @@ def main(symmetry_breaking_paper=True):
 
     (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
      no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
-     external_global_moves_string_16x16_metrop, no_of_jobs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
+     external_global_moves_string_16x16_metrop, no_of_runs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
         config_file_16x16_metrop)
     (_, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64, _, _, _,
      use_external_global_moves_64x64_metrop, external_global_moves_string_64x64_metrop, _, _, _
@@ -48,7 +48,7 @@ def main(symmetry_breaking_paper=True):
      use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop, _, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop)
     (algorithm_name_ecmc, sample_directory_16x16_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
-     _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_jobs_ecmc, _, _
+     _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_runs_ecmc, _, _
      ) = run_script.get_config_data(config_file_16x16_ecmc)
     sample_directory_64x64_ecmc = run_script.get_config_data(config_file_64x64_ecmc)[1]
     sample_directory_256x256_ecmc = run_script.get_config_data(config_file_256x256_ecmc)[1]
@@ -62,7 +62,7 @@ def main(symmetry_breaking_paper=True):
     alphabetic_label_256x256_ecmc = "f"
 
     start_time = time.time()
-    # for job_index in range(no_of_jobs_metrop_with_twists):
+    # for run_index in range(no_of_runs_metrop_with_twists):
     figure, axes = plt.subplots(2, 3, figsize=(30, 20))
     make_subplot(axes[0, 0], algorithm_name_metrop, output_directory, sample_directory_16x16_metrop,
                  no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_metrop,
@@ -108,26 +108,26 @@ def main(symmetry_breaking_paper=True):
     if symmetry_breaking_paper:
         (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
          temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
-         external_global_moves_string_256x256_metrop_with_twists, no_of_jobs_metrop_with_twists, _, _
+         external_global_moves_string_256x256_metrop_with_twists, no_of_runs_metrop_with_twists, _, _
          ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
-        for job_index in range(no_of_jobs_metrop_with_twists):
+        for run_index in range(no_of_runs_metrop_with_twists):
             figure.clear()
             figure, axis = plt.subplots(1)
             make_subplot(axis, algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
                          no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
                          no_of_observations_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
                          use_external_global_moves_256x256_metrop_with_twists,
-                         external_global_moves_string_256x256_metrop_with_twists, None, job_index, True)
+                         external_global_moves_string_256x256_metrop_with_twists, None, run_index, True)
             figure.savefig(
                 f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_twists_"
-                f"{no_of_observations_256x256_metrop_with_twists}_metrop_obs_job_{job_index}.png", bbox_inches="tight")
+                f"{no_of_observations_256x256_metrop_with_twists}_metrop_obs_run_{run_index}.png", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_sites_string,
                  no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
-                 external_global_moves_string, alphabetic_label, job_index, symmetry_breaking_paper):
+                 external_global_moves_string, alphabetic_label, run_index, symmetry_breaking_paper):
     axis.axis('square')
     if alphabetic_label is None:
         axis.text(-0.05, 0.9735, "a", fontsize=22, transform=axis.transAxes, weight='bold')
@@ -203,7 +203,7 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
                     f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
-                    f"{temperature:.4f}_job_{job_index}.npy")
+                    f"{temperature:.4f}_run_{run_index}.npy")
             else:
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
@@ -211,12 +211,12 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                     f"{temperature:.4f}.npy")
         except IOError:
             if use_external_global_moves:
-                cartesian_magnetisation = get_cartesian_magnetisation(f"{sample_directory}/job_{job_index}",
+                cartesian_magnetisation = get_cartesian_magnetisation(f"{sample_directory}/run_{run_index}",
                                                                       temperature, temperature_index, no_of_sites,
                                                                       no_of_equilibration_sweeps)
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
                         f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
-                        f"{temperature:.4f}_job_{job_index}.npy", cartesian_magnetisation)
+                        f"{temperature:.4f}_run_{run_index}.npy", cartesian_magnetisation)
             else:
                 cartesian_magnetisation = get_cartesian_magnetisation(sample_directory, temperature, temperature_index,
                                                                       no_of_sites, no_of_equilibration_sweeps)
