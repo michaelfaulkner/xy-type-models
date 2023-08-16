@@ -10,15 +10,15 @@ def main():
     xy_spin_phases = np.load(f"{data_directory}/xy_snapshot_temp_eq_1_spin_phases.npy")
     xy_spin_phases_zero_temp = np.load(f"{data_directory}/xy_snapshot_temp_eq_1_spin_phases_zero_temp.npy")
     xy_spin_phases_hxy_zero_temp = np.load(f"{data_directory}/xy_snapshot_temp_eq_1_spin_phases_hxy_zero_temp.npy")
-    hxy_spin_phases = np.load(f"{data_directory}/hxy_snapshot_temp_eq_1.5_spin_phases.npy")
-    hxy_spin_phases_zero_temp = np.load(f"{data_directory}/hxy_snapshot_temp_eq_1.5_spin_phases_zero_temp.npy")
+    hxy_spin_phases = np.load(f"{data_directory}/hxy_snapshot_temp_eq_1_point_5_spin_phases.npy")
+    hxy_spin_phases_zero_temp = np.load(f"{data_directory}/hxy_snapshot_temp_eq_1_point_5_spin_phases_zero_temp.npy")
 
     make_single_plot(xy_spin_phases, xy_spin_phases_zero_temp, output_directory,
                      "decomposed_spin_configs_xy_temp_eq_1.pdf")
     make_single_plot(xy_spin_phases, xy_spin_phases_hxy_zero_temp, output_directory,
                      "decomposed_spin_configs_xy_with_hxy_minimisation_temp_eq_1.pdf")
     make_single_plot(hxy_spin_phases, hxy_spin_phases_zero_temp, output_directory,
-                     "decomposed_spin_configs_hxy_temp_eq_1.5.pdf")
+                     "decomposed_spin_configs_hxy_temp_eq_1_point_5.pdf")
 
 
 def make_single_plot(spin_phases, zero_temp_spin_phases, output_directory, output_file_string):
