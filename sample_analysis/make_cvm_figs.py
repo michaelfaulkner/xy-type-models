@@ -83,8 +83,8 @@ def main(no_of_system_sizes=6):
     reduced_temperatures_ecmc = [temperature / approx_transition_temperature for temperature in temperatures_ecmc]
 
     fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.85), gridspec_kw={'width_ratios': [1.2, 1.0]})
-    fig.text(-0.025, 0.9, "d", fontsize=20, weight='bold')
-    fig.text(0.525, 0.9, "e", fontsize=20, weight='bold')
+    fig.text(-0.045, 0.8975, "(a)", fontsize=20)
+    fig.text(0.51, 0.8975, "(b)", fontsize=20)
     fig.tight_layout(w_pad=3.0)
     axes[0].set_yscale('log')
     axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)

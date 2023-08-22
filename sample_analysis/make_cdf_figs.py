@@ -38,10 +38,10 @@ def main():
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 3.8))
     fig.tight_layout(w_pad=-2.5)
-    letter_heights = 0.9625
-    fig.text(0.03125, letter_heights, "a", fontsize=27, weight='bold')
-    fig.text(0.348, letter_heights, "b", fontsize=27, weight='bold')
-    fig.text(0.6677, letter_heights, "c", fontsize=27, weight='bold')
+    letter_heights = 0.9775
+    fig.text(0.03125, letter_heights, "(a)", fontsize=27)
+    fig.text(0.348, letter_heights, "(b)", fontsize=27)
+    fig.text(0.6677, letter_heights, "(c)", fontsize=27)
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
         axis.tick_params(which='major', length=7, labelsize=22.5, pad=3)

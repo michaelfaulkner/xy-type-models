@@ -52,10 +52,10 @@ def make_single_plot(spin_phases, zero_temp_spin_phases, output_directory, outpu
     [axis.set_xticks([]) for axis in axes], [axis.set_yticks([]) for axis in axes]
     [axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"] for axis in axes]
     letter_heights = 0.975
-    fig.text(0.07125, letter_heights, "a", fontsize=25, weight='bold')
-    fig.text(0.289, letter_heights, "b", fontsize=25, weight='bold')
-    fig.text(0.509, letter_heights, "c", fontsize=25, weight='bold')
-    fig.text(0.7285, letter_heights, "d", fontsize=25, weight='bold')
+    fig.text(0.07125, letter_heights, "(a)", fontsize=25)
+    fig.text(0.289, letter_heights, "(b)", fontsize=25)
+    fig.text(0.509, letter_heights, "(c)", fontsize=25)
+    fig.text(0.7285, letter_heights, "(d)", fontsize=25)
     os.system(f"mkdir -p {output_directory}")
     fig.savefig(f"{output_directory}/{output_file_string}", bbox_inches="tight")
     fig.clear()
