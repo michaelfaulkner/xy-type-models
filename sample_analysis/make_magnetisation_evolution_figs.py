@@ -181,13 +181,13 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
         axis.set_yticks(np.arange(-0.5, 1.0, 0.25), minor=True)
         axis.set_yticks([1.0])
         axis.set_xlabel(r"$m_x$", fontsize=21), axis.set_ylabel(r"$m_y$", fontsize=21, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.0, 0.505), axis.yaxis.set_label_coords(0.57, 0.94)
+        axis.xaxis.set_label_coords(1.005, 0.505), axis.yaxis.set_label_coords(0.57, 0.95)
     else:
         axis.set_ylim([-1.0, 1.0])
         axis.set_yticks(minor_ticks, minor=True)
         axis.set_yticks([-1.0, 1.0])
-        axis.set_xlabel(r"$m_x$", fontsize=35), axis.set_ylabel(r"$m_y$", fontsize=32.5, rotation="horizontal")
-        axis.xaxis.set_label_coords(1.005, 0.625), axis.yaxis.set_label_coords(0.565, 0.96)
+        axis.set_xlabel(r"$m_x$", fontsize=35), axis.set_ylabel(r"$m_y$", fontsize=35, rotation="horizontal")
+        axis.xaxis.set_label_coords(1.005, 0.575), axis.yaxis.set_label_coords(0.565, 0.96)
 
     colors = ["black", "red"]
     for temperature_index, temperature in reverse_enumerate(temperatures):
