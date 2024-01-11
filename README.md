@@ -49,7 +49,8 @@ and [`scipy`](https://www.scipy.org)).
 [`LaplacesDemon`](https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
 https://cran.r-project.org/web/packages/mcmcse/). To install these R packages: download the binaries [here](
 https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) 
-and then run `R CMD INSTALL <binary location>` in your terminal.
+and then run `R CMD INSTALL <binary location>` in your terminal. You may also need to install various dependencies of 
+these R packages (listed under Imports on the relevant CRAN package page).
 
 The Fortran code was written in Fortran 90. The Python code is likely to support any Python version >= 3.6 (though we 
 need to check this). We tested the Fortran / Python code with GNU Fortran (Homebrew GCC 10.2.0_4) 10.2.0 / CPython.
