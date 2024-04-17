@@ -1,5 +1,5 @@
 'elementary-electrolyte'                        algorithm_name
-output/prb_91_155412_fig_2/local_moves'         output_directory
+'output/prb_91_155412_fig_2/local_moves'        output_directory
 8                                               integer_lattice_length
 100000                                          no_of_equilibration_sweeps
 1000000                                         no_of_observations
