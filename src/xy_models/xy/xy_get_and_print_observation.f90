@@ -4,6 +4,7 @@ implicit none
 integer :: i, no_of_global_twists_to_minimise_potential(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
+double precision :: sum_of_emergent_field(2)
 
 if (measure_magnetisation) then
     non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
@@ -91,6 +92,16 @@ if (measure_twist_relaxations) then
 
     ! restore spin field
     call get_spins
+end if
+
+if (measure_emergent_field) then
+    call calculate_emergent_field
+    sum_of_emergent_field = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        sum_of_emergent_field(1) = sum_of_emergent_field(1) + emergent_field(i, 1)
+        sum_of_emergent_field(2) = sum_of_emergent_field(2) + emergent_field(i, 2)
+    end do
+    write(95, 100) sum_of_emergent_field(1), sum_of_emergent_field(2)
 end if
 
 100 format(ES25.14, ",", ES25.14)

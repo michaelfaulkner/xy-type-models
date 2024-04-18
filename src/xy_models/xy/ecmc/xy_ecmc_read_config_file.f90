@@ -18,6 +18,7 @@ read(10, *) measure_potential
 read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
 read(10, *) measure_twist_relaxations
+read(10, *) measure_emergent_field
 
 if (algorithm_name /= 'xy-ecmc') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-ecmc.'
@@ -32,6 +33,11 @@ allocate(spin_field(no_of_sites))
 allocate(get_north_neighbour(no_of_sites), get_south_neighbour(no_of_sites))
 allocate(get_east_neighbour(no_of_sites), get_west_neighbour(no_of_sites))
 allocate(get_up_neighbour(no_of_sites), get_down_neighbour(no_of_sites))
+if (measure_emergent_field) then
+    allocate(emergent_field(no_of_sites, 2))
+else
+    allocate(emergent_field(0, 0)) ! we allocate (0, 0) as we don't need to store the emergent field in this case
+end if
 
 return
 end subroutine read_config_file

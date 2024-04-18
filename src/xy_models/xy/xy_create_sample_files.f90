@@ -75,6 +75,16 @@ if (measure_twist_relaxations) then
     end if
 end if
 
+if (measure_emergent_field) then
+    write(filename, '(A, "/temp_", I2.2, "/sum_of_emergent_field.csv")') trim(output_directory), temperature_index
+    if (start_from_checkpoint) then
+        call trim_existing_sample_file(filename, 95, temperature_index)
+    else
+        open(unit=95, file=filename)
+        call print_file_header(95)
+    end if
+end if
+
 return
 end subroutine create_sample_files
 

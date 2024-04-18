@@ -21,6 +21,7 @@ read(10, *) measure_potential
 read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
 read(10, *) measure_twist_relaxations
+read(10, *) measure_emergent_field
 
 if ((algorithm_name /= 'xy-uniform-noise-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-uniform-noise-metropolis or &
@@ -39,6 +40,11 @@ allocate(get_up_neighbour(no_of_sites), get_down_neighbour(no_of_sites), array_o
 do i = 1, no_of_sites
     array_of_sites(i) = i
 end do
+if (measure_emergent_field) then
+    allocate(emergent_field(no_of_sites, 2))
+else
+    allocate(emergent_field(0, 0)) ! we allocate (0, 0) as we don't need to store the emergent field in this case
+end if
 ! charge_hop_proportion is a dummy variable that allows the electrolyte and h/xy models to use the same
 ! step-size adaptor in the same metropolis_algorithm.f90 file
 charge_hop_proportion = 0.0d0
