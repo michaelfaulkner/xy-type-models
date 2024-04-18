@@ -56,13 +56,15 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
                            for observable_string in model_observables] for model_observables in observables]
     run_indexed_sample_directories = [f"{sample_directory}/run_{run_index}" for sample_directory in sample_directories]
     for temperature_index, temperature in enumerate(temperatures):
-        samples = [[get_sample_method(run_indexed_sample_directories[model_index], temperature, temperature_index,
-                                      no_of_sites, no_of_equilibration_sweeps)
-                    for get_sample_method in get_sample_methods[model_index]] for model_index in range(3)]
-        [[axes[temperature_index, model_index].plot(
-            list(zip(*samples[model_index][observable_index][:10000]))[1], linestyle="solid",
-            color=observable_plotting_colours[observable_index]) for observable_index in range(len(model_observables))]
-            for model_index, model_observables in enumerate(observables)]
+        for model_index, model in enumerate(models):
+            samples = np.array([get_sample_method(run_indexed_sample_directories[model_index], temperature,
+                                                  temperature_index, no_of_sites, no_of_equilibration_sweeps)
+                                for get_sample_method in get_sample_methods[model_index]])
+            if model_index < 2:
+                samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi
+            [axes[temperature_index, model_index].plot(samples[observable_index, :10000, 1], linestyle="solid",
+                                                       color=observable_plotting_colours[observable_index])
+             for observable_index in reversed(range(len(samples)))]
     fig.savefig(f"{output_directory}/global_topological_trace_plots_sans_global_moves_{no_of_sites_string}_"
                 f"{no_of_observations}_obs_run_{run_index}.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
