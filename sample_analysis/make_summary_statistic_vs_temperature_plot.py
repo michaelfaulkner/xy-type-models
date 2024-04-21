@@ -146,12 +146,15 @@ def check_for_observable_error(algorithm_name, observable_string):
             and observable_string != "inverse_vacuum_permittivity" and observable_string != "helicity_modulus"
             and observable_string != "hxy_internal_twist_susceptibility"
             and observable_string != "xy_twist_relaxation_susceptibility"
+            and observable_string != "xy_emergent_field_zero_mode_susceptibility"
+            and observable_string != "xy_global_defect_susceptibility"
             and observable_string != "potential_minimising_twist_susceptibility"
             and observable_string != "inverse_permittivity" and observable_string != "topological_susceptibility"):
         print("ConfigurationError: Give one of acceptance_rates, event_rate, potential, specific_heat, "
               "magnetisation_norm, magnetisation_phase, rotated_magnetisation_phase, magnetisation_squared, "
               "magnetic_susceptibility, relative_magnetisation_norm, inverse_vacuum_permittivity, helicity_modulus, "
               "hxy_internal_twist_susceptibility, xy_twist_relaxation_susceptibility, "
+              "xy_emergent_field_zero_mode_susceptibility, xy_global_defect_susceptibility, "
               "potential_minimising_twist_susceptibility, inverse_permittivity or topological_susceptibility as the "
               "second positional argument.")
         raise SystemExit

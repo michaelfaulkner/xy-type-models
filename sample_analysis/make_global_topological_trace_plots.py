@@ -48,8 +48,8 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
     models = ["electrolyte", "hxy_model", "xy_model"]
     """Define observables[i] as the necessary observables of models[i]"""
     observables = [["electric_field_zero_mode", "topological_sector"],
-                   ["total_vortex_polarisation", "hxy_topological_sector", "potential_minimising_twists"],
-                   ["total_vortex_polarisation", "xy_twist_relaxation_field", "potential_minimising_twists",
+                   ["macro_josephson_current", "hxy_topological_sector", "potential_minimising_twists"],
+                   ["macro_josephson_current", "xy_twist_relaxation_field", "potential_minimising_twists",
                     "xy_topological_sector"]]
     observable_plotting_colours = ["black", "blue", "red", "yellow"]
     get_sample_methods = [[getattr(sample_getter, "get_" + observable_string)

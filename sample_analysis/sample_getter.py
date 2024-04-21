@@ -595,12 +595,13 @@ def get_relative_magnetisation_norm(output_directory, temperature, temperature_i
 """XY and HXY emergent-field-based methods"""
 
 
-def get_non_normalised_total_vortex_polarisation(output_directory, temperature, temperature_index, no_of_sites,
-                                                 no_of_equilibration_sweeps=None, thinning_level=None):
+def get_non_normalised_macro_josephson_current(output_directory, temperature, temperature_index, no_of_sites,
+                                               no_of_equilibration_sweeps=None, thinning_level=None):
     """
-    Returns the sample of the non-normalised total vortex polarisation vector, where the x / y component of the total
-    vortex polarisation is the normalised (with respect to no_of_sites) sum over the first derivatives of the potential
-    with respect to the spin differences along the x / y dimension.
+    Returns the sample of the non-normalised macroscopic Josephson current.  This is a 2D vector whose x / y component
+    is the sum over the first derivatives of the potential with respect to the spin differences along the x / y
+    dimension.  The normalised macroscopic Josephson current is equal to
+    non_normalised_macro_josephson_current / no_of_sites.
 
     Parameters
     ----------
@@ -622,10 +623,10 @@ def get_non_normalised_total_vortex_polarisation(output_directory, temperature, 
     Returns
     -------
     numpy.ndarray
-        The sample of the non-normalised total vortex polarisation.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the non-normalised total vortex polarisation measured at
-        observation n; its first / second element is a float corresponding to the x / y component of the non-normalised
-        total vortex polarisation measured at observation n.
+        The sample of the non-normalised Josephson current.  A two-dimensional numpy array of shape
+        (no_of_observations, 2).  The nth sub-array is the non-normalised Josephson current measured at observation n;
+        its first / second element is a float corresponding to the x / y component of the non-normalised Josephson
+        current measured at observation n.
     """
     return get_reduced_sample(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/1st_deriv_of_potential.csv", dtype=float, delimiter=","),
@@ -667,12 +668,12 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_i
         axis=1), no_of_equilibration_sweeps, thinning_level) / no_of_sites
 
 
-def get_total_vortex_polarisation(output_directory, temperature, temperature_index, no_of_sites,
-                                  no_of_equilibration_sweeps=None, thinning_level=None):
+def get_macro_josephson_current(output_directory, temperature, temperature_index, no_of_sites,
+                                no_of_equilibration_sweeps=None, thinning_level=None):
     """
-    Returns the sample of the total vortex polarisation vector, whose x / y component is the normalised (with respect
-    to no_of_sites) sum over the first derivatives of the potential with respect to the spin differences along the
-    x / y dimension.
+    Returns the sample of the macroscopic Josephson current.  This is a 2D vector whose x / y component is the mean
+    value (with respect to the lattice sites) of the first derivatives of the potential with respect to the spin
+    differences along the x / y dimension.  This is equal to non_normalised_macro_josephson_current / no_of_sites.
 
     Parameters
     ----------
@@ -694,13 +695,12 @@ def get_total_vortex_polarisation(output_directory, temperature, temperature_ind
     Returns
     -------
     numpy.ndarray
-        The sample of the total vortex polarisation.  A two-dimensional numpy array of shape (no_of_observations, 2).
-        The nth sub-array is the total vortex polarisation measured at observation n; its first / second element is a
-        float corresponding to the x / y component of the total vortex polarisation measured at observation n.
+        The sample of the Josephson current.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
+        sub-array is the Josephson current measured at observation n; its first / second element is a float
+        corresponding to the x / y component of the Josephson current measured at observation n.
     """
-    return get_non_normalised_total_vortex_polarisation(output_directory, temperature, temperature_index,
-                                                        no_of_sites, no_of_equilibration_sweeps,
-                                                        thinning_level) / no_of_sites
+    return get_non_normalised_macro_josephson_current(output_directory, temperature, temperature_index, no_of_sites,
+                                                      no_of_equilibration_sweeps, thinning_level) / no_of_sites
 
 
 def get_helicity_modulus(output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps=None,
@@ -737,13 +737,12 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
         The sample of the helicity modulus.  A one-dimensional numpy array of length no_of_observations.  The nth
         element is a float corresponding to the helicity modulus measured at observation n.
     """
-    non_normalised_total_vortex_polarisation = get_non_normalised_total_vortex_polarisation(
+    non_normalised_josephson_current = get_non_normalised_macro_josephson_current(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
     return (get_inverse_vacuum_permittivity(output_directory, temperature, temperature_index, no_of_sites,
                                             no_of_equilibration_sweeps, thinning_level)
-            - np.mean((non_normalised_total_vortex_polarisation
-                       - np.mean(non_normalised_total_vortex_polarisation, axis=0)) ** 2, axis=1)
-            / temperature / no_of_sites)
+            - np.mean((non_normalised_josephson_current - np.mean(non_normalised_josephson_current, axis=0)) ** 2,
+                      axis=1) / temperature / no_of_sites)
 
 
 def get_potential_minimising_twists(output_directory, temperature, temperature_index, no_of_sites,
@@ -826,9 +825,12 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
                                no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the sample of the HXY topological sector w \in Z^2, an integer-valued vector field whose components are
-    fixed such that the minimal toroidal vortex polarisation vector \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L],
-    where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero mode of the emergent electric field, as defined in
-    J. Phys. Condens. Matter 29, 085402 (2017).  This method is only valid for the HXY model.
+    fixed such that the minimal toroidal (emergent-charge) polarisation vector
+    \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero
+    mode of the emergent electric field (as defined in J. Phys. Condens. Matter 29, 085402 (2017)) which is the vector
+    cross product of the macroscopic Josephson current with the unit vector in the z direction.
+
+    Note that this method is only valid for the HXY model.
 
     Parameters
     ----------
@@ -854,10 +856,9 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
         sub-array is the topological sector measured at observation n; its first / second element is an int
         corresponding to the x / y component of the topological sector measured at observation n.
     """
-    non_normalised_total_vortex_polarisation = get_non_normalised_total_vortex_polarisation(
-        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
-    return (non_normalised_total_vortex_polarisation + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi *
-                                                                                         no_of_sites ** 0.5)
+    return (get_non_normalised_macro_josephson_current(
+        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level) +
+            math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
 
 
 def get_hxy_internal_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
@@ -866,10 +867,12 @@ def get_hxy_internal_twist_susceptibility(output_directory, temperature, tempera
     Returns the sample of the HXY internal-twist susceptibility chi_w^H(x; temperature, no_of_sites) =
     no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the topological sector w \in Z^2, an integer-valued vector field whose
-    components are fixed such that the minimal toroidal vortex polarisation vector
+    components are fixed such that the minimal toroidal (emergent-charge) polarisation vector
     \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero
-    mode of the emergent electric field, as defined in J. Phys. Condens. Matter 29, 085402 (2017).  This method is only
-    valid for the HXY model.
+    mode of the emergent electric field (as defined in J. Phys. Condens. Matter 29, 085402 (2017)) which is the vector
+    cross product of the macroscopic Josephson current with the unit vector in the z direction.
+
+    Note that this method is only valid for the HXY model.
 
     In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
     winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
@@ -978,11 +981,19 @@ def get_xy_twist_relaxation_susceptibility(output_directory, temperature, temper
 def get_non_normalised_xy_emergent_field_zero_mode(output_directory, temperature, temperature_index, no_of_sites,
                                                    no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the (non-normalised) zero mode of the fictitious XY emergent field, ie, the lattice sum over
-    the emergent field.  The normalised zero mode differs from the sample generated by get_total_vortex_polarisation()
-    as the total vortex polarisation is defined as the mean value of the derivatives of the potential with respect to
-    each nearest-neighbour spin difference.  The XY emergent field is the result of applying this process to the HXY
-    model.  This Python method is only valid for the XY model.
+    Returns the sample of the (non-normalised) zero mode of the XY emergent field, ie, the lattice sum over the
+    emergent field.  The normalised zero mode differs from the sample generated by get_macro_josephson_current() as the
+    x / y component of the macroscopic Josephson current is defined as the mean value of the derivatives of the
+    potential with respect to each nearest-neighbour spin difference along the x / y dimension.  This definition
+    applies to both XY models.  In the HXY case, the macroscopic Josephson current then corresponds to the zero mode of
+    its emergent field (after taking the vector cross product with the unit vector in the z direction).  Moreover, the
+    local Josephson current between any two nearest-neighbour lattice sites is defined as the derivative of the
+    potential with respect to the spin difference between the sites.  In the HXY case, the local Josephson current is
+    used to define the emergent field (in analogy with the zero mode) and its circulation around some plaquette defines
+    the emergent charge of that plaquette.  The XY emergent field is then defined as the HXY emergent field, and is
+    therefore a fictitious quantity in some sense, as it cannot be derived from its own potential.
+
+    Note that this Python method is only valid for the XY model.
 
     Parameters
     ----------
@@ -1017,9 +1028,18 @@ def get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_i
                                     no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the sample of the zero mode of the fictitious XY emergent field.  This differs from the sample generated by
-    get_total_vortex_polarisation() as the total vortex polarisation is defined as the mean value of the derivatives of
-    the potential with respect to each nearest-neighbour spin difference.  The XY emergent field is the result of
-    applying this process to the HXY model.  This Python method is only valid for the XY model.
+    get_macro_josephson_current() as the x / y component of the macroscopic Josephson current is defined as the mean
+    value of the derivatives of the potential with respect to each nearest-neighbour spin difference along the x / y
+    dimension.  This definition applies to both XY models.  In the HXY case, the macroscopic Josephson current then
+    corresponds to the zero mode of its emergent field (after taking the vector cross product with the unit vector in
+    the z direction).  Moreover, the local Josephson current between any two nearest-neighbour lattice sites is defined
+    as the derivative of the potential with respect to the spin difference between the sites.  In the HXY case, the
+    local Josephson current is used to define the emergent field (in analogy with the zero mode) and its circulation
+    around some plaquette defines the emergent charge of that plaquette.  The XY emergent field is then defined as the
+    HXY emergent field, and is therefore a fictitious quantity in some sense, as it cannot be derived from its own
+    potential.
+
+    Note that this Python method is only valid for the XY model.
 
     Parameters
     ----------
@@ -1049,16 +1069,61 @@ def get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_i
                                                           no_of_equilibration_sweeps, thinning_level) / no_of_sites
 
 
+def get_xy_emergent_field_zero_mode_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                                   no_of_equilibration_sweeps=None, thinning_level=None):
+    r"""
+    Returns the sample of the XY global-defect susceptibility chi_w^{XY}(x; temperature, no_of_sites) =
+    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    argument and \overline{E}_w = 2 \pi w / L is the XY topological sector w \in Z^2, an integer-valued vector field
+    defined in get_xy_topological_sector().  As described in get_xy_topological_sector(), the XY global topological
+    defects are fictitious quantities in some sense.
+
+    Note that this method is only valid for the XY model.
+
+    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
+    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
+    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+    no_of_equilibration_sweeps : None or int, optional
+        The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_observations.
+        The nth element is a float corresponding to the global-defect susceptibility measured at observation n.
+    """
+    zero_mode_sample = get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_index, no_of_sites,
+                                                       no_of_equilibration_sweeps, thinning_level)
+    return np.mean((zero_mode_sample - np.mean(zero_mode_sample, axis=0)) ** 2, axis=1) / temperature
+
+
 def get_xy_topological_sector(output_directory, temperature, temperature_index, no_of_sites,
                               no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the fictitious XY topological sector -- an integer-valued two-dimensional vector field that
-    is the result of annealing each XY configuration using the HXY potential, before calculating the twist-minimising
-    field using the HXY potential.  This twist-minimising field then maps to the fictitious topological sector in
-    direct analogy with the HXY case (see get_hxy_topological_sector()).  This defines global topological defects in
-    the XY model, as described in Appendix A of Phys. Rev. B 109, 085405 (2024)  (the local topological defects are
-    analogously defined using the HXY potential to anneal any given XY configuration).  This Python method is only
-    valid for the HXY model.
+    Returns the sample of the XY topological sector -- an integer-valued two-dimensional vector field that is the
+    result of annealing each XY configuration using the HXY potential, before calculating the twist-minimising
+    field using the HXY potential.  This twist-minimising field then maps to the XY topological sector in direct
+    analogy with the HXY case (see get_hxy_topological_sector()).  This defines global topological defects in the XY
+    model, as described in Appendix A of Phys. Rev. B 109, 085405 (2024).  The XY topological sector and XY global
+    topological defects are therefore fictitious quantities in some sense, as they cannot be derived from the XY
+    potential (as is the case for the XY emergent field -- see get_xy_emergent_field_zero_mode()).
+
+    Note that this Python method is only valid for the HXY model.
 
     Parameters
     ----------
@@ -1084,10 +1149,53 @@ def get_xy_topological_sector(output_directory, temperature, temperature_index, 
         nth sub-array is the topological sector measured at observation n; its first / second element is an int
         corresponding to the x / y component of the topological sector measured at observation n.
     """
-    non_normalised_emergent_field_zero_mode = get_non_normalised_xy_emergent_field_zero_mode(
-        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
-    return (non_normalised_emergent_field_zero_mode + math.pi * no_of_sites ** 0.5) // (2.0 * math.pi *
-                                                                                        no_of_sites ** 0.5)
+    return (get_non_normalised_xy_emergent_field_zero_mode(
+        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level) +
+            math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
+
+
+def get_xy_global_defect_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                        no_of_equilibration_sweeps=None, thinning_level=None):
+    r"""
+    Returns the sample of the XY global-defect susceptibility chi_w^{XY}(x; temperature, no_of_sites) =
+    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    argument and \overline{E}_w = 2 \pi w / L is the XY topological sector w \in Z^2, an integer-valued vector field
+    defined in get_xy_topological_sector().  As described in get_xy_topological_sector(), the XY global topological
+    defects are fictitious quantities in some sense.
+
+    Note that this method is only valid for the XY model.
+
+    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
+    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
+    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature : float
+        The sampling temperature.
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+    no_of_sites : int
+        The total number of lattice sites.
+    no_of_equilibration_sweeps : None or int, optional
+        The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
+    thinning_level : None or int, optional
+        The number of observations to be discarded between retained observations of the thinning process.  If None,
+        all observations are retained.
+
+    Returns
+    -------
+    numpy.ndarray
+        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_observations.
+        The nth element is a float corresponding to the global-defect susceptibility measured at observation n.
+    """
+    topological_sector_sample = get_xy_topological_sector(output_directory, temperature, temperature_index,
+                                                          no_of_sites, no_of_equilibration_sweeps, thinning_level)
+    return 4.0 * math.pi ** 2 * np.mean((topological_sector_sample - np.mean(topological_sector_sample, axis=0)) ** 2,
+                                        axis=1) / temperature
 
 
 """Maggs-electrolyte methods"""

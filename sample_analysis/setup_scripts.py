@@ -22,7 +22,7 @@ def check_for_observable_error(algorithm_name, observable_string):
             and observable_string != "magnetic_susceptibility"
             and observable_string != "cartesian_relative_magnetisation"
             and observable_string != "relative_magnetisation_norm"
-            and observable_string != "inverse_vacuum_permittivity" and observable_string != "total_vortex_polarisation"
+            and observable_string != "inverse_vacuum_permittivity" and observable_string != "macro_josephson_current"
             and observable_string != "helicity_modulus" and observable_string != "hxy_topological_sector"
             and observable_string != "hxy_internal_twist_susceptibility"
             and observable_string != "xy_twist_relaxation_susceptibility"
@@ -31,7 +31,7 @@ def check_for_observable_error(algorithm_name, observable_string):
         print("ConfigurationError: Give one of potential, specific_heat, magnetisation_norm, magnetisation_phase, "
               "rotated_magnetisation_phase, magnetisation_squared, cartesian_magnetisation, "
               "absolute_cartesian_magnetisation, magnetic_susceptibility, cartesian_relative_magnetisation, "
-              "relative_magnetisation_norm, inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus, "
+              "relative_magnetisation_norm, inverse_vacuum_permittivity, macro_josephson_current, helicity_modulus, "
               "hxy_topological_sector, hxy_internal_twist_susceptibility, xy_twist_relaxation_susceptibility, "
               "electric_field_zero_mode, inverse_permittivity, topological_sector or topological_susceptibility as the "
               "second positional argument.")
@@ -50,14 +50,14 @@ def check_for_observable_vs_model_error(algorithm_name, observable_string):
              or observable_string == "magnetic_susceptibility"
              or observable_string == "cartesian_relative_magnetisation"
              or observable_string == "relative_magnetisation_norm" or observable_string == "inverse_vacuum_permittivity"
-             or observable_string == "total_vortex_polarisation" or observable_string == "helicity_modulus"
+             or observable_string == "macro_josephson_current" or observable_string == "helicity_modulus"
              or observable_string == "hxy_topological_sector"
              or observable_string == "hxy_internal_twist_susceptibility"
              or observable_string == "xy_twist_relaxation_susceptibility")):
         print("ConfigurationError: This is a Maggs-electrolyte model: do not give either magnetisation_norm, "
               "magnetisation_phase, rotated_magnetisation_phase, magnetisation_squared, cartesian_magnetisation, "
               "absolute_cartesian_magnetisation, magnetic_susceptibility, cartesian_relative_magnetisation, "
-              "relative_magnetisation_norm, inverse_vacuum_permittivity, total_vortex_polarisation, helicity_modulus, "
+              "relative_magnetisation_norm, inverse_vacuum_permittivity, macro_josephson_current, helicity_modulus, "
               "hxy_topological_sector, hxy_internal_twist_susceptibility or xy_twist_relaxation_susceptibility as the "
               "second positional argument.")
         raise SystemExit
