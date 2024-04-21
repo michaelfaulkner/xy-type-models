@@ -15,24 +15,7 @@ if (measure_magnetisation) then
     write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
 end if
 
-if (measure_helicity) then
-    sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-    sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
-    do i = 1, no_of_sites
-        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + &
-                                                    sin(spin_field(get_east_neighbour(i)) - spin_field(i))
-        sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + &
-                                                    sin(spin_field(get_north_neighbour(i)) - spin_field(i))
-        sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
-                                                    cos(spin_field(get_east_neighbour(i)) - spin_field(i))
-        sum_of_2nd_derivative_of_potential(2) = sum_of_2nd_derivative_of_potential(2) + &
-                                                    cos(spin_field(get_north_neighbour(i)) - spin_field(i))
-    end do
-    write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
-    write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
-end if
-
-if ((measure_potential).or.(measure_potential_minimising_twists)) then
+if ((measure_helicity).or.(measure_potential).or.(measure_potential_minimising_twists)) then
     potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
     do i = 1, no_of_sites
         potential_cartesian_components(1) = potential_cartesian_components(1) - &
@@ -40,6 +23,19 @@ if ((measure_potential).or.(measure_potential_minimising_twists)) then
         potential_cartesian_components(2) = potential_cartesian_components(2) - &
                                                 cos(spin_field(get_north_neighbour(i)) - spin_field(i))
     end do
+end if
+
+if (measure_helicity) then
+    sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
+    do i = 1, no_of_sites
+        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + &
+                                                    sin(spin_field(get_east_neighbour(i)) - spin_field(i))
+        sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + &
+                                                    sin(spin_field(get_north_neighbour(i)) - spin_field(i))
+    end do
+    sum_of_2nd_derivative_of_potential = (/ -potential_cartesian_components(1), -potential_cartesian_components(2) /)
+    write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
+    write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
 end if
 
 if (measure_potential) then
