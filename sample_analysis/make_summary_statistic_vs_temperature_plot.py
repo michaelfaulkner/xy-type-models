@@ -1,9 +1,8 @@
 from sample_getter import get_acceptance_rates, get_event_rate
-from setup_scripts import check_initial_run_index, check_for_observable_vs_model_error
+from setup_scripts import check_initial_run_index, check_for_observable_vs_model_error, setup_pool
 from markov_chain_diagnostics import get_sample_mean_and_error
 import importlib
 import matplotlib.pyplot as plt
-import multiprocessing as mp
 import numpy as np
 import os
 import sample_getter
@@ -18,26 +17,41 @@ run_script = importlib.import_module("run")
 
 
 def main(config_file, observable_string):
-    (algorithm_name, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
+    (algorithm_name, sample_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
+    print(external_global_moves_string)
     check_for_observable_error(algorithm_name, observable_string)
     check_initial_run_index(initial_run_index)
+    means, errors = get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites,
+                                         no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string,
+                                         sample_directory, no_of_runs, max_no_of_cpus)
+    if not ((observable_string == "acceptance_rates") or (observable_string == "event_rate")):
+        plt.errorbar(temperatures, means, errors, marker=".", markersize=5, color="k")
+        plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
+        plt.ylabel(f"{observable_string.replace('_', ' ')}", fontsize=15, labelpad=10)
+        plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
+        plt.savefig(f"{sample_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+                    f"{external_global_moves_string}_{no_of_sites_string}.pdf", bbox_inches="tight")
 
+
+def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites, no_of_sites_string,
+                         no_of_equilibration_sweeps, external_global_moves_string, sample_directory, no_of_runs,
+                         max_no_of_cpus):
     try:
-        with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+        with open(f"{sample_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{no_of_sites_string}.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
-            means, errors = output_file_sans_header[1], output_file_sans_header[2]
+            return output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
-        output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+        output_file = open(f"{sample_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
         if observable_string == "acceptance_rates":
             if no_of_runs == 1:
-                acceptance_rates = get_acceptance_rates(output_directory, 0)
+                acceptance_rates = get_acceptance_rates(sample_directory, 0)
             else:
-                acceptance_rates = get_acceptance_rates(output_directory + "/run_1", 0)
+                acceptance_rates = get_acceptance_rates(sample_directory + "/run_1", 0)
             if len(acceptance_rates) == 2:
                 output_file.write("# temperature".ljust(30) + "final width of proposal interval".ljust(40) +
                                   "rotational acceptance rate" + "\n")
@@ -56,9 +70,9 @@ def main(config_file, observable_string):
                                   "acceptance rate (charge hops)".ljust(40) + "acceptance rate (global moves)" + "\n")
         elif observable_string == "event_rate":
             if no_of_runs == 1:
-                event_rate = get_event_rate(output_directory, 0)
+                event_rate = get_event_rate(sample_directory, 0)
             else:
-                event_rate = get_event_rate(output_directory + "/run_1", 0)
+                event_rate = get_event_rate(sample_directory + "/run_1", 0)
             if len(event_rate) == 1:
                 output_file.write("# temperature".ljust(30) + "event rate (field rotations)" + "\n")
             else:
@@ -69,8 +83,7 @@ def main(config_file, observable_string):
                               "\n")
 
         if no_of_runs > 1:
-            no_of_cpus = mp.cpu_count()
-            pool = mp.Pool(no_of_cpus)
+            pool = setup_pool(no_of_runs, max_no_of_cpus)
         else:
             pool = None
 
@@ -82,10 +95,10 @@ def main(config_file, observable_string):
             if observable_string == "acceptance_rates" or observable_string == "event_rate":
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_runs == 1:
-                    acceptance_rates_or_event_rate = get_sample_method(output_directory, temperature_index)
+                    acceptance_rates_or_event_rate = get_sample_method(sample_directory, temperature_index)
                 else:
                     acceptance_rates_or_event_rate = np.mean([
-                        get_sample_method(output_directory + "/run_" + str(run_number), temperature_index)
+                        get_sample_method(sample_directory + "/run_" + str(run_number), temperature_index)
                         for run_number in range(no_of_runs)], axis=0)
                 if len(acceptance_rates_or_event_rate) == 1:
                     output_file.write(f"{temperature:.14e}".ljust(30) +
@@ -109,10 +122,10 @@ def main(config_file, observable_string):
                 get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_runs == 1:
                     sample_mean, sample_error = get_sample_mean_and_error(get_sample_method(
-                        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
+                        sample_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
                 else:
                     sample_means_and_errors = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
-                        get_sample_method(output_directory + "/run_" + str(run_number), temperature, temperature_index,
+                        get_sample_method(sample_directory + "/run_" + str(run_number), temperature, temperature_index,
                                           no_of_sites, no_of_equilibration_sweeps)]
                         for run_number in range(no_of_runs)])))
                     sample_mean = np.mean(sample_means_and_errors[0])
@@ -126,13 +139,7 @@ def main(config_file, observable_string):
         if no_of_runs > 1:
             pool.close()
         output_file.close()
-
-    plt.errorbar(temperatures, means, errors, marker=".", markersize=5, color="k")
-    plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
-    plt.ylabel(f"{observable_string.replace('_', ' ')}", fontsize=15, labelpad=10)
-    plt.tick_params(axis="both", which="major", labelsize=14, pad=10)
-    plt.savefig(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                f"{external_global_moves_string}_{no_of_sites_string}.pdf", bbox_inches="tight")
+        return means, errors
 
 
 def check_for_observable_error(algorithm_name, observable_string):
