@@ -22,26 +22,31 @@ def main():
     config_file_hxy = "config_files/global_top_trace_plots/hxy.txt"
     config_file_xy = "config_files/global_top_trace_plots/xy.txt"
     (_, sample_directory_electrolyte, no_of_sites, no_of_sites_string,
-     no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
+     no_of_equilibration_sweeps, no_of_observations, temperatures_electrolyte, use_external_global_moves,
      external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus
      ) = run_script.get_config_data(config_file_electrolyte)
-    sample_directory_hxy = run_script.get_config_data(config_file_hxy)[1]
-    sample_directory_xy = run_script.get_config_data(config_file_xy)[1]
+    (_, sample_directory_hxy, _, _, _, _, temperatures_hxy, _, _, _, _, _) = run_script.get_config_data(config_file_hxy)
+    (_, sample_directory_xy, _, _, _, _, temperatures_xy, _, _, _, _, _) = run_script.get_config_data(config_file_xy)
     output_directory = sample_directory_electrolyte.replace("/electrolyte", "")
     sample_directories = [sample_directory_electrolyte, sample_directory_hxy, sample_directory_xy]
+    approx_transition_temperatures = [1.351, 1.351, 0.887]
+    reduced_model_temperatures = [
+        [temperature / approx_transition_temperatures[0] for temperature in temperatures_electrolyte],
+        [temperature / approx_transition_temperatures[1] for temperature in temperatures_hxy],
+        [temperature / approx_transition_temperatures[2] for temperature in temperatures_xy]]
 
     check_initial_run_index(initial_run_index)
     start_time = time.time()
     pool = setup_pool(no_of_runs, max_no_of_cpus)
     pool.starmap(make_plots, [
         (sample_directories, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-         temperatures, no_of_observations, run_index) for run_index in range(no_of_runs)])
+         reduced_model_temperatures, no_of_observations, run_index) for run_index in range(no_of_runs)])
     pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
-               temperatures, no_of_observations, run_index):
+               reduced_model_temperatures, no_of_observations, run_index):
     fig, axes = plt.subplots(2, 3, figsize=(20, 10))
     fig.tight_layout()
     setup_figure_axes(axes)
@@ -55,8 +60,9 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
     get_sample_methods = [[getattr(sample_getter, "get_" + observable_string)
                            for observable_string in model_observables] for model_observables in observables]
     run_indexed_sample_directories = [f"{sample_directory}/run_{run_index}" for sample_directory in sample_directories]
-    for temperature_index, temperature in enumerate(temperatures):
-        for model_index, model in enumerate(models):
+
+    for model_index, model in enumerate(models):
+        for temperature_index, temperature in enumerate(reduced_model_temperatures[model_index]):
             samples = np.array([get_sample_method(run_indexed_sample_directories[model_index], temperature,
                                                   temperature_index, no_of_sites, no_of_equilibration_sweeps)
                                 for get_sample_method in get_sample_methods[model_index]])
