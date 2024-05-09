@@ -47,8 +47,8 @@ def main():
 
 def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps,
                reduced_model_temperatures, no_of_observations, run_index):
-    fig, axes = plt.subplots(2, 3, figsize=(20, 10))
-    fig.tight_layout()
+    fig, axes = plt.subplots(2, 3, figsize=(30, 10))
+    fig.tight_layout(w_pad=6.5)
     setup_figure_axes(axes)
     models = ["electrolyte", "hxy_model", "xy_model"]
     """Define observables[i] as the necessary observables of models[i]"""
@@ -78,20 +78,24 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
 
 
 def setup_figure_axes(axes):
-    [axis.tick_params(which='both', width=2) for axis in axes.flatten()]
-    [axis.tick_params(which='major', length=7, labelsize=18, pad=10) for axis in axes.flatten()]
+    [axis.tick_params(which='both', direction='in', width=3) for axis in axes.flatten()]
+    [axis.tick_params(which='major', length=7, labelsize=22.5, pad=3) for axis in axes.flatten()]
     [axis.tick_params(which='minor', length=4) for axis in axes.flatten()]
-    # [axis.set_linewidth(2) for axis in axes.flatten()]
-
-    [axes[1, model_index].set_xlim([0.0, 5.0e3]) for model_index in range(3)]
+    [axis.spines[spine].set_linewidth(3.75) for spine in ["top", "bottom", "left", "right"] for axis in axes.flatten()]
+    [axis.set_xlim([0.0, 5.0e3]) for axis in axes.flatten()]
     [axis.set_ylim([-1.5, 1.5]) for axis in axes.flatten()]
-    [axes[1, model_index].set_xlabel(r"$t$", fontsize=20) for model_index in range(3)]
-    [axis.set_ylabel(r"???", fontsize=20, rotation="horizontal") for axis in axes.flatten()]
-
-    # todo change the following ticks parameters
-    """[axes[1, model_index].set_xticks(np.arange(-math.pi, math.pi + 0.5 * math.pi / 2, step=(0.5 * math.pi)))
-     for model_index in range(3)]
-    [axes[1, model_index].set_xticklabels([r"set", r"these"]) for model_index in range(3)]"""
+    [axes[1, model_index].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=25) for model_index in range(3)]
+    for model_index in range(3):
+        if model_index == 0:
+            [axes[temp_index, model_index].set_ylabel(r"$\chi_{\rm w}(\widetilde{\beta}_{\rm BKT} / \beta = ?)$",
+                                                      fontsize=25, labelpad=-1.0) for temp_index in range(2)]
+        elif model_index == 1:
+            [axes[temp_index, model_index].set_ylabel(r"$\chi_{\rm x}(\widetilde{\beta}_{\rm BKT} / \beta = ?)$",
+                                                      fontsize=25, labelpad=-1.0) for temp_index in range(2)]
+        else:
+            [axes[temp_index, model_index].set_ylabel(
+                r"$\chi_{\rm x}(\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = ?)$", fontsize=25, labelpad=-1.0)
+                for temp_index in range(2)]
 
 
 if __name__ == "__main__":
