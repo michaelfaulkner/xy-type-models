@@ -1,4 +1,5 @@
-from setup_scripts import check_initial_run_index, setup_pool
+from setup_scripts import check_initial_run_index, reverse_enumerate, setup_pool
+from sample_getter import get_macro_josephson_current
 import sample_getter
 import importlib
 import math
@@ -54,17 +55,18 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
     """Define observables[i] as the observables of interest of models[i]..."""
     observables = [["electric_field_zero_mode", "topological_sector"],
                    ["macro_josephson_current", "hxy_topological_sector", "potential_minimising_twists"],
-                   ["macro_josephson_current", "xy_twist_relaxation_field", "potential_minimising_twists",
-                    "xy_topological_sector"]]
+                   ["xy_emergent_field_zero_mode", "xy_topological_sector", "xy_twist_relaxation_field",
+                    "potential_minimising_twists"]]
     """...then define the Cartesian coordinate of each observable (x = 0 / y = 1 for electro/spin-rep quantities)..."""
-    observable_cartesian_coords = [[0, 0], [1, 0, 1], [1, 1, 1, 0]]
+    observable_cartesian_coords = [[0, 0], [1, 0, 1], [0, 0, 1, 1]]
     """...then define the corresponding plot labels"""
-    plot_labels = [[r"$\widebar{E}_{\rm x}$", r"$w_{\rm x}$"],
-                   [r"$\widebar{E}_{\rm x}$", r"$w_{\rm x}$", r"$\tilde{t}_{\rm y}^{\rm non-anneal}$"],
-                   [r"$J \sum_{\langle \mathbf{r}, \mathbf{r}' \rangle_y} "
-                    r"\sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$", r"$\tilde{t}_{\rm y}$",
-                    r"$\tilde{t}_{\rm y}^{\rm non-anneal}$", r"$w_{\rm x}$"]]
+    plot_labels = [[r"$\widebar{E}_{\rm x} / (2\pi / \sqrt{N})$", r"$w_{\rm x}$"],
+                   [r"$\widebar{E}_{\rm x} / (2\pi / \sqrt{N})$", r"$w_{\rm x}$",
+                    r"$\tilde{t}_{\rm y}^{\rm non-anneal}$"],
+                   [r"$\widebar{E}_{\rm x} / (2\pi / \sqrt{N})$", r"$w_{\rm x}$", r"$\tilde{t}_{\rm y}$",
+                    r"$\tilde{t}_{\rm y}^{\rm non-anneal}$"]]
     observable_plotting_colours = ["black", "blue", "red", "yellow"]
+    # r"$J \sum_{\langle \mathbf{r}, \mathbf{r}' \rangle_y} \sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$"
     get_sample_methods = [[getattr(sample_getter, "get_" + observable_string)
                            for observable_string in model_observables] for model_observables in observables]
     run_indexed_sample_directories = [f"{sample_directory}/run_{run_index}" for sample_directory in sample_directories]
@@ -74,8 +76,8 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
             samples = np.array([get_sample_method(run_indexed_sample_directories[model_index], temperature,
                                                   temperature_index, no_of_sites, no_of_equilibration_sweeps)
                                 for get_sample_method in get_sample_methods[model_index]])
-            if model_index < 2:
-                samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi
+            # if model_index < 2:
+            samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi
             if temperature_index == 0:
                 [axes[temperature_index, model_index].plot(samples[observable_index, :no_of_observations,
                                                            observable_cartesian_coords[model_index][observable_index]],
@@ -91,9 +93,40 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
                  for observable_index in reversed(range(len(samples)))]
     for model_index in range(len(models)):
         handles, labels = axes[0, model_index].get_legend_handles_labels()
-        legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=16)
+        if model_index == 0:
+            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=20)
+        else:
+            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=20,
+                                                 ncol=2)
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(3)
+
+    inset_axis = plt.axes((0.8375, 0.545, 0.15, 0.15))
+    inset_axis.tick_params(which='both', direction='in', length=5, width=3, labelsize=12, pad=2)
+    inset_axis.set_xlim([0.0, 4.999e3])
+    inset_axis.xaxis.set_label_position("top")
+    inset_axis.xaxis.tick_top()
+    inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=14, labelpad=3)
+    inset_axis.set_ylim(-0.6, 0.6)
+    # inset_axis.set_yticklabels(["-0.5", "", "0.0", "", "0.5"])
+    inset_axis.set_ylabel(
+        r"$\sum_{\langle \mathbf{r}, \mathbf{r}' \rangle_y} \sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$",
+        fontsize=12, labelpad=-8)
+    [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
+    for temperature_index, temperature in reverse_enumerate(reduced_model_temperatures[2]):
+        xy_macro_josephson_current_sample = get_macro_josephson_current(
+            run_indexed_sample_directories[2], temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps)
+        if temperature_index == 0:
+            inset_axis.plot(xy_macro_josephson_current_sample[:no_of_observations, 1], linestyle="solid",
+                            color="black", label=r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95$")
+        else:
+            inset_axis.plot(xy_macro_josephson_current_sample[:no_of_observations, 1], linestyle="solid",
+                            color="red", label=r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 1.5$")
+    handles, labels = inset_axis.get_legend_handles_labels()
+    legend = inset_axis.legend(reversed(handles), reversed(labels), loc="lower left", fontsize=8, ncol=2)
+    legend.get_frame().set_edgecolor("k")
+    legend.get_frame().set_lw(3)
+
     fig.savefig(f"{output_directory}/global_topological_trace_plots_sans_global_moves_{no_of_sites_string}_"
                 f"{no_of_observations}_obs_run_{run_index}.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
