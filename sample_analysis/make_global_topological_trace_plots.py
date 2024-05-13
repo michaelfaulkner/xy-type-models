@@ -66,7 +66,6 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
                    [r"$\widebar{E}_{\rm x} / (2\pi / \sqrt{N})$", r"$w_{\rm x}$", r"$\tilde{t}_{\rm y}$",
                     r"$\tilde{t}_{\rm y}^{\rm non-anneal}$"]]
     observable_plotting_colours = ["black", "blue", "red", "yellow"]
-    # r"$J \sum_{\langle \mathbf{r}, \mathbf{r}' \rangle_y} \sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$"
     get_sample_methods = [[getattr(sample_getter, "get_" + observable_string)
                            for observable_string in model_observables] for model_observables in observables]
     run_indexed_sample_directories = [f"{sample_directory}/run_{run_index}" for sample_directory in sample_directories]
@@ -108,7 +107,6 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
     inset_axis.xaxis.tick_top()
     inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=14, labelpad=3)
     inset_axis.set_ylim(-0.6, 0.6)
-    # inset_axis.set_yticklabels(["-0.5", "", "0.0", "", "0.5"])
     inset_axis.set_ylabel(
         r"$\sum_{\langle \mathbf{r}, \mathbf{r}' \rangle_y} \sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$",
         fontsize=12, labelpad=-8)
