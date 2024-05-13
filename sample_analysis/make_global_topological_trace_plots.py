@@ -108,19 +108,6 @@ def setup_figure_axes(axes):
     [axis.set_xlim([0.0, 5.0e3]) for axis in axes.flatten()]
     [axis.set_ylim([-2.1, 2.1]) for axis in axes.flatten()]
     [axes[1, model_index].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=25) for model_index in range(3)]
-    """for model_index in range(3):
-        if model_index == 0:
-            [axes[temp_index, model_index].set_ylabel(fr"$\chi_{\rm w}(\widetilde{\beta}_{\rm BKT} / \beta = "
-                                                      fr"{reduced_model_temperatures[model_index][temp_index]:.2f})$",
-                                                      fontsize=25, labelpad=-1.0) for temp_index in range(2)]
-        elif model_index == 1:
-            [axes[temp_index, model_index].set_ylabel(fr"$\chi_{\rm x}(\widetilde{\beta}_{\rm BKT} / \beta = "
-                                                      fr"{reduced_model_temperatures[model_index][temp_index]:.2f})$",
-                                                      fontsize=25, labelpad=-1.0) for temp_index in range(2)]
-        else:
-            [axes[temp_index, model_index].set_ylabel(fr"$\chi_{\rm x}(\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = "
-                                                      fr"{reduced_model_temperatures[model_index][temp_index]:.2f})$", 
-                                                      fontsize=25, labelpad=-1.0) for temp_index in range(2)]"""
     for model_index in range(3):
         if model_index == 0:
             for temp_index in range(2):
