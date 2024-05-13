@@ -129,12 +129,10 @@ def setup_figure_axes(axes):
             for temp_index in range(2):
                 if temp_index == 0:
                     axes[temp_index, model_index].set_ylabel(
-                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95)$", fontsize=25,
-                        labelpad=-1.0)
+                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95)$", fontsize=25, labelpad=-1.0)
                 else:
                     axes[temp_index, model_index].set_ylabel(
-                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 1.5)$", fontsize=25,
-                        labelpad=-1.0)
+                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 1.5)$", fontsize=25, labelpad=-1.0)
 
 
 if __name__ == "__main__":
