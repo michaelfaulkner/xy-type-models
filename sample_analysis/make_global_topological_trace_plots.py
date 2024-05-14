@@ -22,13 +22,16 @@ def main():
     config_file_electrolyte = "config_files/global_top_trace_plots/electrolyte.txt"
     config_file_hxy = "config_files/global_top_trace_plots/hxy.txt"
     config_file_xy = "config_files/global_top_trace_plots/xy.txt"
-    (_, sample_directory_electrolyte, no_of_sites, no_of_sites_string,
+    (algorithm_name_electrolyte, sample_directory_electrolyte, no_of_sites, no_of_sites_string,
      no_of_equilibration_sweeps, no_of_observations, temperatures_electrolyte, use_external_global_moves,
      external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus
      ) = run_script.get_config_data(config_file_electrolyte)
-    (_, sample_directory_hxy, _, _, _, _, temperatures_hxy, _, _, _, _, _) = run_script.get_config_data(config_file_hxy)
-    (_, sample_directory_xy, _, _, _, _, temperatures_xy, _, _, _, _, _) = run_script.get_config_data(config_file_xy)
+    (algorithm_name_hxy, sample_directory_hxy, _, _, _, _, temperatures_hxy, _, _, _, _, _
+     ) = run_script.get_config_data(config_file_hxy)
+    (algorithm_name_xy, sample_directory_xy, _, _, _, _, temperatures_xy, _, _, _, _, _
+     ) = run_script.get_config_data(config_file_xy)
     output_directory = sample_directory_electrolyte.replace("/electrolyte", "")
+    algorithm_names = [algorithm_name_electrolyte, algorithm_name_hxy, algorithm_name_xy]
     sample_directories = [sample_directory_electrolyte, sample_directory_hxy, sample_directory_xy]
     approx_transition_temperatures = [1.351, 1.351, 0.887]
     reduced_model_temperatures = [
@@ -40,14 +43,15 @@ def main():
     start_time = time.time()
     pool = setup_pool(no_of_runs, max_no_of_cpus)
     pool.starmap(make_plots, [
-        (sample_directories, output_directory, no_of_sites, no_of_sites_string, reduced_model_temperatures,
-         no_of_equilibration_sweeps, no_of_observations, run_index) for run_index in range(no_of_runs)])
+        (algorithm_names, sample_directories, output_directory, no_of_sites, no_of_sites_string,
+         reduced_model_temperatures, no_of_equilibration_sweeps, no_of_observations, run_index)
+        for run_index in range(no_of_runs)])
     pool.close()
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
-def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_string, reduced_model_temperatures,
-               no_of_equilibration_sweeps, no_of_observations, run_index):
+def make_plots(algorithm_names, sample_directories, output_directory, no_of_sites, no_of_sites_string,
+               reduced_model_temperatures, no_of_equilibration_sweeps, no_of_observations, run_index):
     fig, axes = plt.subplots(2, 3, figsize=(30, 10))
     fig.tight_layout(w_pad=6.5)
     setup_figure_axes(axes)
@@ -73,9 +77,19 @@ def make_plots(sample_directories, output_directory, no_of_sites, no_of_sites_st
 
     for model_index, model in enumerate(models):
         for temp_index, temperature in enumerate(reduced_model_temperatures[model_index]):
-            samples = np.array([get_sample_method(run_indexed_sample_directories[model_index], temperature,
-                                                  temp_index, no_of_sites, no_of_equilibration_sweeps)
-                                for get_sample_method in get_sample_methods[model_index]])
+            compressed_sample_filenames = [
+                (f"{output_directory}/{observable_string}_{algorithm_names[model_index].replace('-', '_')}_"
+                 f"sans_global_moves_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_{temperature:.4f}_"
+                 f"run_{run_index}.npy") for observable_string in observables[model_index]]
+            try:
+                samples = np.array([np.load(compressed_sample_filenames[observable_index])
+                                    for observable_index in range(len(observables[model_index]))])
+            except IOError:
+                samples = np.array([get_sample_method(run_indexed_sample_directories[model_index], temperature,
+                                                      temp_index, no_of_sites, no_of_equilibration_sweeps)
+                                    for get_sample_method in get_sample_methods[model_index]])
+                [np.save(compressed_sample_filenames[observable_index], samples[observable_index])
+                 for observable_index in range(len(observables[model_index]))]
             samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi
             if temp_index == 0:
                 for observable_index in reversed(range(len(samples))):
