@@ -53,7 +53,18 @@ def main():
 def make_plots(algorithm_names, sample_directories, output_directory, no_of_sites, no_of_sites_string,
                reduced_model_temperatures, no_of_equilibration_sweeps, no_of_observations, run_index):
     fig, axes = plt.subplots(2, 3, figsize=(30, 10))
-    fig.tight_layout(w_pad=6.5)
+    fig.tight_layout(w_pad=4.25)
+    left_letter_width = 0.299
+    middle_letter_width = 0.635
+    right_letter_width = 0.9725
+    letter_heights = 0.94
+    fig.text(left_letter_width, letter_heights, "(a)", fontsize=27)
+    fig.text(middle_letter_width, letter_heights, "(b)", fontsize=27)
+    fig.text(right_letter_width, letter_heights, "(c)", fontsize=27)
+    letter_heights = 0.445
+    fig.text(left_letter_width, letter_heights, "(d)", fontsize=27)
+    fig.text(middle_letter_width, letter_heights, "(e)", fontsize=27)
+    fig.text(right_letter_width, letter_heights, "(f)", fontsize=27)
     setup_figure_axes(axes)
     models = ["electrolyte", "hxy_model", "xy_model"]
     """Define observables[i] as the observables of interest of models[i]..."""
