@@ -151,8 +151,15 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
                           r"\sin (\varphi_\mathbf{r} - \varphi_{\mathbf{r}'}) / N$", fontsize=12, labelpad=-8)
     [inset_axis.spines[spine].set_linewidth(3) for spine in ["top", "bottom", "left", "right"]]
     for temp_index, temperature in reverse_enumerate(reduced_model_temperatures[2]):
-        xy_macro_josephson_current_sample = get_macro_josephson_current(
-            run_indexed_sample_directories[2], temperature, temp_index, no_of_sites, no_of_equilibration_sweeps)
+        compressed_sample_filename = (
+            f"{output_directory}/xy_macro_josephson_current_{algorithm_names[2].replace('-', '_')}_sans_global_moves_"
+            f"{no_of_sites_string}_{no_of_observations}_obs_temp_eq_{temperature:.4f}_run_{run_index}.npy")
+        try:
+            xy_macro_josephson_current_sample = np.load(compressed_sample_filename)
+        except IOError:
+            xy_macro_josephson_current_sample = get_macro_josephson_current(
+                run_indexed_sample_directories[2], temperature, temp_index, no_of_sites, no_of_equilibration_sweeps)
+            np.save(compressed_sample_filename, xy_macro_josephson_current_sample)
         if temp_index == 0:
             inset_axis.plot(xy_macro_josephson_current_sample[:no_of_observations, 1], linestyle="solid",
                             color="black", label=r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95$")
