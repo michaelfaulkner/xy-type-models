@@ -53,18 +53,17 @@ def main():
 def make_plots(algorithm_names, sample_directories, output_directory, no_of_sites, no_of_sites_string,
                reduced_model_temperatures, no_of_equilibration_sweeps, no_of_observations, run_index):
     fig, axes = plt.subplots(2, 3, figsize=(30, 10))
-    fig.tight_layout(w_pad=7.0, h_pad=2.25)
-    left_letter_width = 0.281
-    middle_letter_width = 0.624
-    right_letter_width = 0.9675
-    letter_heights = 0.93
-    fig.text(left_letter_width, letter_heights, "(a)", fontsize=35)
-    fig.text(middle_letter_width, letter_heights, "(b)", fontsize=35)
-    fig.text(right_letter_width, letter_heights, "(c)", fontsize=35)
-    letter_heights = 0.43
-    fig.text(left_letter_width, letter_heights, "(d)", fontsize=35)
-    fig.text(middle_letter_width, letter_heights, "(e)", fontsize=35)
-    fig.text(right_letter_width, letter_heights, "(f)", fontsize=35)
+    fig.tight_layout(w_pad=-1.0, h_pad=2.25)
+    left_letter_widths = 0.306
+    middle_letter_widths = 0.634
+    letter_heights = 0.92
+    fig.text(left_letter_widths, letter_heights, "(a)", fontsize=40)
+    fig.text(middle_letter_widths, letter_heights, "(b)", fontsize=40)
+    fig.text(0.964, letter_heights, "(c)", fontsize=40)
+    letter_heights = 0.42
+    fig.text(left_letter_widths, letter_heights, "(d)", fontsize=40)
+    fig.text(middle_letter_widths, letter_heights, "(e)", fontsize=40)
+    fig.text(0.967, letter_heights, "(f)", fontsize=40)
     setup_figure_axes(axes)
     models = ["electrolyte", "hxy_model", "xy_model"]
     """Define observables[i] as the observables of interest of models[i]..."""
@@ -133,23 +132,23 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
     for model_index in range(len(models)):
         handles, labels = axes[0, model_index].get_legend_handles_labels()
         if model_index == 0:
-            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=32,
+            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=33,
                                                  labelspacing=0)
         else:
-            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=32,
+            legend = axes[0, model_index].legend(reversed(handles), reversed(labels), loc="upper left", fontsize=33,
                                                  labelspacing=0, ncol=2, columnspacing=0.5)
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(5)
 
     inset_axis = plt.axes((0.8375, 0.55, 0.15, 0.12))
-    inset_axis.tick_params(which='both', direction='in', length=7, width=4, labelsize=28, pad=0.5)
+    inset_axis.tick_params(which='both', direction='in', length=7, width=4, labelsize=28, pad=0.75)
     inset_axis.set_xlim([0.0, 2.499e3])
     inset_axis.xaxis.set_label_position("top")
     inset_axis.xaxis.tick_top()
-    inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=28, labelpad=3)
-    inset_axis.set_ylim(-0.4, 0.4)
+    inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=30, labelpad=3)
+    inset_axis.set_ylim(-0.375, 0.375)
     inset_axis.set_yticks(np.arange(-0.3, 0.3 + 0.5 * 0.3 / 2, step=0.3))
-    inset_axis.set_ylabel(r"$j_y(t) \, / \, J$", fontsize=28, labelpad=-2)
+    inset_axis.set_ylabel(r"$j_y(t) / J$", fontsize=30, labelpad=-2)
     [inset_axis.spines[spine].set_linewidth(4) for spine in ["top", "bottom", "left", "right"]]
     for temp_index, temperature in reverse_enumerate(reduced_model_temperatures[2]):
         compressed_sample_filename = (
@@ -163,14 +162,10 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
             np.save(compressed_sample_filename, xy_macro_josephson_current_sample)
         if temp_index == 0:
             inset_axis.plot(xy_macro_josephson_current_sample[:no_of_observations, 1], linestyle="solid",
-                            color="black", label=r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95$")
+                            color="black", label=r"$\beta_{\rm c} / \beta = 0.95$")
         else:
             inset_axis.plot(xy_macro_josephson_current_sample[:no_of_observations, 1], linestyle="solid",
-                            color="red", label=r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 1.5$")
-    '''handles, labels = inset_axis.get_legend_handles_labels()
-    legend = inset_axis.legend(reversed(handles), reversed(labels), loc="lower left", fontsize=10, ncol=2)
-    legend.get_frame().set_edgecolor("k")
-    legend.get_frame().set_lw(2)'''
+                            color="red", label=r"$\beta_{\rm c} / \beta = 1.5$")
 
     fig.savefig(f"{output_directory}/global_topological_trace_plots_sans_global_moves_{no_of_sites_string}_"
                 f"{no_of_observations}_obs_run_{run_index}.pdf", bbox_inches="tight")
@@ -180,37 +175,31 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
 
 def setup_figure_axes(axes):
     [axis.tick_params(which='both', direction='in', width=5) for axis in axes.flatten()]
-    [axis.tick_params(which='major', length=10, labelsize=35.0, pad=3) for axis in axes.flatten()]
+    [axis.tick_params(which='major', length=10, labelsize=40, pad=4) for axis in axes.flatten()]
     [axis.tick_params(which='minor', length=4) for axis in axes.flatten()]
     [axis.spines[spine].set_linewidth(5.0) for spine in ["top", "bottom", "left", "right"] for axis in axes.flatten()]
-    [axis.set_xlim([0.0, 2.5e3]) for axis in axes.flatten()]
+    [axis.set_xlim([0.0,  2.499e3]) for axis in axes.flatten()]
     [axis.set_ylim([-2.1, 2.1]) for axis in axes.flatten()]
-    [axes[1, model_index].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=35) for model_index in range(3)]
-    for model_index in range(3):
-        if model_index == 0:
-            for temp_index in range(2):
-                if temp_index == 0:
-                    axes[temp_index, model_index].set_ylabel(r"$X(t; \widetilde{\beta}_{\rm BKT} / \beta = 0.95)$",
-                                                             fontsize=35, labelpad=-10.0)
-                else:
-                    axes[temp_index, model_index].set_ylabel(r"$X(t; \widetilde{\beta}_{\rm BKT} / \beta = 1.5)$",
-                                                             fontsize=35, labelpad=-10.0)
-        elif model_index == 1:
-            for temp_index in range(2):
-                if temp_index == 0:
-                    axes[temp_index, model_index].set_ylabel(r"$X(t; \widetilde{\beta}_{\rm BKT} / \beta = 0.95)$",
-                                                             fontsize=35, labelpad=-10.0)
-                else:
-                    axes[temp_index, model_index].set_ylabel(r"$X(t; \widetilde{\beta}_{\rm BKT} / \beta = 1.5)$",
-                                                             fontsize=35, labelpad=-10.0)
-        else:
-            for temp_index in range(2):
-                if temp_index == 0:
-                    axes[temp_index, model_index].set_ylabel(
-                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 0.95)$", fontsize=35, labelpad=-10.0)
-                else:
-                    axes[temp_index, model_index].set_ylabel(
-                        r"$X(t; \widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta = 1.5)$", fontsize=35, labelpad=-10.0)
+    axes[1, 0].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}^{\mathrm{elec}}$", fontsize=40)
+    axes[1, 1].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}^{\mathrm{HXY}}$", fontsize=40)
+    axes[1, 2].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}^{\mathrm{XY}}$", fontsize=40)
+    critical_temp_box_coords = [0.035, 0.1]
+    axes[0, 0].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
+                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}$ (electrolyte)",
+                    fontsize=30, transform=axes[0, 0].transAxes,
+                    bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+    axes[0, 1].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
+                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}$ (HXY)",
+                    fontsize=30, transform=axes[0, 1].transAxes,
+                    bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+    axes[0, 2].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
+                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}^{\rm XY}$ (XY)",
+                    fontsize=30, transform=axes[0, 2].transAxes,
+                    bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
+    [axes[i, 1].tick_params(labelleft=False) for i in range(2)]
+    [axes[i, 2].tick_params(labelleft=False) for i in range(2)]
+    axes[0, 0].set_ylabel(r"$X(t; \! \beta_{\rm c} / \beta \! = \! 0.95)$", fontsize=40, labelpad=-30.0)
+    axes[1, 0].set_ylabel(r"$X(t; \! \beta_{\rm c} / \beta \! = \! 1.5)$", fontsize=40, labelpad=-30.0)
 
 
 if __name__ == "__main__":
