@@ -185,11 +185,11 @@ def setup_figure_axes(axes):
     axes[1, 2].set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}^{\mathrm{XY}}$", fontsize=40)
     critical_temp_box_coords = [0.035, 0.1]
     axes[0, 0].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
-                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}$ (electrolyte)",
+                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}^{\mathrm{elec}}$ (electrolyte)",
                     fontsize=30, transform=axes[0, 0].transAxes,
                     bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     axes[0, 1].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
-                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}$ (HXY)",
+                    r"$\beta_{\rm c} = \widetilde{\beta}_{\rm BKT}^{\mathrm{elec}}$ (HXY)",
                     fontsize=30, transform=axes[0, 1].transAxes,
                     bbox=dict(facecolor='none', edgecolor='black', linewidth=3, boxstyle='round, pad=0.5'))
     axes[0, 2].text(critical_temp_box_coords[0], critical_temp_box_coords[1],
