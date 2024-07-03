@@ -44,9 +44,9 @@ def main():
     get_sample_methods = [[getattr(sample_getter, "get_" + observable_string)
                            for observable_string in model_observables] for model_observables in observables]
 
-    config_file_electrolyte = "config_files/top_susceptibilities/electrolyte_all.txt"
-    config_file_hxy = "config_files/top_susceptibilities/hxy_all.txt"
-    config_file_xy = "config_files/top_susceptibilities/xy_all.txt"
+    config_file_electrolyte = "config_files/top_susc_figs/electrolyte_all.txt"
+    config_file_hxy = "config_files/top_susc_figs/hxy_all.txt"
+    config_file_xy = "config_files/top_susc_figs/xy_all.txt"
     (_, sample_directory_electrolyte, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
      temperatures_electrolyte, use_external_global_moves, external_global_moves_string, no_of_runs, _, max_no_of_cpus
      ) = run_script.get_config_data(config_file_electrolyte)
