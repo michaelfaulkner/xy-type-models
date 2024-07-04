@@ -20,7 +20,6 @@ def main(config_file, observable_string):
     (algorithm_name, sample_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, _, temperatures, _,
      external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus) = run_script.get_config_data(
         config_file)
-    print(external_global_moves_string)
     check_for_observable_error(algorithm_name, observable_string)
     check_initial_run_index(initial_run_index)
     means, errors = get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites,
@@ -82,11 +81,7 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
             output_file.write("# temperature".ljust(30) + observable_string.ljust(35) + observable_string + " error" +
                               "\n")
 
-        if no_of_runs > 1:
-            pool = setup_pool(no_of_runs, max_no_of_cpus)
-        else:
-            pool = None
-
+        pool = setup_pool(no_of_runs, max_no_of_cpus)
         means = []
         errors = []
         start_time = time.time()
