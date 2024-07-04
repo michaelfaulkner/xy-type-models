@@ -1,0 +1,22 @@
+'xy-uniform-noise-metropolis'               algorithm_name
+'output/top_susc_figs/4x4_xy_all'           output_directory
+4                                           integer_lattice_length
+100000                                      no_of_equilibration_sweeps
+1000000                                     no_of_observations
+0.5d0                                       initial_temperature
+1.2d0                                       final_temperature
+7                                           no_of_temperature_increments
+1.0d0                                       width_of_proposal_interval (initial)
+0.44d0                                      target_acceptance_rate_of_field_rotations
+.false.                                     randomise_initial_field_configuration
+.true.                                      use_external_global_moves
+.false.                                     measure_magnetisation
+.true.                                      measure_helicity
+.false.                                     measure_potential
+.true.                                      measure_potential_minimising_twists
+.true.                                      measure_external_global_moves
+.false.                                     measure_twist_relaxations
+.true.                                      measure_emergent_field
+4                                           no_of_runs
+0                                           initial_run_index
+4                                           max_no_of_cpus
