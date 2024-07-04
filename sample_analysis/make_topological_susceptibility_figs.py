@@ -32,8 +32,7 @@ def main(no_of_system_sizes=5):
     """Define observables[i] as the necessary observables of algorithms[i]"""
     observables = [["topological_susceptibility"],
                    ["hxy_internal_twist_susceptibility", "potential_minimising_twist_susceptibility"],
-                   # ["xy_global_defect_susceptibility", "potential_minimising_twist_susceptibility"]]
-                   ["xy_global_defect_susceptibility"]]
+                   ["xy_global_defect_susceptibility", "potential_minimising_twist_susceptibility"]]
     observable_plotting_markers = [".", "*"]
     system_size_plotting_colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     system_size_plotting_colors.reverse()
@@ -52,7 +51,6 @@ def main(no_of_system_sizes=5):
         [temperature / approx_transition_temperatures[0] for temperature in temperatures_electrolyte],
         [temperature / approx_transition_temperatures[1] for temperature in temperatures_hxy],
         [temperature / approx_transition_temperatures[2] for temperature in temperatures_xy]]
-    pool = setup_pool(no_of_runs, max_no_of_cpus)
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 3.8))
     fig.tight_layout(w_pad=2.5)
@@ -75,9 +73,15 @@ def main(no_of_system_sizes=5):
         [axis.spines[spine].set_linewidth(3.75) for spine in ["top", "bottom", "left", "right"]]
 
     for algorithm_index, algorithm in enumerate(algorithms):
-        for observable_index, observable in enumerate(observables[algorithm_index]):
-            for system_size_index, length in enumerate(linear_system_sizes):
-                no_of_sites_string = f"{length}x{length}_sites"
+        for system_size_index, length in enumerate(linear_system_sizes):
+            no_of_sites_string = f"{length}x{length}_sites"
+            """first compute mean acceptance rates across the runs"""
+            get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
+                                 no_of_sites_string, no_of_equilibration_sweeps,
+                                 external_global_moves_string_all_moves,
+                                 sample_directories_by_algo[algorithm_index][system_size_index], no_of_runs,
+                                 max_no_of_cpus)
+            for observable_index, observable in enumerate(observables[algorithm_index]):
                 means, errors = get_means_and_errors(observable, algorithm, model_temperatures[algorithm_index],
                                                      length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
                                                      external_global_moves_string_all_moves,
@@ -86,9 +90,6 @@ def main(no_of_system_sizes=5):
                 axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors,
                                                marker=observable_plotting_markers[observable_index], markersize=10,
                                                color=system_size_plotting_colors[system_size_index])
-        # plt.xlabel(r"reduced temperature, $\beta_{\rm c} / \beta$", fontsize=15, labelpad=10)
-        # plt.ylabel(r"$\chi_{\rm{X}}$", fontsize=15, labelpad=10)
-
     fig.savefig(f"{output_directory}/top_susceptibilities_with_global_moves_{no_of_observations}_obs.pdf",
                 bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
