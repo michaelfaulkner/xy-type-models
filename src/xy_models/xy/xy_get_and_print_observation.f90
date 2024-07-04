@@ -124,7 +124,10 @@ do
                                             two_pi / dfloat(integer_lattice_length) - spin_field(get_west_neighbour(i)))
     end do
     potential_difference = potential_of_twisted_field - potential_cartesian_components(1)
-    if (potential_difference < 0.0d0) then
+    ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
+    ! in such cases, potential_difference is exactly zero leading to floating-point errors - this can be a problem at
+    ! L = 4 as proposed_no_of_twists = 4 is reachable given one of {cos(n 2pi / 4), sin(n 2pi / 4)} is zero for all n
+    if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
         no_of_global_twists_to_minimise_potential(1) = sign_of_twist * proposed_no_of_twists
         proposed_no_of_twists = proposed_no_of_twists + 1
     else
@@ -152,7 +155,10 @@ do
                                         two_pi / dfloat(integer_lattice_length) - spin_field(get_south_neighbour(i)))
     end do
     potential_difference = potential_of_twisted_field - potential_cartesian_components(2)
-    if (potential_difference < 0.0d0) then
+    ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
+    ! in such cases, potential_difference is exactly zero leading to floating-point errors - this can be a problem at
+    ! L = 4 as proposed_no_of_twists = 4 is reachable given one of {cos(n 2pi / 4), sin(n 2pi / 4)} is zero for all n
+    if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
         no_of_global_twists_to_minimise_potential(2) = sign_of_twist * proposed_no_of_twists
         proposed_no_of_twists = proposed_no_of_twists + 1
     else
