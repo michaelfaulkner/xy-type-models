@@ -106,7 +106,7 @@ def setup_pool(no_of_runs, max_no_of_cpus):
         raise Exception("ConfigurationError: For the value of no_of_runs, give an integer not less than one.")
     elif no_of_runs == 1:
         print("Running a single sample-analysis process.")
-        pool = None
+        return None
     else:
         no_of_available_cpus = mp.cpu_count()
         if no_of_available_cpus > max_no_of_cpus:
@@ -121,7 +121,7 @@ def setup_pool(no_of_runs, max_no_of_cpus):
             print(f"Running {no_of_runs} sample-analysis processes in parallel on {no_of_cpus} CPUs, where "
                   f"{no_of_available_cpus} CPUs are available.")
             pool = mp.Pool(no_of_cpus)
-    return pool
+        return pool
 
 
 def get_sample_is_one_dimensional(observable_string):
