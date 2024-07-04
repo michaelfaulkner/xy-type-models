@@ -74,8 +74,8 @@ else
 end if
 close(300)
 
-100 format(I20)
-200 format(I20, ", ", ES24.14)
+100 format(ES24.14)
+200 format(ES24.14, ", ", ES24.14)
 
 return
 end subroutine output_event_rate
