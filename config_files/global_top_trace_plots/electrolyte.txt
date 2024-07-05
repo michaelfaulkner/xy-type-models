@@ -1,7 +1,7 @@
 'elementary-electrolyte'                        algorithm_name
 'output/global_top_trace_plots/electrolyte'     output_directory
 32                                              integer_lattice_length
-100000                                          no_of_equilibration_sweeps
+10000                                           no_of_equilibration_sweeps
 10000                                           no_of_observations
 1.2825d0                                        initial_temperature
 2.025d0                                         final_temperature
