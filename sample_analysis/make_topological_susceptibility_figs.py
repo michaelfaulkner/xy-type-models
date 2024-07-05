@@ -1,5 +1,4 @@
 from make_summary_statistic_vs_temperature_plot import get_means_and_errors
-from setup_scripts import setup_pool
 import importlib
 import matplotlib
 import matplotlib.pyplot as plt
