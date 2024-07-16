@@ -1,18 +1,18 @@
 'elementary-electrolyte'                        algorithm_name
-'output/prb_91_155412_fig_2/local_moves'        output_directory
-8                                               integer_lattice_length
+'output/top_susc_figs/16x16_elec_local'         output_directory
+16                                              integer_lattice_length
 100000                                          no_of_equilibration_sweeps
 1000000                                         no_of_observations
-1.0d0                                           initial_temperature
-1.8d0                                           final_temperature
-4                                               no_of_temperature_increments
+0.5d0                                           initial_temperature
+2.1d0                                           final_temperature
+16                                              no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
 0.66666666666666d0                              charge_hop_proportion
-.true.                                          use_external_global_moves
+.false.                                         use_external_global_moves
 .true.                                          measure_electric_field_sum
 .false.                                         measure_potential
 .false.                                         measure_external_global_moves
-16                                              no_of_runs
+192                                             no_of_runs
 0                                               initial_run_index
-4                                               max_no_of_cpus
+48                                              max_no_of_cpus
