@@ -92,21 +92,21 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
             """first compute mean acceptance rates across the runs"""
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
                                  no_of_sites_string, no_of_equilibration_sweeps,
-                                 external_global_moves_string_all_moves,
+                                 external_global_moves_string_all_moves, output_directory,
                                  sample_directories_by_algo[algorithm_index][system_size_index], no_of_runs,
                                  max_no_of_cpus)
             """now compute the inverse vacuum permittivities of the XY models (for our records)"""
             if algorithm_index > 0:
                 get_means_and_errors("inverse_vacuum_permittivity", algorithm, model_temperatures[algorithm_index],
                                      length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
-                                     external_global_moves_string_all_moves,
+                                     external_global_moves_string_all_moves, output_directory,
                                      sample_directories_by_algo[algorithm_index][system_size_index],
                                      no_of_runs, max_no_of_cpus)
 
             for observable_index, observable in enumerate(observables[algorithm_index]):
                 means, errors = get_means_and_errors(observable, algorithm, model_temperatures[algorithm_index],
                                                      length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
-                                                     external_global_moves_string_all_moves,
+                                                     external_global_moves_string_all_moves, output_directory,
                                                      sample_directories_by_algo[algorithm_index][system_size_index],
                                                      no_of_runs, max_no_of_cpus)
                 if observable_index > 0:
@@ -133,19 +133,20 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
             """first compute mean acceptance rates across the runs"""
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
                                  no_of_sites_string, no_of_equilibration_sweeps,
-                                 external_global_moves_string_local_moves,
+                                 external_global_moves_string_local_moves, output_directory,
                                  sample_directories_by_algo_local_moves[algorithm_index][system_size_index], no_of_runs,
                                  max_no_of_cpus)
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
                                  no_of_sites_string, no_of_equilibration_sweeps,
-                                 external_global_moves_string_all_moves,
+                                 external_global_moves_string_all_moves, output_directory,
                                  sample_directories_by_algo_all_moves[algorithm_index][system_size_index], no_of_runs,
                                  max_no_of_cpus)
 
             for observable_index, observable in enumerate(observables[algorithm_index]):
+                output_file_string = (f"{output_directory}/{observable}_ratio_{algorithm.replace('-', '_')}_"
+                                      f"{no_of_sites_string}.tsv")
                 try:
-                    with open(f"{output_directory}/{algorithm.replace('-', '_')}_{observable}_ratio_"
-                              f"{no_of_sites_string}.tsv", "r") as output_file:
+                    with open(output_file_string, "r") as output_file:
                         output_file_sans_header = np.array([
                             np.fromstring(line, dtype=float, sep='\t')
                             for line in output_file if not line.startswith('#')]).transpose()
@@ -153,12 +154,12 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                 except IOError:
                     sample_means_local_moves, sample_errors_local_moves = get_means_and_errors(
                         observable, algorithm, model_temperatures[algorithm_index], length ** 2, no_of_sites_string,
-                        no_of_equilibration_sweeps, external_global_moves_string_local_moves,
+                        no_of_equilibration_sweeps, external_global_moves_string_local_moves, output_directory,
                         sample_directories_by_algo_local_moves[algorithm_index][system_size_index], no_of_runs,
                         max_no_of_cpus)
                     sample_means_all_moves, sample_errors_all_moves = get_means_and_errors(
                         observable, algorithm, model_temperatures[algorithm_index], length ** 2, no_of_sites_string,
-                        no_of_equilibration_sweeps, external_global_moves_string_all_moves,
+                        no_of_equilibration_sweeps, external_global_moves_string_all_moves, output_directory,
                         sample_directories_by_algo_all_moves[algorithm_index][system_size_index], no_of_runs,
                         max_no_of_cpus)
                     chi_ratios = [sample_mean_local_moves / sample_means_all_moves[temperature_index]
@@ -169,8 +170,7 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                            sample_means_all_moves[temperature_index] ** 2) ** 2)
                         for temperature_index, sample_mean_local_moves in enumerate(sample_means_local_moves)]
 
-                    output_file = open(f"{output_directory}/{algorithm.replace('-', '_')}_{observable}_ratio_"
-                                       f"{no_of_sites_string}.tsv", "w")
+                    output_file = open(output_file_string, "w")
                     output_file.write("# *** NB, chi represents the observable in the file name ***" + "\n")
                     output_file.write("# temperature".ljust(30) + "chi ratio".ljust(30) + "chi ratio error".ljust(30) +
                                       "chi (local only)".ljust(30) + "chi error (local only)".ljust(30) +

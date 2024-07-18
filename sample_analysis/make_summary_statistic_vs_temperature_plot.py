@@ -24,7 +24,7 @@ def main(config_file, observable_string):
     check_initial_run_index(initial_run_index)
     means, errors = get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites,
                                          no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string,
-                                         sample_directory, no_of_runs, max_no_of_cpus)
+                                         sample_directory, sample_directory, no_of_runs, max_no_of_cpus)
     if not ((observable_string == "acceptance_rates") or (observable_string == "event_rate")):
         plt.errorbar(temperatures, means, errors, marker=".", markersize=5, color="k")
         plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
@@ -35,16 +35,16 @@ def main(config_file, observable_string):
 
 
 def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites, no_of_sites_string,
-                         no_of_equilibration_sweeps, external_global_moves_string, sample_directory, no_of_runs,
-                         max_no_of_cpus):
+                         no_of_equilibration_sweeps, external_global_moves_string, output_directory, sample_directory,
+                         no_of_runs, max_no_of_cpus):
     try:
-        with open(f"{sample_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+        with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{no_of_sites_string}.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             return output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
-        output_file = open(f"{sample_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+        output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                            f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
         if observable_string == "acceptance_rates":
             if no_of_runs == 1:
