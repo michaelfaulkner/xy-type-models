@@ -22,9 +22,14 @@ def main(config_file, observable_string):
         config_file)
     check_for_observable_error(algorithm_name, observable_string)
     check_initial_run_index(initial_run_index)
+    pool = setup_pool(no_of_runs, max_no_of_cpus)
+    start_time = time.time()
     means, errors = get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites,
                                          no_of_sites_string, no_of_equilibration_sweeps, external_global_moves_string,
-                                         sample_directory, sample_directory, no_of_runs, max_no_of_cpus)
+                                         sample_directory, sample_directory, no_of_runs, pool)
+    print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
+    if no_of_runs > 1:
+        pool.close()
     if not ((observable_string == "acceptance_rates") or (observable_string == "event_rate")):
         plt.errorbar(temperatures, means, errors, marker=".", markersize=5, color="k")
         plt.xlabel(r"temperature, $1 / (\beta J)$", fontsize=15, labelpad=10)
@@ -36,7 +41,7 @@ def main(config_file, observable_string):
 
 def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites, no_of_sites_string,
                          no_of_equilibration_sweeps, external_global_moves_string, output_directory, sample_directory,
-                         no_of_runs, max_no_of_cpus):
+                         no_of_runs, pool):
     try:
         with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{no_of_sites_string}.tsv", "r") as output_file:
@@ -81,10 +86,8 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
             output_file.write("# temperature".ljust(30) + observable_string.ljust(35) + observable_string + " error" +
                               "\n")
 
-        pool = setup_pool(no_of_runs, max_no_of_cpus)
-        means = []
-        errors = []
-        start_time = time.time()
+        means, errors = [], []
+        print(f"Processing {observable_string} of {algorithm_name}")
         for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
             if observable_string == "acceptance_rates" or observable_string == "event_rate":
@@ -120,19 +123,14 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
                         sample_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
                 else:
                     sample_means_and_errors = np.transpose(np.array(pool.starmap(get_sample_mean_and_error, [[
-                        get_sample_method(sample_directory + "/run_" + str(run_number), temperature, temperature_index,
+                        get_sample_method(f"{sample_directory}/run_{run_number}", temperature, temperature_index,
                                           no_of_sites, no_of_equilibration_sweeps)]
                         for run_number in range(no_of_runs)])))
                     sample_mean = np.mean(sample_means_and_errors[0])
                     sample_error = np.linalg.norm(sample_means_and_errors[1])
                 output_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_mean:.14e}".ljust(35) +
                                   f"{sample_error:.14e}" + "\n")
-                means.append(sample_mean)
-                errors.append(sample_error)
-
-        print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
-        if no_of_runs > 1:
-            pool.close()
+                means.append(sample_mean), errors.append(sample_error)
         output_file.close()
         return means, errors
 
