@@ -401,7 +401,7 @@ instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/
 integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
 
 
-## *General symmetry breaking at a topological phase transition* [\[Faulkner2022b\]](https://arxiv.org/abs/2209.03699)
+## *Symmetry breaking at a topological phase transition* [\[Faulkner2022b\]](https://arxiv.org/abs/2209.03699)
 
 This details how to make its figures.
 
