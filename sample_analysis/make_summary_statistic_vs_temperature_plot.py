@@ -90,8 +90,8 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
         print(f"Processing {observable_string} of {algorithm_name}")
         for temperature_index, temperature in enumerate(temperatures):
             print(f"Temperature = {temperature:.4f}")
+            get_sample_method = getattr(sample_getter, "get_" + observable_string)
             if observable_string == "acceptance_rates" or observable_string == "event_rate":
-                get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_runs == 1:
                     acceptance_rates_or_event_rate = get_sample_method(sample_directory, temperature_index)
                 else:
@@ -117,7 +117,6 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
                                       f"{acceptance_rates_or_event_rate[2]:.14e}".ljust(40) +
                                       f"{acceptance_rates_or_event_rate[3]:.14e}" + "\n")
             else:
-                get_sample_method = getattr(sample_getter, "get_" + observable_string)
                 if no_of_runs == 1:
                     sample_mean, sample_error = get_sample_mean_and_error(get_sample_method(
                         sample_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps))
