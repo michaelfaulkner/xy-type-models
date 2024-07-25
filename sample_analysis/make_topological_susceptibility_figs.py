@@ -101,14 +101,6 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                  no_of_sites_string, no_of_equilibration_sweeps,
                                  external_global_moves_string_all_moves, output_directory,
                                  sample_directories_by_algo[algorithm_index][system_size_index], no_of_runs, pool)
-            """now compute the inverse vacuum permittivities of the XY models (for our records)"""
-            if algorithm_index > 0:
-                get_means_and_errors("inverse_vacuum_permittivity", algorithm, model_temperatures[algorithm_index],
-                                     length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
-                                     external_global_moves_string_all_moves, output_directory,
-                                     sample_directories_by_algo[algorithm_index][system_size_index],
-                                     no_of_runs, pool)
-
             for observable_index, observable in enumerate(observables[algorithm_index]):
                 means, errors = get_means_and_errors(observable, algorithm, model_temperatures[algorithm_index],
                                                      length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
