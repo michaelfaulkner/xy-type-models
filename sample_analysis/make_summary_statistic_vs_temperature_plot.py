@@ -40,17 +40,18 @@ def main(config_file, observable_string):
 
 
 def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites, no_of_sites_string,
-                         no_of_equilibration_sweeps, external_global_moves_string, output_directory, sample_directory,
-                         no_of_runs, pool):
+                         no_of_equilibration_sweeps, no_of_observations, external_global_moves_string, output_directory,
+                         sample_directory, no_of_runs, pool):
+    output_file_string = (
+        f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
+        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_runs}x{no_of_observations}_obs.tsv")
     try:
-        with open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                  f"{external_global_moves_string}_{no_of_sites_string}.tsv", "r") as output_file:
+        with open(output_file_string, "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             return output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
-        output_file = open(f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-                           f"{external_global_moves_string}_{no_of_sites_string}.tsv", "w")
+        output_file = open(output_file_string, "w")
         if observable_string == "acceptance_rates":
             if no_of_runs == 1:
                 acceptance_rates = get_acceptance_rates(sample_directory, 0)
@@ -125,6 +126,12 @@ def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_
                         get_sample_method(f"{sample_directory}/run_{run_number}", temperature, temperature_index,
                                           no_of_sites, no_of_equilibration_sweeps)]
                         for run_number in range(no_of_runs)])))
+                    """comment out the above (replacing w/below) if having problems w/pool.starmap() on cluster"""
+                    """
+                    sample_means_and_errors = np.transpose(np.array([get_sample_mean_and_error(get_sample_method(
+                        f"{sample_directory}/run_{run_number}", temperature, temperature_index, no_of_sites,
+                        no_of_equilibration_sweeps)) for run_number in range(no_of_runs)]))
+                    """
                     sample_mean = np.mean(sample_means_and_errors[0])
                     sample_error = np.linalg.norm(sample_means_and_errors[1])
                 output_file.write(f"{temperature:.14e}".ljust(30) + f"{sample_mean:.14e}".ljust(35) +
