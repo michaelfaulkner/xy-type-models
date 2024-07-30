@@ -1,11 +1,11 @@
 'elementary-electrolyte'                        algorithm_name
 'output/top_susc_figs/64x64_elec_all'           output_directory
 64                                              integer_lattice_length
-100000                                          no_of_equilibration_sweeps
-1000000                                         no_of_observations
-0.5d0                                           initial_temperature
+10000                                           no_of_equilibration_sweeps
+100000                                          no_of_observations
+0.6d0                                           initial_temperature
 2.1d0                                           final_temperature
-16                                              no_of_temperature_increments
+15                                              no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
 0.66666666666666d0                              charge_hop_proportion
@@ -13,6 +13,6 @@
 .true.                                          measure_electric_field_sum
 .false.                                         measure_potential
 .true.                                          measure_external_global_moves
-48                                              no_of_runs
+192                                             no_of_runs
 0                                               initial_run_index
 48                                              max_no_of_cpus
