@@ -29,7 +29,8 @@ except (ModuleNotFoundError, ValueError) as _:
 
 
     def get_sample_mean_and_error(sample):
-        return np.mean(sample), np.std(sample) / len(sample) ** 0.5
+        """nb, , ddof=1 in np.std() uses 1 / (len(sample) - 1) factor"""
+        return np.mean(sample), np.std(sample, ddof=1) / len(sample) ** 0.5
 
 
 def get_thinned_sample(one_dimensional_sample, thinning_level):
