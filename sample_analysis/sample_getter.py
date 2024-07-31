@@ -636,9 +636,10 @@ def get_non_normalised_macro_josephson_current(output_directory, temperature, te
 def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_index, no_of_sites,
                                     no_of_equilibration_sweeps=None, thinning_level=None):
     """
-    Returns the sample of the inverse vacuum permittivity vector, whose x / y component is the normalised (with respect
-    to no_of_sites) sum over the second derivatives of the potential with respect to the spin differences along the
-    x / y dimension.  This is a generalisation of its HXY definition in J. Phys. Condens. Matter 29, 085402 (2017).
+    Returns the sample of the Cartesian mean of the inverse vacuum permittivity vector, where the x / y Cartesian
+    component is the normalised (with respect to no_of_sites) sum over the second derivatives of the potential with
+    respect to the spin differences along the x / y dimension.  This is a generalisation of its HXY definition in
+    J. Phys.: Condens. Matter 29, 085402 (2017).
 
     Parameters
     ----------
@@ -707,12 +708,13 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
                          thinning_level=None):
     r"""
     Returns the sample of the helicity modulus Upsilon(x; temperature, no_of_sites).  For the XY model,
-    Upsilon(x; temperature, no_of_sites) = sum_{<i, j>} cos(x_i - x_j) / no_of_sites - [sum_{<i, j>} sin(x_i - x_j)
-    - E[sum_{<i, j>} sin(x_i - x_j)]] ** 2 / temperature / no_of_sites.  For the HXY model,
-    Upsilon(x; temperature, no_of_sites) = sum_{n = 1}^{inf} sum_{<i, j>} (-1) ** n * cos[n * (x_i - x_j)]
-    / no_of_sites - no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature.  In both equations, E[.] is the
-    expected value of the argument; in the latter, \overline{E} is the zero mode of the emergent electric field, as
-    defined in J. Phys. Condens. Matter 29, 085402 (2017).
+    Upsilon(x; temperature, no_of_sites) = 0.5 * sum_{<i, j>} cos(x_i - x_j) / no_of_sites - 0.5 * ([sum_{<i, j>}_x
+    sin(x_i - x_j) - E[sum_{<i, j>}_x sin(x_i - x_j)]] ** 2 + [sum_{<i, j>}_y sin(x_i - x_j) -
+    E[sum_{<i, j>}_y sin(x_i - x_j)]] ** 2) / temperature / no_of_sites.  For the HXY model,
+    Upsilon(x; temperature, no_of_sites) = 0.5 * sum_{n = 1}^{inf} sum_{<i, j>} (-1) ** n * cos[n * (x_i - x_j)]
+    / no_of_sites - 0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature.  In both equations, E[.]
+    is the expected value of the argument; in the latter, \overline{E} is the zero mode of the emergent electric field,
+    as defined in J. Phys.: Condens. Matter 29, 085402 (2017).
 
     Parameters
     ----------
@@ -785,7 +787,7 @@ def get_potential_minimising_twist_susceptibility(output_directory, temperature,
                                                   no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the sample of the potential-minimising twist susceptibility chi_{\tilde{t}}(x; temperature, no_of_sites) =
-    4 * \pi ** 2 * [\tilde{t} - E[\tilde{t}]] ** 2 / temperature, where E[.] is the expected value of the
+    0.5 * 4 * \pi ** 2 * [\tilde{t} - E[\tilde{t}]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \tilde{t} \in Z^2 is the potential-minimising twist field w -- an integer-valued two-dimensional
     vector field whose x / y component corresponds to the number of twists required (along the x / y dimension) to
     minimise the potential.
@@ -827,7 +829,7 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
     Returns the sample of the HXY topological sector w \in Z^2, an integer-valued vector field whose components are
     fixed such that the minimal toroidal (emergent-charge) polarisation vector
     \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero
-    mode of the emergent electric field (as defined in J. Phys. Condens. Matter 29, 085402 (2017)) which is the vector
+    mode of the emergent electric field (as defined in J. Phys.: Condens. Matter 29, 085402 (2017)) which is the vector
     cross product of the macroscopic Josephson current with the unit vector in the z direction.
 
     Note that this method is only valid for the HXY model.
@@ -864,19 +866,20 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
 def get_hxy_internal_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
                                           no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the HXY internal-twist susceptibility chi_w^H(x; temperature, no_of_sites) =
-    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    Returns the sample of the HXY internal-twist susceptibility chi_w(x; temperature, no_of_sites) =
+    0.5 * no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the topological sector w \in Z^2, an integer-valued vector field whose
     components are fixed such that the minimal toroidal (emergent-charge) polarisation vector
     \overline{E}_{p, x / y} \in ( - \pi / L, \pi / L], where \overline{E} = \overline{E}_p + 2 \pi w / L is the zero
-    mode of the emergent electric field (as defined in J. Phys. Condens. Matter 29, 085402 (2017)) which is the vector
+    mode of the emergent electric field (as defined in J. Phys.: Condens. Matter 29, 085402 (2017)) which is the vector
     cross product of the macroscopic Josephson current with the unit vector in the z direction.
 
     Note that this method is only valid for the HXY model.
 
     In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
-    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
-    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
+    winding-field susceptibility and was defined without the factor of 1/2 (and also multiplied by the inverse vacuum
+    permittivity) to account for each Cartesian dimension of the system; in the return line below, this corresponds to 
+    the first np.mean() -> np.sum().
 
     Parameters
     ----------
@@ -1072,17 +1075,12 @@ def get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_i
 def get_xy_emergent_field_zero_mode_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
                                                    no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the XY global-defect susceptibility chi_w^{XY}(x; temperature, no_of_sites) =
-    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
-    argument and \overline{E}_w = 2 \pi w / L is the XY topological sector w \in Z^2, an integer-valued vector field
-    defined in get_xy_topological_sector().  As described in get_xy_topological_sector(), the XY global topological
-    defects are fictitious quantities in some sense.
+    Returns the sample of the XY zero-mode susceptibility chi_\overline{E}(x; temperature, no_of_sites) =
+    0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value of the
+    argument.  As described in get_xy_emergent_field_zero_mode(), the XY zero mode is a fictitious quantities in some
+    sense.
 
     Note that this method is only valid for the XY model.
-
-    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
-    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
-    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
 
     Parameters
     ----------
@@ -1107,9 +1105,10 @@ def get_xy_emergent_field_zero_mode_susceptibility(output_directory, temperature
         The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_observations.
         The nth element is a float corresponding to the global-defect susceptibility measured at observation n.
     """
-    zero_mode_sample = get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_index, no_of_sites,
-                                                       no_of_equilibration_sweeps, thinning_level)
-    return np.mean((zero_mode_sample - np.mean(zero_mode_sample, axis=0)) ** 2, axis=1) / temperature
+    non_normalised_zero_mode_sample = get_non_normalised_xy_emergent_field_zero_mode(
+        output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
+    return np.mean((non_normalised_zero_mode_sample - np.mean(non_normalised_zero_mode_sample, axis=0)) ** 2,
+                   axis=1) / temperature / no_of_sites
 
 
 def get_xy_topological_sector(output_directory, temperature, temperature_index, no_of_sites,
@@ -1157,17 +1156,13 @@ def get_xy_topological_sector(output_directory, temperature, temperature_index, 
 def get_xy_global_defect_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
                                         no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the XY global-defect susceptibility chi_w^{XY}(x; temperature, no_of_sites) =
-    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    Returns the sample of the XY global-defect susceptibility chi_w(x; temperature, no_of_sites) =
+    0.5 * no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the XY topological sector w \in Z^2, an integer-valued vector field
     defined in get_xy_topological_sector().  As described in get_xy_topological_sector(), the XY global topological
     defects are fictitious quantities in some sense.
 
     Note that this method is only valid for the XY model.
-
-    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
-    winding-field susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of
-    the system; in the return line below, this corresponds to the first np.mean() -> np.sum().
 
     Parameters
     ----------
@@ -1275,8 +1270,9 @@ def get_inverse_permittivity(output_directory, temperature, temperature_index, n
                              no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the sample of the inverse (electric) permittivity modulus [epsilon(x; temperature, no_of_sites)] ** (-1)
-    = 1.0 - no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value of the
-    argument and \overline{E} is the zero mode of the electric field, as defined in Phys. Rev. B 91, 155412 (2015).
+    = 1.0 - 0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value
+    of the argument and \overline{E} is the zero mode of the electric field,
+    as defined in Phys. Rev. B 91, 155412 (2015).
 
     Parameters
     ----------
@@ -1349,7 +1345,7 @@ def get_topological_susceptibility(output_directory, temperature, temperature_in
                                    no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
     Returns the sample of the topological susceptibility chi_w(x; temperature, no_of_sites) =
-    no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
+    0.5 * no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the winding field, as defined in Phys. Rev. B 91, 155412 (2015).  In
     Phys. Rev. B 91, 155412 (2015), topological susceptibility was called the winding-field susceptibility and was
     defined without the factor of 1/2 to account for each Cartesian dimension of the system; in the return line below,
