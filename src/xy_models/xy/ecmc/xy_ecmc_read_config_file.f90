@@ -19,6 +19,7 @@ read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
 read(10, *) measure_twist_relaxations
 read(10, *) measure_emergent_field
+read(10, *) print_samples
 
 if (algorithm_name /= 'xy-ecmc') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-ecmc.'

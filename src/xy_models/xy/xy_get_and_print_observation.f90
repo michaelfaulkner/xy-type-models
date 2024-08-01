@@ -1,10 +1,11 @@
-subroutine get_and_print_observation
+subroutine get_and_print_observation(observation_index)
 use variables
 implicit none
-integer :: i, no_of_global_twists_to_minimise_potential(2)
+integer :: i, no_of_global_twists_to_minimise_potential(2), topological_sector(2), observation_index
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
-double precision :: sum_of_emergent_field(2)
+double precision :: sum_of_emergent_field(2), raw_magnetic_norm_squared, raw_inverse_vacuum_perm
+double precision :: get_topological_sector_component
 
 if (measure_magnetisation) then
     non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
@@ -12,7 +13,16 @@ if (measure_magnetisation) then
         non_normalised_magnetisation(1) = non_normalised_magnetisation(1) + cos(spin_field(i))
         non_normalised_magnetisation(2) = non_normalised_magnetisation(2) + sin(spin_field(i))
     end do
-    write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
+    if (print_samples) then
+        write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
+        raw_magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 + non_normalised_magnetisation(2) ** 2
+        raw_magnetic_norm_sum = raw_magnetic_norm_sum + raw_magnetic_norm_squared ** 0.5
+        raw_magnetic_norm_squared_sum = raw_magnetic_norm_squared_sum + raw_magnetic_norm_squared
+        raw_magnetic_norm_quartic_sum = raw_magnetic_norm_quartic_sum + raw_magnetic_norm_squared ** 2
+    end if
 end if
 
 if ((measure_helicity).or.(measure_potential).or.(measure_potential_minimising_twists)) then
@@ -34,13 +44,34 @@ if (measure_helicity) then
                                                     sin(spin_field(get_north_neighbour(i)) - spin_field(i))
     end do
     sum_of_2nd_derivative_of_potential = (/ -potential_cartesian_components(1), -potential_cartesian_components(2) /)
-    write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
-    write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
+    if (print_samples) then
+        write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
+        write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        ! inverse_vacuum_perm = raw_inverse_vacuum_perm / 2
+        raw_inverse_vacuum_perm = sum_of_2nd_derivative_of_potential(1) + sum_of_2nd_derivative_of_potential(2)
+        raw_inverse_vacuum_perm_sum = raw_inverse_vacuum_perm_sum + raw_inverse_vacuum_perm
+        raw_inverse_vacuum_perm_squared_sum = raw_inverse_vacuum_perm_squared_sum + raw_inverse_vacuum_perm ** 2
+        ! macro_josephson_current = raw_macro_josephson_current / no_of_sites
+        raw_macro_josephson_current_sum(1) = raw_macro_josephson_current_sum(1) + sum_of_1st_derivative_of_potential(1)
+        raw_macro_josephson_current_sum(2) = raw_macro_josephson_current_sum(2) + sum_of_1st_derivative_of_potential(2)
+        raw_macro_josephson_current_squared_sum = raw_macro_josephson_current_squared_sum + &
+                                sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2
+        raw_macro_josephson_current_quartic_sum = raw_macro_josephson_current_quartic_sum + &
+                        (sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2) ** 2
+    end if
 end if
 
 if (measure_potential) then
     potential = potential_cartesian_components(1) + potential_cartesian_components(2)
-    write(60, 200) potential
+    if (print_samples) then
+        write(60, 200) potential
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        potential_sum = potential_sum + potential
+        potential_squared_sum = potential_squared_sum + potential ** 2
+    end if
 end if
 
 if (measure_potential_minimising_twists) then
@@ -53,10 +84,22 @@ if (measure_potential_minimising_twists) then
                                                     potential_cartesian_components) ! y direction; positive twists
     call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, -1, &
                                                     potential_cartesian_components) ! y direction; negative twists
-    write(70, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+    if (print_samples) then
+        write(70, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        potential_minimising_twists_sum(1) = potential_minimising_twists_sum(1) + &
+                                                no_of_global_twists_to_minimise_potential(1)
+        potential_minimising_twists_sum(2) = potential_minimising_twists_sum(2) + &
+                                                no_of_global_twists_to_minimise_potential(2)
+        potential_minimising_twists_squared_sum = potential_minimising_twists_squared_sum + &
+                no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2
+        potential_minimising_twists_quartic_sum = potential_minimising_twists_quartic_sum + &
+                (no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2) ** 2
+    end if
 end if
 
-if (measure_external_global_moves) then
+if ((measure_external_global_moves).and.(print_samples)) then
     write(80, 300) external_global_moves(1), external_global_moves(2)
 end if
 
@@ -84,7 +127,17 @@ if (measure_twist_relaxations) then
                                                     potential_cartesian_components) ! y direction; positive twists
     call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, -1, &
                                                     potential_cartesian_components) ! y direction; negative twists
-    write(90, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+    if (print_samples) then
+        write(90, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        twist_relaxations_sum(1) = twist_relaxations_sum(1) + no_of_global_twists_to_minimise_potential(1)
+        twist_relaxations_sum(2) = twist_relaxations_sum(2) + no_of_global_twists_to_minimise_potential(2)
+        twist_relaxations_squared_sum = twist_relaxations_squared_sum + &
+                no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2
+        twist_relaxations_quartic_sum = twist_relaxations_quartic_sum + &
+                (no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2) ** 2
+    end if
 
     ! restore spin field
     call get_spins
@@ -97,7 +150,26 @@ if (measure_emergent_field) then
         sum_of_emergent_field(1) = sum_of_emergent_field(1) + emergent_field(i, 1)
         sum_of_emergent_field(2) = sum_of_emergent_field(2) + emergent_field(i, 2)
     end do
-    write(95, 100) sum_of_emergent_field(1), sum_of_emergent_field(2)
+    if (print_samples) then
+        write(95, 100) sum_of_emergent_field(1), sum_of_emergent_field(2)
+    end if
+    if (observation_index >= no_of_equilibration_sweeps) then
+        sum_of_emergent_field_sum(1) = sum_of_emergent_field_sum(1) + sum_of_emergent_field(1)
+        sum_of_emergent_field_sum(2) = sum_of_emergent_field_sum(2) + sum_of_emergent_field(2)
+        sum_of_emergent_field_squared_sum = sum_of_emergent_field_squared_sum + &
+                                                sum_of_emergent_field(1) ** 2 + sum_of_emergent_field(2) ** 2
+        sum_of_emergent_field_quartic_sum = sum_of_emergent_field_quartic_sum + &
+                                                (sum_of_emergent_field(1) ** 2 + sum_of_emergent_field(2) ** 2) ** 2
+
+        topological_sector(1) = get_topological_sector_component(sum_of_emergent_field(1))
+        topological_sector(2) = get_topological_sector_component(sum_of_emergent_field(2))
+        topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
+        topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
+        topological_sector_squared_sum = topological_sector_squared_sum + &
+                                            topological_sector(1) ** 2 + topological_sector(2) ** 2
+        topological_sector_quartic_sum = topological_sector_quartic_sum + &
+                                            (topological_sector(1) ** 2 + topological_sector(2) ** 2) ** 2
+    end if
 end if
 
 100 format(ES25.14, ",", ES25.14)
@@ -206,3 +278,16 @@ close(1000)
 
 return
 end subroutine get_spins
+
+
+function get_topological_sector_component(sum_of_emergent_field_component)
+use variables
+implicit none
+double precision :: get_topological_sector_component, sum_of_emergent_field_component
+! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
+! compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L))
+! get_topological_sector_component = floor((sum_of_emergent_field_component + pi * dfloat(integer_lattice_length) - &
+!                                             two_pi * 1.0d-8) / (two_pi * dfloat(integer_lattice_length)))
+get_topological_sector_component = floor(sum_of_emergent_field_component / two_pi / dfloat(integer_lattice_length) &
+                                            + 0.5d0 - 1.0d-8 / dfloat(integer_lattice_length))
+end function get_topological_sector_component

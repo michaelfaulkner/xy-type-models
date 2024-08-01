@@ -21,6 +21,7 @@ read(10, *) measure_helicity
 read(10, *) measure_potential
 read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
+read(10, *) print_samples
 
 if ((algorithm_name /= 'hxy-uniform-noise-metropolis').and.(algorithm_name /= 'hxy-gaussian-noise-metropolis')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal hxy-uniform-noise-metropolis or &
@@ -28,8 +29,14 @@ if ((algorithm_name /= 'hxy-uniform-noise-metropolis').and.(algorithm_name /= 'h
    stop
 end if
 
+measure_twist_relaxations = .false.
 if (.not.(use_external_global_moves)) then
     measure_external_global_moves = .false.
+end if
+if (measure_helicity) then
+    measure_emergent_field = .true.
+else
+    measure_emergent_field = .false.
 end if
 no_of_sites = integer_lattice_length * integer_lattice_length
 allocate(spin_field(no_of_sites), emergent_field(no_of_sites, 2))

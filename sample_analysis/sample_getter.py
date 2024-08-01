@@ -1148,9 +1148,10 @@ def get_xy_topological_sector(output_directory, temperature, temperature_index, 
         nth sub-array is the topological sector measured at observation n; its first / second element is an int
         corresponding to the x / y component of the topological sector measured at observation n.
     """
+    """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L))"""
     return (get_non_normalised_xy_emergent_field_zero_mode(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level) +
-            math.pi * no_of_sites ** 0.5) // (2.0 * math.pi * no_of_sites ** 0.5)
+            math.pi * no_of_sites ** 0.5 - 2.0 * math.pi * 1.0e-8) // (2.0 * math.pi * no_of_sites ** 0.5)
 
 
 def get_xy_global_defect_susceptibility(output_directory, temperature, temperature_index, no_of_sites,

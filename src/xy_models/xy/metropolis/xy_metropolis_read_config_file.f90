@@ -22,6 +22,7 @@ read(10, *) measure_potential_minimising_twists
 read(10, *) measure_external_global_moves
 read(10, *) measure_twist_relaxations
 read(10, *) measure_emergent_field
+read(10, *) print_samples
 
 if ((algorithm_name /= 'xy-uniform-noise-metropolis').and.(algorithm_name /= 'xy-gaussian-noise-metropolis')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-uniform-noise-metropolis or &

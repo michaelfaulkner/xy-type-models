@@ -15,7 +15,10 @@ if (.not.simulation_complete) then
     do temperature_index = initial_temperature_index, no_of_temperature_increments
         write(6, '(A, F6.4)') 'Temperature = ', temperature
         beta = 1.0d0 / temperature
-        call create_sample_files(temperature_index)
+        if (print_samples) then
+            call create_sample_files(temperature_index)
+        end if
+        call set_running_sums
 
         if (initial_observation_index < no_of_equilibration_sweeps) then
             do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
@@ -23,7 +26,9 @@ if (.not.simulation_complete) then
                     call attempt_external_global_moves
                 end if
                 call single_event_chain
-                call get_and_print_observation
+                if (print_samples) then
+                    call get_and_print_observation(observation_index)
+                end if
                 call do_checkpointing(temperature_index, observation_index)
             end do
             call reset_event_counters
@@ -35,7 +40,7 @@ if (.not.simulation_complete) then
                 call attempt_external_global_moves
             end if
             call single_event_chain
-            call get_and_print_observation
+            call get_and_print_observation(observation_index)
             if (observation_index < no_of_equilibration_sweeps + no_of_observations - 1) then
                 call do_checkpointing(temperature_index, observation_index) ! we don't checkpoint at end of temp index
             end if
@@ -43,6 +48,7 @@ if (.not.simulation_complete) then
 
         call output_event_rate(temperature_index)
         call reset_event_counters
+        call output_summary_statistics(temperature_index)
         start_from_checkpoint = .false.
         initial_observation_index = 0
         temperature = temperature + magnitude_of_temperature_increments
