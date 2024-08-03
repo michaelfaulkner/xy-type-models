@@ -1,7 +1,7 @@
 program metropolis_algorithm
 use variables
 implicit none
-integer :: temperature_index, observation_index
+integer :: temperature_index, sample_index
 real :: start_time, end_time
 double precision :: acceptance_rate_of_field_rotns
 
@@ -20,14 +20,14 @@ if (.not.simulation_complete) then
         end if
         call set_running_sums
 
-        if (initial_observation_index < no_of_equilibration_sweeps) then
-            do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
+        if (initial_sample_index < no_of_equilibration_sweeps) then
+            do sample_index = initial_sample_index, no_of_equilibration_sweeps - 1
                 if (use_external_global_moves) then
                     call attempt_external_global_moves
                 end if
                 call metropolis_sweep
                 ! step-size adaptor
-                if (mod(observation_index, 100) == 0) then
+                if (mod(sample_index, 100) == 0) then
                     acceptance_rate_of_field_rotns = 1.0d-2 * no_of_accepted_field_rotations_per_site / &
                                                             (1.0d0 - charge_hop_proportion)
                     if (acceptance_rate_of_field_rotns > target_acceptance_rate_of_field_rotations + 5.0d-2) then
@@ -40,22 +40,22 @@ if (.not.simulation_complete) then
                     no_of_accepted_field_rotations_per_site = 0.0d0
                 end if
                 if (print_samples) then
-                    call process_sample(observation_index)
+                    call process_sample(sample_index)
                 end if
-                call do_checkpointing(temperature_index, observation_index)
+                call do_checkpointing(temperature_index, sample_index)
             end do
             call reset_metropolis_acceptance_counters
-            initial_observation_index = no_of_equilibration_sweeps
+            initial_sample_index = no_of_equilibration_sweeps
         end if
 
-        do observation_index = initial_observation_index, no_of_equilibration_sweeps + no_of_observations - 1
+        do sample_index = initial_sample_index, no_of_equilibration_sweeps + no_of_samples - 1
             if (use_external_global_moves) then
                 call attempt_external_global_moves
             end if
             call metropolis_sweep
-            call process_sample(observation_index)
-            if (observation_index < no_of_equilibration_sweeps + no_of_observations - 1) then
-                call do_checkpointing(temperature_index, observation_index) ! we don't checkpoint at end of temp index
+            call process_sample(sample_index)
+            if (sample_index < no_of_equilibration_sweeps + no_of_samples - 1) then
+                call do_checkpointing(temperature_index, sample_index) ! we don't checkpoint at end of temp index
             end if
         end do
 
@@ -63,7 +63,7 @@ if (.not.simulation_complete) then
         call reset_metropolis_acceptance_counters
         call output_summary_statistics(temperature_index)
         start_from_checkpoint = .false.
-        initial_observation_index = 0
+        initial_sample_index = 0
         temperature = temperature + magnitude_of_temperature_increments
         call initialise_field_configuration(.false.)
     end do

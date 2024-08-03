@@ -1,14 +1,14 @@
-subroutine process_sample(observation_index)
+subroutine process_sample(sample_index)
 use variables
 implicit none
-integer :: i, observation_index, raw_electric_field_zero_mode(2), get_topological_sector_component, topological_sector(2)
+integer :: i, sample_index, raw_electric_field_zero_mode(2), get_topological_sector_component, topological_sector(2)
 double precision :: potential
 
 if (measure_electric_field_sum) then
     if (print_samples) then
         write(30, 100) - two_pi * dfloat(net_charge_displacement(1)), - two_pi * dfloat(net_charge_displacement(2))
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         ! raw_electric_field_zero_mode = \sum_r E(r) / two_pi = no_of_sites * Ebar / two_pi = - net_charge_displacement
         raw_electric_field_zero_mode(1) = - dfloat(net_charge_displacement(1))
         raw_electric_field_zero_mode(2) = - dfloat(net_charge_displacement(2))
@@ -38,7 +38,7 @@ if (measure_potential) then
     if (print_samples) then
         write(40, 200) potential
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         potential_sum = potential_sum + potential
         potential_squared_sum = potential_squared_sum + potential ** 2
     end if

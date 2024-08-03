@@ -7,7 +7,7 @@ read(10, *) algorithm_name
 read(10, *) output_directory
 read(10, *) integer_lattice_length
 read(10, *) no_of_equilibration_sweeps
-read(10, *) no_of_observations
+read(10, *) no_of_samples
 read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments

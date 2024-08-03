@@ -2,7 +2,7 @@
 '../bc4-output/cdf_figs/256x256_ecmc'           output_directory
 256                                             integer_lattice_length
 10000                                           no_of_equilibration_sweeps
-10000                                           no_of_observations
+10000                                           no_of_samples
 0.45d0                                          initial_temperature
 1.35d0                                          final_temperature
 1                                               no_of_temperature_increments

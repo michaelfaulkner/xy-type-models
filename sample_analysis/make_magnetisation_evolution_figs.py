@@ -38,7 +38,7 @@ def main(symmetry_breaking_paper=True):
         config_file_256x256_metrop_with_twists = None
 
     (algorithm_name_metrop, sample_directory_16x16_metrop, no_of_sites_16x16, no_of_sites_string_16x16,
-     no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
+     no_of_equilibration_sweeps_metrop, no_of_samples_metrop, temperatures, use_external_global_moves_16x16_metrop,
      external_global_moves_string_16x16_metrop, no_of_runs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
         config_file_16x16_metrop)
     (_, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64, _, _, _,
@@ -47,7 +47,7 @@ def main(symmetry_breaking_paper=True):
     (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _,
      use_external_global_moves_256x256_metrop, external_global_moves_string_256x256_metrop, _, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop)
-    (algorithm_name_ecmc, sample_directory_16x16_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
+    (algorithm_name_ecmc, sample_directory_16x16_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_samples_ecmc,
      _, use_external_global_moves_ecmc, external_global_moves_string_ecmc, no_of_runs_ecmc, _, _
      ) = run_script.get_config_data(config_file_16x16_ecmc)
     sample_directory_64x64_ecmc = run_script.get_config_data(config_file_64x64_ecmc)[1]
@@ -66,27 +66,27 @@ def main(symmetry_breaking_paper=True):
     figure, axes = plt.subplots(2, 3, figsize=(30, 20))
     make_subplot(axes[0, 0], algorithm_name_metrop, output_directory, sample_directory_16x16_metrop,
                  no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_metrop,
-                 no_of_observations_metrop, temperatures, use_external_global_moves_16x16_metrop,
+                 no_of_samples_metrop, temperatures, use_external_global_moves_16x16_metrop,
                  external_global_moves_string_16x16_metrop, alphabetic_label_16x16_metrop, None)
     make_subplot(axes[0, 1], algorithm_name_metrop, output_directory, sample_directory_64x64_metrop,
                  no_of_sites_64x64, no_of_sites_string_64x64, no_of_equilibration_sweeps_metrop,
-                 no_of_observations_metrop, temperatures, use_external_global_moves_64x64_metrop,
+                 no_of_samples_metrop, temperatures, use_external_global_moves_64x64_metrop,
                  external_global_moves_string_64x64_metrop, alphabetic_label_64x64_metrop, None)
     make_subplot(axes[0, 2], algorithm_name_metrop, output_directory, sample_directory_256x256_metrop,
                  no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
-                 no_of_observations_metrop, temperatures, use_external_global_moves_256x256_metrop,
+                 no_of_samples_metrop, temperatures, use_external_global_moves_256x256_metrop,
                  external_global_moves_string_256x256_metrop, alphabetic_label_256x256_metrop, None)
     make_subplot(axes[1, 0], algorithm_name_ecmc, output_directory, sample_directory_16x16_ecmc,
                  no_of_sites_16x16, no_of_sites_string_16x16, no_of_equilibration_sweeps_ecmc,
-                 no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
+                 no_of_samples_ecmc, temperatures, use_external_global_moves_ecmc,
                  external_global_moves_string_ecmc, alphabetic_label_16x16_ecmc, None)
     make_subplot(axes[1, 1], algorithm_name_ecmc, output_directory, sample_directory_64x64_ecmc,
                  no_of_sites_64x64, no_of_sites_string_64x64, no_of_equilibration_sweeps_ecmc,
-                 no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
+                 no_of_samples_ecmc, temperatures, use_external_global_moves_ecmc,
                  external_global_moves_string_ecmc, alphabetic_label_64x64_ecmc, None)
     make_subplot(axes[1, 2], algorithm_name_ecmc, output_directory, sample_directory_256x256_ecmc,
                  no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_ecmc,
-                 no_of_observations_ecmc, temperatures, use_external_global_moves_ecmc,
+                 no_of_samples_ecmc, temperatures, use_external_global_moves_ecmc,
                  external_global_moves_string_ecmc, alphabetic_label_256x256_ecmc, None)
 
     # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
@@ -99,11 +99,11 @@ def main(symmetry_breaking_paper=True):
         plt.Line2D([0.6465, 0.6465], [0.11, 0.88], transform=figure.transFigure, color="black", linewidth=4.5))
 
     figure.savefig(f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_ecmc_"
-                   f"{no_of_observations_metrop}_metrop_obs_{no_of_observations_ecmc}_ecmc_obs.png",
+                   f"{no_of_samples_metrop}_metrop_obs_{no_of_samples_ecmc}_ecmc_obs.png",
                    bbox_inches="tight")
 
     if symmetry_breaking_paper:
-        (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_observations_256x256_metrop_with_twists,
+        (_, sample_directory_256x256_metrop_with_twists, _, _, _, no_of_samples_256x256_metrop_with_twists,
          temperatures_256x256_metrop_with_twists, use_external_global_moves_256x256_metrop_with_twists,
          external_global_moves_string_256x256_metrop_with_twists, no_of_runs_metrop_with_twists, _, _
          ) = run_script.get_config_data(config_file_256x256_metrop_with_twists)
@@ -112,18 +112,18 @@ def main(symmetry_breaking_paper=True):
             figure, axis = plt.subplots(1)
             make_subplot(axis, algorithm_name_metrop, output_directory, sample_directory_256x256_metrop_with_twists,
                          no_of_sites_256x256, no_of_sites_string_256x256, no_of_equilibration_sweeps_metrop,
-                         no_of_observations_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
+                         no_of_samples_256x256_metrop_with_twists, temperatures_256x256_metrop_with_twists,
                          use_external_global_moves_256x256_metrop_with_twists,
                          external_global_moves_string_256x256_metrop_with_twists, None, run_index)
             figure.savefig(
                 f"{output_directory}/magnetisation_evolution_xy_model_metropolis_with_gaussian_noise_and_global_twists_"
-                f"{no_of_observations_256x256_metrop_with_twists}_metrop_obs_run_{run_index}.png", bbox_inches="tight")
+                f"{no_of_samples_256x256_metrop_with_twists}_metrop_obs_run_{run_index}.png", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of_sites, no_of_sites_string,
-                 no_of_equilibration_sweeps, no_of_observations, temperatures, use_external_global_moves,
+                 no_of_equilibration_sweeps, no_of_samples, temperatures, use_external_global_moves,
                  external_global_moves_string, alphabetic_label, run_index):
     axis.axis('square')
     if alphabetic_label is None:
@@ -196,12 +196,12 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
             if use_external_global_moves:
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples}_obs_temp_eq_"
                     f"{temperature:.4f}_run_{run_index}.npy")
             else:
                 cartesian_magnetisation = np.load(
                     f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples}_obs_temp_eq_"
                     f"{temperature:.4f}.npy")
         except IOError:
             if use_external_global_moves:
@@ -209,13 +209,13 @@ def make_subplot(axis, algorithm_name, output_directory, sample_directory, no_of
                                                                       temperature, temperature_index, no_of_sites,
                                                                       no_of_equilibration_sweeps)
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples}_obs_temp_eq_"
                         f"{temperature:.4f}_run_{run_index}.npy", cartesian_magnetisation)
             else:
                 cartesian_magnetisation = get_cartesian_magnetisation(sample_directory, temperature, temperature_index,
                                                                       no_of_sites, no_of_equilibration_sweeps)
                 np.save(f"{output_directory}/cartesian_magnetisation_sample_{algorithm_name.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations}_obs_temp_eq_"
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples}_obs_temp_eq_"
                         f"{temperature:.4f}.npy", cartesian_magnetisation)
         if alphabetic_label is None:
             rotation = 0.0  # previously set rotation = -0.15

@@ -2,7 +2,7 @@
 'output/comparisons_against_prb_49_8811/xy/metropolis'          output_directory
 100                                                             integer_lattice_length
 10000                                                           no_of_equilibration_sweeps
-10000                                                           no_of_observations
+10000                                                           no_of_samples
 0.7d0                                                           initial_temperature
 1.5d0                                                           final_temperature
 4                                                               no_of_temperature_increments

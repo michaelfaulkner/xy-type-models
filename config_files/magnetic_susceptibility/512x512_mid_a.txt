@@ -2,7 +2,7 @@
 '../bc4-output/magnetic_susceptibility/512x512'         output_directory
 512                                                     integer_lattice_length
 1000                                                    no_of_equilibration_sweeps
-100000                                                  no_of_observations
+100000                                                  no_of_samples
 1.0d0                                                   initial_temperature
 1.24d0                                                  final_temperature
 24                                                      no_of_temperature_increments

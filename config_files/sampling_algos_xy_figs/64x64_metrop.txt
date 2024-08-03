@@ -2,7 +2,7 @@
 '../bc4-output/sampling_algos_xy_figs/64x64_metrop'         output_directory
 64                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
-100000                                                      no_of_observations
+100000                                                      no_of_samples
 0.45d0                                                      initial_temperature
 1.35d0                                                      final_temperature
 1                                                           no_of_temperature_increments

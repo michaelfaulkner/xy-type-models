@@ -1,8 +1,8 @@
-subroutine do_checkpointing(temperature_index, observation_index)
+subroutine do_checkpointing(temperature_index, sample_index)
 use variables
 implicit none
 character(100) :: temporary_filename
-integer :: temperature_index, observation_index, site_index
+integer :: temperature_index, sample_index, site_index
 real :: current_time
 
 ! a checkpoint is a snapshot of the system, created in case the simulation fails - this subroutine creates a new one if
@@ -13,7 +13,7 @@ call cpu_time(current_time)
 if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     open(unit=11, file=temporary_filename)
     write(11, 100) temperature_index
-    write(11, 100) observation_index + 1
+    write(11, 100) sample_index + 1
     do site_index = 1, no_of_sites
         write(11, 200) spin_field(site_index)
     end do

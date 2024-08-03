@@ -5,9 +5,9 @@ logical :: measure_emergent_field, measure_potential, measure_potential_minimisi
 logical :: measure_twist_relaxations, start_from_checkpoint, simulation_complete, print_samples
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer, allocatable, dimension(:) :: get_up_neighbour, get_down_neighbour
-integer(kind=8) :: no_of_observations ! kind=8 to avoid upper integer bound on long timescales
+integer(kind=8) :: no_of_samples ! kind=8 to avoid upper integer bound on long timescales
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
-integer :: initial_temperature_index, initial_observation_index, external_global_moves(2)
+integer :: initial_temperature_index, initial_sample_index, external_global_moves(2)
 integer :: vacuum_permittivity_sum_cutoff
 ! kind=8 below to avoid upper integer bound on long timescales
 integer(kind=8) :: potential_minimising_twists_squared_sum, potential_minimising_twists_quartic_sum
@@ -22,7 +22,7 @@ double precision, parameter :: pi_squared_over_two = 4.93480220054468d0
 double precision, allocatable, dimension(:) :: spin_field
 double precision, allocatable, dimension(:, :) :: emergent_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
-double precision :: spin_space_distance_between_observations, no_of_events_per_unit_spin_space_distance
+double precision :: spin_space_distance_between_samples, no_of_events_per_unit_spin_space_distance
 double precision :: no_of_accepted_external_global_moves
 double precision :: raw_magnetic_norm_sum, raw_magnetic_norm_squared_sum, raw_magnetic_norm_quartic_sum
 double precision :: raw_inverse_vacuum_perm_sum, raw_inverse_vacuum_perm_squared_sum, raw_macro_josephson_current_sum(2)

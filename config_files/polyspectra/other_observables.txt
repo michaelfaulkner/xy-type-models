@@ -2,7 +2,7 @@
 '../bc4-output/polyspectra/other_observables'           output_directory
 32                                                      integer_lattice_length
 10000                                                   no_of_equilibration_sweeps
-1000000                                                 no_of_observations
+1000000                                                 no_of_samples
 0.5d0                                                   initial_temperature
 2.2d0                                                   final_temperature
 4                                                       no_of_temperature_increments

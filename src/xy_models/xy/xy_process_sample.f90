@@ -1,7 +1,7 @@
-subroutine process_sample(observation_index)
+subroutine process_sample(sample_index)
 use variables
 implicit none
-integer :: i, observation_index, no_of_global_twists_to_minimise_potential(2), topological_sector(2)
+integer :: i, sample_index, no_of_global_twists_to_minimise_potential(2), topological_sector(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: sum_of_emergent_field(2), raw_magnetic_norm_squared, raw_inverse_vacuum_perm
@@ -16,7 +16,7 @@ if (measure_magnetisation) then
     if (print_samples) then
         write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
         raw_magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 + non_normalised_magnetisation(2) ** 2
         raw_magnetic_norm_sum = raw_magnetic_norm_sum + raw_magnetic_norm_squared ** 0.5
@@ -48,7 +48,7 @@ if (measure_helicity) then
         write(40, 100) sum_of_1st_derivative_of_potential(1), sum_of_1st_derivative_of_potential(2)
         write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         ! inverse_vacuum_perm = raw_inverse_vacuum_perm / 2
         raw_inverse_vacuum_perm = sum_of_2nd_derivative_of_potential(1) + sum_of_2nd_derivative_of_potential(2)
         raw_inverse_vacuum_perm_sum = raw_inverse_vacuum_perm_sum + raw_inverse_vacuum_perm
@@ -68,7 +68,7 @@ if (measure_potential) then
     if (print_samples) then
         write(60, 200) potential
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         potential_sum = potential_sum + potential
         potential_squared_sum = potential_squared_sum + potential ** 2
     end if
@@ -87,7 +87,7 @@ if (measure_potential_minimising_twists) then
     if (print_samples) then
         write(70, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         potential_minimising_twists_sum(1) = potential_minimising_twists_sum(1) + &
                                                 no_of_global_twists_to_minimise_potential(1)
         potential_minimising_twists_sum(2) = potential_minimising_twists_sum(2) + &
@@ -130,7 +130,7 @@ if (measure_twist_relaxations) then
     if (print_samples) then
         write(90, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         twist_relaxations_sum(1) = twist_relaxations_sum(1) + no_of_global_twists_to_minimise_potential(1)
         twist_relaxations_sum(2) = twist_relaxations_sum(2) + no_of_global_twists_to_minimise_potential(2)
         twist_relaxations_squared_sum = twist_relaxations_squared_sum + &
@@ -153,7 +153,7 @@ if (measure_emergent_field) then
     if (print_samples) then
         write(95, 100) sum_of_emergent_field(1), sum_of_emergent_field(2)
     end if
-    if (observation_index >= no_of_equilibration_sweeps) then
+    if (sample_index >= no_of_equilibration_sweeps) then
         sum_of_emergent_field_sum(1) = sum_of_emergent_field_sum(1) + sum_of_emergent_field(1)
         sum_of_emergent_field_sum(2) = sum_of_emergent_field_sum(2) + sum_of_emergent_field(2)
         sum_of_emergent_field_squared_sum = sum_of_emergent_field_squared_sum + &

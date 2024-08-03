@@ -3,13 +3,13 @@ use variables
 implicit none
 integer :: i, active_spin_index, vetoeing_spin_index, neighbouring_spin_indices(4)
 double precision :: uphill_distance_through_potential_space_before_next_event, shortest_distance_to_next_factor_event
-double precision :: initial_two_spin_potential, final_two_spin_potential, distance_left_before_next_observation
+double precision :: initial_two_spin_potential, final_two_spin_potential, distance_left_before_next_sample
 double precision :: active_spin_value, non_active_spin_value, initial_spin_value_difference, final_spin_value_difference
 double precision :: distance_to_next_factor_event, no_of_complete_spin_rotations, get_spin_difference
 
 active_spin_index = int(dfloat(no_of_sites) * rand()) + 1
-distance_left_before_next_observation = spin_space_distance_between_observations
-! iterate until total distance covered in spin space reaches spin_space_distance_between_observations
+distance_left_before_next_sample = spin_space_distance_between_samples
+! iterate until total distance covered in spin space reaches spin_space_distance_between_samples
 do
     active_spin_value = spin_field(active_spin_index)
     neighbouring_spin_indices(1) = get_north_neighbour(active_spin_index)
@@ -52,20 +52,20 @@ do
         end if
     end do
 
-    if (distance_left_before_next_observation < shortest_distance_to_next_factor_event) then
+    if (distance_left_before_next_sample < shortest_distance_to_next_factor_event) then
         ! update active spin value and exit event chain in order to observe the system
-        spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_observation, two_pi)
+        spin_field(active_spin_index) = mod(active_spin_value + distance_left_before_next_sample, two_pi)
         call calculate_emergent_field
         exit
     else
         ! update active spin value and continute event chain
         spin_field(active_spin_index) = mod(active_spin_value + shortest_distance_to_next_factor_event, two_pi)
-        distance_left_before_next_observation = distance_left_before_next_observation - &
+        distance_left_before_next_sample = distance_left_before_next_sample - &
                                                     shortest_distance_to_next_factor_event
         active_spin_index = vetoeing_spin_index
         ! we count events in double precision (float) to avoid upper integer bound on long timescales
         no_of_events_per_unit_spin_space_distance = no_of_events_per_unit_spin_space_distance + &
-                                                        1.0d0 / spin_space_distance_between_observations
+                                                        1.0d0 / spin_space_distance_between_samples
     end if
 end do
 

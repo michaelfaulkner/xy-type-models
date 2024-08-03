@@ -5,7 +5,7 @@ integer :: site_index
 
 open(unit=11, file=checkpoint_filename)
 read(11, 100) initial_temperature_index
-read(11, 100) initial_observation_index
+read(11, 100) initial_sample_index
 do site_index = 1, no_of_sites
     read(11, 200) spin_field(site_index)
 end do

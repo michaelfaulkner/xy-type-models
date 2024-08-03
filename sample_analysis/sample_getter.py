@@ -135,14 +135,14 @@ def get_potential(output_directory, temperature, temperature_index, no_of_sites,
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The potential sample.  A one-dimensional numpy array of length no_of_observations.  The nth element is a float
-        corresponding to the potential measured at observation n.
+        The potential sample.  A one-dimensional numpy array of length no_of_samples.  The nth element is a float
+        corresponding to the potential measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/potential.csv", dtype=float,
                                          delimiter=","), no_of_equilibration_sweeps, thinning_level)
@@ -153,7 +153,7 @@ def get_specific_heat(output_directory, temperature, temperature_index, no_of_si
     """
     Returns the sample of the specific-heat C_V(x; temperature, no_of_sites) per particle, where
     C_V(x; temperature, no_of_sites) = [U(x; temperature, no_of_sites) - E[U(x; temperature, no_of_sites)]] ** 2 /
-    temperature ** 2, with x the particle positions at the time of observation, E[.] the expected value of the argument
+    temperature ** 2, with x the particle positions at the time of sample, E[.] the expected value of the argument
     and U(x; temperature, no_of_sites) the system potential.
 
     Parameters
@@ -170,14 +170,14 @@ def get_specific_heat(output_directory, temperature, temperature_index, no_of_si
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The specific-heat sample.  A one-dimensional numpy array of length no_of_observations.  The nth element is a
-        float corresponding to the specific heat measured at observation n.
+        The specific-heat sample.  A one-dimensional numpy array of length no_of_samples.  The nth element is a
+        float corresponding to the specific heat measured at sample n.
     """
     potential_sample = get_potential(output_directory, temperature, temperature_index, no_of_sites,
                                      no_of_equilibration_sweeps, thinning_level)
@@ -205,14 +205,14 @@ def get_external_global_move(output_directory, temperature, temperature_index, n
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The external global move sample.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
-        sub-array is an integer-valued two-dimensional Cartesian vector, as measured at observation n; the first /
+        The external global move sample.  A two-dimensional numpy array of shape (no_of_samples, 2).  The nth
+        sub-array is an integer-valued two-dimensional Cartesian vector, as measured at sample n; the first /
         second element (of the sub-array) is an int corresponding to the x / y Cartesian component, where the value is
         0 if the x / y component of the external global move was not accepted, 1 if a positive external global move was
         accepted and -1 if a negative external global move was accepted.
@@ -229,7 +229,7 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, te
     """
     Returns the sample of the non-normalised magnetisation no_of_sites * m(x; temperature, no_of_sites), where
     m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation, with
-    x_i the position of particle i at the time of observation.
+    x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -245,16 +245,16 @@ def get_non_normalised_cartesian_magnetisation(output_directory, temperature, te
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the non-normalised magnetisation.  A two-dimensional numpy array of shape (no_of_observations, 2).
-        The nth sub-array is the non-normalised magnetisation vector measured at observation n; its first / second
+        The sample of the non-normalised magnetisation.  A two-dimensional numpy array of shape (no_of_samples, 2).
+        The nth sub-array is the non-normalised magnetisation vector measured at sample n; its first / second
         element is a float corresponding to the x / y component of the non-normalised magnetisation vector measured at
-        observation n.
+        sample n.
     """
     return get_reduced_sample(
         np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/magnetisation.csv", dtype=float, delimiter=","),
@@ -266,7 +266,7 @@ def get_magnetisation_norm(output_directory, temperature, temperature_index, no_
     """
     Returns the sample of the magnetisation norm || m(x; temperature, no_of_sites) ||, where
     m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation, with
-    x_i the position of particle i at the time of observation.
+    x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -282,14 +282,14 @@ def get_magnetisation_norm(output_directory, temperature, temperature_index, no_
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the magnetisation norm.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to magnetisation norm measured at observation n.
+        The sample of the magnetisation norm.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to magnetisation norm measured at sample n.
     """
     return np.linalg.norm(get_non_normalised_cartesian_magnetisation(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level),
@@ -302,7 +302,7 @@ def get_magnetisation_phase(output_directory, temperature, temperature_index, no
     Returns the sample of the magnetisation phase phi(x; temperature, no_of_sites), where
     m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
     radial coordinates and m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian
-    magnetisation, with x_i the position of particle i at the time of observation.
+    magnetisation, with x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -318,16 +318,16 @@ def get_magnetisation_phase(output_directory, temperature, temperature_index, no
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the magnetisation phase.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to magnetisation phase measured at observation n.
+        The sample of the magnetisation phase.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to magnetisation phase measured at sample n.
     """
-    return np.array([get_phase_in_polar_coordinates(observation) for observation in
+    return np.array([get_phase_in_polar_coordinates(sample) for sample in
                      get_non_normalised_cartesian_magnetisation(output_directory, temperature, temperature_index,
                                                                 no_of_sites, no_of_equilibration_sweeps,
                                                                 thinning_level)])
@@ -340,9 +340,9 @@ def get_rotated_magnetisation_phase(output_directory, temperature, temperature_i
     phi(x; temperature, no_of_sites) is defined by writing the magnetisation vector
     m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites in radial coordinates,
     m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t.  Here,
-    x_i the position of particle i at the time of observation.
+    x_i the position of particle i at the time of sample.
 
-    Each observation of the phase is rotated by the mean of the absolute values of the observations.  We then apply
+    Each sample of the phase is rotated by the mean of the absolute values of the samples.  We then apply
     modular arithmetic to transform the resultant values onto (-pi, pi].  We then subtract the mean of the resultant
     sample.
 
@@ -360,14 +360,14 @@ def get_rotated_magnetisation_phase(output_directory, temperature, temperature_i
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the rotated magnetisation phase.  A one-dimensional numpy array of length no_of_observations.
-        The nth element is a float corresponding to the rotated magnetisation phase measured at observation n.
+        The sample of the rotated magnetisation phase.  A one-dimensional numpy array of length no_of_samples.
+        The nth element is a float corresponding to the rotated magnetisation phase measured at sample n.
     """
     non_rotated_mag_phase = get_magnetisation_phase(output_directory, temperature, temperature_index, no_of_sites,
                                                     no_of_equilibration_sweeps, thinning_level)
@@ -380,7 +380,7 @@ def get_magnetisation_squared(output_directory, temperature, temperature_index, 
     """
     Returns the sample of the magnetisation squared || m(x; temperature, no_of_sites) ||^2, where
     m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation, with
-    x_i the position of particle i at the time of observation.
+    x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -396,14 +396,14 @@ def get_magnetisation_squared(output_directory, temperature, temperature_index, 
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the magnetisation norm.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to magnetisation norm measured at observation n.
+        The sample of the magnetisation norm.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to magnetisation norm measured at sample n.
     """
     return get_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites,
                                   no_of_equilibration_sweeps, thinning_level) ** 2
@@ -413,7 +413,7 @@ def get_cartesian_magnetisation(output_directory, temperature, temperature_index
                                 no_of_equilibration_sweeps=None, thinning_level=None):
     """
     Returns the sample of the Cartesian magnetisation vector m(x; temperature, no_of_sites) =
-    sum_i [cos(x_i), sin(x_i)]^t / no_of_sites, where x_i the position of particle i at the time of observation.
+    sum_i [cos(x_i), sin(x_i)]^t / no_of_sites, where x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -429,15 +429,15 @@ def get_cartesian_magnetisation(output_directory, temperature, temperature_index
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the Cartesian magnetisation.  A two-dimensional numpy array of shape (no_of_observations, 2).
-        The nth sub-array is the Cartesian magnetisation vector measured at observation n; its first / second element
-        is a float corresponding to the x / y component of the Cartesian magnetisation vector measured at observation n.
+        The sample of the Cartesian magnetisation.  A two-dimensional numpy array of shape (no_of_samples, 2).
+        The nth sub-array is the Cartesian magnetisation vector measured at sample n; its first / second element
+        is a float corresponding to the x / y component of the Cartesian magnetisation vector measured at sample n.
     """
     return get_non_normalised_cartesian_magnetisation(output_directory, temperature, temperature_index, no_of_sites,
                                                       no_of_equilibration_sweeps, thinning_level) / no_of_sites
@@ -448,7 +448,7 @@ def get_absolute_cartesian_magnetisation(output_directory, temperature, temperat
     """
     Returns the sample of the vector formed from the absolute value of each Cartesian component of the magnetisation
     vector m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites, where x_i the position of
-    particle i at the time of observation.  Each observation is therefore the vector
+    particle i at the time of sample.  Each sample is therefore the vector
     [|m_1(x; temperature, no_of_sites)|, |m_2(x; temperature, no_of_sites)|].
 
     Parameters
@@ -465,16 +465,16 @@ def get_absolute_cartesian_magnetisation(output_directory, temperature, temperat
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the absolute Cartesian magnetisation vector.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the absolute Cartesian magnetisation vector measured at
-        observation n; its first / second element is a float corresponding to the absolute value of the x / y component
-        of the Cartesian magnetisation vector measured at observation n.
+        (no_of_samples, 2).  The nth sub-array is the absolute Cartesian magnetisation vector measured at
+        sample n; its first / second element is a float corresponding to the absolute value of the x / y component
+        of the Cartesian magnetisation vector measured at sample n.
     """
     return np.abs(get_cartesian_magnetisation(output_directory, temperature, temperature_index, no_of_sites,
                                               no_of_equilibration_sweeps, thinning_level))
@@ -486,7 +486,7 @@ def get_magnetic_susceptibility(output_directory, temperature, temperature_index
     Returns the sample of the magnetic-norm susceptibility per particle chi_m(x; temperature, no_of_sites) =
     no_of_sites * [|| m(x; temperature, no_of_sites) || - E[|| m(x; temperature, no_of_sites) ||]] ** 2 / temperature,
     where m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation,
-    with x_i the position of particle i at the time of observation.
+    with x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -502,14 +502,14 @@ def get_magnetic_susceptibility(output_directory, temperature, temperature_index
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the magnetic susceptibility.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to the magnetisation phase measured at observation n.
+        The sample of the magnetic susceptibility.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to the magnetisation phase measured at sample n.
     """
     magnetisation_norm = get_magnetisation_norm(output_directory, temperature, temperature_index, no_of_sites,
                                                 no_of_equilibration_sweeps, thinning_level)
@@ -521,7 +521,7 @@ def get_cartesian_relative_magnetisation(output_directory, temperature, temperat
     """
     Returns the sample of the Cartesian relative magnetisation vector tilde{m}(x; temperature, no_of_sites) =
     m / sigma_{|| m ||}, where m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the
-    Cartesian magnetisation (with x_i the position of particle i at the time of observation) and sigma_{|| m ||} is
+    Cartesian magnetisation (with x_i the position of particle i at the time of sample) and sigma_{|| m ||} is
     the standard deviation of its norm.
 
     Parameters
@@ -538,16 +538,16 @@ def get_cartesian_relative_magnetisation(output_directory, temperature, temperat
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the Cartesian relative magnetisation.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the Cartesian magnetisation vector measured at observation n;
+        (no_of_samples, 2).  The nth sub-array is the Cartesian magnetisation vector measured at sample n;
         its first / second element is a float corresponding to the x / y component of the relative Cartesian
-        magnetisation vector measured at observation n.
+        magnetisation vector measured at sample n.
     """
     cartesian_magnetisation = get_cartesian_magnetisation(output_directory, temperature, temperature_index, no_of_sites,
                                                           no_of_equilibration_sweeps, thinning_level)
@@ -560,7 +560,7 @@ def get_relative_magnetisation_norm(output_directory, temperature, temperature_i
     Returns the sample of the relative magnetisation norm || tilde{m}(x; temperature, no_of_sites) ||, where
     tilde{m}(x; temperature, no_of_sites) = m / sigma_{|| m ||} is the Cartesian relative magnetisation,
     m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the Cartesian magnetisation (with
-    x_i the position of particle i at the time of observation) and sigma_{|| m ||} is the standard deviation of its
+    x_i the position of particle i at the time of sample) and sigma_{|| m ||} is the standard deviation of its
     norm.
 
 
@@ -578,14 +578,14 @@ def get_relative_magnetisation_norm(output_directory, temperature, temperature_i
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the relative magnetisation norm.  A one-dimensional numpy array of length no_of_observations.
-        The nth element is a float corresponding to the relative magnetisation norm measured at observation n.
+        The sample of the relative magnetisation norm.  A one-dimensional numpy array of length no_of_samples.
+        The nth element is a float corresponding to the relative magnetisation norm measured at sample n.
     """
     return np.linalg.norm(get_cartesian_relative_magnetisation(output_directory, temperature, temperature_index,
                                                                no_of_sites, no_of_equilibration_sweeps,
@@ -617,16 +617,16 @@ def get_non_normalised_macro_josephson_current(output_directory, temperature, te
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the non-normalised Josephson current.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the non-normalised Josephson current measured at observation n;
+        (no_of_samples, 2).  The nth sub-array is the non-normalised Josephson current measured at sample n;
         its first / second element is a float corresponding to the x / y component of the non-normalised Josephson
-        current measured at observation n.
+        current measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/1st_deriv_of_potential.csv", dtype=float, delimiter=","),
@@ -655,14 +655,14 @@ def get_inverse_vacuum_permittivity(output_directory, temperature, temperature_i
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the inverse vacuum permittivity.  A one-dimensional numpy array of length no_of_observations.
-        The nth  element is a float corresponding to the inverse vacuum permittivity measured at observation n.
+        The sample of the inverse vacuum permittivity.  A one-dimensional numpy array of length no_of_samples.
+        The nth  element is a float corresponding to the inverse vacuum permittivity measured at sample n.
     """
     return get_reduced_sample(np.mean(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/2nd_deriv_of_potential.csv", dtype=float, delimiter=","),
@@ -690,15 +690,15 @@ def get_macro_josephson_current(output_directory, temperature, temperature_index
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the Josephson current.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
-        sub-array is the Josephson current measured at observation n; its first / second element is a float
-        corresponding to the x / y component of the Josephson current measured at observation n.
+        The sample of the Josephson current.  A two-dimensional numpy array of shape (no_of_samples, 2).  The nth
+        sub-array is the Josephson current measured at sample n; its first / second element is a float
+        corresponding to the x / y component of the Josephson current measured at sample n.
     """
     return get_non_normalised_macro_josephson_current(output_directory, temperature, temperature_index, no_of_sites,
                                                       no_of_equilibration_sweeps, thinning_level) / no_of_sites
@@ -730,14 +730,14 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the helicity modulus.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to the helicity modulus measured at observation n.
+        The sample of the helicity modulus.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to the helicity modulus measured at sample n.
     """
     non_normalised_josephson_current = get_non_normalised_macro_josephson_current(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -767,16 +767,16 @@ def get_potential_minimising_twists(output_directory, temperature, temperature_i
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the potential-minimising twist field.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the potential-minimising twist field measured at observation n;
+        (no_of_samples, 2).  The nth sub-array is the potential-minimising twist field measured at sample n;
         its first / second element is an int corresponding to the x / y component of the potential-minimising twist
-        field measured at observation n.
+        field measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/potential_minimising_twists.csv", dtype=float, delimiter=","),
@@ -806,15 +806,15 @@ def get_potential_minimising_twist_susceptibility(output_directory, temperature,
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the potential-minimising twist susceptibility.  A one-dimensional numpy array of length
-        no_of_observations.  The nth element is a float corresponding to the potential-minimising twist susceptibility
-        measured at observation n.
+        no_of_samples.  The nth element is a float corresponding to the potential-minimising twist susceptibility
+        measured at sample n.
     """
     potential_minimising_twists_sample = get_potential_minimising_twists(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -848,15 +848,15 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the topological sector.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
-        sub-array is the topological sector measured at observation n; its first / second element is an int
-        corresponding to the x / y component of the topological sector measured at observation n.
+        The sample of the topological sector.  A two-dimensional numpy array of shape (no_of_samples, 2).  The nth
+        sub-array is the topological sector measured at sample n; its first / second element is an int
+        corresponding to the x / y component of the topological sector measured at sample n.
     """
     """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L)); 
                 this ensures edge cases are correctly processed, eg, Ebar_x = pi / L does not incorrectly set w_x = 1"""
@@ -897,14 +897,14 @@ def get_hxy_internal_twist_susceptibility(output_directory, temperature, tempera
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the internal-twist susceptibility.  A one-dimensional numpy array of length no_of_observations.
-        The nth element is a float corresponding to the internal-twist susceptibility measured at observation n.
+        The sample of the internal-twist susceptibility.  A one-dimensional numpy array of length no_of_samples.
+        The nth element is a float corresponding to the internal-twist susceptibility measured at sample n.
     """
     topological_sector_sample = get_hxy_topological_sector(output_directory, temperature, temperature_index,
                                                            no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -933,15 +933,15 @@ def get_xy_twist_relaxation_field(output_directory, temperature, temperature_ind
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the XY internal global twists.  A two-dimensional numpy array of shape (no_of_observations, 2).
-        The nth sub-array is the internal global twists measured at observation n; its first / second element is an
-        int corresponding to the x / y component of the internal global twists measured at observation n.
+        The sample of the XY internal global twists.  A two-dimensional numpy array of shape (no_of_samples, 2).
+        The nth sub-array is the internal global twists measured at sample n; its first / second element is an
+        int corresponding to the x / y component of the internal global twists measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/twist_relaxations.csv", dtype=float, delimiter=","),
@@ -967,15 +967,15 @@ def get_xy_twist_relaxation_susceptibility(output_directory, temperature, temper
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the global twist-relaxation susceptibility.  A one-dimensional numpy array of length
-        no_of_observations.  The nth element is a float corresponding to the global twist-relaxation susceptibility
-        measured at observation n.
+        no_of_samples.  The nth element is a float corresponding to the global twist-relaxation susceptibility
+        measured at sample n.
     """
     twist_relaxations_sample = get_xy_twist_relaxation_field(output_directory, temperature, temperature_index,
                                                              no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -1014,14 +1014,14 @@ def get_non_normalised_xy_emergent_field_zero_mode(output_directory, temperature
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the non-normalised zero mode of the XY emergent field.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the zero mode measured at observation n; its first / second
+        (no_of_samples, 2).  The nth sub-array is the zero mode measured at sample n; its first / second
         element is a float corresponding to its x / y component.
     """
     return get_reduced_sample(np.loadtxt(
@@ -1060,14 +1060,14 @@ def get_xy_emergent_field_zero_mode(output_directory, temperature, temperature_i
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the zero mode of the XY emergent field.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the zero mode measured at observation n; its first / second
+        (no_of_samples, 2).  The nth sub-array is the zero mode measured at sample n; its first / second
         element is a float corresponding to its x / y component.
     """
     return get_non_normalised_xy_emergent_field_zero_mode(output_directory, temperature, temperature_index, no_of_sites,
@@ -1098,14 +1098,14 @@ def get_xy_emergent_field_zero_mode_susceptibility(output_directory, temperature
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_observations.
-        The nth element is a float corresponding to the global-defect susceptibility measured at observation n.
+        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_samples.
+        The nth element is a float corresponding to the global-defect susceptibility measured at sample n.
     """
     non_normalised_zero_mode_sample = get_non_normalised_xy_emergent_field_zero_mode(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -1140,15 +1140,15 @@ def get_xy_topological_sector(output_directory, temperature, temperature_index, 
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the XY topological sector.  A two-dimensional numpy array of shape (no_of_observations, 2).  The
-        nth sub-array is the topological sector measured at observation n; its first / second element is an int
-        corresponding to the x / y component of the topological sector measured at observation n.
+        The sample of the XY topological sector.  A two-dimensional numpy array of shape (no_of_samples, 2).  The
+        nth sub-array is the topological sector measured at sample n; its first / second element is an int
+        corresponding to the x / y component of the topological sector measured at sample n.
     """
     """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L)); 
         this ensures edge cases are correctly processed, eg, Ebar_x = pi / L does not incorrectly set w_x = 1"""
@@ -1182,14 +1182,14 @@ def get_xy_global_defect_susceptibility(output_directory, temperature, temperatu
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_observations.
-        The nth element is a float corresponding to the global-defect susceptibility measured at observation n.
+        The sample of the global-defect susceptibility.  A one-dimensional numpy array of length no_of_samples.
+        The nth element is a float corresponding to the global-defect susceptibility measured at sample n.
     """
     topological_sector_sample = get_xy_topological_sector(output_directory, temperature, temperature_index,
                                                           no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -1219,15 +1219,15 @@ def get_sum_of_electric_field(output_directory, temperature, temperature_index, 
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the sum of the electric field.  A two-dimensional numpy array of shape (no_of_observations, 2).
-        The nth sub-array is the sum of the electric field measured at observation n; its first / second element is a
-        float corresponding to the x / y component of the sum of the electric field measured at observation n.
+        The sample of the sum of the electric field.  A two-dimensional numpy array of shape (no_of_samples, 2).
+        The nth sub-array is the sum of the electric field measured at sample n; its first / second element is a
+        float corresponding to the x / y component of the sum of the electric field measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(
         f"{output_directory}/temp_{temperature_index:02d}/electric_field_sum.csv", dtype=float, delimiter=","),
@@ -1255,16 +1255,16 @@ def get_electric_field_zero_mode(output_directory, temperature, temperature_inde
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
         The sample of the zero mode of the electric field.  A two-dimensional numpy array of shape
-        (no_of_observations, 2).  The nth sub-array is the zero mode of the electric field measured at observation n;
+        (no_of_samples, 2).  The nth sub-array is the zero mode of the electric field measured at sample n;
         its first / second element is a float corresponding to the x / y component of the zero mode of the electric
-        field measured at observation n.
+        field measured at sample n.
     """
     return get_sum_of_electric_field(output_directory, temperature, temperature_index, no_of_sites,
                                      no_of_equilibration_sweeps, thinning_level) / no_of_sites
@@ -1292,14 +1292,14 @@ def get_inverse_permittivity(output_directory, temperature, temperature_index, n
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the helicity modulus.  A one-dimensional numpy array of length no_of_observations.  The nth
-        element is a float corresponding to the helicity modulus measured at observation n.
+        The sample of the helicity modulus.  A one-dimensional numpy array of length no_of_samples.  The nth
+        element is a float corresponding to the helicity modulus measured at sample n.
     """
     sum_of_electric_field_sample = get_sum_of_electric_field(output_directory, temperature, temperature_index,
                                                              no_of_sites, no_of_equilibration_sweeps, thinning_level)
@@ -1330,15 +1330,15 @@ def get_topological_sector(output_directory, temperature, temperature_index, no_
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the topological sector.  A two-dimensional numpy array of shape (no_of_observations, 2).  The nth
-        sub-array is the topological sector measured at observation n; its first / second element is an int
-        corresponding to the x / y component of the topological sector measured at observation n.
+        The sample of the topological sector.  A two-dimensional numpy array of shape (no_of_samples, 2).  The nth
+        sub-array is the topological sector measured at sample n; its first / second element is an int
+        corresponding to the x / y component of the topological sector measured at sample n.
     """
     """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L)); 
             this ensures edge cases are correctly processed, eg, Ebar_x = pi / L does not incorrectly set w_x = 1"""
@@ -1371,14 +1371,14 @@ def get_topological_susceptibility(output_directory, temperature, temperature_in
     no_of_equilibration_sweeps : None or int, optional
         The total number of equilibration iterations of the Markov process.  If None, the entire sample is returned.
     thinning_level : None or int, optional
-        The number of observations to be discarded between retained observations of the thinning process.  If None,
-        all observations are retained.
+        The number of samples to be discarded between retained samples of the thinning process.  If None,
+        all samples are retained.
 
     Returns
     -------
     numpy.ndarray
-        The sample of the topological susceptibility.  A one-dimensional numpy array of length no_of_observations.  The
-        nth element is a float corresponding to the topological susceptibility measured at observation n.
+        The sample of the topological susceptibility.  A one-dimensional numpy array of length no_of_samples.  The
+        nth element is a float corresponding to the topological susceptibility measured at sample n.
     """
     topological_sector_sample = get_topological_sector(output_directory, temperature, temperature_index, no_of_sites,
                                                        no_of_equilibration_sweeps, thinning_level)

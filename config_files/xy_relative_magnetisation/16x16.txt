@@ -2,7 +2,7 @@
 'output/xy_relative_magnetisation/16x16'            output_directory
 16                                                  integer_lattice_length
 1000                                                no_of_equilibration_sweeps
-10000                                               no_of_observations
+10000                                               no_of_samples
 0.1d0                                               initial_temperature
 2.1d0                                               final_temperature
 10                                                  no_of_temperature_increments

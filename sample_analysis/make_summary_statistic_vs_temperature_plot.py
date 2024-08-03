@@ -17,7 +17,7 @@ run_script = importlib.import_module("run")
 
 
 def main(config_file, observable_string):
-    (algorithm_name, sample_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
+    (algorithm_name, sample_directory, no_of_sites, no_of_sites_string, no_of_equilibration_sweeps, no_of_samples,
      temperatures, _, external_global_moves_string, no_of_runs, initial_run_index, max_no_of_cpus
      ) = run_script.get_config_data(config_file)
     check_for_observable_error(algorithm_name, observable_string)
@@ -25,7 +25,7 @@ def main(config_file, observable_string):
     pool = setup_pool(no_of_runs, max_no_of_cpus)
     start_time = time.time()
     means, errors = get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites,
-                                         no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
+                                         no_of_sites_string, no_of_equilibration_sweeps, no_of_samples,
                                          external_global_moves_string, sample_directory, sample_directory, no_of_runs,
                                          pool)
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
@@ -41,11 +41,11 @@ def main(config_file, observable_string):
 
 
 def get_means_and_errors(observable_string, algorithm_name, temperatures, no_of_sites, no_of_sites_string,
-                         no_of_equilibration_sweeps, no_of_observations, external_global_moves_string, output_directory,
+                         no_of_equilibration_sweeps, no_of_samples, external_global_moves_string, output_directory,
                          sample_directory, no_of_runs, pool):
     output_file_string = (
         f"{output_directory}/{observable_string}_vs_temperature_{algorithm_name.replace('-', '_')}_"
-        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_runs}x{no_of_observations}_obs.tsv")
+        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_runs}x{no_of_samples}_obs.tsv")
     try:
         with open(output_file_string, "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file

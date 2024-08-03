@@ -26,10 +26,10 @@ def main():
     config_file_256x256_metrop = "config_files/cdf_figs/256x256_metropolis.txt"
     config_file_256x256_ecmc = "config_files/cdf_figs/256x256_ecmc.txt"
     (algorithm_name_metrop, sample_directory_64x64_metrop, no_of_sites_64x64, no_of_sites_string_64x64,
-     no_of_equilibration_sweeps_metrop, no_of_observations_metrop, temperatures, use_external_global_moves,
+     no_of_equilibration_sweeps_metrop, no_of_samples_metrop, temperatures, use_external_global_moves,
      external_global_moves_string, no_of_runs_metrop, _, max_no_of_cpus) = run_script.get_config_data(
         config_file_64x64_metrop)
-    (algorithm_name_ecmc, sample_directory_64x64_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc,
+    (algorithm_name_ecmc, sample_directory_64x64_ecmc, _, _, no_of_equilibration_sweeps_ecmc, no_of_samples_ecmc,
      _, _, _, no_of_runs_ecmc, _, _) = run_script.get_config_data(config_file_64x64_ecmc)
     (_, sample_directory_256x256_metrop, no_of_sites_256x256, no_of_sites_string_256x256, _, _, _, _, _, _, _, _
      ) = run_script.get_config_data(config_file_256x256_metrop)
@@ -88,13 +88,13 @@ def main():
     make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
                                no_of_sites_64x64, no_of_sites_string_64x64, temperatures,
                                no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
-                               no_of_observations_ecmc, no_of_observations_metrop, no_of_runs_ecmc, no_of_runs_metrop,
+                               no_of_samples_ecmc, no_of_samples_metrop, no_of_runs_ecmc, no_of_runs_metrop,
                                output_directory, sample_directory_64x64_ecmc, sample_directory_64x64_metrop, axes,
                                inset_axis, linestyles, colors, 0)
     make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string,
                                no_of_sites_256x256, no_of_sites_string_256x256, temperatures,
                                no_of_equilibration_sweeps_ecmc, no_of_equilibration_sweeps_metrop,
-                               no_of_observations_ecmc, no_of_observations_metrop, no_of_runs_ecmc, no_of_runs_metrop,
+                               no_of_samples_ecmc, no_of_samples_metrop, no_of_runs_ecmc, no_of_runs_metrop,
                                output_directory, sample_directory_256x256_ecmc, sample_directory_256x256_metrop, axes,
                                inset_axis, linestyles, colors, 1)
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
@@ -119,7 +119,7 @@ def main():
 
 def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, external_global_moves_string, no_of_sites,
                                no_of_sites_string, temperatures, no_of_equilibration_sweeps_ecmc,
-                               no_of_equilibration_sweeps_metrop, no_of_observations_ecmc, no_of_observations_metrop,
+                               no_of_equilibration_sweeps_metrop, no_of_samples_ecmc, no_of_samples_metrop,
                                no_of_runs_ecmc, no_of_runs_metrop, output_directory, sample_directory_ecmc,
                                sample_directory_metrop, axes, inset_axis, linestyles, colors, subplot_index):
     try:
@@ -127,7 +127,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
             for run_index in range(no_of_runs_metrop):
                 output_file_metrop = (
                     f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_"
+                    f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples_metrop}_obs_"
                     f"temp_eq_{temperature:.4f}_run_{run_index}.npy")
                 if run_index == 0:
                     axes[subplot_index].plot(*np.load(output_file_metrop), color=colors[temperature_index],
@@ -145,7 +145,7 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                 if run_index < no_of_runs_ecmc:
                     output_file_ecmc = (
                         f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples_ecmc}_obs_"
                         f"temp_eq_{temperature:.4f}_run_{run_index}.npy")
                     if subplot_index == 0:
                         inset_axis.plot(*np.load(output_file_ecmc), color=colors[temperature_index],
@@ -169,11 +169,11 @@ def make_non_schematic_subplot(algorithm_name_ecmc, algorithm_name_metrop, exter
                                              color=colors[temperature_index], linestyle=linestyles[run_index],
                                              linewidth=2)
                 np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_metrop.replace('-', '_')}_"
-                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_metrop}_obs_"
+                        f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples_metrop}_obs_"
                         f"temp_eq_{temperature:.4f}_run_{run_index}.npy", cdfs_of_magnetisation_phase_metrop[run_index])
                 if run_index < no_of_runs_ecmc:
                     np.save(f"{output_directory}/magnetisation_phase_cdf_{algorithm_name_ecmc.replace('-', '_')}_"
-                            f"{external_global_moves_string}_{no_of_sites_string}_{no_of_observations_ecmc}_obs_"
+                            f"{external_global_moves_string}_{no_of_sites_string}_{no_of_samples_ecmc}_obs_"
                             f"temp_eq_{temperature:.4f}_run_{run_index}.npy",
                             cdfs_of_magnetisation_phase_ecmc[run_index])
                     if subplot_index == 0:
@@ -190,7 +190,7 @@ def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_in
     The magnetisation phase phi(x; temperature, no_of_sites) is defined via
     m(x; temperature, no_of_sites) = (|| m(x; temperature, no_of_sites) ||, phi(x; temperature, no_of_sites))^t in
     radial coordinates, where m(x; temperature, no_of_sites) = sum_i [cos(x_i), sin(x_i)]^t / no_of_sites is the
-    Cartesian magnetisation, with x_i the position of particle i at the time of observation.
+    Cartesian magnetisation, with x_i the position of particle i at the time of sample.
 
     Parameters
     ----------
@@ -203,7 +203,7 @@ def get_cdf_of_magnetisation_phase(sample_directory, temperature, temperature_in
     no_of_sites : int
         The number of lattice sites.
     no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
+        The number of discarded equilibration samples.
 
     Returns
     -------

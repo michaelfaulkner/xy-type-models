@@ -2,7 +2,7 @@
 '../bc4-output/cvm_figs/16x16_metrop_upper_trans'           output_directory
 16                                                          integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
-1000000                                                     no_of_observations
+1000000                                                     no_of_samples
 1.1d0                                                       initial_temperature
 1.34d0                                                      final_temperature
 6                                                           no_of_temperature_increments

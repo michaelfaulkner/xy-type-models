@@ -4,9 +4,9 @@ logical :: use_external_global_moves, measure_electric_field_sum, measure_potent
 logical :: start_from_checkpoint, simulation_complete, print_samples
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer, allocatable, dimension(:) :: get_up_neighbour, get_down_neighbour, array_of_sites, charge_configuration
-integer(kind=8) :: no_of_observations ! kind=8 to avoid upper integer bound on long timescales
+integer(kind=8) :: no_of_samples ! kind=8 to avoid upper integer bound on long timescales
 integer :: integer_lattice_length, no_of_sites, no_of_temperature_increments, no_of_equilibration_sweeps
-integer :: initial_temperature_index, initial_observation_index, net_charge_displacement(2), external_global_moves(2)
+integer :: initial_temperature_index, initial_sample_index, net_charge_displacement(2), external_global_moves(2)
 ! kind=8 below to avoid upper integer bound on long timescales
 integer(kind=8) :: raw_electric_field_zero_mode_squared_sum, raw_electric_field_zero_mode_quartic_sum
 integer(kind=8) :: topological_sector_squared_sum, topological_sector_quartic_sum

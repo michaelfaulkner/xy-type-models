@@ -1,7 +1,7 @@
 program ecmc_algorithm
 use variables
 implicit none
-integer :: temperature_index, observation_index
+integer :: temperature_index, sample_index
 real :: start_time, end_time
 
 call pre_simulation_processes
@@ -10,7 +10,7 @@ if (.not.start_from_checkpoint) then
 end if
 
 if (.not.simulation_complete) then
-    spin_space_distance_between_observations = 1.0d0 * dfloat(no_of_sites)
+    spin_space_distance_between_samples = 1.0d0 * dfloat(no_of_sites)
     call cpu_time(start_time)
     do temperature_index = initial_temperature_index, no_of_temperature_increments
         write(6, '(A, F6.4)') 'Temperature = ', temperature
@@ -20,29 +20,29 @@ if (.not.simulation_complete) then
         end if
         call set_running_sums
 
-        if (initial_observation_index < no_of_equilibration_sweeps) then
-            do observation_index = initial_observation_index, no_of_equilibration_sweeps - 1
+        if (initial_sample_index < no_of_equilibration_sweeps) then
+            do sample_index = initial_sample_index, no_of_equilibration_sweeps - 1
                 if (use_external_global_moves) then
                     call attempt_external_global_moves
                 end if
                 call single_event_chain
                 if (print_samples) then
-                    call process_sample(observation_index)
+                    call process_sample(sample_index)
                 end if
-                call do_checkpointing(temperature_index, observation_index)
+                call do_checkpointing(temperature_index, sample_index)
             end do
             call reset_event_counters
-            initial_observation_index = no_of_equilibration_sweeps
+            initial_sample_index = no_of_equilibration_sweeps
         end if
 
-        do observation_index = initial_observation_index, no_of_equilibration_sweeps + no_of_observations - 1
+        do sample_index = initial_sample_index, no_of_equilibration_sweeps + no_of_samples - 1
             if (use_external_global_moves) then
                 call attempt_external_global_moves
             end if
             call single_event_chain
-            call process_sample(observation_index)
-            if (observation_index < no_of_equilibration_sweeps + no_of_observations - 1) then
-                call do_checkpointing(temperature_index, observation_index) ! we don't checkpoint at end of temp index
+            call process_sample(sample_index)
+            if (sample_index < no_of_equilibration_sweeps + no_of_samples - 1) then
+                call do_checkpointing(temperature_index, sample_index) ! we don't checkpoint at end of temp index
             end if
         end do
 
@@ -50,7 +50,7 @@ if (.not.simulation_complete) then
         call reset_event_counters
         call output_summary_statistics(temperature_index)
         start_from_checkpoint = .false.
-        initial_observation_index = 0
+        initial_sample_index = 0
         temperature = temperature + magnitude_of_temperature_increments
         call initialise_field_configuration(.false.)
     end do
@@ -73,10 +73,10 @@ integer :: temperature_index
 write (filename, '(A, "/temp_", I2.2, "/event_rate.csv")' ) trim(output_directory), temperature_index
 open(unit=300, file = filename)
 if (.not.(use_external_global_moves)) then
-    write(300, 100) no_of_events_per_unit_spin_space_distance / dfloat(no_of_observations)
+    write(300, 100) no_of_events_per_unit_spin_space_distance / dfloat(no_of_samples)
 else
-    write(300, 200) no_of_events_per_unit_spin_space_distance / dfloat(no_of_observations), &
-                        0.5d0 * no_of_accepted_external_global_moves / dfloat(no_of_observations)
+    write(300, 200) no_of_events_per_unit_spin_space_distance / dfloat(no_of_samples), &
+                        0.5d0 * no_of_accepted_external_global_moves / dfloat(no_of_samples)
 end if
 close(300)
 

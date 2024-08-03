@@ -29,33 +29,33 @@ def main(no_of_system_sizes=6):
 
     """temperatures_ecmc = [*temperatures_metrop_low_temps, *temperatures_metrop_high_temps] in the following lines"""
     (algorithm_name_metrop, sample_directory_4x4_metrop_low_temps, _, _, no_of_equilibration_sweeps_metrop_low_temps,
-     no_of_observations_metrop_small_systems_low_temps, temperatures_metrop_low_temps, _, external_global_moves_string,
+     no_of_samples_metrop_small_systems_low_temps, temperatures_metrop_low_temps, _, external_global_moves_string,
      no_of_runs_metrop_low_temps, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_metrop_low_temps)
-    (_, _, _, _, no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_lower_trans, no_of_samples_metrop_lower_trans,
      temperatures_metrop_lower_trans, _, _, no_of_runs_metrop_lower_trans, _, _) = run_script.get_config_data(
         base_config_file_metrop_lower_trans)
-    (_, _, _, _, no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_upper_trans, no_of_samples_metrop_upper_trans,
      temperatures_metrop_upper_trans, _, _, no_of_runs_metrop_upper_trans, _, _) = run_script.get_config_data(
         base_config_file_metrop_upper_trans)
-    (_, _, _, _, no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
+    (_, _, _, _, no_of_equilibration_sweeps_metrop_high_temps, no_of_samples_metrop_high_temps,
      temperatures_metrop_high_temps, _, _, no_of_runs_metrop_high_temps, _, _) = run_script.get_config_data(
         base_config_file_metrop_high_temps)
-    (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc, _, _,
+    (algorithm_name_ecmc, _, _, _, no_of_equilibration_sweeps_ecmc, no_of_samples_ecmc, temperatures_ecmc, _, _,
      no_of_runs_ecmc, _, _) = run_script.get_config_data(base_config_file_ecmc)
 
     """We also define an additional 'lowest-temps' case for L = 128.  This is because we split the lowest four 
         temperatures into two directories in this case.  This keeps within the two-week time limit on BlueCrystal 4, as 
         this larger system size uses more CPU time at fixed simulation timescale, but also requires longer simulation 
         timescales for CvM convergence.  Due to these longer required simulation timescales, L = 64 and 128 both 
-        require the additional field no_of_observations_metrop_large_systems_low_temps."""
+        require the additional field no_of_samples_metrop_large_systems_low_temps."""
     base_config_file_128x128_metrop_low_temps_lower = f"config_files/cvm_figs/128x128_metrop_lowest_temps.txt"
     base_config_file_128x128_metrop_low_temps_upper = f"config_files/cvm_figs/128x128_metrop_low_temps.txt"
     temperatures_128x128_metrop_low_temps_lower = run_script.get_config_data(
         base_config_file_128x128_metrop_low_temps_lower)[6]
-    (_, _, _, _, _, no_of_observations_metrop_large_systems_low_temps, temperatures_128x128_metrop_low_temps_upper, _,
+    (_, _, _, _, _, no_of_samples_metrop_large_systems_low_temps, temperatures_128x128_metrop_low_temps_upper, _,
      _, _, _, _) = run_script.get_config_data(base_config_file_128x128_metrop_low_temps_upper)
-    no_of_observations_metrop_low_temps = [no_of_observations_metrop_small_systems_low_temps if index < 4 else
-                                           no_of_observations_metrop_large_systems_low_temps for index in
+    no_of_samples_metrop_low_temps = [no_of_samples_metrop_small_systems_low_temps if index < 4 else
+                                           no_of_samples_metrop_large_systems_low_temps for index in
                                            range(len(linear_system_sizes))]
 
     output_directory = sample_directory_4x4_metrop_low_temps.replace("/4x4_metrop_low_temps", "")
@@ -141,115 +141,115 @@ def main(no_of_system_sizes=6):
             compute_physical_time_steps(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
-                no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
+                no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
         else:
             compute_physical_time_steps(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directory_128x128_metrop_low_temps_lower, temperatures_128x128_metrop_low_temps_lower,
-                length, no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
+                length, no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
             compute_physical_time_steps(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_128x128_metrop_low_temps_upper,
-                length, no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
+                length, no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_lower_trans[system_size_index], temperatures_metrop_lower_trans, length,
-            no_of_observations_metrop_lower_trans, no_of_runs_metrop_lower_trans, pool)
+            no_of_samples_metrop_lower_trans, no_of_runs_metrop_lower_trans, pool)
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_upper_trans[system_size_index], temperatures_metrop_upper_trans, length,
-            no_of_observations_metrop_upper_trans, no_of_runs_metrop_upper_trans, pool)
+            no_of_samples_metrop_upper_trans, no_of_runs_metrop_upper_trans, pool)
         compute_physical_time_steps(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
-            no_of_observations_metrop_high_temps, no_of_runs_metrop_high_temps, pool)
+            no_of_samples_metrop_high_temps, no_of_runs_metrop_high_temps, pool)
 
         """compute non-used event rates for our records"""
         compute_event_rates(algorithm_name_ecmc, external_global_moves_string, output_directory,
                             sample_directories_ecmc[system_size_index], temperatures_ecmc, length,
-                            no_of_observations_ecmc, no_of_runs_ecmc, pool)
+                            no_of_samples_ecmc, no_of_runs_ecmc, pool)
 
         """compute non-used simulation variances for our records"""
         if length < 128:
             _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_metrop_low_temps, length,
-                no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
+                no_of_equilibration_sweeps_metrop_low_temps, no_of_samples_metrop_low_temps[system_size_index],
                 no_of_runs_metrop_low_temps, pool))
         else:
             _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directory_128x128_metrop_low_temps_lower, temperatures_128x128_metrop_low_temps_lower, length,
-                no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
+                no_of_equilibration_sweeps_metrop_low_temps, no_of_samples_metrop_low_temps[system_size_index],
                 no_of_runs_metrop_low_temps, pool))
             _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
                 algorithm_name_metrop, external_global_moves_string, output_directory,
                 sample_directories_metrop_low_temps[system_size_index], temperatures_128x128_metrop_low_temps_upper,
                 length, no_of_equilibration_sweeps_metrop_low_temps,
-                no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool))
+                no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool))
         _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_lower_trans[system_size_index], temperatures_metrop_lower_trans, length,
-            no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
+            no_of_equilibration_sweeps_metrop_lower_trans, no_of_samples_metrop_lower_trans,
             no_of_runs_metrop_lower_trans, pool))
         _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_upper_trans[system_size_index], temperatures_metrop_upper_trans, length,
-            no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
+            no_of_equilibration_sweeps_metrop_upper_trans, no_of_samples_metrop_upper_trans,
             no_of_runs_metrop_upper_trans, pool))
         _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_metrop, external_global_moves_string, output_directory,
             sample_directories_metrop_high_temps[system_size_index], temperatures_metrop_high_temps, length,
-            no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
+            no_of_equilibration_sweeps_metrop_high_temps, no_of_samples_metrop_high_temps,
             no_of_runs_metrop_high_temps, pool))
         _, _ = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name_ecmc, external_global_moves_string, output_directory,
             sample_directories_ecmc[system_size_index], temperatures_ecmc, length, no_of_equilibration_sweeps_ecmc,
-            no_of_observations_ecmc, no_of_runs_ecmc, pool))
+            no_of_samples_ecmc, no_of_runs_ecmc, pool))
 
         """compute non-used (in this script) twist probabilities for later use in make_twist_figs -- this optimises 
             our usage of the scratch space on BlueCrystal 4, ACRC, University of Bristol"""
         if length < 128:
             _, _ = get_twist_probabilities_and_errors(
                 algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
-                temperatures_metrop_low_temps, length, no_of_observations_metrop_low_temps[system_size_index],
+                temperatures_metrop_low_temps, length, no_of_samples_metrop_low_temps[system_size_index],
                 no_of_runs_metrop_low_temps, pool)
         else:
             _, _ = get_twist_probabilities_and_errors(
                 algorithm_name_metrop, output_directory, sample_directory_128x128_metrop_low_temps_lower,
                 temperatures_128x128_metrop_low_temps_lower, length,
-                no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
+                no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
             _, _ = get_twist_probabilities_and_errors(
                 algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
                 temperatures_128x128_metrop_low_temps_upper, length,
-                no_of_observations_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
+                no_of_samples_metrop_low_temps[system_size_index], no_of_runs_metrop_low_temps, pool)
         _, _ = get_twist_probabilities_and_errors(
             algorithm_name_metrop, output_directory, sample_directories_metrop_lower_trans[system_size_index],
-            temperatures_metrop_lower_trans, length, no_of_observations_metrop_lower_trans,
+            temperatures_metrop_lower_trans, length, no_of_samples_metrop_lower_trans,
             no_of_runs_metrop_lower_trans, pool)
         _, _ = get_twist_probabilities_and_errors(
             algorithm_name_metrop, output_directory, sample_directories_metrop_upper_trans[system_size_index],
-            temperatures_metrop_upper_trans, length, no_of_observations_metrop_upper_trans,
+            temperatures_metrop_upper_trans, length, no_of_samples_metrop_upper_trans,
             no_of_runs_metrop_upper_trans, pool)
         _, _ = get_twist_probabilities_and_errors(
             algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
-            temperatures_metrop_high_temps, length, no_of_observations_metrop_high_temps, no_of_runs_metrop_high_temps,
+            temperatures_metrop_high_temps, length, no_of_samples_metrop_high_temps, no_of_runs_metrop_high_temps,
             pool)
 
         if length < 128:
             cvms_metrop_low_temps, cvm_errors_metrop_low_temps = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
-                no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
+                no_of_equilibration_sweeps_metrop_low_temps, no_of_samples_metrop_low_temps[system_size_index],
                 temperatures_metrop_low_temps, external_global_moves_string, no_of_runs_metrop_low_temps, pool, length)
         else:
             cvms_128x128_metrop_lowest_temps, cvm_errors_128x128_metrop_lowest_temps = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, output_directory, sample_directory_128x128_metrop_low_temps_lower,
-                no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
+                no_of_equilibration_sweeps_metrop_low_temps, no_of_samples_metrop_low_temps[system_size_index],
                 temperatures_128x128_metrop_low_temps_lower, external_global_moves_string, no_of_runs_metrop_low_temps,
                 pool, length)
             cvms_128x128_metrop_low_temps, cvm_errors_128x128_metrop_low_temps = get_cvm_mag_phase_vs_temperature(
                 algorithm_name_metrop, output_directory, sample_directories_metrop_low_temps[system_size_index],
-                no_of_equilibration_sweeps_metrop_low_temps, no_of_observations_metrop_low_temps[system_size_index],
+                no_of_equilibration_sweeps_metrop_low_temps, no_of_samples_metrop_low_temps[system_size_index],
                 temperatures_128x128_metrop_low_temps_upper, external_global_moves_string, no_of_runs_metrop_low_temps,
                 pool, length)
             cvms_metrop_low_temps = [*cvms_128x128_metrop_lowest_temps, *cvms_128x128_metrop_low_temps]
@@ -257,19 +257,19 @@ def main(no_of_system_sizes=6):
                                            *cvm_errors_128x128_metrop_low_temps]
         cvms_metrop_lower_trans, cvm_errors_metrop_lower_trans = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_lower_trans[system_size_index],
-            no_of_equilibration_sweeps_metrop_lower_trans, no_of_observations_metrop_lower_trans,
+            no_of_equilibration_sweeps_metrop_lower_trans, no_of_samples_metrop_lower_trans,
             temperatures_metrop_lower_trans, external_global_moves_string, no_of_runs_metrop_lower_trans, pool, length)
         cvms_metrop_upper_trans, cvm_errors_metrop_upper_trans = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_upper_trans[system_size_index],
-            no_of_equilibration_sweeps_metrop_upper_trans, no_of_observations_metrop_upper_trans,
+            no_of_equilibration_sweeps_metrop_upper_trans, no_of_samples_metrop_upper_trans,
             temperatures_metrop_upper_trans, external_global_moves_string, no_of_runs_metrop_upper_trans, pool, length)
         cvms_metrop_high_temps, cvm_errors_metrop_high_temps = get_cvm_mag_phase_vs_temperature(
             algorithm_name_metrop, output_directory, sample_directories_metrop_high_temps[system_size_index],
-            no_of_equilibration_sweeps_metrop_high_temps, no_of_observations_metrop_high_temps,
+            no_of_equilibration_sweeps_metrop_high_temps, no_of_samples_metrop_high_temps,
             temperatures_metrop_high_temps, external_global_moves_string, no_of_runs_metrop_high_temps, pool, length)
         cvms_ecmc, cvm_errors_ecmc = get_cvm_mag_phase_vs_temperature(
             algorithm_name_ecmc, output_directory, sample_directories_ecmc[system_size_index],
-            no_of_equilibration_sweeps_ecmc, no_of_observations_ecmc, temperatures_ecmc,
+            no_of_equilibration_sweeps_ecmc, no_of_samples_ecmc, temperatures_ecmc,
             external_global_moves_string, no_of_runs_ecmc, pool, length)
 
         cvms_metrop = np.array([*cvms_metrop_low_temps, *cvms_metrop_lower_trans, *cvms_metrop_upper_trans,
@@ -426,16 +426,16 @@ def main(no_of_system_sizes=6):
 
 
 def compute_event_rates(algorithm_name, external_global_moves_string, output_directory, sample_directory, temperatures,
-                        length, no_of_observations, no_of_runs, pool):
+                        length, no_of_samples, no_of_runs, pool):
     try:
         with open(f"{output_directory}/event_rates_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
                   f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_"
-                  f"{no_of_observations}_obs_{no_of_runs}_runs.tsv", "r") as _:
+                  f"{no_of_samples}_obs_{no_of_runs}_runs.tsv", "r") as _:
             pass
     except IOError:
         event_rates_file = open(
             f"{output_directory}/event_rates_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
-            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_"
+            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_samples}_"
             f"obs_{no_of_runs}_runs.tsv", "w")
         event_rates_file.write("# temperature".ljust(30) + "event rate".ljust(30) + "event-rate error" + "\n")
         for temperature_index, temperature in enumerate(temperatures):

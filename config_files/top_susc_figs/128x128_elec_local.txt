@@ -2,7 +2,7 @@
 'output/top_susc_figs/128x128_elec_local'           output_directory
 128                                                 integer_lattice_length
 10000                                               no_of_equilibration_sweeps
-100000                                              no_of_observations
+100000                                              no_of_samples
 0.6d0                                               initial_temperature
 2.1d0                                               final_temperature
 15                                                  no_of_temperature_increments

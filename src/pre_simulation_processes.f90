@@ -46,7 +46,7 @@ if (start_from_checkpoint) then
     call get_checkpoint
 else
     initial_temperature_index = 0
-    initial_observation_index = 0
+    initial_sample_index = 0
 end if
 temperature = temperature + initial_temperature_index * magnitude_of_temperature_increments
 write(end_of_simulation_filename, '(A, "/end_of_simulation.csv")') trim(output_directory)
@@ -57,13 +57,13 @@ if (.not.simulation_complete) then
     if (algorithm_name == '3dxy-gaussian-noise-metropolis') then
         write(6, '(A, A, A, I4.4, A, I4.4, A, I4.4, A, I2, A, I10, A)') 'Starting the ', trim(algorithm_name), &
                 ' simulation on ', integer_lattice_length, 'x', integer_lattice_length, 'x', integer_lattice_length, &
-                ' lattice sites, from temperature index ', initial_temperature_index, ' and observation_index ', &
-                initial_observation_index, ' (where both indices start from 0).'
+                ' lattice sites, from temperature index ', initial_temperature_index, ' and sample_index ', &
+                initial_sample_index, ' (where both indices start from 0).'
     else
         write(6, '(A, A, A, I4.4, A, I4.4, A, I2, A, I10, A)') 'Starting the ', trim(algorithm_name), &
                 ' simulation on ', integer_lattice_length, 'x', integer_lattice_length,  &
-                ' lattice sites, from temperature index ', initial_temperature_index, ' and observation_index ', &
-                initial_observation_index, ' (where both indices start from 0).'
+                ' lattice sites, from temperature index ', initial_temperature_index, ' and sample_index ', &
+                initial_sample_index, ' (where both indices start from 0).'
     end if
 else
     write(6, '(A)') 'Simulation has already been completed.  Delete end_of_simulation.csv to re-run it.'

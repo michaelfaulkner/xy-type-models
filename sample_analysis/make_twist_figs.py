@@ -30,17 +30,17 @@ def main(no_of_system_sizes=6):
     base_config_file_high_temps = f"config_files/cvm_figs/4x4_metrop_high_temps.txt"
 
     (algorithm_name, sample_directory_4x4_low_temp_all, _, _, no_of_equilibration_sweeps_low_temp,
-     no_of_observations_low_temp, temperatures_low_temp, _, external_global_moves_string_all, no_of_runs_low_temp, _,
+     no_of_samples_low_temp, temperatures_low_temp, _, external_global_moves_string_all, no_of_runs_low_temp, _,
      max_no_of_cpus) = run_script.get_config_data(base_config_file_low_temp_all)
     external_global_moves_string_local = run_script.get_config_data(base_config_file_low_temp_local)[8]
     (_, sample_directory_4x4_mid_temps, _, _, no_of_equilibration_sweeps_mid_temps,
-     no_of_observations_small_systems_mid_temps, temperatures_mid_temps, _, _, no_of_runs_mid_temps, _, _
+     no_of_samples_small_systems_mid_temps, temperatures_mid_temps, _, _, no_of_runs_mid_temps, _, _
      ) = run_script.get_config_data(base_config_file_mid_temps)
-    (_, _, _, _, no_of_equilibration_sweeps_lower_trans, no_of_observations_lower_trans, temperatures_lower_trans, _, _,
+    (_, _, _, _, no_of_equilibration_sweeps_lower_trans, no_of_samples_lower_trans, temperatures_lower_trans, _, _,
      no_of_runs_lower_trans, _, _) = run_script.get_config_data(base_config_file_lower_trans)
-    (_, _, _, _, no_of_equilibration_sweeps_upper_trans, no_of_observations_upper_trans, temperatures_upper_trans, _, _,
+    (_, _, _, _, no_of_equilibration_sweeps_upper_trans, no_of_samples_upper_trans, temperatures_upper_trans, _, _,
      no_of_runs_upper_trans, _, _) = run_script.get_config_data(base_config_file_upper_trans)
-    (_, _, _, _, no_of_equilibration_sweeps_high_temps, no_of_observations_high_temps, temperatures_high_temps, _, _,
+    (_, _, _, _, no_of_equilibration_sweeps_high_temps, no_of_samples_high_temps, temperatures_high_temps, _, _,
      no_of_runs_high_temps, _, _) = run_script.get_config_data(base_config_file_high_temps)
     temperatures = [*temperatures_low_temp, *temperatures_mid_temps, *temperatures_lower_trans,
                     *temperatures_upper_trans, *temperatures_high_temps]
@@ -51,14 +51,14 @@ def main(no_of_system_sizes=6):
         two-temperature directories.  This kept the CvM simulations within the two-week time limit on BlueCrystal 4, as 
         this larger system size uses more CPU time at fixed simulation timescale, but also requires longer simulation 
         timescales for CvM convergence.  Due to these longer required simulation timescales, L = 64 and 128 both 
-        require the additional field no_of_observations_large_systems_mid_temps."""
+        require the additional field no_of_samples_large_systems_mid_temps."""
     base_config_file_128x128_mid_temps_lower = f"config_files/cvm_figs/128x128_metrop_lowest_temps.txt"
     base_config_file_128x128_mid_temps_upper = f"config_files/cvm_figs/128x128_metrop_low_temps.txt"
     temperatures_128x128_mid_temps_lower = run_script.get_config_data(base_config_file_128x128_mid_temps_lower)[6]
-    (_, _, _, _, _, no_of_observations_large_systems_mid_temps, temperatures_128x128_mid_temps_upper, _, _, _,
+    (_, _, _, _, _, no_of_samples_large_systems_mid_temps, temperatures_128x128_mid_temps_upper, _, _, _,
      _, _) = run_script.get_config_data(base_config_file_128x128_mid_temps_upper)
-    no_of_observations_mid_temps = [no_of_observations_small_systems_mid_temps if index < 4 else
-                                    no_of_observations_large_systems_mid_temps for index in
+    no_of_samples_mid_temps = [no_of_samples_small_systems_mid_temps if index < 4 else
+                                    no_of_samples_large_systems_mid_temps for index in
                                     range(len(linear_system_sizes))]
 
     output_directory_low_temp = sample_directory_4x4_low_temp_all.replace("/4x4_low_temp_all", "")
@@ -116,37 +116,37 @@ def main(no_of_system_sizes=6):
         """compute non-used physical time steps for our records"""
         compute_physical_time_steps(algorithm_name, external_global_moves_string_all, output_directory_low_temp,
                                     sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
-                                    no_of_observations_low_temp, no_of_runs_low_temp, pool)
+                                    no_of_samples_low_temp, no_of_runs_low_temp, pool)
 
         twist_probabilities_low_temp, twist_probability_errors_low_temp = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_low_temp, sample_directories_low_temp_all[system_size_index],
-            temperatures_low_temp, length, no_of_observations_low_temp, no_of_runs_low_temp, pool)
+            temperatures_low_temp, length, no_of_samples_low_temp, no_of_runs_low_temp, pool)
         if length < 128:
             twist_probabilities_mid_temps, twist_probability_errors_mid_temps = get_twist_probabilities_and_errors(
                 algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
-                temperatures_mid_temps, length, no_of_observations_mid_temps[system_size_index], no_of_runs_mid_temps,
+                temperatures_mid_temps, length, no_of_samples_mid_temps[system_size_index], no_of_runs_mid_temps,
                 pool)
         else:
             twist_probs_mid_temps_lower, twist_prob_errors_mid_temps_lower = get_twist_probabilities_and_errors(
                 algorithm_name, output_directory_higher_temps, sample_directory_128x128_mid_temps_lower,
-                temperatures_128x128_mid_temps_lower, length, no_of_observations_mid_temps[system_size_index],
+                temperatures_128x128_mid_temps_lower, length, no_of_samples_mid_temps[system_size_index],
                 no_of_runs_mid_temps, pool)
             twist_probs_mid_temps_upper, twist_prob_errors_mid_temps_upper = get_twist_probabilities_and_errors(
                 algorithm_name, output_directory_higher_temps, sample_directories_mid_temps[system_size_index],
-                temperatures_128x128_mid_temps_upper, length, no_of_observations_mid_temps[system_size_index],
+                temperatures_128x128_mid_temps_upper, length, no_of_samples_mid_temps[system_size_index],
                 no_of_runs_mid_temps, pool)
             twist_probabilities_mid_temps = [*twist_probs_mid_temps_lower, *twist_probs_mid_temps_upper]
             twist_probability_errors_mid_temps = [*twist_prob_errors_mid_temps_lower,
                                                   *twist_prob_errors_mid_temps_upper]
         twist_probabilities_lower_trans, twist_probability_errors_lower_trans = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_higher_temps, sample_directories_lower_trans[system_size_index],
-            temperatures_lower_trans, length, no_of_observations_lower_trans, no_of_runs_lower_trans, pool)
+            temperatures_lower_trans, length, no_of_samples_lower_trans, no_of_runs_lower_trans, pool)
         twist_probabilities_upper_trans, twist_probability_errors_upper_trans = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_higher_temps, sample_directories_upper_trans[system_size_index],
-            temperatures_upper_trans, length, no_of_observations_upper_trans, no_of_runs_upper_trans, pool)
+            temperatures_upper_trans, length, no_of_samples_upper_trans, no_of_runs_upper_trans, pool)
         twist_probabilities_high_temps, twist_probability_errors_high_temps = get_twist_probabilities_and_errors(
             algorithm_name, output_directory_higher_temps, sample_directories_high_temps[system_size_index],
-            temperatures_high_temps, length, no_of_observations_high_temps, no_of_runs_high_temps, pool)
+            temperatures_high_temps, length, no_of_samples_high_temps, no_of_runs_high_temps, pool)
         twist_probabilities = [*twist_probabilities_low_temp, *twist_probabilities_mid_temps,
                                *twist_probabilities_lower_trans, *twist_probabilities_upper_trans,
                                *twist_probabilities_high_temps]
@@ -159,13 +159,13 @@ def main(no_of_system_sizes=6):
          low_temp_simulation_variance_errors_local) = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name, external_global_moves_string_local, output_directory_low_temp,
             sample_directories_low_temp_local[system_size_index], temperatures_low_temp, length,
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_runs_low_temp, pool)) / (
+            no_of_equilibration_sweeps_low_temp, no_of_samples_low_temp, no_of_runs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
         (low_temp_simulation_variances_all,
          low_temp_simulation_variance_errors_all) = np.array(get_mag_phase_simulation_variances_and_errors(
             algorithm_name, external_global_moves_string_all, output_directory_low_temp,
             sample_directories_low_temp_all[system_size_index], temperatures_low_temp, length,
-            no_of_equilibration_sweeps_low_temp, no_of_observations_low_temp, no_of_runs_low_temp, pool)) / (
+            no_of_equilibration_sweeps_low_temp, no_of_samples_low_temp, no_of_runs_low_temp, pool)) / (
                 math.pi ** 2 / 3.0)
 
         low_temp_simulation_variance_vs_system_size_local.append(low_temp_simulation_variances_local[0])
@@ -196,16 +196,16 @@ def main(no_of_system_sizes=6):
 
 
 def compute_physical_time_steps(algorithm_name, external_global_moves_string, output_directory, sample_directory,
-                                temperatures, length, no_of_observations, no_of_runs, pool):
+                                temperatures, length, no_of_samples, no_of_runs, pool):
     try:
         with open(f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
-                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_runs.tsv", "r") as _:
+                  f"{temperatures[-1]:.4f}_{no_of_samples}_obs_{no_of_runs}_runs.tsv", "r") as _:
             pass
     except IOError:
         physical_time_step_file = open(
             f"{output_directory}/physical_time_steps_{algorithm_name.replace('-', '_')}_{external_global_moves_string}_"
-            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_"
+            f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_samples}_"
             f"obs_{no_of_runs}_runs.tsv", "w")
         physical_time_step_file.write("# temperature".ljust(30) + "Delta t".ljust(30) + "Delta t error" + "\n")
         for temperature_index, temperature in enumerate(temperatures):
@@ -219,18 +219,18 @@ def compute_physical_time_steps(algorithm_name, external_global_moves_string, ou
 
 
 def get_twist_probabilities_and_errors(algorithm_name, output_directory, sample_directory, temperatures, length,
-                                       no_of_observations, no_of_runs, pool):
+                                       no_of_samples, no_of_runs, pool):
     try:
         with open(f"{output_directory}/probability_of_global_twists_{algorithm_name.replace('-', '_')}_"
                   f"{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_"
-                  f"{no_of_observations}_obs_{no_of_runs}_runs.tsv", "r") as output_file:
+                  f"{no_of_samples}_obs_{no_of_runs}_runs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             twist_probabilities, twist_probability_errors = output_file_sans_header[1], output_file_sans_header[2]
     except IOError:
         twists_file = open(
             f"{output_directory}/probability_of_global_twists_{algorithm_name.replace('-', '_')}_{length}x{length}_"
-            f"sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_"
+            f"sites_temp_range_{temperatures[0]:.4f}_to_{temperatures[-1]:.4f}_{no_of_samples}_obs_{no_of_runs}_"
             f"runs.tsv", "w")
         twists_file.write("# temperature".ljust(30) + "p(twist)".ljust(30) + "p(twist) error" + "\n")
         twist_probabilities, twist_probability_errors = [], []
@@ -249,11 +249,11 @@ def get_twist_probabilities_and_errors(algorithm_name, output_directory, sample_
 
 def get_mag_phase_simulation_variances_and_errors(algorithm_name, external_global_moves_string, output_directory,
                                                   sample_directory, temperatures, length, no_of_equilibration_sweeps,
-                                                  no_of_observations, no_of_runs, pool):
+                                                  no_of_samples, no_of_runs, pool):
     try:
         with open(f"{output_directory}/magnetisation_phase_simulation_variance_{algorithm_name.replace('-', '_')}_"
                   f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
-                  f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_runs.tsv", "r") as output_file:
+                  f"{temperatures[-1]:.4f}_{no_of_samples}_obs_{no_of_runs}_runs.tsv", "r") as output_file:
             output_file_sans_header = np.array([np.fromstring(line, dtype=float, sep='\t') for line in output_file
                                                 if not line.startswith('#')]).transpose()
             simulation_variances, simulation_variance_errors = output_file_sans_header[1], output_file_sans_header[2]
@@ -261,7 +261,7 @@ def get_mag_phase_simulation_variances_and_errors(algorithm_name, external_globa
         simulation_variance_file = open(
             f"{output_directory}/magnetisation_phase_simulation_variance_{algorithm_name.replace('-', '_')}_"
             f"{external_global_moves_string}_{length}x{length}_sites_temp_range_{temperatures[0]:.4f}_to_"
-            f"{temperatures[-1]:.4f}_{no_of_observations}_obs_{no_of_runs}_runs.tsv", "w")
+            f"{temperatures[-1]:.4f}_{no_of_samples}_obs_{no_of_runs}_runs.tsv", "w")
         simulation_variance_file.write("# temperature".ljust(30) + "simulation variance".ljust(30) +
                                        "simulation variance error" + "\n")
         simulation_variances, simulation_variance_errors = [], []
@@ -295,7 +295,7 @@ def get_simulation_variance_of_magnetisation_phase(sample_directory, temperature
     no_of_sites : int
         The number of lattice sites.
     no_of_equilibration_sweeps : int
-        The number of discarded equilibration observations.
+        The number of discarded equilibration samples.
 
     Returns
     -------

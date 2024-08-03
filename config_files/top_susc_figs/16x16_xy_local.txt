@@ -2,7 +2,7 @@
 'output/top_susc_figs/16x16_xy_local'           output_directory
 16                                              integer_lattice_length
 10000                                           no_of_equilibration_sweeps
-100000                                          no_of_observations
+100000                                          no_of_samples
 0.3939304219097d0                               initial_temperature
 1.378756476684d0                                final_temperature
 15                                              no_of_temperature_increments

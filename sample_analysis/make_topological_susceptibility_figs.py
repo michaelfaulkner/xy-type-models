@@ -25,8 +25,8 @@ def main(no_of_system_sizes=6):
     base_config_file_hxy_all_moves = f"config_files/top_susc_figs/4x4_hxy_all.txt"
     base_config_file_xy_all_moves = f"config_files/top_susc_figs/4x4_xy_all.txt"
     (algorithm_name_electrolyte, sample_directory_4x4_electrolyte_all_moves, _, _, no_of_equilibration_sweeps,
-     no_of_observations, temperatures_electrolyte, _, external_global_moves_string_all_moves,
-     no_of_runs, _, max_no_of_cpus) = run_script.get_config_data(base_config_file_electrolyte_all_moves)
+     no_of_samples, temperatures_electrolyte, _, external_global_moves_string_all_moves, no_of_runs, _, max_no_of_cpus
+     ) = run_script.get_config_data(base_config_file_electrolyte_all_moves)
     (algorithm_name_hxy, _, _, _, _, _, temperatures_hxy, _, _, _, _, _
      ) = run_script.get_config_data(base_config_file_hxy_all_moves)
     (algorithm_name_xy, _, _, _, _, _, temperatures_xy, _, _, _, _, _
@@ -75,12 +75,12 @@ def main(no_of_system_sizes=6):
     # pool = None
     start_time = time.time()
     make_topological_susceptibility_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
-                                          linear_system_sizes, no_of_equilibration_sweeps, no_of_observations,
+                                          linear_system_sizes, no_of_equilibration_sweeps, no_of_samples,
                                           no_of_runs, output_directory, sample_directories_by_algo_all_moves,
                                           external_global_moves_string_all_moves, observable_plotting_markers,
                                           system_size_plotting_colors, pool)
     make_topological_stability_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
-                                     linear_system_sizes, no_of_equilibration_sweeps, no_of_observations, no_of_runs,
+                                     linear_system_sizes, no_of_equilibration_sweeps, no_of_samples, no_of_runs,
                                      output_directory, sample_directories_by_algo_local_moves,
                                      sample_directories_by_algo_all_moves, external_global_moves_string_local_moves,
                                      external_global_moves_string_all_moves, observable_plotting_markers,
@@ -92,7 +92,7 @@ def main(no_of_system_sizes=6):
 
 
 def make_topological_susceptibility_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
-                                          linear_system_sizes, no_of_equilibration_sweeps, no_of_observations,
+                                          linear_system_sizes, no_of_equilibration_sweeps, no_of_samples,
                                           no_of_runs, output_directory, sample_directories_by_algo,
                                           external_global_moves_string_all_moves, observable_plotting_markers,
                                           system_size_plotting_colors, pool):
@@ -102,13 +102,13 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
             no_of_sites_string = f"{length}x{length}_sites"
             """first compute mean acceptance rates across the runs"""
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
-                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
+                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_samples,
                                  external_global_moves_string_all_moves, output_directory,
                                  sample_directories_by_algo[algorithm_index][system_size_index], no_of_runs, pool)
             for observable_index, observable in enumerate(observables[algorithm_index]):
                 means, errors = get_means_and_errors(observable, algorithm, model_temperatures[algorithm_index],
                                                      length ** 2, no_of_sites_string, no_of_equilibration_sweeps,
-                                                     no_of_observations, external_global_moves_string_all_moves,
+                                                     no_of_samples, external_global_moves_string_all_moves,
                                                      output_directory,
                                                      sample_directories_by_algo[algorithm_index][system_size_index],
                                                      no_of_runs, pool)
@@ -117,14 +117,14 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                                    marker=observable_plotting_markers[observable_index], markersize=10,
                                                    color=system_size_plotting_colors[system_size_index],
                                                    linestyle="dashed")
-    fig.savefig(f"{output_directory}/top_susceptibilities_with_global_moves_{no_of_runs}x{no_of_observations}_obs.pdf",
+    fig.savefig(f"{output_directory}/top_susceptibilities_with_global_moves_{no_of_runs}x{no_of_samples}_obs.pdf",
                 bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
     plt.close()
 
 
 def make_topological_stability_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
-                                     linear_system_sizes, no_of_equilibration_sweeps, no_of_observations, no_of_runs,
+                                     linear_system_sizes, no_of_equilibration_sweeps, no_of_samples, no_of_runs,
                                      output_directory, sample_directories_by_algo_local_moves,
                                      sample_directories_by_algo_all_moves, external_global_moves_string_local_moves,
                                      external_global_moves_string_all_moves, observable_plotting_markers,
@@ -135,19 +135,19 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
             no_of_sites_string = f"{length}x{length}_sites"
             """first compute mean acceptance rates across the runs"""
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
-                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
+                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_samples,
                                  external_global_moves_string_local_moves, output_directory,
                                  sample_directories_by_algo_local_moves[algorithm_index][system_size_index], no_of_runs,
                                  pool)
             get_means_and_errors("acceptance_rates", algorithm, model_temperatures[algorithm_index], length ** 2,
-                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_observations,
+                                 no_of_sites_string, no_of_equilibration_sweeps, no_of_samples,
                                  external_global_moves_string_all_moves, output_directory,
                                  sample_directories_by_algo_all_moves[algorithm_index][system_size_index], no_of_runs,
                                  pool)
 
             for observable_index, observable in enumerate(observables[algorithm_index]):
                 output_file_string = (f"{output_directory}/{observable}_ratio_{algorithm.replace('-', '_')}_"
-                                      f"{no_of_sites_string}_{no_of_runs}x{no_of_observations}_obs.tsv")
+                                      f"{no_of_sites_string}_{no_of_runs}x{no_of_samples}_obs.tsv")
                 try:
                     with open(output_file_string, "r") as output_file:
                         output_file_sans_header = np.array([
@@ -157,12 +157,12 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                 except IOError:
                     sample_means_local_moves, sample_errors_local_moves = get_means_and_errors(
                         observable, algorithm, model_temperatures[algorithm_index], length ** 2, no_of_sites_string,
-                        no_of_equilibration_sweeps, no_of_observations, external_global_moves_string_local_moves,
+                        no_of_equilibration_sweeps, no_of_samples, external_global_moves_string_local_moves,
                         output_directory, sample_directories_by_algo_local_moves[algorithm_index][system_size_index],
                         no_of_runs, pool)
                     sample_means_all_moves, sample_errors_all_moves = get_means_and_errors(
                         observable, algorithm, model_temperatures[algorithm_index], length ** 2, no_of_sites_string,
-                        no_of_equilibration_sweeps, no_of_observations, external_global_moves_string_all_moves,
+                        no_of_equilibration_sweeps, no_of_samples, external_global_moves_string_all_moves,
                         output_directory, sample_directories_by_algo_all_moves[algorithm_index][system_size_index],
                         no_of_runs, pool)
                     chi_ratios = [sample_mean_local_moves / sample_means_all_moves[temperature_index]
@@ -193,7 +193,7 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                                            marker=observable_plotting_markers[observable_index], markersize=10,
                                            color=system_size_plotting_colors[system_size_index], linestyle="dashed")
 
-    fig.savefig(f"{output_directory}/top_stabilities_{no_of_runs}x{no_of_observations}_obs.pdf", bbox_inches="tight")
+    fig.savefig(f"{output_directory}/top_stabilities_{no_of_runs}x{no_of_samples}_obs.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
     plt.close()
 

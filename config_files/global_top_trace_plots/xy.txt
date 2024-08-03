@@ -2,7 +2,7 @@
 'output/global_top_trace_plots/xy'      output_directory
 64                                      integer_lattice_length
 10000                                   no_of_equilibration_sweeps
-10000                                   no_of_observations
+10000                                   no_of_samples
 0.84265d0                               initial_temperature
 1.3365d0                                final_temperature
 1                                       no_of_temperature_increments

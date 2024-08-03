@@ -2,7 +2,7 @@
 '../bc4-output/cvm_figs/4x4_metrop_high_temps'          output_directory
 4                                                       integer_lattice_length
 100000                                                  no_of_equilibration_sweeps
-1000000                                                 no_of_observations
+1000000                                                 no_of_samples
 1.5d0                                                   initial_temperature
 2.7d0                                                   final_temperature
 6                                                       no_of_temperature_increments

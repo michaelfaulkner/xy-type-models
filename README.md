@@ -110,7 +110,7 @@ sizes fall within the time limit.
 'output/convergence_tests/hxy/ecmc'         output_directory
 8                                           integer_lattice_length
 10000                                       no_of_equilibration_sweeps
-100000                                      no_of_observations
+100000                                      no_of_samples
 1.3d0                                       initial_temperature
 1.3d0                                       final_temperature
 0                                           no_of_temperature_increments
@@ -134,7 +134,7 @@ sizes fall within the time limit.
 'output/convergence_tests/hxy/uniform_noise_metropolis'         output_directory
 8                                                               integer_lattice_length
 100000                                                          no_of_equilibration_sweeps
-1000000                                                         no_of_observations
+1000000                                                         no_of_samples
 1.3d0                                                           initial_temperature
 1.3d0                                                           final_temperature
 0                                                               no_of_temperature_increments
@@ -160,7 +160,7 @@ sizes fall within the time limit.
 'output/convergence_tests/hxy/gaussian_noise_metropolis'            output_directory
 8                                                                   integer_lattice_length
 100000                                                              no_of_equilibration_sweeps
-1000000                                                             no_of_observations
+1000000                                                             no_of_samples
 1.3d0                                                               initial_temperature
 1.3d0                                                               final_temperature
 0                                                                   no_of_temperature_increments
@@ -186,7 +186,7 @@ sizes fall within the time limit.
 'output/convergence_tests/xy/ecmc'          output_directory
 8                                           integer_lattice_length
 10000                                       no_of_equilibration_sweeps
-100000                                      no_of_observations
+100000                                      no_of_samples
 0.8d0                                       initial_temperature
 0.8d0                                       final_temperature
 0                                           no_of_temperature_increments
@@ -210,7 +210,7 @@ sizes fall within the time limit.
 'output/convergence_tests/xy/uniform_noise_metropolis'          output_directory
 8                                                               integer_lattice_length
 100000                                                          no_of_equilibration_sweeps
-1000000                                                         no_of_observations
+1000000                                                         no_of_samples
 0.8d0                                                           initial_temperature
 0.8d0                                                           final_temperature
 0                                                               no_of_temperature_increments
@@ -236,7 +236,7 @@ sizes fall within the time limit.
 'output/convergence_tests/xy/gaussian_noise_metropolis'         output_directory
 8                                                               integer_lattice_length
 100000                                                          no_of_equilibration_sweeps
-1000000                                                         no_of_observations
+1000000                                                         no_of_samples
 0.8d0                                                           initial_temperature
 0.8d0                                                           final_temperature
 0                                                               no_of_temperature_increments
@@ -262,7 +262,7 @@ sizes fall within the time limit.
 'output/convergence_tests/electrolyte/elementary'           output_directory
 8                                                           integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
-1000000                                                     no_of_observations
+1000000                                                     no_of_samples
 1.5d0                                                       initial_temperature
 1.5d0                                                       final_temperature
 0                                                           no_of_temperature_increments
@@ -285,7 +285,7 @@ sizes fall within the time limit.
 'output/convergence_tests/electrolyte/multivalued'          output_directory
 8                                                           integer_lattice_length
 100000                                                      no_of_equilibration_sweeps
-1000000                                                     no_of_observations
+1000000                                                     no_of_samples
 1.5d0                                                       initial_temperature
 1.5d0                                                       final_temperature
 0                                                           no_of_temperature_increments
@@ -308,7 +308,7 @@ sizes fall within the time limit.
 'output/convergence_tests/3dxy'         output_directory
 4                                       integer_lattice_length
 10000                                   no_of_equilibration_sweeps
-100000                                  no_of_observations
+100000                                  no_of_samples
 0.5d0                                   initial_temperature
 0.5d0                                   final_temperature
 0                                       no_of_temperature_increments
