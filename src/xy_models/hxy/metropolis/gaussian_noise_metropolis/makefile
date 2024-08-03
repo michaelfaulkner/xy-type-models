@@ -16,7 +16,7 @@ OBJECTS = random_number_generator.o hxy_metropolis_variables.o hxy_metropolis_re
 			xy_models_record_running_sums.o xy_models_set_running_sums.o get_monte_carlo_error.o \
 			get_topological_sector_component.o xy_models_output_summary_statistics.o setup_periodic_boundaries.o \
 			hxy_initialise_field_configuration.o hxy_create_sample_files.o \
-			xy_models_reset_metropolis_acceptance_counters.o hxy_get_and_print_observation.o \
+			xy_models_reset_metropolis_acceptance_counters.o hxy_process_sample.o \
 			xy_models_output_metropolis_acceptance_rates.o attempt_external_global_moves.o \
 			hxy_attempt_single_external_global_move.o get_spin_difference.o calculate_emergent_field.o \
 			hxy_gaussian_noise_metropolis_sweep.o metropolis_algorithm.o

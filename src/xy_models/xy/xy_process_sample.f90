@@ -1,4 +1,4 @@
-subroutine get_and_print_observation(observation_index)
+subroutine process_sample(observation_index)
 use variables
 implicit none
 integer :: i, observation_index, no_of_global_twists_to_minimise_potential(2), topological_sector(2)
@@ -177,7 +177,7 @@ end if
 300 format(I10, ",", I10)
 
 return
-end subroutine get_and_print_observation
+end subroutine process_sample
 
 
 subroutine potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, sign_of_twist, &

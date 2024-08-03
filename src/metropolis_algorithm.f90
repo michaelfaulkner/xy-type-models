@@ -40,7 +40,7 @@ if (.not.simulation_complete) then
                     no_of_accepted_field_rotations_per_site = 0.0d0
                 end if
                 if (print_samples) then
-                    call get_and_print_observation(observation_index)
+                    call process_sample(observation_index)
                 end if
                 call do_checkpointing(temperature_index, observation_index)
             end do
@@ -53,7 +53,7 @@ if (.not.simulation_complete) then
                 call attempt_external_global_moves
             end if
             call metropolis_sweep
-            call get_and_print_observation(observation_index)
+            call process_sample(observation_index)
             if (observation_index < no_of_equilibration_sweeps + no_of_observations - 1) then
                 call do_checkpointing(temperature_index, observation_index) ! we don't checkpoint at end of temp index
             end if

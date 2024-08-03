@@ -1,4 +1,4 @@
-subroutine get_and_print_observation(observation_index)
+subroutine process_sample(observation_index)
 use variables
 implicit none
 integer :: i, observation_index
@@ -42,4 +42,4 @@ end if
 200 format(ES25.14)
 
 return
-end subroutine get_and_print_observation
+end subroutine process_sample

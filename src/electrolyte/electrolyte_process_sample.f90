@@ -1,4 +1,4 @@
-subroutine get_and_print_observation(observation_index)
+subroutine process_sample(observation_index)
 use variables
 implicit none
 integer :: i, observation_index, raw_electric_field_zero_mode(2), get_topological_sector_component, topological_sector(2)
@@ -53,4 +53,4 @@ end if
 300 format(I10, ",", I10)
 
 return
-end subroutine get_and_print_observation
+end subroutine process_sample
