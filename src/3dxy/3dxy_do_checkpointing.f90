@@ -20,8 +20,8 @@ if (current_time - previous_checkpointing_time > time_between_checkpoints) then
     end do
     write(11, 200) no_of_accepted_field_rotations_per_site
     close(11)
-
     call system('mv ' // trim(temporary_filename) // ' ' // trim(checkpoint_filename))
+    call record_running_sums
     previous_checkpointing_time = current_time
 end if
 

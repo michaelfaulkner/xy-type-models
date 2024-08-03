@@ -17,6 +17,7 @@
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
 .false.                                                         measure_emergent_field
+.true.                                                          print_samples
 64                                                              no_of_runs
 64                                                              initial_run_index
 16                                                              max_no_of_cpus

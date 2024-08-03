@@ -2,6 +2,7 @@ subroutine get_and_print_observation(observation_index)
 use variables
 implicit none
 integer :: i, n, no_of_external_twists_to_minimise_potential(2), topological_sector(2), observation_index
+integer :: get_topological_sector_component
 double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: raw_magnetic_norm_squared, raw_inverse_vacuum_perm
@@ -55,9 +56,9 @@ if (measure_helicity) then
                                 sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2
         raw_macro_josephson_current_quartic_sum = raw_macro_josephson_current_quartic_sum + &
                         (sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2) ** 2
-        ! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
-        topological_sector(1) = floor(sum_of_1st_derivative_of_potential(2) / two_pi / integer_lattice_length + 0.5d0)
-        topological_sector(2) = floor(-sum_of_1st_derivative_of_potential(1) / two_pi / integer_lattice_length + 0.5d0)
+
+        topological_sector(1) = get_topological_sector_component(sum_of_1st_derivative_of_potential(2))
+        topological_sector(2) = get_topological_sector_component(-sum_of_1st_derivative_of_potential(1))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &

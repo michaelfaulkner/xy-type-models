@@ -13,6 +13,7 @@
 .false.                                                     measure_electric_field_sum
 .true.                                                      measure_potential
 .false.                                                     measure_external_global_moves
+.true.                                                      print_samples
 1                                                           no_of_runs
 0                                                           initial_run_index
 1                                                           max_no_of_cpus

@@ -17,6 +17,7 @@ read(10, *) randomise_initial_field_configuration
 read(10, *) use_external_global_moves
 read(10, *) measure_magnetisation
 read(10, *) measure_potential
+read(10, *) print_samples
 
 if (algorithm_name /= '3dxy-gaussian-noise-metropolis') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal 3dxy-gaussian-noise-metropolis.'

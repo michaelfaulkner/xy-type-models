@@ -18,6 +18,7 @@ read(10, *) use_external_global_moves
 read(10, *) measure_electric_field_sum
 read(10, *) measure_potential
 read(10, *) measure_external_global_moves
+read(10, *) print_samples
 
 if ((algorithm_name /= 'elementary-electrolyte').and.(algorithm_name /= 'multivalued-electrolyte')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal either elementary-electrolyte or &

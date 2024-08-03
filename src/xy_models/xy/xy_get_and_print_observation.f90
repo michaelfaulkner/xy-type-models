@@ -1,7 +1,7 @@
 subroutine get_and_print_observation(observation_index)
 use variables
 implicit none
-integer :: i, no_of_global_twists_to_minimise_potential(2), topological_sector(2), observation_index
+integer :: i, observation_index, no_of_global_twists_to_minimise_potential(2), topological_sector(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: sum_of_emergent_field(2), raw_magnetic_norm_squared, raw_inverse_vacuum_perm
@@ -278,16 +278,3 @@ close(1000)
 
 return
 end subroutine get_spins
-
-
-function get_topological_sector_component(sum_of_emergent_field_component)
-use variables
-implicit none
-double precision :: get_topological_sector_component, sum_of_emergent_field_component
-! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
-! compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L))
-! get_topological_sector_component = floor((sum_of_emergent_field_component + pi * dfloat(integer_lattice_length) - &
-!                                             two_pi * 1.0d-8) / (two_pi * dfloat(integer_lattice_length)))
-get_topological_sector_component = floor(sum_of_emergent_field_component / two_pi / dfloat(integer_lattice_length) &
-                                            + 0.5d0 - 1.0d-8 / dfloat(integer_lattice_length))
-end function get_topological_sector_component
