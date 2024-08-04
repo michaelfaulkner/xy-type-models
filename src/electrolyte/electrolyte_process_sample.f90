@@ -41,6 +41,7 @@ if (measure_potential) then
     if (sample_index >= no_of_equilibration_sweeps) then
         potential_sum = potential_sum + potential
         potential_squared_sum = potential_squared_sum + potential ** 2
+        potential_quartic_sum = potential_quartic_sum + potential ** 4
     end if
 end if
 

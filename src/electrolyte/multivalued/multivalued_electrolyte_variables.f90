@@ -18,5 +18,5 @@ double precision :: beta, temperature, initial_temperature, final_temperature, m
 double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations
 double precision :: charge_hop_proportion, charge_hop_proportion_over_two, no_of_accepted_charge_hops_per_site
 double precision :: no_of_accepted_field_rotations_per_site, no_of_accepted_external_global_moves
-double precision :: potential_sum, potential_squared_sum
+double precision :: potential_sum, potential_squared_sum, potential_quartic_sum
 end module variables

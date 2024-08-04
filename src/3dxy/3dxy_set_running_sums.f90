@@ -24,10 +24,12 @@ if (measure_potential) then
         open(unit=11, file=filename)
         read(11, 200) potential_sum
         read(11, 200) potential_squared_sum
+        read(11, 200) potential_quartic_sum
         close(11)
     else
         potential_sum = 0.0d0
         potential_squared_sum = 0.0d0
+        potential_quartic_sum = 0.0d0
     end if
 end if
 

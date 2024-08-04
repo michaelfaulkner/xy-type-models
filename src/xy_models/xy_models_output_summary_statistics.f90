@@ -8,7 +8,8 @@ double precision :: magnetic_norm_error, magnetic_susc_mean, magnetic_susc_error
 double precision :: inverse_vacuum_perm_squared_mean, inverse_vacuum_perm_error, macro_josephson_current_mean(2)
 double precision :: macro_josephson_current_squared_mean, macro_josephson_current_quartic_mean
 double precision :: macro_josephson_current_susc_mean, macro_josephson_current_susc_error, helicity_mean, helicity_error
-double precision :: potential_mean, potential_squared_mean, potential_error, potential_minimising_twists_mean(2)
+double precision :: potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
+double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error, potential_minimising_twists_mean(2)
 double precision :: potential_minimising_twists_squared_mean, potential_minimising_twists_quartic_mean
 double precision :: potential_minimising_twist_susc_mean, potential_minimising_twist_susc_error
 double precision :: twist_relaxations_mean(2), twist_relaxations_squared_mean, twist_relaxations_quartic_mean
@@ -70,12 +71,18 @@ end if
 if (measure_potential) then
     potential_mean = potential_sum / dfloat(no_of_samples)
     potential_squared_mean = potential_squared_sum / dfloat(no_of_samples)
+    potential_quartic_mean = potential_quartic_sum / dfloat(no_of_samples)
     potential_error = get_monte_carlo_error(potential_mean, potential_squared_mean)
+    specific_heat_per_particle_mean = beta ** 2 * (potential_squared_mean - potential_mean ** 2) / dfloat(no_of_sites)
+    specific_heat_per_particle_error = beta ** 2 * &
+                            get_monte_carlo_error(potential_squared_mean, potential_quartic_mean) / dfloat(no_of_sites)
 
     write(filename, '(A, "/temp_", I2.2, "/potential_summary_stats.csv")') trim(output_directory), temperature_index
     open(unit=11, file=filename)
     write(11, 200) potential_mean
     write(11, 200) potential_error
+    write(11, 200) specific_heat_per_particle_mean
+    write(11, 200) specific_heat_per_particle_error
     close(11)
 end if
 

@@ -865,10 +865,10 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
             math.pi * no_of_sites ** 0.5 - 2.0 * math.pi * 1.0e-8) // (2.0 * math.pi * no_of_sites ** 0.5)
 
 
-def get_hxy_internal_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
-                                          no_of_equilibration_sweeps=None, thinning_level=None):
+def get_hxy_global_defect_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                         no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the HXY internal-twist susceptibility chi_w(x; temperature, no_of_sites) =
+    Returns the sample of the HXY global-defect (or internal-twist) susceptibility chi_w(x; temperature, no_of_sites) =
     0.5 * no_of_sites * [\overline{E}_w - E[\overline{E}_w]] ** 2 / temperature, where E[.] is the expected value of the
     argument and \overline{E}_w = 2 \pi w / L is the topological sector w \in Z^2, an integer-valued vector field whose
     components are fixed such that the minimal toroidal (emergent-charge) polarisation vector
@@ -878,10 +878,10 @@ def get_hxy_internal_twist_susceptibility(output_directory, temperature, tempera
 
     Note that this method is only valid for the HXY model.
 
-    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY internal-twist susceptibility was called the HXY
-    winding-field susceptibility and was defined without the factor of 1/2 (and also multiplied by the inverse vacuum
-    permittivity) to account for each Cartesian dimension of the system; in the return line below, this corresponds to 
-    the first np.mean() -> np.sum().
+    In J. Phys.: Condens. Matter 29, 085402 (2017), the HXY global-defect/internal-twist susceptibility was called the
+    HXY winding-field susceptibility and was defined without the factor of 1/2 (and also multiplied by the inverse
+    vacuum permittivity) to account for each Cartesian dimension of the system; in the return line below, this
+    corresponds to the first np.mean() -> np.sum().
 
     Parameters
     ----------

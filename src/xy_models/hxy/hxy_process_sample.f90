@@ -58,13 +58,20 @@ if (measure_helicity) then
                         (sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2) ** 2
 
         topological_sector(1) = get_topological_sector_component(sum_of_1st_derivative_of_potential(2))
-        topological_sector(2) = get_topological_sector_component(-sum_of_1st_derivative_of_potential(1))
+        topological_sector(2) = get_topological_sector_component(- sum_of_1st_derivative_of_potential(1))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &
                                             topological_sector(1) ** 2 + topological_sector(2) ** 2
         topological_sector_quartic_sum = topological_sector_quartic_sum + &
                                             (topological_sector(1) ** 2 + topological_sector(2) ** 2) ** 2
+    end if
+    if (sample_index == no_of_equilibration_sweeps + no_of_samples - 1) then
+        ! for outputting zero_mode_susc_mean and zero_mode_susc_error in xy_models_output_summary_stats
+        sum_of_emergent_field_sum(1) = raw_macro_josephson_current_sum(2)
+        sum_of_emergent_field_sum(2) = - raw_macro_josephson_current_sum(1)
+        sum_of_emergent_field_squared_sum = raw_macro_josephson_current_squared_sum
+        sum_of_emergent_field_quartic_sum = raw_macro_josephson_current_quartic_sum
     end if
 end if
 
@@ -84,6 +91,7 @@ if (measure_potential) then
     if (sample_index >= no_of_equilibration_sweeps) then
         potential_sum = potential_sum + potential
         potential_squared_sum = potential_squared_sum + potential ** 2
+        potential_quartic_sum = potential_quartic_sum + potential ** 4
     end if
 end if
 

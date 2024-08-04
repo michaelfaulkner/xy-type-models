@@ -24,6 +24,7 @@ if (measure_potential) then
     open(unit=11, file=filename)
     write(11, 200) potential_sum
     write(11, 200) potential_squared_sum
+    write(11, 200) potential_quartic_sum
     close(11)
 end if
 

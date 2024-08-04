@@ -24,6 +24,6 @@ double precision :: no_of_accepted_external_global_moves
 double precision :: raw_magnetic_norm_sum, raw_magnetic_norm_squared_sum, raw_magnetic_norm_quartic_sum
 double precision :: raw_inverse_vacuum_perm_sum, raw_inverse_vacuum_perm_squared_sum, raw_macro_josephson_current_sum(2)
 double precision :: raw_macro_josephson_current_squared_sum, raw_macro_josephson_current_quartic_sum, potential_sum
-double precision :: potential_squared_sum, sum_of_emergent_field_sum(2), sum_of_emergent_field_squared_sum
-double precision :: sum_of_emergent_field_quartic_sum
+double precision :: potential_squared_sum, potential_quartic_sum, sum_of_emergent_field_sum(2)
+double precision :: sum_of_emergent_field_squared_sum, sum_of_emergent_field_quartic_sum
 end module variables

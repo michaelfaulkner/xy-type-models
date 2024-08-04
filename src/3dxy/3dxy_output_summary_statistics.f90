@@ -5,7 +5,8 @@ character(100) :: temperature_directory, filename
 integer :: temperature_index
 double precision :: get_monte_carlo_error, magnetic_norm_mean, magnetic_norm_squared_mean, magnetic_norm_quartic_mean
 double precision :: magnetic_norm_error, magnetic_susc_mean, magnetic_susc_error
-double precision :: potential_mean, potential_squared_mean, potential_error
+double precision :: potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
+double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error
 
 ! make sure the temperature directory (in which to save the summary-stats files) is open
 write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
@@ -33,12 +34,18 @@ end if
 if (measure_potential) then
     potential_mean = potential_sum / dfloat(no_of_samples)
     potential_squared_mean = potential_squared_sum / dfloat(no_of_samples)
+    potential_quartic_mean = potential_quartic_sum / dfloat(no_of_samples)
     potential_error = get_monte_carlo_error(potential_mean, potential_squared_mean)
+    specific_heat_per_particle_mean = beta ** 2 * (potential_squared_mean - potential_mean ** 2) / dfloat(no_of_sites)
+    specific_heat_per_particle_error = beta ** 2 * &
+                            get_monte_carlo_error(potential_squared_mean, potential_quartic_mean) / dfloat(no_of_sites)
 
     write(filename, '(A, "/temp_", I2.2, "/potential_summary_stats.csv")') trim(output_directory), temperature_index
     open(unit=11, file=filename)
     write(11, 200) potential_mean
     write(11, 200) potential_error
+    write(11, 200) specific_heat_per_particle_mean
+    write(11, 200) specific_heat_per_particle_error
     close(11)
 end if
 
