@@ -1,6 +1,7 @@
 program ecmc_algorithm
 use variables
 implicit none
+character(100) :: temperature_directory
 integer :: temperature_index, sample_index
 real :: start_time, end_time
 
@@ -15,6 +16,9 @@ if (.not.simulation_complete) then
     do temperature_index = initial_temperature_index, no_of_temperature_increments
         write(6, '(A, F6.4)') 'Temperature = ', temperature
         beta = 1.0d0 / temperature
+        ! opens new directory in which to save sample and summary-statistic files at the current temperature
+        write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
+        call system('mkdir -p ' // temperature_directory)
         if (print_samples) then
             call create_sample_files(temperature_index)
         end if

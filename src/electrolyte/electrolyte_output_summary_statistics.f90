@@ -1,17 +1,13 @@
 subroutine output_summary_statistics(temperature_index)
 use variables
 implicit none
-character(100) :: temperature_directory, filename
+character(100) :: filename
 integer :: temperature_index
 double precision :: get_monte_carlo_error, potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
 double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error, zero_mode_mean(2)
 double precision :: zero_mode_squared_mean, zero_mode_quartic_mean, zero_mode_susc_mean, zero_mode_susc_error
 double precision :: topological_sector_mean(2), topological_sector_squared_mean, topological_sector_quartic_mean
 double precision :: topological_susc_mean, topological_susc_error
-
-! make sure the temperature directory (in which to save the summary-stats files) is open
-write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
-call system('mkdir -p ' // temperature_directory)
 
 if (measure_electric_field_sum) then
     ! raw_electric_field_zero_mode = \sum_r E(r) / two_pi = no_of_sites * Ebar / c

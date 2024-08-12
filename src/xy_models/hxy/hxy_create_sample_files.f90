@@ -1,12 +1,8 @@
 subroutine create_sample_files(temperature_index)
 use variables
 implicit none
-character(100) :: temperature_directory, filename
+character(100) :: filename
 integer :: temperature_index
-
-! opens new directory in which to save the sample files at the current temperature
-write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
-call system('mkdir -p ' // temperature_directory)
 
 if (measure_magnetisation) then
     write(filename, '(A, "/temp_", I2.2, "/magnetisation.csv")') trim(output_directory), temperature_index

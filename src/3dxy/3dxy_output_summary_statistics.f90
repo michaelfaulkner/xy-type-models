@@ -1,16 +1,12 @@
 subroutine output_summary_statistics(temperature_index)
 use variables
 implicit none
-character(100) :: temperature_directory, filename
+character(100) :: filename
 integer :: temperature_index
 double precision :: get_monte_carlo_error, magnetic_norm_mean, magnetic_norm_squared_mean, magnetic_norm_quartic_mean
 double precision :: magnetic_norm_error, magnetic_susc_mean, magnetic_susc_error
 double precision :: potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
 double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error
-
-! make sure the temperature directory (in which to save the summary-stats files) is open
-write(temperature_directory, '(A, "/temp_", I2.2)') trim(output_directory), temperature_index
-call system('mkdir -p ' // temperature_directory)
 
 if (measure_magnetisation) then
     ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2

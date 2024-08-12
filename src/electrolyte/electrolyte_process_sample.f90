@@ -45,7 +45,7 @@ if (measure_potential) then
     end if
 end if
 
-if (measure_external_global_moves) then
+if ((measure_external_global_moves).and.(print_samples)) then
     write(50, 300) external_global_moves(1), external_global_moves(2)
 end if
 
