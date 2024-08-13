@@ -100,7 +100,7 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
                                     for get_sample_method in get_sample_methods[model_index]])
                 [np.save(compressed_sample_filenames[observable_index], samples[observable_index])
                  for observable_index in range(len(observables[model_index]))]
-            samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi
+            samples[0] = (no_of_sites ** 0.5) * samples[0] / 2.0 / math.pi  # normalise the zero modes
             if temp_index == 0:
                 for observable_index in reversed(range(len(samples))):
                     if observable_index == 0:
