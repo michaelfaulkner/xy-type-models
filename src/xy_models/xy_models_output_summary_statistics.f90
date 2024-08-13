@@ -83,10 +83,10 @@ if (measure_potential) then
 end if
 
 if (measure_potential_minimising_twists) then
-    potential_minimising_twists_mean(1) = potential_minimising_twists_sum(1) / dfloat(no_of_samples)
-    potential_minimising_twists_mean(2) = potential_minimising_twists_sum(2) / dfloat(no_of_samples)
-    potential_minimising_twists_squared_mean = potential_minimising_twists_squared_sum / dfloat(no_of_samples)
-    potential_minimising_twists_quartic_mean = potential_minimising_twists_quartic_sum / dfloat(no_of_samples)
+    potential_minimising_twists_mean(1) = dfloat(potential_minimising_twists_sum(1)) / dfloat(no_of_samples)
+    potential_minimising_twists_mean(2) = dfloat(potential_minimising_twists_sum(2)) / dfloat(no_of_samples)
+    potential_minimising_twists_squared_mean = dfloat(potential_minimising_twists_squared_sum) / dfloat(no_of_samples)
+    potential_minimising_twists_quartic_mean = dfloat(potential_minimising_twists_quartic_sum) / dfloat(no_of_samples)
 
     potential_minimising_twist_susc_mean = 2.0d0 * pi ** 2 * beta * (potential_minimising_twists_squared_mean - &
                                     potential_minimising_twists_mean(1) ** 2 - potential_minimising_twists_mean(2) ** 2)
@@ -101,10 +101,10 @@ if (measure_potential_minimising_twists) then
 end if
 
 if (measure_twist_relaxations) then
-    twist_relaxations_mean(1) = twist_relaxations_sum(1) / dfloat(no_of_samples)
-    twist_relaxations_mean(2) = twist_relaxations_sum(2) / dfloat(no_of_samples)
-    twist_relaxations_squared_mean = twist_relaxations_squared_sum / dfloat(no_of_samples)
-    twist_relaxations_quartic_mean = twist_relaxations_quartic_sum / dfloat(no_of_samples)
+    twist_relaxations_mean(1) = dfloat(twist_relaxations_sum(1)) / dfloat(no_of_samples)
+    twist_relaxations_mean(2) = dfloat(twist_relaxations_sum(2)) / dfloat(no_of_samples)
+    twist_relaxations_squared_mean = dfloat(twist_relaxations_squared_sum) / dfloat(no_of_samples)
+    twist_relaxations_quartic_mean = dfloat(twist_relaxations_quartic_sum) / dfloat(no_of_samples)
 
     twist_relaxation_susc_mean = 2.0d0 * pi ** 2 * beta * &
                     (twist_relaxations_squared_mean - twist_relaxations_mean(1) ** 2 - twist_relaxations_mean(2) ** 2)
@@ -125,9 +125,9 @@ if (measure_emergent_field) then
     zero_mode_squared_mean = sum_of_emergent_field_squared_sum / dfloat(no_of_sites ** 2 * no_of_samples)
     zero_mode_quartic_mean = sum_of_emergent_field_quartic_sum / dfloat(no_of_sites ** 4 * no_of_samples)
 
-    zero_mode_susc_mean = 0.5d0 * no_of_sites * beta * &
+    zero_mode_susc_mean = 0.5d0 * dfloat(no_of_sites) * beta * &
                                 (zero_mode_squared_mean - zero_mode_mean(1) ** 2 - zero_mode_mean(2) ** 2)
-    zero_mode_susc_error = 0.5d0 * no_of_sites * beta * &
+    zero_mode_susc_error = 0.5d0 * dfloat(no_of_sites) * beta * &
                                 get_monte_carlo_error(zero_mode_squared_mean, zero_mode_quartic_mean)
 
     topological_sector_mean(1) = dfloat(topological_sector_sum(1)) / dfloat(no_of_samples)

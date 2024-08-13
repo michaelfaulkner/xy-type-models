@@ -1,7 +1,7 @@
 subroutine process_sample(sample_index)
 use variables
 implicit none
-integer :: i, sample_index, raw_electric_field_zero_mode(2), get_topological_sector_component, topological_sector(2)
+integer :: i, sample_index, get_topological_sector_component, topological_sector(2)
 double precision :: potential
 
 if (measure_electric_field_sum) then
@@ -10,17 +10,15 @@ if (measure_electric_field_sum) then
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
         ! raw_electric_field_zero_mode = \sum_r E(r) / two_pi = no_of_sites * Ebar / two_pi = - net_charge_displacement
-        raw_electric_field_zero_mode(1) = - dfloat(net_charge_displacement(1))
-        raw_electric_field_zero_mode(2) = - dfloat(net_charge_displacement(2))
-        raw_electric_field_zero_mode_sum(1) = raw_electric_field_zero_mode_sum(1) + raw_electric_field_zero_mode(1)
-        raw_electric_field_zero_mode_sum(2) = raw_electric_field_zero_mode_sum(2) + raw_electric_field_zero_mode(2)
+        raw_electric_field_zero_mode_sum(1) = raw_electric_field_zero_mode_sum(1) - net_charge_displacement(1)
+        raw_electric_field_zero_mode_sum(2) = raw_electric_field_zero_mode_sum(2) - net_charge_displacement(2)
         raw_electric_field_zero_mode_squared_sum = raw_electric_field_zero_mode_squared_sum + &
-                                            raw_electric_field_zero_mode(1) ** 2 + raw_electric_field_zero_mode(2) ** 2
+                                                    net_charge_displacement(1) ** 2 + net_charge_displacement(2) ** 2
         raw_electric_field_zero_mode_quartic_sum = raw_electric_field_zero_mode_quartic_sum + &
-                                    (raw_electric_field_zero_mode(1) ** 2 + raw_electric_field_zero_mode(2) ** 2) ** 2
+                                                (net_charge_displacement(1) ** 2 + net_charge_displacement(2) ** 2) ** 2
 
-        topological_sector(1) = get_topological_sector_component(raw_electric_field_zero_mode(1))
-        topological_sector(2) = get_topological_sector_component(raw_electric_field_zero_mode(2))
+        topological_sector(1) = get_topological_sector_component(net_charge_displacement(1))
+        topological_sector(2) = get_topological_sector_component(net_charge_displacement(2))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &
@@ -55,3 +53,16 @@ end if
 
 return
 end subroutine process_sample
+
+
+function get_topological_sector_component(net_charge_displacement_component)
+use variables
+implicit none
+integer :: get_topological_sector_component, net_charge_displacement_component
+! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
+! compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L))
+! get_topological_sector_component = floor((sum_of_emergent_field_component + pi * dfloat(integer_lattice_length) - &
+!                                             two_pi * 1.0d-8) / (two_pi * dfloat(integer_lattice_length)))
+get_topological_sector_component = floor(-dfloat(net_charge_displacement_component) / dfloat(integer_lattice_length) + &
+                                            0.5d0 - 1.0d-8 / dfloat(integer_lattice_length))
+end function get_topological_sector_component

@@ -1,11 +1,14 @@
 subroutine process_sample(sample_index)
 use variables
 implicit none
-integer :: i, n, no_of_external_twists_to_minimise_potential(2), topological_sector(2), sample_index
-integer :: get_topological_sector_component
+integer :: i, sample_index, n, no_of_external_twists_to_minimise_potential(2)
+integer :: get_xy_models_topological_sector_component, topological_sector(2)
 double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
-double precision :: raw_magnetic_norm_squared, raw_inverse_vacuum_perm
+double precision :: raw_magnetic_norm_squared, raw_inverse_vacuum_perm, non_normalised_emergent_field_zero_mode(2)
+
+! recalculate emergent field to remove floating-point errors from previous Monte Carlo moves
+call calculate_emergent_field
 
 if (measure_magnetisation) then
     non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
@@ -29,7 +32,7 @@ if (measure_helicity) then
     sum_of_1st_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
     sum_of_2nd_derivative_of_potential = (/ 0.0d0, 0.0d0 /)
     do i = 1, no_of_sites
-        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) + emergent_field(i, 2)
+        sum_of_1st_derivative_of_potential(1) = sum_of_1st_derivative_of_potential(1) - emergent_field(i, 2)
         sum_of_1st_derivative_of_potential(2) = sum_of_1st_derivative_of_potential(2) + emergent_field(i, 1)
         do n = 1, vacuum_permittivity_sum_cutoff
             sum_of_2nd_derivative_of_potential(1) = sum_of_2nd_derivative_of_potential(1) + &
@@ -57,8 +60,10 @@ if (measure_helicity) then
         raw_macro_josephson_current_quartic_sum = raw_macro_josephson_current_quartic_sum + &
                         (sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2) ** 2
 
-        topological_sector(1) = get_topological_sector_component(sum_of_1st_derivative_of_potential(2))
-        topological_sector(2) = get_topological_sector_component(- sum_of_1st_derivative_of_potential(1))
+        non_normalised_emergent_field_zero_mode(1) = sum_of_1st_derivative_of_potential(2)
+        non_normalised_emergent_field_zero_mode(2) = - sum_of_1st_derivative_of_potential(1)
+        topological_sector(1) = get_xy_models_topological_sector_component(non_normalised_emergent_field_zero_mode(1))
+        topological_sector(2) = get_xy_models_topological_sector_component(non_normalised_emergent_field_zero_mode(2))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &
