@@ -2,7 +2,7 @@ subroutine process_sample(sample_index)
 use variables
 implicit none
 integer :: i, sample_index, n, no_of_external_twists_to_minimise_potential(2)
-integer :: get_xy_models_topological_sector_component, topological_sector(2)
+integer :: get_topological_sector_component, topological_sector(2)
 double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: raw_magnetic_norm_squared, raw_inverse_vacuum_perm, non_normalised_emergent_field_zero_mode(2)
@@ -62,8 +62,8 @@ if (measure_helicity) then
 
         non_normalised_emergent_field_zero_mode(1) = sum_of_1st_derivative_of_potential(2)
         non_normalised_emergent_field_zero_mode(2) = - sum_of_1st_derivative_of_potential(1)
-        topological_sector(1) = get_xy_models_topological_sector_component(non_normalised_emergent_field_zero_mode(1))
-        topological_sector(2) = get_xy_models_topological_sector_component(non_normalised_emergent_field_zero_mode(2))
+        topological_sector(1) = get_topological_sector_component(non_normalised_emergent_field_zero_mode(1))
+        topological_sector(2) = get_topological_sector_component(non_normalised_emergent_field_zero_mode(2))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &

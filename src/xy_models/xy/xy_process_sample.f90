@@ -2,7 +2,7 @@ subroutine process_sample(sample_index)
 use variables
 implicit none
 integer :: i, sample_index, no_of_global_twists_to_minimise_potential(2)
-integer :: get_xy_models_topological_sector_component, topological_sector(2)
+integer :: get_topological_sector_component, topological_sector(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: sum_of_emergent_field(2), raw_magnetic_norm_squared, raw_inverse_vacuum_perm
@@ -162,8 +162,8 @@ if (measure_emergent_field) then
         sum_of_emergent_field_quartic_sum = sum_of_emergent_field_quartic_sum + &
                                                 (sum_of_emergent_field(1) ** 2 + sum_of_emergent_field(2) ** 2) ** 2
 
-        topological_sector(1) = get_xy_models_topological_sector_component(sum_of_emergent_field(1))
-        topological_sector(2) = get_xy_models_topological_sector_component(sum_of_emergent_field(2))
+        topological_sector(1) = get_topological_sector_component(sum_of_emergent_field(1))
+        topological_sector(2) = get_topological_sector_component(sum_of_emergent_field(2))
         topological_sector_sum(1) = topological_sector_sum(1) + topological_sector(1)
         topological_sector_sum(2) = topological_sector_sum(2) + topological_sector(2)
         topological_sector_squared_sum = topological_sector_squared_sum + &

@@ -59,10 +59,10 @@ function get_topological_sector_component(net_charge_displacement_component)
 use variables
 implicit none
 integer :: get_topological_sector_component, net_charge_displacement_component
+! *** NB, this differs from the XY models version as it takes an integer ***
 ! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
-! compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L - 2pi epsilon) / (2pi L))
-! get_topological_sector_component = floor((sum_of_emergent_field_component + pi * dfloat(integer_lattice_length) - &
-!                                             two_pi * 1.0d-8) / (two_pi * dfloat(integer_lattice_length)))
+! to compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L + 2pi epsilon) / (2pi L))
+! this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = -1
 get_topological_sector_component = floor(-dfloat(net_charge_displacement_component) / dfloat(integer_lattice_length) + &
-                                            0.5d0 - 1.0d-8 / dfloat(integer_lattice_length))
+                                            0.5d0 + 1.0d-8 / dfloat(integer_lattice_length))
 end function get_topological_sector_component
