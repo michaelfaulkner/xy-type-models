@@ -146,9 +146,8 @@ double precision :: potential_difference, get_spin_difference, sum_of_squared_tw
 double precision :: sum_of_squared_emergent_field(2)
 double precision :: potential_difference_w_previous_twist, sum_of_squared_previous_twisted_emergent_field
 
-proposed_no_of_twists = 1
 sum_of_squared_previous_twisted_emergent_field = sum_of_squared_emergent_field(2)
-do
+do proposed_no_of_twists = 1, integer_lattice_length - 1
     sum_of_squared_twisted_emergent_field = 0.0d0
     do i = 1, no_of_sites
         sum_of_squared_twisted_emergent_field = sum_of_squared_twisted_emergent_field + &
@@ -168,13 +167,8 @@ do
 
     ! now check potential difference wrt original configuration
     potential_difference = 0.5d0 * (sum_of_squared_twisted_emergent_field - sum_of_squared_emergent_field(2))
-    ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
-    ! in such cases, potential_difference is exactly zero leading to floating-point errors - this is unlikely to be an
-    ! issue for the 2DHXY model issue but can be a problem for the 2DXY model at L = 4 as proposed_no_of_twists = 4 is
-    ! reachable given one of {cos(n 2pi / 4), sin(n 2pi / 4)} is zero for all n
     if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
         no_of_external_twists_to_minimise_potential(1) = sign_of_twist * proposed_no_of_twists
-        proposed_no_of_twists = proposed_no_of_twists + 1
     else
         exit
     end if
@@ -194,9 +188,8 @@ double precision :: potential_difference, get_spin_difference, sum_of_squared_tw
 double precision :: sum_of_squared_emergent_field(2)
 double precision :: potential_difference_w_previous_twist, sum_of_squared_previous_twisted_emergent_field
 
-proposed_no_of_twists = 1
 sum_of_squared_previous_twisted_emergent_field = sum_of_squared_emergent_field(1)
-do
+do proposed_no_of_twists = 1, integer_lattice_length - 1
     sum_of_squared_twisted_emergent_field = 0.0d0
     do i = 1, no_of_sites
         sum_of_squared_twisted_emergent_field = sum_of_squared_twisted_emergent_field + &
@@ -216,13 +209,8 @@ do
 
     ! now check potential difference wrt original configuration
     potential_difference = 0.5d0 * (sum_of_squared_twisted_emergent_field - sum_of_squared_emergent_field(1))
-    ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
-    ! in such cases, potential_difference is exactly zero leading to floating-point errors - this is unlikely to be an
-    ! issue for the 2DHXY model issue but can be a problem for the 2DXY model at L = 4 as proposed_no_of_twists = 4 is
-    ! reachable given one of {cos(n 2pi / 4), sin(n 2pi / 4)} is zero for all n
     if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
         no_of_external_twists_to_minimise_potential(2) = sign_of_twist * proposed_no_of_twists
-        proposed_no_of_twists = proposed_no_of_twists + 1
     else
         exit
     end if
