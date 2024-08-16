@@ -15,6 +15,6 @@
 .false.                                     measure_potential
 .true.                                      measure_external_global_moves
 .false.                                     print_samples
-16                                         no_of_runs
+192                                         no_of_runs
 0                                           initial_run_index
-4                                          max_no_of_cpus
+48                                          max_no_of_cpus
