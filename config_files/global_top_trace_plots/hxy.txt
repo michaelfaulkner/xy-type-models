@@ -14,7 +14,7 @@
 .false.                                 measure_magnetisation
 .true.                                  measure_helicity
 .false.                                 measure_potential
-.true.                                  measure_potential_minimising_twists
+.true.                                  measure_hot_twist_relaxations
 .false.                                 measure_external_global_moves
 .true.                                  print_samples
 48                                      no_of_runs

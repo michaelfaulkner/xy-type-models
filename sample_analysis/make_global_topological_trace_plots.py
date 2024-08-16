@@ -68,8 +68,8 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
     models = ["electrolyte", "hxy_model", "xy_model"]
     """Define observables[i] as the observables of interest of models[i]..."""
     observables = [["electric_field_zero_mode", "topological_sector"],
-                   ["macro_josephson_current", "hxy_topological_sector", "potential_minimising_twists"],
-                   ["xy_emergent_field_zero_mode", "xy_topological_sector", "potential_minimising_twists",
+                   ["macro_josephson_current", "hxy_topological_sector", "hot_twist_relaxations"],
+                   ["xy_emergent_field_zero_mode", "xy_topological_sector", "hot_twist_relaxations",
                     "xy_twist_relaxation_field"]]
     """...then define the Cartesian coordinate of each observable (x = 0 / y = 1 for electro/spin-rep quantities)..."""
     observable_cartesian_coords = [[0, 0], [1, 0, 1], [0, 0, 1, 1]]
@@ -200,6 +200,10 @@ def setup_figure_axes(axes):
     [axes[i, 2].tick_params(labelleft=False) for i in range(2)]
     axes[0, 0].set_ylabel(r"$X(t; \! \beta_{\rm c} / \beta \! = \! 0.95)$", fontsize=40, labelpad=-30.0)
     axes[1, 0].set_ylabel(r"$X(t; \! \beta_{\rm c} / \beta \! = \! 1.5)$", fontsize=40, labelpad=-30.0)
+    """horizontal lines at Ebar_{x / y} values at which w_{x / y} becomes nonzero; not top-right fig as it's crowded"""
+    for index in [0, 1, 3, 4, 5]:
+        axes.flatten()[index].axhline(y=0.5, color='gray', linestyle='--')
+        axes.flatten()[index].axhline(y=-0.5, color='gray', linestyle='--')
 
 
 if __name__ == "__main__":

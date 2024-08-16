@@ -9,8 +9,8 @@ double precision :: inverse_vacuum_perm_squared_mean, inverse_vacuum_perm_error,
 double precision :: macro_josephson_current_squared_mean, macro_josephson_current_quartic_mean
 double precision :: macro_josephson_current_susc_mean, macro_josephson_current_susc_error, helicity_mean, helicity_error
 double precision :: potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
-double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error, potential_minimising_twists_mean(2)
-double precision :: potential_minimising_twists_squared_mean, potential_minimising_twists_quartic_mean
+double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error, hot_twist_relaxations_mean(2)
+double precision :: hot_twist_relaxations_squared_mean, hot_twist_relaxations_quartic_mean
 double precision :: potential_minimising_twist_susc_mean, potential_minimising_twist_susc_error
 double precision :: twist_relaxations_mean(2), twist_relaxations_squared_mean, twist_relaxations_quartic_mean
 double precision :: twist_relaxation_susc_mean, twist_relaxation_susc_error, zero_mode_mean(2), zero_mode_squared_mean
@@ -82,18 +82,19 @@ if (measure_potential) then
     close(11)
 end if
 
-if (measure_potential_minimising_twists) then
-    potential_minimising_twists_mean(1) = dfloat(potential_minimising_twists_sum(1)) / dfloat(no_of_samples)
-    potential_minimising_twists_mean(2) = dfloat(potential_minimising_twists_sum(2)) / dfloat(no_of_samples)
-    potential_minimising_twists_squared_mean = dfloat(potential_minimising_twists_squared_sum) / dfloat(no_of_samples)
-    potential_minimising_twists_quartic_mean = dfloat(potential_minimising_twists_quartic_sum) / dfloat(no_of_samples)
+if (measure_hot_twist_relaxations) then
+    hot_twist_relaxations_mean(1) = dfloat(hot_twist_relaxations_sum(1)) / dfloat(no_of_samples)
+    hot_twist_relaxations_mean(2) = dfloat(hot_twist_relaxations_sum(2)) / dfloat(no_of_samples)
+    hot_twist_relaxations_squared_mean = dfloat(hot_twist_relaxations_squared_sum) / dfloat(no_of_samples)
+    hot_twist_relaxations_quartic_mean = dfloat(hot_twist_relaxations_quartic_sum) / dfloat(no_of_samples)
 
-    potential_minimising_twist_susc_mean = 2.0d0 * pi ** 2 * beta * (potential_minimising_twists_squared_mean - &
-                                    potential_minimising_twists_mean(1) ** 2 - potential_minimising_twists_mean(2) ** 2)
+    potential_minimising_twist_susc_mean = 2.0d0 * pi ** 2 * beta * (hot_twist_relaxations_squared_mean - &
+                                                hot_twist_relaxations_mean(1) ** 2 - hot_twist_relaxations_mean(2) ** 2)
     potential_minimising_twist_susc_error = 2.0d0 * pi ** 2 * beta * &
-            get_monte_carlo_error(potential_minimising_twists_squared_mean, potential_minimising_twists_quartic_mean)
+                            get_monte_carlo_error(hot_twist_relaxations_squared_mean, hot_twist_relaxations_quartic_mean)
 
-    write(filename, '(A, "/temp_", I2.2, "/pot_min_twists_summary_stats.csv")') trim(output_directory), temperature_index
+    write(filename, '(A, "/temp_", I2.2, "/hot_twist_relaxations_summary_stats.csv")') trim(output_directory), &
+                                                                                            temperature_index
     open(unit=11, file=filename)
     write(11, 200) potential_minimising_twist_susc_mean
     write(11, 200) potential_minimising_twist_susc_error

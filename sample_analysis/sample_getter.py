@@ -747,11 +747,12 @@ def get_helicity_modulus(output_directory, temperature, temperature_index, no_of
                       axis=1) / temperature / no_of_sites)
 
 
-def get_potential_minimising_twists(output_directory, temperature, temperature_index, no_of_sites,
-                                    no_of_equilibration_sweeps=None, thinning_level=None):
+def get_hot_twist_relaxations(output_directory, temperature, temperature_index, no_of_sites,
+                              no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the potential-minimising twist field -- an integer-valued two-dimensional vector field whose
-    x / y component corresponds to the number of twists required (along the x / y dimension) to minimise the potential.
+    Returns the sample of the hot twist-relaxation field -- an integer-valued two-dimensional vector field whose x / y
+    component corresponds to the number of twists required (along the x / y dimension) to minimise the potential of the
+    non-annealed (ie, hot) system.
 
     Parameters
     ----------
@@ -779,18 +780,18 @@ def get_potential_minimising_twists(output_directory, temperature, temperature_i
         field measured at sample n.
     """
     return get_reduced_sample(np.loadtxt(
-        f"{output_directory}/temp_{temperature_index:02d}/potential_minimising_twists.csv", dtype=float, delimiter=","),
+        f"{output_directory}/temp_{temperature_index:02d}/hot_twist_relaxations.csv", dtype=float, delimiter=","),
         no_of_equilibration_sweeps, thinning_level)
 
 
-def get_potential_minimising_twist_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
-                                                  no_of_equilibration_sweeps=None, thinning_level=None):
+def get_hot_twist_relaxation_susceptibility(output_directory, temperature, temperature_index, no_of_sites,
+                                            no_of_equilibration_sweeps=None, thinning_level=None):
     r"""
-    Returns the sample of the potential-minimising twist susceptibility chi_{\tilde{t}}(x; temperature, no_of_sites) =
+    Returns the sample of the hot global twist-relaxation susceptibility chi_{\tilde{t}}(x; temperature, no_of_sites) =
     0.5 * 4 * \pi ** 2 * [\tilde{t} - E[\tilde{t}]] ** 2 / temperature, where E[.] is the expected value of the
-    argument and \tilde{t} \in Z^2 is the potential-minimising twist field w -- an integer-valued two-dimensional
-    vector field whose x / y component corresponds to the number of twists required (along the x / y dimension) to
-    minimise the potential.
+    argument and \tilde{t} \in Z^2 is the hot global twist-relaxation field -- an integer-valued two-dimensional vector
+    field whose x / y component corresponds to the number of twists required (along the x / y dimension) to minimise
+    the non-annealed (ie, hot) potential.
 
     Parameters
     ----------
@@ -816,11 +817,10 @@ def get_potential_minimising_twist_susceptibility(output_directory, temperature,
         no_of_samples.  The nth element is a float corresponding to the potential-minimising twist susceptibility
         measured at sample n.
     """
-    potential_minimising_twists_sample = get_potential_minimising_twists(
+    hot_twist_relaxations_sample = get_hot_twist_relaxations(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
     return 4.0 * math.pi ** 2 * np.mean(
-        (potential_minimising_twists_sample - np.mean(potential_minimising_twists_sample, axis=0)) ** 2,
-        axis=1) / temperature
+        (hot_twist_relaxations_sample - np.mean(hot_twist_relaxations_sample, axis=0)) ** 2, axis=1) / temperature
 
 
 def get_hxy_topological_sector(output_directory, temperature, temperature_index, no_of_sites,

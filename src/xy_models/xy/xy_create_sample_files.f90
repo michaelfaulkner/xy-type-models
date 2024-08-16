@@ -41,8 +41,8 @@ if (measure_potential) then
     end if
 end if
 
-if (measure_potential_minimising_twists) then
-    write(filename, '(A, "/temp_", I2.2, "/potential_minimising_twists.csv")') trim(output_directory), temperature_index
+if (measure_hot_twist_relaxations) then
+    write(filename, '(A, "/temp_", I2.2, "/hot_twist_relaxations.csv")') trim(output_directory), temperature_index
     if (start_from_checkpoint) then
         call trim_existing_sample_file(filename, 70, temperature_index)
     else

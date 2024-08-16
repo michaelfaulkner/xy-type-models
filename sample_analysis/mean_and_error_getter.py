@@ -176,13 +176,13 @@ def get_helicity_modulus(output_directory, temperature_index):
     return summary_stats[0], summary_stats[1]
 
 
-def get_potential_minimising_twist_susceptibility(output_directory, temperature_index):
+def get_hot_twist_relaxation_susceptibility(output_directory, temperature_index):
     r"""
-    Returns the Monte Carlo mean and error of the potential-minimising twist susceptibility
+    Returns the Monte Carlo mean and error of the hot global twist-relaxation susceptibility
     chi_{\tilde{t}}(x; temperature, no_of_sites) = 0.5 * 4 * \pi ** 2 * [\tilde{t} - E[\tilde{t}]] ** 2 / temperature,
-    where E[.] is the expected value of the argument and \tilde{t} \in Z^2 is the potential-minimising twist field --
+    where E[.] is the expected value of the argument and \tilde{t} \in Z^2 is the hot global twist-relaxation field --
     an integer-valued two-dimensional vector field whose x / y component corresponds to the number of twists required
-    (along the x / y dimension) to minimise the potential.
+    (along the x / y dimension) to minimise the non-annealed (ie, hot) potential.
 
     Parameters
     ----------
@@ -199,7 +199,7 @@ def get_potential_minimising_twist_susceptibility(output_directory, temperature_
         is the Monte Carlo mean / error.
     """
     summary_stats = np.loadtxt(
-        f"{output_directory}/temp_{temperature_index:02d}/pot_min_twists_summary_stats.csv", dtype=float,
+        f"{output_directory}/temp_{temperature_index:02d}/hot_twist_relaxations_summary_stats.csv", dtype=float,
         delimiter=",")
     return summary_stats[0], summary_stats[1]
 

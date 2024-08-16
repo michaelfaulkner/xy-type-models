@@ -37,14 +37,14 @@ if (measure_potential) then
     close(11)
 end if
 
-if (measure_potential_minimising_twists) then
-    write(filename, '(A, "/potential_minimising_twists_running_sums.csv")') trim(output_directory)
+if (measure_hot_twist_relaxations) then
+    write(filename, '(A, "/hot_twist_relaxations_running_sums.csv")') trim(output_directory)
     write(temporary_filename, '(A, "/temporary_running_sums.csv")') trim(output_directory)
     open(unit=11, file=temporary_filename)
-    write(11, 100) potential_minimising_twists_sum(1)
-    write(11, 100) potential_minimising_twists_sum(2)
-    write(11, 100) potential_minimising_twists_squared_sum
-    write(11, 100) potential_minimising_twists_quartic_sum
+    write(11, 100) hot_twist_relaxations_sum(1)
+    write(11, 100) hot_twist_relaxations_sum(2)
+    write(11, 100) hot_twist_relaxations_squared_sum
+    write(11, 100) hot_twist_relaxations_quartic_sum
     close(11)
     call system('mv ' // trim(temporary_filename) // ' ' // trim(filename))
 end if

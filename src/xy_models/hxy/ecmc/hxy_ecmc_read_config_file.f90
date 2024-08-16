@@ -16,7 +16,7 @@ read(10, *) use_external_global_moves
 read(10, *) measure_magnetisation
 read(10, *) measure_helicity
 read(10, *) measure_potential
-read(10, *) measure_potential_minimising_twists
+read(10, *) measure_hot_twist_relaxations
 read(10, *) measure_external_global_moves
 read(10, *) print_samples
 

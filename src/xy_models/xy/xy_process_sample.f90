@@ -1,8 +1,7 @@
 subroutine process_sample(sample_index)
 use variables
 implicit none
-integer :: i, sample_index, no_of_global_twists_to_minimise_potential(2)
-integer :: get_topological_sector_component, topological_sector(2)
+integer :: i, sample_index, twist_relaxations(2), get_topological_sector_component, topological_sector(2)
 double precision :: potential, potential_cartesian_components(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
 double precision :: sum_of_emergent_field(2), raw_magnetic_norm_squared, raw_inverse_vacuum_perm
@@ -25,7 +24,7 @@ if (measure_magnetisation) then
     end if
 end if
 
-if ((measure_helicity).or.(measure_potential).or.(measure_potential_minimising_twists)) then
+if ((measure_helicity).or.(measure_potential).or.(measure_hot_twist_relaxations)) then
     potential_cartesian_components = (/ 0.0d0, 0.0d0 /)
     do i = 1, no_of_sites
         potential_cartesian_components(1) = potential_cartesian_components(1) - &
@@ -75,28 +74,22 @@ if (measure_potential) then
     end if
 end if
 
-if (measure_potential_minimising_twists) then
-    no_of_global_twists_to_minimise_potential = (/ 0, 0 /)
-    call potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, 1, &
-                                                    potential_cartesian_components) ! x direction; positive twists
-    call potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, -1, &
-                                                    potential_cartesian_components) ! x direction; negative twists
-    call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, 1, &
-                                                    potential_cartesian_components) ! y direction; positive twists
-    call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, -1, &
-                                                    potential_cartesian_components) ! y direction; negative twists
+if (measure_hot_twist_relaxations) then
+    twist_relaxations = (/ 0, 0 /)
+    call twist_relaxations_calculation_x(twist_relaxations, 1, potential_cartesian_components) ! x direction; +ve twists
+    call twist_relaxations_calculation_x(twist_relaxations, -1, potential_cartesian_components) ! x direction; -ve twists
+    call twist_relaxations_calculation_y(twist_relaxations, 1, potential_cartesian_components) ! y direction; +ve twists
+    call twist_relaxations_calculation_y(twist_relaxations, -1, potential_cartesian_components) ! y direction; -ve twists
     if (print_samples) then
-        write(70, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+        write(70, 300) twist_relaxations(1), twist_relaxations(2)
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        potential_minimising_twists_sum(1) = potential_minimising_twists_sum(1) + &
-                                                no_of_global_twists_to_minimise_potential(1)
-        potential_minimising_twists_sum(2) = potential_minimising_twists_sum(2) + &
-                                                no_of_global_twists_to_minimise_potential(2)
-        potential_minimising_twists_squared_sum = potential_minimising_twists_squared_sum + &
-                no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2
-        potential_minimising_twists_quartic_sum = potential_minimising_twists_quartic_sum + &
-                (no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2) ** 2
+        hot_twist_relaxations_sum(1) = hot_twist_relaxations_sum(1) + twist_relaxations(1)
+        hot_twist_relaxations_sum(2) = hot_twist_relaxations_sum(2) + twist_relaxations(2)
+        hot_twist_relaxations_squared_sum = hot_twist_relaxations_squared_sum + &
+                                                twist_relaxations(1) ** 2 + twist_relaxations(2) ** 2
+        hot_twist_relaxations_quartic_sum = hot_twist_relaxations_quartic_sum + &
+                                                (twist_relaxations(1) ** 2 + twist_relaxations(2) ** 2) ** 2
     end if
 end if
 
@@ -119,25 +112,21 @@ if (measure_twist_relaxations) then
         potential_cartesian_components(2) = potential_cartesian_components(2) - &
                                                 cos(spin_field(get_north_neighbour(i)) - spin_field(i))
     end do
-    no_of_global_twists_to_minimise_potential = (/ 0, 0 /)
-    call potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, 1, &
-                                                    potential_cartesian_components) ! x direction; positive twists
-    call potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, -1, &
-                                                    potential_cartesian_components) ! x direction; negative twists
-    call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, 1, &
-                                                    potential_cartesian_components) ! y direction; positive twists
-    call potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, -1, &
-                                                    potential_cartesian_components) ! y direction; negative twists
+    twist_relaxations = (/ 0, 0 /)
+    call twist_relaxations_calculation_x(twist_relaxations, 1, potential_cartesian_components) ! x direction; +ve twists
+    call twist_relaxations_calculation_x(twist_relaxations, -1, potential_cartesian_components) ! x direction; -ve twists
+    call twist_relaxations_calculation_y(twist_relaxations, 1, potential_cartesian_components) ! y direction; +ve twists
+    call twist_relaxations_calculation_y(twist_relaxations, -1, potential_cartesian_components) ! y direction; -ve twists
     if (print_samples) then
-        write(90, 300) no_of_global_twists_to_minimise_potential(1), no_of_global_twists_to_minimise_potential(2)
+        write(90, 300) twist_relaxations(1), twist_relaxations(2)
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        twist_relaxations_sum(1) = twist_relaxations_sum(1) + no_of_global_twists_to_minimise_potential(1)
-        twist_relaxations_sum(2) = twist_relaxations_sum(2) + no_of_global_twists_to_minimise_potential(2)
+        twist_relaxations_sum(1) = twist_relaxations_sum(1) + twist_relaxations(1)
+        twist_relaxations_sum(2) = twist_relaxations_sum(2) + twist_relaxations(2)
         twist_relaxations_squared_sum = twist_relaxations_squared_sum + &
-                no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2
+                                            twist_relaxations(1) ** 2 + twist_relaxations(2) ** 2
         twist_relaxations_quartic_sum = twist_relaxations_quartic_sum + &
-                (no_of_global_twists_to_minimise_potential(1) ** 2 + no_of_global_twists_to_minimise_potential(2) ** 2) ** 2
+                                            (twist_relaxations(1) ** 2 + twist_relaxations(2) ** 2) ** 2
     end if
 
     ! restore spin field
@@ -181,11 +170,10 @@ return
 end subroutine process_sample
 
 
-subroutine potential_minimising_twists_calculation_x(no_of_global_twists_to_minimise_potential, sign_of_twist, &
-                                                        potential_cartesian_components)
+subroutine twist_relaxations_calculation_x(twist_relaxations, sign_of_twist, potential_cartesian_components)
 use variables
 implicit none
-integer :: i, proposed_no_of_twists, no_of_global_twists_to_minimise_potential(2), sign_of_twist
+integer :: i, proposed_no_of_twists, twist_relaxations(2), sign_of_twist
 double precision :: potential_difference, potential_of_twisted_field, potential_cartesian_components(2)
 double precision :: potential_difference_w_previous_twist, potential_of_previous_twisted_field
 
@@ -208,7 +196,7 @@ do proposed_no_of_twists = 1, integer_lattice_length - 1
     ! now check potential difference wrt original configuration
     potential_difference = potential_of_twisted_field - potential_cartesian_components(1)
     if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
-        no_of_global_twists_to_minimise_potential(1) = sign_of_twist * proposed_no_of_twists
+        twist_relaxations(1) = sign_of_twist * proposed_no_of_twists
     else
         exit
     end if
@@ -216,14 +204,13 @@ do proposed_no_of_twists = 1, integer_lattice_length - 1
 end do
 
 return
-end subroutine potential_minimising_twists_calculation_x
+end subroutine twist_relaxations_calculation_x
 
 
-subroutine potential_minimising_twists_calculation_y(no_of_global_twists_to_minimise_potential, sign_of_twist, &
-                                                        potential_cartesian_components)
+subroutine twist_relaxations_calculation_y(twist_relaxations, sign_of_twist, potential_cartesian_components)
 use variables
 implicit none
-integer :: i, proposed_no_of_twists, no_of_global_twists_to_minimise_potential(2), sign_of_twist
+integer :: i, proposed_no_of_twists, twist_relaxations(2), sign_of_twist
 double precision :: potential_difference, potential_of_twisted_field, potential_cartesian_components(2)
 double precision :: potential_difference_w_previous_twist, potential_of_previous_twisted_field
 
@@ -247,7 +234,7 @@ do proposed_no_of_twists = 1, integer_lattice_length - 1
     ! now check potential difference wrt original configuration
     potential_difference = potential_of_twisted_field - potential_cartesian_components(2)
     if ((potential_difference < 0.0d0).and.(abs(potential_difference) > 1.0d-12)) then
-        no_of_global_twists_to_minimise_potential(2) = sign_of_twist * proposed_no_of_twists
+        twist_relaxations(2) = sign_of_twist * proposed_no_of_twists
     else
         exit
     end if
@@ -255,7 +242,7 @@ do proposed_no_of_twists = 1, integer_lattice_length - 1
 end do
 
 return
-end subroutine potential_minimising_twists_calculation_y
+end subroutine twist_relaxations_calculation_y
 
 
 subroutine store_spins

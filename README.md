@@ -120,7 +120,7 @@ sizes fall within the time limit.
 .true.                                      measure_magnetisation
 .false.                                     measure_helicity
 .false.                                     measure_potential
-.false.                                     measure_potential_minimising_twists
+.false.                                     measure_hot_twist_relaxations
 .false.                                     measure_external_global_moves
 1                                           no_of_runs
 0                                           initial_run_index
@@ -146,7 +146,7 @@ sizes fall within the time limit.
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
 .false.                                                         measure_potential
-.false.                                                         measure_potential_minimising_twists
+.false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
 1                                                               no_of_runs
 0                                                               initial_run_index
@@ -172,7 +172,7 @@ sizes fall within the time limit.
 .true.                                                              measure_magnetisation
 .false.                                                             measure_helicity
 .false.                                                             measure_potential
-.false.                                                             measure_potential_minimising_twists
+.false.                                                             measure_hot_twist_relaxations
 .false.                                                             measure_external_global_moves
 1                                                                   no_of_runs
 0                                                                   initial_run_index
@@ -195,7 +195,7 @@ sizes fall within the time limit.
 .true.                                      measure_magnetisation
 .false.                                     measure_helicity
 .false.                                     measure_potential
-.false.                                     measure_potential_minimising_twists
+.false.                                     measure_hot_twist_relaxations
 .false.                                     measure_external_global_moves
 .false.                                     measure_twist_relaxations
 1                                           no_of_runs
@@ -221,7 +221,7 @@ sizes fall within the time limit.
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
 .false.                                                         measure_potential
-.false.                                                         measure_potential_minimising_twists
+.false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
 1                                                               no_of_runs
@@ -247,7 +247,7 @@ sizes fall within the time limit.
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
 .false.                                                         measure_potential
-.false.                                                         measure_potential_minimising_twists
+.false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
 1                                                               no_of_runs

@@ -53,19 +53,19 @@ if (measure_potential) then
     end if
 end if
 
-if (measure_potential_minimising_twists) then
+if (measure_hot_twist_relaxations) then
     if (start_from_checkpoint) then
-        write(filename, '(A, "/potential_minimising_twists_running_sums.csv")') trim(output_directory)
+        write(filename, '(A, "/hot_twist_relaxations_running_sums.csv")') trim(output_directory)
         open(unit=11, file=filename)
-        read(11, 100) potential_minimising_twists_sum(1)
-        read(11, 100) potential_minimising_twists_sum(2)
-        read(11, 100) potential_minimising_twists_squared_sum
-        read(11, 100) potential_minimising_twists_quartic_sum
+        read(11, 100) hot_twist_relaxations_sum(1)
+        read(11, 100) hot_twist_relaxations_sum(2)
+        read(11, 100) hot_twist_relaxations_squared_sum
+        read(11, 100) hot_twist_relaxations_quartic_sum
         close(11)
     else
-        potential_minimising_twists_sum = (/ 0, 0 /)
-        potential_minimising_twists_squared_sum = 0
-        potential_minimising_twists_quartic_sum = 0
+        hot_twist_relaxations_sum = (/ 0, 0 /)
+        hot_twist_relaxations_squared_sum = 0
+        hot_twist_relaxations_quartic_sum = 0
     end if
 end if
 

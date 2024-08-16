@@ -36,8 +36,8 @@ def main(no_of_system_sizes=6):
     """Define observables[i] as the necessary observables of algorithms[i]"""
     observables = [
         ["inverse_permittivity", "topological_susceptibility"],
-        ["helicity_modulus", "global_defect_susceptibility", "potential_minimising_twist_susceptibility"],
-        ["helicity_modulus", "global_defect_susceptibility", "potential_minimising_twist_susceptibility"]]
+        ["helicity_modulus", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility"],
+        ["helicity_modulus", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility"]]
     observable_plotting_markers = [".", "*", "o"]
     system_size_plotting_colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     system_size_plotting_colors.reverse()
