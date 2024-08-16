@@ -859,7 +859,9 @@ def get_hxy_topological_sector(output_directory, temperature, temperature_index,
         corresponding to the x / y component of the topological sector measured at sample n.
     """
     """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L + 2pi epsilon) / (2pi L)); 
-            this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = -1"""
+            this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = -1
+            *** NB, the epsilon was mistakenly absent in the code of J. Phys.: Condens. Matter 29, 085402 (2017), which 
+                    led to lower quality chi_w estimates ***"""
     non_normalised_macro_josephson_current = get_non_normalised_macro_josephson_current(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level)
     non_normalised_xy_emergent_field_zero_mode = np.zeros(np.shape(non_normalised_macro_josephson_current))
@@ -1345,7 +1347,9 @@ def get_topological_sector(output_directory, temperature, temperature_index, no_
         corresponding to the x / y component of the topological sector measured at sample n.
     """
     """compute accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L + 2pi epsilon) / (2pi L)); 
-            this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = - 1"""
+            this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = - 1 
+            *** NB, the epsilon was mistakenly absent in the code of Phys. Rev. B 91, 155412 (2015), which led to lower 
+                    quality chi_w estimates ***"""
     return (get_sum_of_electric_field(
         output_directory, temperature, temperature_index, no_of_sites, no_of_equilibration_sweeps, thinning_level) +
             math.pi * no_of_sites ** 0.5 + 2.0 * math.pi * 1.0e-8) // (2.0 * math.pi * no_of_sites ** 0.5)

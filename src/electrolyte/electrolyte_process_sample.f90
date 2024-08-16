@@ -63,6 +63,8 @@ integer :: get_topological_sector_component, net_charge_displacement_component
 ! w_{x / y} = floor((sum_r E_{x / y}(r) + pi L) / (2pi L)), where w \in Z^2 is the topological_sector
 ! to compute this accurately w/small epsilon > 0: w_{x / y} = floor((sum_r E_{x / y}(r) + pi L + 2pi epsilon) / (2pi L))
 ! this ensures edge cases are correctly processed, eg, Ebar_x = - pi / L does not incorrectly set w_x = -1
+! *** NB, the epsilon was mistakenly absent in the code of Phys. Rev. B 91, 155412 (2015) ***
+! *** this led to lower quality chi_w estimates ***
 get_topological_sector_component = floor(-dfloat(net_charge_displacement_component) / dfloat(integer_lattice_length) + &
                                             0.5d0 + 1.0d-8 / dfloat(integer_lattice_length))
 end function get_topological_sector_component
