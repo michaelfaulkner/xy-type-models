@@ -187,8 +187,10 @@ use variables
 implicit none
 integer :: i, proposed_no_of_twists, no_of_global_twists_to_minimise_potential(2), sign_of_twist
 double precision :: potential_difference, potential_of_twisted_field, potential_cartesian_components(2)
+double precision :: potential_difference_w_previous_twist, potential_of_previous_twisted_field
 
 proposed_no_of_twists = 1
+potential_of_previous_twisted_field = potential_cartesian_components(1)
 do
     potential_of_twisted_field = 0.0d0
     do i = 1, no_of_sites
@@ -196,6 +198,15 @@ do
                                         cos(spin_field(i) + dfloat(sign_of_twist) * dfloat(proposed_no_of_twists) * &
                                             two_pi / dfloat(integer_lattice_length) - spin_field(get_west_neighbour(i)))
     end do
+    ! first check potential difference wrt previously twisted configuration - if 0.0 and sign_of_twist < 0, then exit;
+    ! this accounts for energy degeneracy that can occur for a charge-neutral vortex pair separated by a distance L/2
+    ! nb, sign_of_twist > 0 for y twists - the different choices align with the emergent-field convention
+    potential_difference_w_previous_twist = potential_of_twisted_field - potential_of_previous_twisted_field
+    if ((abs(potential_difference_w_previous_twist) < 1.0d-8).and.(sign_of_twist < 0)) then
+       exit
+    end if
+
+    ! now check potential difference wrt original configuration
     potential_difference = potential_of_twisted_field - potential_cartesian_components(1)
     ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
     ! in such cases, potential_difference is exactly zero leading to floating-point errors - this can be a problem at
@@ -206,6 +217,7 @@ do
     else
         exit
     end if
+    potential_of_previous_twisted_field = potential_of_twisted_field
 end do
 
 return
@@ -218,8 +230,10 @@ use variables
 implicit none
 integer :: i, proposed_no_of_twists, no_of_global_twists_to_minimise_potential(2), sign_of_twist
 double precision :: potential_difference, potential_of_twisted_field, potential_cartesian_components(2)
+double precision :: potential_difference_w_previous_twist, potential_of_previous_twisted_field
 
 proposed_no_of_twists = 1
+potential_of_previous_twisted_field = potential_cartesian_components(2)
 do
     potential_of_twisted_field = 0.0d0
     do i = 1, no_of_sites
@@ -227,6 +241,16 @@ do
                                         cos(spin_field(i) + dfloat(sign_of_twist) * dfloat(proposed_no_of_twists) * &
                                         two_pi / dfloat(integer_lattice_length) - spin_field(get_south_neighbour(i)))
     end do
+
+    ! first check potential difference wrt previously twisted configuration - if 0.0 and sign_of_twist > 0, then exit;
+    ! this accounts for energy degeneracy that can occur for a charge-neutral vortex pair separated by a distance L/2
+    ! nb, sign_of_twist < 0 for x twists - the different choices align with the emergent-field convention
+    potential_difference_w_previous_twist = potential_of_twisted_field - potential_of_previous_twisted_field
+    if ((abs(potential_difference_w_previous_twist) < 1.0d-8).and.(sign_of_twist > 0)) then
+       exit
+    end if
+
+    ! now check potential difference wrt original configuration
     potential_difference = potential_of_twisted_field - potential_cartesian_components(2)
     ! nb, we need abs(potential_difference) > 1.0d-12 below for cases où proposed_no_of_twists = integer_lattice_length
     ! in such cases, potential_difference is exactly zero leading to floating-point errors - this can be a problem at
@@ -237,6 +261,7 @@ do
     else
         exit
     end if
+    potential_of_previous_twisted_field = potential_of_twisted_field
 end do
 
 return
