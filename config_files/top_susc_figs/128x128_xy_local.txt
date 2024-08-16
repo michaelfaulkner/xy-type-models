@@ -1,14 +1,14 @@
 'xy-uniform-noise-metropolis'                   algorithm_name
 'output/top_susc_figs/128x128_xy_local'         output_directory
 128                                             integer_lattice_length
-10000                                           no_of_equilibration_sweeps
-100000                                          no_of_samples
+100009                                          no_of_equilibration_sweeps
+1000000                                         no_of_samples
 0.3939304219097d0                               initial_temperature
 1.378756476684d0                                final_temperature
 15                                              no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
-.false.                                         randomise_initial_field_configuration
+.true.                                          randomise_initial_field_configuration
 .false.                                         use_external_global_moves
 .false.                                         measure_magnetisation
 .true.                                          measure_helicity

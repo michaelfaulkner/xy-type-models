@@ -1,20 +1,20 @@
 'hxy-uniform-noise-metropolis'              algorithm_name
 'output/top_susc_figs/8x8_hxy_all'          output_directory
 8                                           integer_lattice_length
-10000                                       no_of_equilibration_sweeps
-100000                                      no_of_samples
+100000                                      no_of_equilibration_sweeps
+1000000                                     no_of_samples
 0.6d0                                       initial_temperature
 2.1d0                                       final_temperature
 15                                          no_of_temperature_increments
 1.0d0                                       width_of_proposal_interval (initial)
 0.44d0                                      target_acceptance_rate_of_field_rotations
 11                                          vacuum_permittivity_sum_cutoff
-.false.                                     randomise_initial_field_configuration
+.true.                                      randomise_initial_field_configuration
 .true.                                      use_external_global_moves
 .false.                                     measure_magnetisation
 .true.                                      measure_helicity
 .false.                                     measure_potential
-.true.                                      measure_potential_minimising_twists
+.true.                                      measure_hot_twist_relaxations
 .true.                                      measure_external_global_moves
 .false.                                     print_samples
 192                                         no_of_runs
