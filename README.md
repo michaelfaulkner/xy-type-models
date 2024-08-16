@@ -122,6 +122,7 @@ sizes fall within the time limit.
 .false.                                     measure_potential
 .false.                                     measure_hot_twist_relaxations
 .false.                                     measure_external_global_moves
+.true.                                      print_samples
 1                                           no_of_runs
 0                                           initial_run_index
 1                                           max_no_of_cpus
@@ -148,6 +149,7 @@ sizes fall within the time limit.
 .false.                                                         measure_potential
 .false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
+.true.                                                          print_samples
 1                                                               no_of_runs
 0                                                               initial_run_index
 1                                                               max_no_of_cpus
@@ -174,6 +176,7 @@ sizes fall within the time limit.
 .false.                                                             measure_potential
 .false.                                                             measure_hot_twist_relaxations
 .false.                                                             measure_external_global_moves
+.true.                                                              print_samples
 1                                                                   no_of_runs
 0                                                                   initial_run_index
 1                                                                   max_no_of_cpus
@@ -198,6 +201,7 @@ sizes fall within the time limit.
 .false.                                     measure_hot_twist_relaxations
 .false.                                     measure_external_global_moves
 .false.                                     measure_twist_relaxations
+.true.                                      print_samples
 1                                           no_of_runs
 0                                           initial_run_index
 1                                           max_no_of_cpus
@@ -224,6 +228,7 @@ sizes fall within the time limit.
 .false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
+.true.                                                          print_samples
 1                                                               no_of_runs
 0                                                               initial_run_index
 1                                                               max_no_of_cpus
@@ -250,6 +255,7 @@ sizes fall within the time limit.
 .false.                                                         measure_hot_twist_relaxations
 .false.                                                         measure_external_global_moves
 .false.                                                         measure_twist_relaxations
+.true.                                                          print_samples
 1                                                               no_of_runs
 0                                                               initial_run_index
 1                                                               max_no_of_cpus
@@ -269,10 +275,12 @@ sizes fall within the time limit.
 1.0d0                                                       width_of_proposal_interval (initial)
 0.44d0                                                      target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                          charge_hop_proportion
+.false.                                                     always_cold_start
 .true.                                                      use_external_global_moves
 .false.                                                     measure_electric_field_sum
 .true.                                                      measure_potential
 .false.                                                     measure_external_global_moves
+.true.                                                      print_samples
 1                                                           no_of_runs
 0                                                           initial_run_index
 1                                                           max_no_of_cpus
@@ -292,10 +300,12 @@ sizes fall within the time limit.
 1.0d0                                                       width_of_proposal_interval (initial)
 0.44d0                                                      target_acceptance_rate_of_field_rotations
 0.66666666666666d0                                          charge_hop_proportion
+.false.                                                     always_cold_start
 .true.                                                      use_external_global_moves
 .false.                                                     measure_electric_field_sum
 .true.                                                      measure_potential
 .false.                                                     measure_external_global_moves
+.true.                                                      print_samples
 1                                                           no_of_runs
 0                                                           initial_run_index
 1                                                           max_no_of_cpus
@@ -318,6 +328,7 @@ sizes fall within the time limit.
 .false.                                 use_external_global_moves
 .true.                                  measure_magnetisation
 .false.                                 measure_potential
+.true.                                  print_samples
 1                                       no_of_runs
 0                                       initial_run_index
 1                                       max_no_of_cpus

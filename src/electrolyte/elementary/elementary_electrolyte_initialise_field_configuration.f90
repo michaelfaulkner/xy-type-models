@@ -4,7 +4,7 @@ implicit none
 logical :: pre_simulation
 integer :: site_index
 
-if (pre_simulation) then
+if ((pre_simulation).or.(always_cold_start)) then
     do site_index = 1, no_of_sites
         electric_field(site_index, 1) = 0.0d0
         electric_field(site_index, 2) = 0.0d0

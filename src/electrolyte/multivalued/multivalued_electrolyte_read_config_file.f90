@@ -14,6 +14,7 @@ read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) charge_hop_proportion
+read(10, *) always_cold_start
 read(10, *) use_external_global_moves
 read(10, *) measure_electric_field_sum
 read(10, *) measure_potential

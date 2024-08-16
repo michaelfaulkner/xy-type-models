@@ -1,7 +1,7 @@
 module variables
 character(100) :: output_directory, algorithm_name, checkpoint_filename
-logical :: use_external_global_moves, measure_electric_field_sum, measure_potential, measure_external_global_moves
-logical :: start_from_checkpoint, simulation_complete, print_samples
+logical :: always_cold_start, use_external_global_moves, measure_electric_field_sum, measure_potential
+logical :: measure_external_global_moves, start_from_checkpoint, simulation_complete, print_samples
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour
 integer, allocatable, dimension(:) :: get_up_neighbour, get_down_neighbour, array_of_sites
 integer(kind=8) :: no_of_samples ! kind=8 to avoid upper integer bound on long timescales
