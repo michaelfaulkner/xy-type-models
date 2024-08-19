@@ -7,7 +7,8 @@
 3.0d0                                                   final_temperature
 19                                                      no_of_temperature_increments
 0                                                       vacuum_permittivity_sum_cutoff
-.false.                                                 randomise_initial_field_configuration
+.false.                                                 always_cold_start
+.false.                                                 always_hot_start
 .false.                                                 use_external_global_moves
 .true.                                                  measure_magnetisation
 .false.                                                 measure_helicity

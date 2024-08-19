@@ -1,6 +1,6 @@
 module variables
 character(100) :: output_directory, algorithm_name, checkpoint_filename
-logical :: use_external_global_moves, randomise_initial_field_configuration, measure_magnetisation, measure_helicity
+logical :: use_external_global_moves, always_hot_start, always_cold_start, measure_magnetisation, measure_helicity
 logical :: measure_potential, measure_hot_twist_relaxations, measure_external_global_moves
 logical :: measure_twist_relaxations, measure_emergent_field, start_from_checkpoint, simulation_complete, print_samples
 integer, allocatable, dimension(:) :: get_north_neighbour, get_south_neighbour, get_east_neighbour, get_west_neighbour

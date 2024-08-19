@@ -14,7 +14,8 @@ read(10, *) no_of_temperature_increments
 read(10, *) width_of_proposal_interval
 read(10, *) target_acceptance_rate_of_field_rotations
 read(10, *) vacuum_permittivity_sum_cutoff
-read(10, *) randomise_initial_field_configuration
+read(10, *) always_cold_start
+read(10, *) always_hot_start
 read(10, *) use_external_global_moves
 read(10, *) measure_magnetisation
 read(10, *) measure_helicity
@@ -26,6 +27,11 @@ read(10, *) print_samples
 if ((algorithm_name /= 'hxy-uniform-noise-metropolis').and.(algorithm_name /= 'hxy-gaussian-noise-metropolis')) then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal hxy-uniform-noise-metropolis or &
                     hxy-gaussian-noise-metropolis.'
+   stop
+end if
+
+if ((always_cold_start).and.(always_hot_start)) then
+    write(6, *) 'ConfigurationError: the value of always_cold_start and always_hot_start are both equal to true.'
    stop
 end if
 

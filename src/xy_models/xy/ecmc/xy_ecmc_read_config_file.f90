@@ -10,7 +10,8 @@ read(10, *) no_of_samples
 read(10, *) initial_temperature
 read(10, *) final_temperature
 read(10, *) no_of_temperature_increments
-read(10, *) randomise_initial_field_configuration
+read(10, *) always_cold_start
+read(10, *) always_hot_start
 read(10, *) use_external_global_moves
 read(10, *) measure_magnetisation
 read(10, *) measure_helicity
@@ -23,6 +24,11 @@ read(10, *) print_samples
 
 if (algorithm_name /= 'xy-ecmc') then
    write(6, *) 'ConfigurationError: the value of algorithm_name does not equal xy-ecmc.'
+   stop
+end if
+
+if ((always_cold_start).and.(always_hot_start)) then
+    write(6, *) 'ConfigurationError: the value of always_cold_start and always_hot_start are both equal to true.'
    stop
 end if
 

@@ -115,7 +115,8 @@ sizes fall within the time limit.
 1.3d0                                       final_temperature
 0                                           no_of_temperature_increments
 0                                           vacuum_permittivity_sum_cutoff
-.false.                                     randomise_initial_field_configuration
+.false.                                     always_cold_start
+.false.                                     always_hot_start
 .true.                                      use_external_global_moves
 .true.                                      measure_magnetisation
 .false.                                     measure_helicity
@@ -142,7 +143,8 @@ sizes fall within the time limit.
 1.0d0                                                           width_of_proposal_interval (initial)
 0.44d0                                                          target_acceptance_rate_of_field_rotations
 0                                                               vacuum_permittivity_sum_cutoff
-.false.                                                         randomise_initial_field_configuration
+.false.                                                         always_cold_start
+.false.                                                         always_hot_start
 .true.                                                          use_external_global_moves
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
@@ -169,7 +171,8 @@ sizes fall within the time limit.
 1.0d0                                                               width_of_proposal_interval (initial)
 0.44d0                                                              target_acceptance_rate_of_field_rotations
 0                                                                   vacuum_permittivity_sum_cutoff
-.false.                                                             randomise_initial_field_configuration
+.false.                                                             always_cold_start
+.false.                                                             always_hot_start
 .true.                                                              use_external_global_moves
 .true.                                                              measure_magnetisation
 .false.                                                             measure_helicity
@@ -193,7 +196,8 @@ sizes fall within the time limit.
 0.8d0                                       initial_temperature
 0.8d0                                       final_temperature
 0                                           no_of_temperature_increments
-.false.                                     randomise_initial_field_configuration
+.false.                                     always_cold_start
+.false.                                     always_hot_start
 .true.                                      use_external_global_moves
 .true.                                      measure_magnetisation
 .false.                                     measure_helicity
@@ -220,7 +224,8 @@ sizes fall within the time limit.
 0                                                               no_of_temperature_increments
 1.0d0                                                           width_of_proposal_interval (initial)
 0.44d0                                                          target_acceptance_rate_of_field_rotations
-.false.                                                         randomise_initial_field_configuration
+.false.                                                         always_cold_start
+.false.                                                         always_hot_start
 .true.                                                          use_external_global_moves
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
@@ -247,7 +252,8 @@ sizes fall within the time limit.
 0                                                               no_of_temperature_increments
 1.0d0    	                                                    width_of_proposal_interval (initial)
 0.44d0		                                                    target_acceptance_rate_of_field_rotations
-.false.                                                         randomise_initial_field_configuration
+.false.                                                         always_cold_start
+.false.                                                         always_hot_start
 .true.                                                          use_external_global_moves
 .true.                                                          measure_magnetisation
 .false.                                                         measure_helicity
@@ -324,7 +330,8 @@ sizes fall within the time limit.
 0                                       no_of_temperature_increments
 1.0d0                                   width_of_proposal_interval (initial)
 0.44d0                                  target_acceptance_rate_of_field_rotations
-.false.                                 randomise_initial_field_configuration
+.false.                                 always_cold_start
+.false.                                 always_hot_start
 .false.                                 use_external_global_moves
 .true.                                  measure_magnetisation
 .false.                                 measure_potential
@@ -391,28 +398,7 @@ directory and enter `make xy-ecmc`, `make xy-uniform-noise-metropolis`, `make xy
 executable and store it in the `executables` directory.
 
 
-
-## *Sampling algorithms in statistical physics* [\[Faulkner2022a\]](https://arxiv.org/abs/2208.04751)
-
-This details how to make its XY figures.
-
-### Figure 12
-
-- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
-config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
- etc.  
-
-- Once all simulations are complete, run the relevant sample-analysis script via the command 
-`python sample_analysis/make_magnetisation_evolution_figs.py False`.
-
-### Figures 2, 9, 10 and 11
-
-Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
-instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
-integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
-
-
-## *Symmetry breaking at a topological phase transition* [\[Faulkner2022b\]](https://arxiv.org/abs/2209.03699)
+## *Symmetry breaking at a topological phase transition* [\[Faulkner2024a\]](https://doi.org/10.1103/PhysRevB.109.085405)
 
 This details how to make its figures.
 
@@ -487,6 +473,26 @@ Each ECMC configuration file requires approximately 40GB of scratch space.
 ### Figure 4
 
 Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
+
+
+## *Sampling algorithms in statistical physics* [\[Faulkner2024b\]](https://doi.org/10.1214/23-STS893)
+
+This details how to make its XY figures.
+
+### Figure 12
+
+- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
+config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
+ etc.  
+
+- Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py False`.
+
+### Figures 2, 9, 10 and 11
+
+Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
+integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
 
 
 ## Citation

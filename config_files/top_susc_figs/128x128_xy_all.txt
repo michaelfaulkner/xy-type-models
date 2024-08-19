@@ -8,7 +8,8 @@
 15                                              no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
-.true.                                          randomise_initial_field_configuration
+.true.                                          always_cold_start
+.false.                                         always_hot_start
 .true.                                          use_external_global_moves
 .false.                                         measure_magnetisation
 .true.                                          measure_helicity
