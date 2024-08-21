@@ -18,6 +18,6 @@
 .true.                                              measure_hot_twist_relaxations
 .false.                                             measure_external_global_moves
 .false.                                             print_samples
-192                                                 no_of_runs
+384                                                 no_of_runs
 0                                                   initial_run_index
 48                                                  max_no_of_cpus
