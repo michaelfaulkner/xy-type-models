@@ -1,11 +1,11 @@
 'xy-uniform-noise-metropolis'                   algorithm_name
-'output/top_susc_figs/128x128_xy_local'         output_directory
-128                                             integer_lattice_length
+'output/top_susc_figs/32x32_xy_local'           output_directory
+32                                              integer_lattice_length
 100000                                          no_of_equilibration_sweeps
 1000000                                         no_of_samples
 0.3939304219097d0                               initial_temperature
-1.378756476684d0                                final_temperature
-15                                              no_of_temperature_increments
+0.8535159141377d0                               final_temperature
+7                                               no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
 .true.                                          always_cold_start
