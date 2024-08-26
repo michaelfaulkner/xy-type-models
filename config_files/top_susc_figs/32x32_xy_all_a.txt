@@ -4,8 +4,8 @@
 100000                                      no_of_equilibration_sweeps
 1000000                                     no_of_samples
 0.3939304219097d0                           initial_temperature
-0.8535159141377d0                           final_temperature
-7                                           no_of_temperature_increments
+1.378756476684d0                            final_temperature
+15                                          no_of_temperature_increments
 1.0d0                                       width_of_proposal_interval (initial)
 0.44d0                                      target_acceptance_rate_of_field_rotations
 .true.                                      always_cold_start
@@ -19,6 +19,6 @@
 .false.                                     measure_twist_relaxations
 .true.                                      measure_emergent_field
 .false.                                     print_samples
-384                                         no_of_runs
+192                                         no_of_runs
 0                                           initial_run_index
 48                                          max_no_of_cpus

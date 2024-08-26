@@ -3,9 +3,9 @@
 128                                             integer_lattice_length
 100000                                          no_of_equilibration_sweeps
 1000000                                         no_of_samples
-1.0d0                                           initial_temperature
-1.0d0                                           final_temperature
-0                                               no_of_temperature_increments
+0.6d0                                           initial_temperature
+2.1d0                                           final_temperature
+15                                              no_of_temperature_increments
 1.0d0                                           width_of_proposal_interval (initial)
 0.44d0                                          target_acceptance_rate_of_field_rotations
 11                                              vacuum_permittivity_sum_cutoff
@@ -18,6 +18,6 @@
 .true.                                          measure_hot_twist_relaxations
 .true.                                          measure_external_global_moves
 .false.                                         print_samples
-384                                             no_of_runs
-0                                               initial_run_index
+48                                              no_of_runs
+192                                             initial_run_index
 48                                              max_no_of_cpus
