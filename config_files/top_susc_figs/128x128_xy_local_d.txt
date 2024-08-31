@@ -19,6 +19,6 @@
 .false.                                         measure_twist_relaxations
 .true.                                          measure_emergent_field
 .false.                                         print_samples
-384                                             no_of_runs
-0                                               initial_run_index
+48                                              no_of_runs
+144                                             initial_run_index
 48                                              max_no_of_cpus
