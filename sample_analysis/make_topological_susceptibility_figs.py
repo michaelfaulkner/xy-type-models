@@ -209,8 +209,6 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                  r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (XY)", fontsize=16.0, transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
 
-
-
     fig.savefig(f"{output_directory}/topological_susceptibilities_with_global_moves.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
     plt.close()
@@ -280,12 +278,12 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                     output_file.close()
 
                 topological_stabilities = [1.0 - chi_ratio ** 0.5 for chi_ratio in chi_ratios]
-                if observable_index == 1:
+                if observable_index == 0:
                     axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], topological_stabilities,
                                                marker=observable_plotting_markers[observable_index - 1], markersize=10,
                                                color=system_size_plotting_colors[system_size_index], linestyle="dashed",
                                                label=fr"$N = {length} \! \times \! {length}$")
-                elif observable_index > 0:
+                else:
                     axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], topological_stabilities,
                                                marker=observable_plotting_markers[observable_index - 1], markersize=10,
                                                color=system_size_plotting_colors[system_size_index], linestyle="dashed")
