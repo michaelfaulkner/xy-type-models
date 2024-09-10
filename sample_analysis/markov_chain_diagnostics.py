@@ -29,7 +29,7 @@ except (ModuleNotFoundError, ValueError) as _:
 
 
     def get_sample_mean_and_error(sample):
-        """nb, , ddof=1 in np.std() uses 1 / (len(sample) - 1) factor"""
+        """nb, ddof=1 in np.std() uses 1 / (len(sample) - 1) factor"""
         return np.mean(sample), np.std(sample, ddof=1) / len(sample) ** 0.5
 
 
