@@ -359,7 +359,7 @@ def get_inverse_permittivity(output_directory, temperature_index):
         is the Monte Carlo mean / error.
     """
     summary_stats = get_electric_field_summary_stats(output_directory, temperature_index)
-    return 1.0 - summary_stats[0], 1.0 - summary_stats[1]
+    return 1.0 - summary_stats[0], summary_stats[1]
 
 
 def get_topological_susceptibility(output_directory, temperature_index):
