@@ -2,9 +2,9 @@ subroutine process_sample(sample_index)
 use variables
 implicit none
 integer :: i, sample_index, n, twist_relaxations(2), get_topological_sector_component, topological_sector(2)
-double precision :: potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
+double precision :: magnetic_norm_squared, potential, sum_of_squared_emergent_field(2), non_normalised_magnetisation(2)
 double precision :: sum_of_1st_derivative_of_potential(2), sum_of_2nd_derivative_of_potential(2)
-double precision :: raw_magnetic_norm_squared, raw_inverse_vacuum_perm, non_normalised_emergent_field_zero_mode(2)
+double precision :: inverse_vacuum_perm, macro_josephson_current(2), non_normalised_emergent_field_zero_mode(2)
 
 ! recalculate emergent field to remove floating-point errors from previous Monte Carlo moves
 call calculate_emergent_field
@@ -19,11 +19,12 @@ if (measure_magnetisation) then
         write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
-        raw_magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 + non_normalised_magnetisation(2) ** 2
-        raw_magnetic_norm_sum = raw_magnetic_norm_sum + raw_magnetic_norm_squared ** 0.5
-        raw_magnetic_norm_squared_sum = raw_magnetic_norm_squared_sum + raw_magnetic_norm_squared
-        raw_magnetic_norm_quartic_sum = raw_magnetic_norm_quartic_sum + raw_magnetic_norm_squared ** 2
+        ! nb, we divide by no_of_sites at this point to avoid infinities at large system size and long timescale
+        magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 / dfloat(no_of_sites ** 2) + &
+                                non_normalised_magnetisation(2) ** 2 / dfloat(no_of_sites ** 2)
+        magnetic_norm_sum = magnetic_norm_sum + magnetic_norm_squared ** 0.5
+        magnetic_norm_squared_sum = magnetic_norm_squared_sum + magnetic_norm_squared
+        magnetic_norm_quartic_sum = magnetic_norm_quartic_sum + magnetic_norm_squared ** 2
     end if
 end if
 
@@ -47,17 +48,20 @@ if (measure_helicity) then
         write(50, 100) sum_of_2nd_derivative_of_potential(1), sum_of_2nd_derivative_of_potential(2)
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        ! inverse_vacuum_perm = raw_inverse_vacuum_perm / 2
-        raw_inverse_vacuum_perm = sum_of_2nd_derivative_of_potential(1) + sum_of_2nd_derivative_of_potential(2)
-        raw_inverse_vacuum_perm_sum = raw_inverse_vacuum_perm_sum + raw_inverse_vacuum_perm
-        raw_inverse_vacuum_perm_squared_sum = raw_inverse_vacuum_perm_squared_sum + raw_inverse_vacuum_perm ** 2
-        ! macro_josephson_current = raw_macro_josephson_current / no_of_sites
-        raw_macro_josephson_current_sum(1) = raw_macro_josephson_current_sum(1) + sum_of_1st_derivative_of_potential(1)
-        raw_macro_josephson_current_sum(2) = raw_macro_josephson_current_sum(2) + sum_of_1st_derivative_of_potential(2)
-        raw_macro_josephson_current_squared_sum = raw_macro_josephson_current_squared_sum + &
-                                sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2
-        raw_macro_josephson_current_quartic_sum = raw_macro_josephson_current_quartic_sum + &
-                        (sum_of_1st_derivative_of_potential(1) ** 2 + sum_of_1st_derivative_of_potential(2) ** 2) ** 2
+        ! nb, we divide by no_of_sites at this point to avoid infinities at large system size and long timescale
+        inverse_vacuum_perm = 0.5d0 * (sum_of_2nd_derivative_of_potential(1) + sum_of_2nd_derivative_of_potential(2)) / &
+                                        dfloat(no_of_sites)
+        inverse_vacuum_perm_sum = inverse_vacuum_perm_sum + inverse_vacuum_perm
+        inverse_vacuum_perm_squared_sum = inverse_vacuum_perm_squared_sum + inverse_vacuum_perm ** 2
+
+        macro_josephson_current(1) = sum_of_1st_derivative_of_potential(1) / dfloat(no_of_sites)
+        macro_josephson_current(2) = sum_of_1st_derivative_of_potential(2) / dfloat(no_of_sites)
+        macro_josephson_current_sum(1) = macro_josephson_current_sum(1) + macro_josephson_current(1)
+        macro_josephson_current_sum(2) = macro_josephson_current_sum(2) + macro_josephson_current(2)
+        macro_josephson_current_squared_sum = macro_josephson_current_squared_sum + &
+                                                 macro_josephson_current(1) ** 2 + macro_josephson_current(2) ** 2
+        macro_josephson_current_quartic_sum = macro_josephson_current_quartic_sum + &
+                                                (macro_josephson_current(1) ** 2 + macro_josephson_current(2) ** 2) ** 2
 
         non_normalised_emergent_field_zero_mode(1) = sum_of_1st_derivative_of_potential(2)
         non_normalised_emergent_field_zero_mode(2) = - sum_of_1st_derivative_of_potential(1)
@@ -72,10 +76,10 @@ if (measure_helicity) then
     end if
     if (sample_index == no_of_equilibration_sweeps + no_of_samples - 1) then
         ! for outputting zero_mode_susc_mean and zero_mode_susc_error in xy_models_output_summary_stats
-        sum_of_emergent_field_sum(1) = raw_macro_josephson_current_sum(2)
-        sum_of_emergent_field_sum(2) = - raw_macro_josephson_current_sum(1)
-        sum_of_emergent_field_squared_sum = raw_macro_josephson_current_squared_sum
-        sum_of_emergent_field_quartic_sum = raw_macro_josephson_current_quartic_sum
+        emergent_field_zero_mode_sum(1) = macro_josephson_current_sum(2)
+        emergent_field_zero_mode_sum(2) = - macro_josephson_current_sum(1)
+        emergent_field_zero_mode_squared_sum = macro_josephson_current_squared_sum
+        emergent_field_zero_mode_quartic_sum = macro_josephson_current_quartic_sum
     end if
 end if
 

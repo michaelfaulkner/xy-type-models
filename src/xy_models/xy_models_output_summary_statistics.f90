@@ -19,10 +19,9 @@ double precision :: topological_sector_squared_mean, topological_sector_quartic_
 double precision :: topological_susc_error
 
 if (measure_magnetisation) then
-    ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
-    magnetic_norm_mean = raw_magnetic_norm_sum / dfloat(no_of_sites * no_of_samples)
-    magnetic_norm_squared_mean = raw_magnetic_norm_squared_sum / dfloat(no_of_sites ** 2 * no_of_samples)
-    magnetic_norm_quartic_mean = raw_magnetic_norm_quartic_sum / dfloat(no_of_sites ** 4 * no_of_samples)
+    magnetic_norm_mean = magnetic_norm_sum / dfloat(no_of_samples)
+    magnetic_norm_squared_mean = magnetic_norm_squared_sum / dfloat(no_of_samples)
+    magnetic_norm_quartic_mean = magnetic_norm_quartic_sum / dfloat(no_of_samples)
     magnetic_norm_error = get_monte_carlo_error(magnetic_norm_mean, magnetic_norm_squared_mean)
     magnetic_susc_mean = dfloat(no_of_sites) * beta * (magnetic_norm_squared_mean - magnetic_norm_mean ** 2)
     magnetic_susc_error = dfloat(no_of_sites) * beta * &
@@ -38,20 +37,17 @@ if (measure_magnetisation) then
 end if
 
 if (measure_helicity) then
-    ! inverse_vacuum_perm = raw_inverse_vacuum_perm / 2 / no_of_sites
-    inverse_vacuum_perm_mean = 0.5d0 * raw_inverse_vacuum_perm_sum / dfloat(no_of_sites * no_of_samples)
-    inverse_vacuum_perm_squared_mean = 0.25d0 * raw_inverse_vacuum_perm_squared_sum / &
-                                                dfloat(no_of_sites ** 2 * no_of_samples)
+    inverse_vacuum_perm_mean = inverse_vacuum_perm_sum / dfloat(no_of_samples)
+    inverse_vacuum_perm_squared_mean = inverse_vacuum_perm_squared_sum / dfloat(no_of_samples)
     inverse_vacuum_perm_error = get_monte_carlo_error(inverse_vacuum_perm_mean, inverse_vacuum_perm_squared_mean)
 
-    ! macro_josephson_current = raw_macro_josephson_current / no_of_sites
-    macro_josephson_current_mean(1) = raw_macro_josephson_current_sum(1) / dfloat(no_of_sites * no_of_samples)
-    macro_josephson_current_mean(2) = raw_macro_josephson_current_sum(2) / dfloat(no_of_sites * no_of_samples)
-    macro_josephson_current_squared_mean = raw_macro_josephson_current_squared_sum / dfloat(no_of_sites ** 2 * no_of_samples)
-    macro_josephson_current_quartic_mean = raw_macro_josephson_current_quartic_sum / dfloat(no_of_sites ** 4 * no_of_samples)
-    macro_josephson_current_susc_mean = no_of_sites * beta * 0.5d0 * (macro_josephson_current_squared_mean - &
+    macro_josephson_current_mean(1) = macro_josephson_current_sum(1) / dfloat(no_of_samples)
+    macro_josephson_current_mean(2) = macro_josephson_current_sum(2) / dfloat(no_of_samples)
+    macro_josephson_current_squared_mean = macro_josephson_current_squared_sum / dfloat(no_of_samples)
+    macro_josephson_current_quartic_mean = macro_josephson_current_quartic_sum / dfloat(no_of_samples)
+    macro_josephson_current_susc_mean = dfloat(no_of_sites) * beta * 0.5d0 * (macro_josephson_current_squared_mean - &
                                             macro_josephson_current_mean(1) ** 2 - macro_josephson_current_mean(2) ** 2)
-    macro_josephson_current_susc_error = no_of_sites * beta * 0.5d0 * &
+    macro_josephson_current_susc_error = dfloat(no_of_sites) * beta * 0.5d0 * &
                     get_monte_carlo_error(macro_josephson_current_squared_mean, macro_josephson_current_quartic_mean)
 
     helicity_mean = inverse_vacuum_perm_mean - macro_josephson_current_susc_mean
@@ -121,10 +117,10 @@ if (measure_twist_relaxations) then
 end if
 
 if (measure_emergent_field) then
-    zero_mode_mean(1) = sum_of_emergent_field_sum(1) / dfloat(no_of_sites * no_of_samples)
-    zero_mode_mean(2) = sum_of_emergent_field_sum(2) / dfloat(no_of_sites * no_of_samples)
-    zero_mode_squared_mean = sum_of_emergent_field_squared_sum / dfloat(no_of_sites ** 2 * no_of_samples)
-    zero_mode_quartic_mean = sum_of_emergent_field_quartic_sum / dfloat(no_of_sites ** 4 * no_of_samples)
+    zero_mode_mean(1) = emergent_field_zero_mode_sum(1) / dfloat(no_of_samples)
+    zero_mode_mean(2) = emergent_field_zero_mode_sum(2) / dfloat(no_of_samples)
+    zero_mode_squared_mean = emergent_field_zero_mode_squared_sum / dfloat(no_of_samples)
+    zero_mode_quartic_mean = emergent_field_zero_mode_quartic_sum / dfloat(no_of_samples)
 
     zero_mode_susc_mean = 0.5d0 * dfloat(no_of_sites) * beta * &
                                 (zero_mode_squared_mean - zero_mode_mean(1) ** 2 - zero_mode_mean(2) ** 2)

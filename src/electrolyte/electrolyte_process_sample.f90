@@ -2,20 +2,24 @@ subroutine process_sample(sample_index)
 use variables
 implicit none
 integer :: i, sample_index, get_topological_sector_component, topological_sector(2)
-double precision :: potential
+double precision :: potential, raw_electric_field_zero_mode(2)
 
 if (measure_electric_field_sum) then
     if (print_samples) then
         write(30, 100) - two_pi * dfloat(net_charge_displacement(1)), - two_pi * dfloat(net_charge_displacement(2))
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        ! raw_electric_field_zero_mode = \sum_r E(r) / two_pi = no_of_sites * Ebar / two_pi = - net_charge_displacement
-        raw_electric_field_zero_mode_sum(1) = raw_electric_field_zero_mode_sum(1) - net_charge_displacement(1)
-        raw_electric_field_zero_mode_sum(2) = raw_electric_field_zero_mode_sum(2) - net_charge_displacement(2)
+        ! raw_electric_field_zero_mode = \sum_r E(r) / no_of_sites / two_pi = Ebar / two_pi
+        !                                                                   = - net_charge_displacement / no_of_sites
+        ! nb, we divide by no_of_sites at this point to avoid infinities at large system size and long timescale
+        raw_electric_field_zero_mode(1) = - dfloat(net_charge_displacement(1)) / dfloat(no_of_sites)
+        raw_electric_field_zero_mode(2) = - dfloat(net_charge_displacement(2)) / dfloat(no_of_sites)
+        raw_electric_field_zero_mode_sum(1) = raw_electric_field_zero_mode_sum(1) + raw_electric_field_zero_mode(1)
+        raw_electric_field_zero_mode_sum(2) = raw_electric_field_zero_mode_sum(2) + raw_electric_field_zero_mode(2)
         raw_electric_field_zero_mode_squared_sum = raw_electric_field_zero_mode_squared_sum + &
-                                                    net_charge_displacement(1) ** 2 + net_charge_displacement(2) ** 2
+                                    raw_electric_field_zero_mode(1) ** 2 + raw_electric_field_zero_mode(2) ** 2
         raw_electric_field_zero_mode_quartic_sum = raw_electric_field_zero_mode_quartic_sum + &
-                                                (net_charge_displacement(1) ** 2 + net_charge_displacement(2) ** 2) ** 2
+                                    (raw_electric_field_zero_mode(1) ** 2 + raw_electric_field_zero_mode(2) ** 2) ** 2
 
         topological_sector(1) = get_topological_sector_component(net_charge_displacement(1))
         topological_sector(2) = get_topological_sector_component(net_charge_displacement(2))

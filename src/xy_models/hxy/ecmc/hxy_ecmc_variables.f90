@@ -23,9 +23,9 @@ double precision, allocatable, dimension(:, :) :: emergent_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: spin_space_distance_between_samples, no_of_events_per_unit_spin_space_distance
 double precision :: no_of_accepted_external_global_moves
-double precision :: raw_magnetic_norm_sum, raw_magnetic_norm_squared_sum, raw_magnetic_norm_quartic_sum
-double precision :: raw_inverse_vacuum_perm_sum, raw_inverse_vacuum_perm_squared_sum, raw_macro_josephson_current_sum(2)
-double precision :: raw_macro_josephson_current_squared_sum, raw_macro_josephson_current_quartic_sum, potential_sum
-double precision :: potential_squared_sum, potential_quartic_sum, sum_of_emergent_field_sum(2)
-double precision :: sum_of_emergent_field_squared_sum, sum_of_emergent_field_quartic_sum
+double precision :: magnetic_norm_sum, magnetic_norm_squared_sum, magnetic_norm_quartic_sum
+double precision :: inverse_vacuum_perm_sum, inverse_vacuum_perm_squared_sum, macro_josephson_current_sum(2)
+double precision :: macro_josephson_current_squared_sum, macro_josephson_current_quartic_sum, potential_sum
+double precision :: potential_squared_sum, potential_quartic_sum, emergent_field_zero_mode_sum(2)
+double precision :: emergent_field_zero_mode_squared_sum, emergent_field_zero_mode_quartic_sum
 end module variables

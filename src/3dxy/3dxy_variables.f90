@@ -12,6 +12,6 @@ double precision, parameter :: two_pi = 6.28318530717959d0
 double precision, allocatable, dimension(:) :: spin_field
 double precision :: beta, temperature, initial_temperature, final_temperature, magnitude_of_temperature_increments
 double precision :: width_of_proposal_interval, target_acceptance_rate_of_field_rotations, charge_hop_proportion
-double precision :: no_of_accepted_field_rotations_per_site, raw_magnetic_norm_sum, raw_magnetic_norm_squared_sum
-double precision :: raw_magnetic_norm_quartic_sum, potential_sum, potential_squared_sum, potential_quartic_sum
+double precision :: no_of_accepted_field_rotations_per_site, magnetic_norm_sum, magnetic_norm_squared_sum
+double precision :: magnetic_norm_quartic_sum, potential_sum, potential_squared_sum, potential_quartic_sum
 end module variables

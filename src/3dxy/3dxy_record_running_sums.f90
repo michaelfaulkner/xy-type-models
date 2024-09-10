@@ -7,9 +7,9 @@ if (measure_magnetisation) then
     write(filename, '(A, "/magnetic_running_sums.csv")') trim(output_directory)
     write(temporary_filename, '(A, "/temporary_running_sums.csv")') trim(output_directory)
     open(unit=11, file=temporary_filename)
-    write(11, 200) raw_magnetic_norm_sum
-    write(11, 200) raw_magnetic_norm_squared_sum
-    write(11, 200) raw_magnetic_norm_quartic_sum
+    write(11, 200) magnetic_norm_sum
+    write(11, 200) magnetic_norm_squared_sum
+    write(11, 200) magnetic_norm_quartic_sum
     close(11)
     call system('mv ' // trim(temporary_filename) // ' ' // trim(filename))
 end if

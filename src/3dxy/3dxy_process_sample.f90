@@ -2,7 +2,7 @@ subroutine process_sample(sample_index)
 use variables
 implicit none
 integer :: i, sample_index
-double precision :: potential, non_normalised_magnetisation(2), raw_magnetic_norm_squared
+double precision :: potential, non_normalised_magnetisation(2), magnetic_norm_squared
 
 if (measure_magnetisation) then
     non_normalised_magnetisation = (/ 0.0d0, 0.0d0 /)
@@ -14,11 +14,12 @@ if (measure_magnetisation) then
         write(30, 100) non_normalised_magnetisation(1), non_normalised_magnetisation(2)
     end if
     if (sample_index >= no_of_equilibration_sweeps) then
-        ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
-        raw_magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 + non_normalised_magnetisation(2) ** 2
-        raw_magnetic_norm_sum = raw_magnetic_norm_sum + raw_magnetic_norm_squared ** 0.5
-        raw_magnetic_norm_squared_sum = raw_magnetic_norm_squared_sum + raw_magnetic_norm_squared
-        raw_magnetic_norm_quartic_sum = raw_magnetic_norm_quartic_sum + raw_magnetic_norm_squared ** 2
+        ! nb, we divide by no_of_sites at this point to avoid infinities at large system size and long timescale
+        magnetic_norm_squared = non_normalised_magnetisation(1) ** 2 / dfloat(no_of_sites ** 2) + &
+                                non_normalised_magnetisation(2) ** 2 / dfloat(no_of_sites ** 2)
+        magnetic_norm_sum = magnetic_norm_sum + magnetic_norm_squared ** 0.5
+        magnetic_norm_squared_sum = magnetic_norm_squared_sum + magnetic_norm_squared
+        magnetic_norm_quartic_sum = magnetic_norm_quartic_sum + magnetic_norm_squared ** 2
     end if
 end if
 

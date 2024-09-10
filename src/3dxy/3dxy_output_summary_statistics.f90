@@ -9,10 +9,9 @@ double precision :: potential_mean, potential_squared_mean, potential_quartic_me
 double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error
 
 if (measure_magnetisation) then
-    ! magnetic_norm_squared = raw_magnetic_norm_squared / no_of_sites ** 2
-    magnetic_norm_mean = raw_magnetic_norm_sum / dfloat(no_of_sites * no_of_samples)
-    magnetic_norm_squared_mean = raw_magnetic_norm_squared_sum / dfloat(no_of_sites ** 2 * no_of_samples)
-    magnetic_norm_quartic_mean = raw_magnetic_norm_quartic_sum / dfloat(no_of_sites ** 4 * no_of_samples)
+    magnetic_norm_mean = magnetic_norm_sum / dfloat(no_of_samples)
+    magnetic_norm_squared_mean = magnetic_norm_squared_sum / dfloat(no_of_samples)
+    magnetic_norm_quartic_mean = magnetic_norm_quartic_sum / dfloat(no_of_samples)
     magnetic_norm_error = get_monte_carlo_error(magnetic_norm_mean, magnetic_norm_squared_mean)
     magnetic_susc_mean = dfloat(no_of_sites) * beta * (magnetic_norm_squared_mean - magnetic_norm_mean ** 2)
     magnetic_susc_error = dfloat(no_of_sites) * beta * &

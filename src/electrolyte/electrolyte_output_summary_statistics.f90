@@ -10,17 +10,15 @@ double precision :: topological_sector_mean(2), topological_sector_squared_mean,
 double precision :: topological_susc_mean, topological_susc_error
 
 if (measure_electric_field_sum) then
-    ! raw_electric_field_zero_mode = \sum_r E(r) / two_pi = no_of_sites * Ebar / c
-    zero_mode_mean(1) =  two_pi * dfloat(raw_electric_field_zero_mode_sum(1)) / dfloat(no_of_sites * no_of_samples)
-    zero_mode_mean(2) = two_pi * dfloat(raw_electric_field_zero_mode_sum(2)) / dfloat(no_of_sites * no_of_samples)
-    zero_mode_squared_mean = two_pi ** 2 * dfloat(raw_electric_field_zero_mode_squared_sum) / &
-                                                                        dfloat(no_of_sites ** 2 * no_of_samples)
-    zero_mode_quartic_mean = two_pi ** 4 * dfloat(raw_electric_field_zero_mode_quartic_sum) / &
-                                                                        dfloat(no_of_sites ** 4 * no_of_samples)
+    ! raw_electric_field_zero_mode = \sum_r E(r) / no_of_sites / two_pi = Ebar / two_pi
+    zero_mode_mean(1) =  two_pi * raw_electric_field_zero_mode_sum(1) / dfloat(no_of_samples)
+    zero_mode_mean(2) = two_pi * raw_electric_field_zero_mode_sum(2) / dfloat(no_of_samples)
+    zero_mode_squared_mean = two_pi ** 2 * raw_electric_field_zero_mode_squared_sum / dfloat(no_of_samples)
+    zero_mode_quartic_mean = two_pi ** 4 * raw_electric_field_zero_mode_quartic_sum / dfloat(no_of_samples)
 
-    zero_mode_susc_mean = 0.5d0 * no_of_sites * beta * &
+    zero_mode_susc_mean = 0.5d0 * dfloat(no_of_sites) * beta * &
                                 (zero_mode_squared_mean - zero_mode_mean(1) ** 2 - zero_mode_mean(2) ** 2)
-    zero_mode_susc_error = 0.5d0 * no_of_sites * beta * &
+    zero_mode_susc_error = 0.5d0 * dfloat(no_of_sites) * beta * &
                                 get_monte_carlo_error(zero_mode_squared_mean, zero_mode_quartic_mean)
 
     topological_sector_mean(1) = dfloat(topological_sector_sum(1)) / dfloat(no_of_samples)

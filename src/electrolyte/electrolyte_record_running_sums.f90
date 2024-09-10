@@ -7,10 +7,10 @@ if (measure_electric_field_sum) then
     write(filename, '(A, "/electric_field_running_sums.csv")') trim(output_directory)
     write(temporary_filename, '(A, "/temporary_running_sums.csv")') trim(output_directory)
     open(unit=11, file=temporary_filename)
-    write(11, 100) raw_electric_field_zero_mode_sum(1)
-    write(11, 100) raw_electric_field_zero_mode_sum(2)
-    write(11, 100) raw_electric_field_zero_mode_squared_sum
-    write(11, 100) raw_electric_field_zero_mode_quartic_sum
+    write(11, 200) raw_electric_field_zero_mode_sum(1)
+    write(11, 200) raw_electric_field_zero_mode_sum(2)
+    write(11, 200) raw_electric_field_zero_mode_squared_sum
+    write(11, 200) raw_electric_field_zero_mode_quartic_sum
     write(11, 100) topological_sector_sum(1)
     write(11, 100) topological_sector_sum(2)
     write(11, 100) topological_sector_squared_sum

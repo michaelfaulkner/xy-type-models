@@ -7,14 +7,14 @@ if (measure_magnetisation) then
     if (start_from_checkpoint) then
         write(filename, '(A, "/magnetic_running_sums.csv")') trim(output_directory)
         open(unit=11, file=filename)
-        read(11, 200) raw_magnetic_norm_sum
-        read(11, 200) raw_magnetic_norm_squared_sum
-        read(11, 200) raw_magnetic_norm_quartic_sum
+        read(11, 200) magnetic_norm_sum
+        read(11, 200) magnetic_norm_squared_sum
+        read(11, 200) magnetic_norm_quartic_sum
         close(11)
     else
-        raw_magnetic_norm_sum = 0.0d0
-        raw_magnetic_norm_squared_sum = 0.0d0
-        raw_magnetic_norm_quartic_sum = 0.0d0
+        magnetic_norm_sum = 0.0d0
+        magnetic_norm_squared_sum = 0.0d0
+        magnetic_norm_quartic_sum = 0.0d0
     end if
 end if
 
