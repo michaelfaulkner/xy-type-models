@@ -146,6 +146,79 @@ def get_magnetic_susceptibility(output_directory, temperature_index):
     return summary_stats[2], summary_stats[3]
 
 
+def get_helicity_summary_stats(output_directory, temperature_index):
+    """
+    Returns the summary stats related to the helicity modulus.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+
+    Returns
+    -------
+    numpy.ndarray
+        The summary stats of the helicity modulus.  A one-dimensional numpy array of floats of length 4.
+    """
+    return np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/helicity_summary_stats.csv",
+                      dtype=float, delimiter=",")
+
+
+def get_inverse_vacuum_permittivity(output_directory, temperature_index):
+    r"""
+    Returns the Monte Carlo mean and error of the inverse vacuum permittivity.  For the XY model, this is
+    0.5 * sum_{<i, j>} cos(x_i - x_j) / no_of_sites.  For the HXY model, this is
+    0.5 * sum_{n = 1}^{inf} sum_{<i, j>} (-1) ** n * cos[n * (x_i - x_j)] / no_of_sites.  In both equations, E[.]
+    is the expected value of the argument.
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+
+    Returns
+    -------
+    Tuple[float, float]
+        The tuple containing the mean and error.  A one-dimensional tuple of floats of length 2.  The 0th / 1st element
+        is the Monte Carlo mean / error.
+    """
+    summary_stats = get_helicity_summary_stats(output_directory, temperature_index)
+    return summary_stats[0], summary_stats[1]
+
+
+def get_josephson_susceptibility(output_directory, temperature_index):
+    r"""
+    Returns the Monte Carlo mean and error of the Josephson susceptibility.  For the XY model, this is
+    0.5 * ([sum_{<i, j>}_x sin(x_i - x_j) - E[sum_{<i, j>}_x sin(x_i - x_j)]] ** 2 + [sum_{<i, j>}_y sin(x_i - x_j) -
+    E[sum_{<i, j>}_y sin(x_i - x_j)]] ** 2) / temperature / no_of_sites.  For the HXY model, this is
+    0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature.  In both equations, E[.] is the expected
+    value of the argument; in the latter, \overline{E} is the zero mode of the emergent electric field, as defined in
+    J. Phys.: Condens. Matter 29, 085402 (2017).
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+
+    Returns
+    -------
+    Tuple[float, float]
+        The tuple containing the mean and error.  A one-dimensional tuple of floats of length 2.  The 0th / 1st element
+        is the Monte Carlo mean / error.
+    """
+    summary_stats = get_helicity_summary_stats(output_directory, temperature_index)
+    return summary_stats[2], summary_stats[3]
+
+
 def get_helicity_modulus(output_directory, temperature_index):
     r"""
     Returns the Monte Carlo mean and error of the helicity modulus.  For the XY model,
@@ -171,9 +244,10 @@ def get_helicity_modulus(output_directory, temperature_index):
         The tuple containing the mean and error.  A one-dimensional tuple of floats of length 2.  The 0th / 1st element
         is the Monte Carlo mean / error.
     """
-    summary_stats = np.loadtxt(f"{output_directory}/temp_{temperature_index:02d}/helicity_summary_stats.csv",
-                               dtype=float, delimiter=",")
-    return summary_stats[0], summary_stats[1]
+    inverse_vacuum_permittivity_summary_stats = get_inverse_vacuum_permittivity(output_directory, temperature_index)
+    josephson_susceptibility_summary_stats = get_josephson_susceptibility(output_directory, temperature_index)
+    return (inverse_vacuum_permittivity_summary_stats[0] - josephson_susceptibility_summary_stats[0],
+            (inverse_vacuum_permittivity_summary_stats[1] ** 2 + josephson_susceptibility_summary_stats[1] ** 2) ** 0.5)
 
 
 def get_hot_twist_relaxation_susceptibility(output_directory, temperature_index):
@@ -337,12 +411,15 @@ def get_electric_field_summary_stats(output_directory, temperature_index):
                       dtype=float, delimiter=",")
 
 
-def get_inverse_permittivity(output_directory, temperature_index):
+def get_zero_mode_susceptibility(output_directory, temperature_index):
     r"""
-    Returns the Monte Carlo mean and error of the inverse (electric) permittivity modulus
-    [epsilon(x; temperature, no_of_sites)] ** (-1) =
-    1.0 - 0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value of
-    the argument and \overline{E} is the zero mode of the electric field, as defined in Phys. Rev. B 91, 155412 (2015).
+    Returns the Monte Carlo mean and error of the (electrolyte) zero-mode susceptibility
+    chi_\overline{E}(x; temperature, no_of_sites) =
+    0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value of the
+    argument.
+
+    In J. Phys.: Condens. Matter 29, 085402 (2017), the zero-mode susceptibility was called the harmonic-mode
+    susceptibility and was defined without the factor of 1/2 to account for each Cartesian dimension of the system.
 
     Parameters
     ----------
@@ -359,6 +436,32 @@ def get_inverse_permittivity(output_directory, temperature_index):
         is the Monte Carlo mean / error.
     """
     summary_stats = get_electric_field_summary_stats(output_directory, temperature_index)
+    return summary_stats[0], summary_stats[1]
+
+
+def get_inverse_permittivity(output_directory, temperature_index):
+    r"""
+    Returns the Monte Carlo mean and error of the inverse (electric) permittivity
+    [epsilon(x; temperature, no_of_sites)] ** (-1) =
+    1.0 - 0.5 * no_of_sites * [\overline{E} - E[\overline{E}]] ** 2 / temperature, where E[.] is the expected value of
+    the argument and \overline{E} is the zero mode of the electric field, as defined in
+    J. Phys.: Condens. Matter 29, 085402 (2017)
+
+    Parameters
+    ----------
+    output_directory : str
+        The location of the directory containing the sample(s) and Metropolis acceptance rate(s) (plurals refer to the
+        option of multiple repeated simulations).
+    temperature_index : int
+        The index of the current sampling temperature within the configuration file.
+
+    Returns
+    -------
+    Tuple[float, float]
+        The tuple containing the mean and error.  A one-dimensional tuple of floats of length 2.  The 0th / 1st element
+        is the Monte Carlo mean / error.
+    """
+    summary_stats = get_zero_mode_susceptibility(output_directory, temperature_index)
     return 1.0 - summary_stats[0], summary_stats[1]
 
 

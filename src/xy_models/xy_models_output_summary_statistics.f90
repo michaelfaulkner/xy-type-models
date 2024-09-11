@@ -7,7 +7,7 @@ double precision :: get_monte_carlo_error, magnetic_norm_mean, magnetic_norm_squ
 double precision :: magnetic_norm_error, magnetic_susc_mean, magnetic_susc_error, inverse_vacuum_perm_mean
 double precision :: inverse_vacuum_perm_squared_mean, inverse_vacuum_perm_error, macro_josephson_current_mean(2)
 double precision :: macro_josephson_current_squared_mean, macro_josephson_current_quartic_mean
-double precision :: macro_josephson_current_susc_mean, macro_josephson_current_susc_error, helicity_mean, helicity_error
+double precision :: macro_josephson_current_susc_mean, macro_josephson_current_susc_error
 double precision :: potential_mean, potential_squared_mean, potential_quartic_mean, potential_error
 double precision :: specific_heat_per_particle_mean, specific_heat_per_particle_error, hot_twist_relaxations_mean(2)
 double precision :: hot_twist_relaxations_squared_mean, hot_twist_relaxations_quartic_mean
@@ -50,13 +50,12 @@ if (measure_helicity) then
     macro_josephson_current_susc_error = dfloat(no_of_sites) * beta * 0.5d0 * &
                     get_monte_carlo_error(macro_josephson_current_squared_mean, macro_josephson_current_quartic_mean)
 
-    helicity_mean = inverse_vacuum_perm_mean - macro_josephson_current_susc_mean
-    helicity_error = (inverse_vacuum_perm_error ** 2 + macro_josephson_current_susc_error ** 2) ** 0.5
-
     write(filename, '(A, "/temp_", I2.2, "/helicity_summary_stats.csv")') trim(output_directory), temperature_index
     open(unit=11, file=filename)
-    write(11, 200) helicity_mean
-    write(11, 200) helicity_error
+    write(11, 200) inverse_vacuum_perm_mean
+    write(11, 200) inverse_vacuum_perm_error
+    write(11, 200) macro_josephson_current_susc_mean
+    write(11, 200) macro_josephson_current_susc_error
     close(11)
 end if
 
