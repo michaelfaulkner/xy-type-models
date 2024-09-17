@@ -36,11 +36,10 @@ def main(no_of_system_sizes=6):
     algorithms = [algorithm_name_electrolyte, algorithm_name_hxy, algorithm_name_xy]
     no_of_runs = [no_of_runs_electrolyte, no_of_runs_hxy, no_of_runs_xy]
     """Define observables[i] as the necessary observables of algorithms[i]"""
-    observables = [
-        ["zero_mode_susceptibility", "topological_susceptibility"],
-        ["josephson_susceptibility", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility"],
-        ["josephson_susceptibility", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility"]]
-    global_topological_field_labels = [r"$\mathbf{w}$", r"$\tilde{\mathbf{t}}$", r"$\tilde{\mathbf{t}}^{\rm hot}$"]
+    observables = [["zero_mode_susceptibility", "topological_susceptibility"],
+                   ["josephson_susceptibility", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility"],
+                   ["josephson_susceptibility", "global_defect_susceptibility", "hot_twist_relaxation_susceptibility",
+                    "emergent_field_zero_mode_susceptibility"]]
     observable_plotting_markers = [".", "*"]
     system_size_plotting_colors = ["black", "red", "blue", "green", "magenta", "indigo"][:no_of_system_sizes]
     system_size_plotting_colors.reverse()
@@ -78,21 +77,21 @@ def main(no_of_system_sizes=6):
     make_topological_susceptibility_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
                                           linear_system_sizes, no_of_samples, no_of_runs, output_directory,
                                           sample_directories_by_algo_all_moves, external_global_moves_string_all_moves,
-                                          observable_plotting_markers, system_size_plotting_colors,
-                                          global_topological_field_labels)
+                                          observable_plotting_markers, system_size_plotting_colors)
     make_topological_stability_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
                                      linear_system_sizes, no_of_samples, no_of_runs, output_directory,
                                      sample_directories_by_algo_local_moves, sample_directories_by_algo_all_moves,
                                      external_global_moves_string_local_moves, external_global_moves_string_all_moves,
-                                     observable_plotting_markers, system_size_plotting_colors,
-                                     global_topological_field_labels)
+                                     observable_plotting_markers, system_size_plotting_colors)
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
 
 
 def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatures, linear_system_sizes,
                         no_of_samples, no_of_runs, output_directory, sample_directories_by_algo,
                         external_global_moves_string_all_moves, system_size_plotting_colors):
-    fig, axes = make_three_empty_subfigures(r"$\Gamma$")
+    fig, axes = make_three_empty_subfigures(r"$\Gamma$", 25.0)
+    [axes[axis_index].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0]) for axis_index in [0, 1]]
+    axes[2].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8])
     observables = ["inverse_permittivity", "helicity_modulus", "helicity_modulus"]
     for algorithm_index, algorithm in enumerate(algorithms):
         for system_size_index, length in enumerate(linear_system_sizes):
@@ -106,20 +105,14 @@ def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatur
                 observables[algorithm_index], algorithm, model_temperatures[algorithm_index], no_of_sites_string,
                 no_of_samples, external_global_moves_string_all_moves, output_directory,
                 sample_directories_by_algo[algorithm_index][system_size_index], no_of_runs[algorithm_index])
-            """
-            axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors, marker=".", 
-                                           markersize=10, color=system_size_plotting_colors[system_size_index], 
+            axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors, marker=".",
+                                           markersize=12, color=system_size_plotting_colors[system_size_index],
                                            linestyle="dashed", label=fr"$N = {length} \! \times \! {length}$")
-            """
-            """reinstate above line once error bars are fixed"""
-            axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], means, marker=".", markersize=10,
-                                       color=system_size_plotting_colors[system_size_index], linestyle="dashed",
-                                       label=fr"$N = {length} \! \times \! {length}$")
             legend = axes[algorithm_index].legend(loc="lower left", fontsize=15.5, labelspacing=0)
             legend.get_frame().set_edgecolor("k")
             legend.get_frame().set_lw(2.5)
 
-    observable_box_coords = [0.045, 0.55]
+    observable_box_coords = [0.048, 0.55]
     axes[0].text(*observable_box_coords, r"$\Gamma = \epsilon^{-1}$ (electrolyte)", fontsize=14.5,
                  transform=axes[0].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
@@ -130,6 +123,11 @@ def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatur
                  transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
 
+    fig_label_x_coord = 1.46
+    axes[0].text(fig_label_x_coord, 0.925, "(a)", fontsize=25.0)
+    axes[1].text(fig_label_x_coord, 0.925, "(b)", fontsize=25.0)
+    axes[2].text(fig_label_x_coord, 0.83, "(c)", fontsize=25.0)
+
     fig.savefig(f"{output_directory}/helicities_with_global_moves.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
     plt.close()
@@ -138,9 +136,11 @@ def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatur
 def make_topological_susceptibility_plots(algorithms, observables, model_temperatures, reduced_model_temperatures,
                                           linear_system_sizes, no_of_samples, no_of_runs, output_directory,
                                           sample_directories_by_algo, external_global_moves_string_all_moves,
-                                          observable_plotting_markers, system_size_plotting_colors,
-                                          global_topological_field_labels):
-    fig, axes = make_three_empty_subfigures(r"$\beta L^2 {\rm Var}[{\rm X}] / (2J)$")
+                                          observable_plotting_markers, system_size_plotting_colors):
+    fig, axes = make_three_empty_subfigures(r"$\beta L^2 {\rm Var}[{\rm X}] / (2J)$", 25.0)
+    [axis.set_xlim(0.7, 1.6) for axis in axes]
+    axes[1].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8]), axes[1].set_ylim(-0.04, 0.801)
+    axes[2].set_yticks([0.0, 0.5, 1.0, 1.5, 2.0, 2.5])
     for algorithm_index, algorithm in enumerate(algorithms):
         for system_size_index, length in enumerate(linear_system_sizes):
             no_of_sites_string = f"{length}x{length}_sites"
@@ -170,7 +170,7 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                                    marker=observable_plotting_markers[observable_index - 1],
                                                    color=system_size_plotting_colors[system_size_index], markersize=10,
                                                    linestyle="dashed", label=fr"$N = {length} \! \times \! {length}$")
-                    else:
+                    elif observable_index == 2:
                         """
                         axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors,
                                                        marker=observable_plotting_markers[observable_index - 1],
@@ -183,10 +183,10 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                                    markersize=10, linestyle="dashed")
 
         if algorithm_index == 0:
-            legend = axes[algorithm_index].legend(loc="upper left", fontsize=16.0, labelspacing=0)
+            legend = axes[algorithm_index].legend(loc="upper left", fontsize=15.0, labelspacing=0)
         else:
             legend = axes[algorithm_index].legend(handler_map={plt.Line2D: HandlerLine2D(update_func=remove_markers)},
-                                                  loc="upper left", fontsize=16.0, labelspacing=0)
+                                                  loc="upper left", fontsize=15.0, labelspacing=0)
             # the following is an attempt at removing the markers???
             """
             legend_handler_map = axes[algorithm_index].get_legend_handler_map()
@@ -200,14 +200,19 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(2.5)
 
-    axes[0].text(0.05, 0.35, r"$X = \mathbf{w}$ (electrolyte)", fontsize=16.0, transform=axes[0].transAxes,
+    axes[0].text(0.048, 0.44, r"$X = \mathbf{w}$ (electrolyte)", fontsize=14.0, transform=axes[0].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
-    axes[1].text(0.05, 0.3, r"dots: $\,\, X = \mathbf{w}$ (HXY)" + "\n" +
-                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (HXY)", fontsize=16.0, transform=axes[1].transAxes,
+    axes[1].text(0.048, 0.36, r"dots: $\,\, X = \mathbf{w}$ (HXY)" + "\n" +
+                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (HXY)", fontsize=14.0, transform=axes[1].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
-    axes[2].text(0.05, 0.3, r"dots: $\,\, X = \mathbf{w}$ (XY)" + "\n" +
-                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (XY)", fontsize=16.0, transform=axes[2].transAxes,
+    axes[2].text(0.048, 0.36, r"dots: $\,\, X = \mathbf{w}$ (XY)" + "\n" +
+                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (XY)", fontsize=14.0, transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
+
+    fig_label_x_coord = 1.49
+    axes[0].text(fig_label_x_coord, 0.005, "(a)", fontsize=25.0)
+    axes[1].text(fig_label_x_coord, 0.005, "(b)", fontsize=25.0)
+    axes[2].text(fig_label_x_coord, 0.01, "(c)", fontsize=25.0)
 
     fig.savefig(f"{output_directory}/topological_susceptibilities_with_global_moves.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
@@ -218,9 +223,11 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                                      linear_system_sizes, no_of_samples, no_of_runs, output_directory,
                                      sample_directories_by_algo_local_moves, sample_directories_by_algo_all_moves,
                                      external_global_moves_string_local_moves, external_global_moves_string_all_moves,
-                                     observable_plotting_markers, system_size_plotting_colors,
-                                     global_topological_field_labels):
-    fig, axes = make_three_empty_subfigures(r"$g_{\rm X}^{\alpha}$")
+                                     observable_plotting_markers, system_size_plotting_colors):
+    fig, axes = make_three_empty_subfigures(
+        r"$g_{\rm X}^{\rm local} \left( \tau = 10^6 \Delta t_\mathrm{Metrop}^\mathrm{model} \right)$",
+        22.0, True)
+    [axis.set_ylim(-0.49, 1.075) for axis in axes]
     for algorithm_index, algorithm in enumerate(algorithms):
         for system_size_index, length in enumerate(linear_system_sizes):
             no_of_sites_string = f"{length}x{length}_sites"
@@ -243,20 +250,6 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                     no_of_runs[algorithm_index])
                 get_means_and_errors(
                     "inverse_vacuum_permittivity", algorithm, model_temperatures[algorithm_index],
-                    no_of_sites_string, no_of_samples, external_global_moves_string_all_moves, output_directory,
-                    sample_directories_by_algo_all_moves[algorithm_index][system_size_index],
-                    no_of_runs[algorithm_index])
-
-            """and also the means and errors of the emergent-field zero-mode susceptibility of the 2DXY model, nb, in 
-                the case of the 2DHXY model, this quantity is equivalent to the Josephson susceptibility"""
-            if algorithm_index == 2:
-                get_means_and_errors(
-                    "emergent_field_zero_mode_susceptibility", algorithm, model_temperatures[algorithm_index],
-                    no_of_sites_string, no_of_samples, external_global_moves_string_local_moves, output_directory,
-                    sample_directories_by_algo_local_moves[algorithm_index][system_size_index],
-                    no_of_runs[algorithm_index])
-                get_means_and_errors(
-                    "emergent_field_zero_mode_susceptibility", algorithm, model_temperatures[algorithm_index],
                     no_of_sites_string, no_of_samples, external_global_moves_string_all_moves, output_directory,
                     sample_directories_by_algo_all_moves[algorithm_index][system_size_index],
                     no_of_runs[algorithm_index])
@@ -305,58 +298,60 @@ def make_topological_stability_plots(algorithms, observables, model_temperatures
                     output_file.close()
 
                 topological_stabilities = [1.0 - chi_ratio ** 0.5 for chi_ratio in chi_ratios]
-                if observable_index == 0:
+                if observable_index == 1:
                     axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], topological_stabilities,
                                                marker=observable_plotting_markers[observable_index - 1], markersize=10,
                                                color=system_size_plotting_colors[system_size_index], linestyle="dashed",
                                                label=fr"$N = {length} \! \times \! {length}$")
-                else:
+                elif observable_index == 2:
                     axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], topological_stabilities,
                                                marker=observable_plotting_markers[observable_index - 1], markersize=10,
                                                color=system_size_plotting_colors[system_size_index], linestyle="dashed")
 
         if algorithm_index == 0:
-            legend = axes[algorithm_index].legend(loc="upper right", fontsize=13.0, labelspacing=0)
+            legend = axes[algorithm_index].legend(loc="upper right", fontsize=15.0, labelspacing=0)
         else:
             legend = axes[algorithm_index].legend(handler_map={plt.Line2D: HandlerLine2D(update_func=remove_markers)},
-                                                  loc="upper right", fontsize=13.0, labelspacing=0)
+                                                  loc="upper right", fontsize=15.0, labelspacing=0)
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(2.5)
 
-    axes[0].text(0.575, 0.08, r"$\alpha = $ electrolyte" + "\n" + r"$X = \mathbf{w}$", fontsize=13.0,
-                 transform=axes[0].transAxes,
+    text_box_coords = [0.04, 0.075]
+    axes[0].text(*text_box_coords, r"$X = \mathbf{w}$ (electrolyte)", fontsize=14.0, transform=axes[0].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
-    axes[1].text(0.5725, 0.435, r"$\alpha = $ HXY" + "\n" + r"dots: $\,\, X = \mathbf{w}$" + "\n" +
-                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$", fontsize=12.25, transform=axes[1].transAxes,
+    axes[1].text(*text_box_coords, r"dots: $\,\, X = \mathbf{w}$ (HXY)" + "\n" +
+                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (HXY)", fontsize=14.0, transform=axes[1].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
-    axes[2].text(0.605, 0.435, r"$\alpha = $ XY" + "\n" + r"dots: $\,\, X = \mathbf{w}$" + "\n" +
-                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$", fontsize=12.25, transform=axes[2].transAxes,
+    axes[2].text(*text_box_coords, r"dots: $\,\, X = \mathbf{w}$ (XY)" + "\n" +
+                 r"stars: $X = \tilde{\mathbf{t}}^\mathrm{hot}$ (XY)", fontsize=14.0, transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
+
+    fig_labels = ["(a)", "(b)", "(c)"]
+    fig_label_coords = [1.475, -0.4125]
+    [axes[fig_index].text(*fig_label_coords, fig_labels[fig_index], fontsize=25.0) for fig_index in range(3)]
 
     fig.savefig(f"{output_directory}/topological_stabilities.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
     plt.close()
 
 
-def make_three_empty_subfigures(y_axis_label):
+def make_three_empty_subfigures(y_axis_label, y_axis_label_font_size, remove_secondary_y_axis_values=False):
     fig, axes = plt.subplots(1, 3, figsize=(15, 3.8))
-    fig.tight_layout(w_pad=1.0)
-    axes[0].set_ylabel(y_axis_label, fontsize=25, labelpad=-1.0)
+    if remove_secondary_y_axis_values:
+        axes[1].axes.yaxis.set_ticklabels([]), axes[2].axes.yaxis.set_ticklabels([])
+        fig.tight_layout(w_pad=-0.5)
+    else:
+        fig.tight_layout(w_pad=1.4)
+    axes[0].set_ylabel(y_axis_label, fontsize=y_axis_label_font_size, labelpad=-1.0)
     for axis_index, axis in enumerate(axes):
         axis.tick_params(which='both', direction='in', width=3)
-        axis.tick_params(which='major', length=7, labelsize=22.5, pad=3)
+        axis.tick_params(which='major', length=7, labelsize=25.0, pad=3)
         axis.tick_params(which='minor', length=4)
         [axis.spines[spine].set_linewidth(3.75) for spine in ["top", "bottom", "left", "right"]]
         if axis_index < 2:
-            axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-0.5)
+            axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT}^{\rm elec} / \beta$", fontsize=25, labelpad=-0.5)
         else:
-            axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta$", fontsize=20, labelpad=-0.5)
-        """
-        axis.set_ylim(0.0, 1.0)
-        axis.yaxis.set_major_locator(ticker.MultipleLocator(base=0.5))
-        axis.yaxis.set_major_formatter('{x:.1e}')
-        axis.axes.yaxis.set_ticklabels([])
-        """
+            axis.set_xlabel(r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta$", fontsize=25, labelpad=-0.5)
     return fig, axes
 
 
