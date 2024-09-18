@@ -17,7 +17,9 @@ sys.path.insert(0, directory_containing_run_script)
 run_script = importlib.import_module("run")
 
 
-def main(no_of_system_sizes=6):
+def main(symmetry_breaking_paper=True, no_of_system_sizes=6):
+    """For 'Symmetry breaking at a topological phase transition', set symmetry_breaking_paper=True;
+        for 'Emergent electrostatics in...' paper, set symmetry_breaking_paper=False."""
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     linear_system_sizes = [2 ** (index + 2) for index in range(no_of_system_sizes)]
     base_config_file_low_temp_all = f"config_files/twist_figs/4x4_low_temp_all.txt"
@@ -87,7 +89,10 @@ def main(no_of_system_sizes=6):
     fig.text(0.115, 0.3825, "(c)", fontsize=20)
     fig.tight_layout(h_pad=1.75)
 
-    axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-12)
+    if symmetry_breaking_paper:
+        axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT} / \beta$", fontsize=20, labelpad=-12)
+    else:
+        axes[0].set_xlabel(r"$\widetilde{\beta}_{\rm BKT}^{\rm XY} / \beta$", fontsize=20, labelpad=-12)
     axes[0].set_ylabel(r"$p_{\rm twist}$", fontsize=20, labelpad=1)
     axes[0].set_yscale('log')
     axes[0].set_ylim([8.0 * 10 ** (-8), 1.5])
@@ -188,8 +193,12 @@ def main(no_of_system_sizes=6):
                axes[1].legend(loc="lower right", fontsize=10.5)]
     [legend.get_frame().set_edgecolor("k") for legend in legends]
     [legend.get_frame().set_lw(3) for legend in legends]
-    fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_simulation_"
-                f"variance_vs_system_size_xy_gaussian_noise_metropolis.pdf", bbox_inches="tight")
+    if symmetry_breaking_paper:
+        fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_simulation_"
+                    f"variance_vs_system_size_xy_gaussian_noise_metropolis.pdf", bbox_inches="tight")
+    else:
+        fig.savefig(f"{output_directory_low_temp}/twist_probability_vs_temperature_and_magnetisation_phase_simulation_"
+                    f"variance_vs_system_size_xy_gaussian_noise_metropolis_review_paper.pdf", bbox_inches="tight")
 
     print(f"Sample analysis complete.  Total runtime = {time.time() - start_time:.2e} seconds.")
     pool.close()
@@ -307,19 +316,39 @@ def get_simulation_variance_of_magnetisation_phase(sample_directory, temperature
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        raise Exception("InterfaceError: At most one positional arguments permitted.  None are required but you may "
-                        "provide no_of_system_sizes, which must be an integer greater than 0 and less than 7 (default "
-                        "value is 6).")
+    if len(sys.argv) > 3:
+        raise Exception("InterfaceError: At most two positional arguments are permitted.  None are required but you "
+                        "may provide symmetry_breaking_paper (see docstring of main() - default value is True) and "
+                        "no_of_system_sizes (which must be an integer greater than 0 and less than 7 - default value "
+                        "is 6).")
+    if len(sys.argv) == 3:
+        print("Two positional arguments provided.  These must be symmetry_breaking_paper (see docstring of main() - "
+              "default value is True) and no_of_system_sizes (which must be an integer greater than 0 and less than 7 "
+              "- default value is 6).")
+        chosen_no_of_system_sizes = int(sys.argv[2])
+        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 6:
+            raise Exception("InterfaceError: chosen_no_of_system_sizes must be an integer greater than 0 and less than "
+                            "7 (default value is 6).")
+        if sys.argv[1] == "True":
+            main(True, chosen_no_of_system_sizes)
+        elif sys.argv[1] == "False":
+            main(False, chosen_no_of_system_sizes)
+        else:
+            Exception("InterfaceError: The provided value of symmetry_breaking_paper is neither True nor False (see "
+                      "docstring of main()).")
     if len(sys.argv) == 2:
-        print("One positional argument provided.  This must be no_of_system_sizes - which must be an integer greater "
-              "than 0 and less than 7 (default value is 6).")
-        chosen_no_of_system_sizes = int(sys.argv[1])
-        if chosen_no_of_system_sizes < 1 or chosen_no_of_system_sizes > 7:
-            raise Exception("InterfaceError: no_of_system_sizes must be an integer greater than 0 and less than 7 "
-                            "(default value is 6).")
-        main(chosen_no_of_system_sizes)
+        print("One positional argument provided.  This must be symmetry_breaking_paper (see docstring of main() - "
+              "default value is True).  In addition, you may provide number_of_system_sizes - which must be an integer "
+              "greater than 0 and less than 7 (default value is 6).")
+        if sys.argv[1] == "True":
+            main(True)
+        elif sys.argv[1] == "False":
+            main(False)
+        else:
+            Exception("InterfaceError: The provided value of symmetry_breaking_paper is neither True nor False (see "
+                      "docstring of main()).")
     else:
-        print("No positional arguments provided.  None are required but you may provide no_of_system_sizes, which must "
-              "be an integer greater than 0 and less than 7 (default value is 6).")
+        print("No positional arguments provided.  None are required but you may provide symmetry_breaking_paper (see "
+              "docstring of main() - default value is True) and chosen_no_of_system_sizes (which must be an integer "
+              "greater than 0 and less than 7 - default value is 6).")
         main()
