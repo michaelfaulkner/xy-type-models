@@ -140,15 +140,15 @@ def make_plots(algorithm_names, sample_directories, output_directory, no_of_site
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(5)
 
-    inset_axis = plt.axes((0.8375, 0.55, 0.15, 0.12))
+    inset_axis = plt.axes((0.8375, 0.555, 0.15, 0.11))
     inset_axis.tick_params(which='both', direction='in', length=7, width=4, labelsize=28, pad=0.75)
     inset_axis.set_xlim([0.0, 2.499e3])
     inset_axis.xaxis.set_label_position("top")
     inset_axis.xaxis.tick_top()
-    inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}$", fontsize=30, labelpad=3)
-    inset_axis.set_ylim(-0.375, 0.375)
-    inset_axis.set_yticks(np.arange(-0.3, 0.3 + 0.5 * 0.3 / 2, step=0.3))
-    inset_axis.set_ylabel(r"$j_y(t) / J$", fontsize=30, labelpad=-2)
+    inset_axis.set_xlabel(r"$t / \Delta t_{\mathrm{Metrop}}^{\mathrm{XY}}$", fontsize=28, labelpad=3)
+    inset_axis.set_ylim(-0.058, 0.058)
+    # inset_axis.set_yticks(np.arange(-0.05, 0.05 + 0.5 * 0.1 / 2, step=0.1))
+    inset_axis.set_ylabel(r"$j_y(t) / J$", fontsize=28, labelpad=-6)
     [inset_axis.spines[spine].set_linewidth(4) for spine in ["top", "bottom", "left", "right"]]
     for temp_index, temperature in reverse_enumerate(reduced_model_temperatures[2]):
         compressed_sample_filename = (
