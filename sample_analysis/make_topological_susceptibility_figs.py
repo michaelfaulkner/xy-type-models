@@ -139,7 +139,7 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                           observable_plotting_markers, system_size_plotting_colors):
     fig, axes = make_three_empty_subfigures(r"$\beta L^2 {\rm Var}[{\rm X}] / (2J)$", 25.0)
     [axis.set_xlim(0.7, 1.6) for axis in axes]
-    axes[1].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8]), axes[1].set_ylim(-0.04, 0.801)
+    axes[1].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8])
     axes[2].set_yticks([0.0, 0.5, 1.0, 1.5, 2.0, 2.5])
     for algorithm_index, algorithm in enumerate(algorithms):
         for system_size_index, length in enumerate(linear_system_sizes):
@@ -157,46 +157,22 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                                          sample_directories_by_algo[algorithm_index][system_size_index],
                                                          no_of_runs[algorithm_index])
                     if observable_index == 1:
-                        # todo reinstate errorbar() - currently using plot() as handler_map (see legend below) does not
-                        #  work w/errorbar(); same for second part of clause
-                        """
                         axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors,
                                                        marker=observable_plotting_markers[observable_index - 1],
                                                        color=system_size_plotting_colors[system_size_index],
                                                        markersize=10, linestyle="dashed",
                                                        label=fr"$N = {length} \! \times \! {length}$")
-                        """
-                        axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], means,
-                                                   marker=observable_plotting_markers[observable_index - 1],
-                                                   color=system_size_plotting_colors[system_size_index], markersize=10,
-                                                   linestyle="dashed", label=fr"$N = {length} \! \times \! {length}$")
                     elif observable_index == 2:
-                        """
                         axes[algorithm_index].errorbar(reduced_model_temperatures[algorithm_index], means, errors,
                                                        marker=observable_plotting_markers[observable_index - 1],
                                                        color=system_size_plotting_colors[system_size_index],
                                                        markersize=10, linestyle="dashed")
-                        """
-                        axes[algorithm_index].plot(reduced_model_temperatures[algorithm_index], means,
-                                                   marker=observable_plotting_markers[observable_index - 1],
-                                                   color=system_size_plotting_colors[system_size_index],
-                                                   markersize=10, linestyle="dashed")
 
         if algorithm_index == 0:
             legend = axes[algorithm_index].legend(loc="upper left", fontsize=15.0, labelspacing=0)
         else:
             legend = axes[algorithm_index].legend(handler_map={plt.Line2D: HandlerLine2D(update_func=remove_markers)},
                                                   loc="upper left", fontsize=15.0, labelspacing=0)
-            # the following is an attempt at removing the markers???
-            """
-            legend_handler_map = axes[algorithm_index].get_legend_handler_map()
-            legend_handler_map.set_marker("")
-            handles, labels = axes[algorithm_index].get_legend_handles_labels()
-            legend = axes[algorithm_index].legend(handles, labels, loc="upper left", fontsize=13.0, labelspacing=0)
-            plt.legend(handles=[plt.plot([], ls="-", color=system_size_plotting_colors[system_size_index])[0]],
-                       labels=[line.get_label()])
-            """
-
         legend.get_frame().set_edgecolor("k")
         legend.get_frame().set_lw(2.5)
 
@@ -210,9 +186,9 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
 
     fig_label_x_coord = 1.49
-    axes[0].text(fig_label_x_coord, 0.005, "(a)", fontsize=25.0)
-    axes[1].text(fig_label_x_coord, 0.005, "(b)", fontsize=25.0)
-    axes[2].text(fig_label_x_coord, 0.01, "(c)", fontsize=25.0)
+    axes[0].text(fig_label_x_coord, 0.0, "(a)", fontsize=25.0)
+    axes[1].text(fig_label_x_coord, 0.0, "(b)", fontsize=25.0)
+    axes[2].text(fig_label_x_coord, 0.0, "(c)", fontsize=25.0)
 
     fig.savefig(f"{output_directory}/topological_susceptibilities_with_global_moves.pdf", bbox_inches="tight")
     [axis.cla() for axis in axes.flatten()]
