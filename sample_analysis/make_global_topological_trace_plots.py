@@ -202,8 +202,8 @@ def setup_figure_axes(axes):
     axes[1, 0].set_ylabel(r"$X(t; \! \beta_{\rm c} / \beta \! = \! 1.5)$", fontsize=40, labelpad=-30.0)
     """horizontal lines at Ebar_{x / y} values at which w_{x / y} becomes nonzero; not top-right fig as it's crowded"""
     for index in [0, 1, 3, 4, 5]:
-        axes.flatten()[index].axhline(y=0.5, color='gray', linestyle='--')
-        axes.flatten()[index].axhline(y=-0.5, color='gray', linestyle='--')
+        axes.flatten()[index].axhline(y=0.5, color='gray', linestyle='--', linewidth=3)
+        axes.flatten()[index].axhline(y=-0.5, color='gray', linestyle='--', linewidth=3)
 
 
 if __name__ == "__main__":
