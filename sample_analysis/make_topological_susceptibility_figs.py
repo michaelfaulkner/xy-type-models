@@ -119,7 +119,7 @@ def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatur
     axes[1].text(*observable_box_coords, r"$\Gamma = \Upsilon_\mathrm{HXY}$", fontsize=15.5,
                  transform=axes[1].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
-    axes[2].text(*observable_box_coords, r"$\Gamma = \Upsilon_\mathrm{HXY}$", fontsize=15.5,
+    axes[2].text(*observable_box_coords, r"$\Gamma = \Upsilon_\mathrm{XY}$", fontsize=15.5,
                  transform=axes[2].transAxes,
                  bbox=dict(facecolor='none', edgecolor='black', linewidth=2.5, boxstyle='round, pad=0.5'))
 
@@ -137,7 +137,7 @@ def make_topological_susceptibility_plots(algorithms, observables, model_tempera
                                           linear_system_sizes, no_of_samples, no_of_runs, output_directory,
                                           sample_directories_by_algo, external_global_moves_string_all_moves,
                                           observable_plotting_markers, system_size_plotting_colors):
-    fig, axes = make_three_empty_subfigures(r"$\beta L^2 {\rm Var}[{\rm X}] / (2J)$", 25.0)
+    fig, axes = make_three_empty_subfigures(r"$2 \pi^2 \beta J {\rm Var}[{\rm X}]$", 25.0)
     [axis.set_xlim(0.7, 1.6) for axis in axes]
     axes[1].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8])
     axes[2].set_yticks([0.0, 0.5, 1.0, 1.5, 2.0, 2.5])
