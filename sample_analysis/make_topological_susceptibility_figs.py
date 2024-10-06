@@ -89,7 +89,7 @@ def main(no_of_system_sizes=6):
 def make_helicity_plots(algorithms, model_temperatures, reduced_model_temperatures, linear_system_sizes,
                         no_of_samples, no_of_runs, output_directory, sample_directories_by_algo,
                         external_global_moves_string_all_moves, system_size_plotting_colors):
-    fig, axes = make_three_empty_subfigures(r"$\Gamma$", 25.0)
+    fig, axes = make_three_empty_subfigures(r"$\Gamma / \, J$", 25.0)
     [axes[axis_index].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0]) for axis_index in [0, 1]]
     axes[2].set_yticks([0.0, 0.2, 0.4, 0.6, 0.8])
     observables = ["inverse_permittivity", "helicity_modulus", "helicity_modulus"]
