@@ -1,2 +1,2 @@
 """Module that stores the version of the xy-type-models application."""
-version = "5.1.6"
+version = "6.0.0"
