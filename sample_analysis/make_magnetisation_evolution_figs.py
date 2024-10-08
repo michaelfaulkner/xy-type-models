@@ -17,7 +17,7 @@ run_script = importlib.import_module("run")
 
 
 def main(symmetry_breaking_paper=True):
-    """For 'General symmetry breaking at a topological phase transition,' set symmetry_breaking_paper=True;
+    """For 'Symmetry breaking at a topological phase transition,' set symmetry_breaking_paper=True;
         for 'Sampling algorithms in statistical physics...', set symmetry_breaking_paper=False."""
     matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
     if symmetry_breaking_paper:

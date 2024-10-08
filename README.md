@@ -38,19 +38,18 @@ directory.
 
 The code that analyses the resultant samples (i.e., that contained in the [`sample_analysis`](sample_analysis) 
 directory) was written in Python and depends on [`numpy`](https://numpy.org). Some of it also depends on 
-[`matplotlib`](https://matplotlib.org), [`rpy2`](https://rpy2.github.io) or [`scipy`](https://www.scipy.org). To manage 
-external Python packages, we use [conda](https://docs.conda.io/projects/conda/en/latest/) environments via the 
-[miniconda distribution](https://docs.conda.io/en/latest/miniconda.html). However, we found [`rpy2`](
-https://rpy2.github.io) to be buggy when installed via conda. Instead, we `pip install rpy2` from within the project's 
-conda environment (after having `conda install`ed [`numpy`](https://numpy.org), [`matplotlib`](https://matplotlib.org) 
-and [`scipy`](https://www.scipy.org)).
+[`matplotlib`](https://matplotlib.org), [`rpy2`](https://rpy2.github.io) or [`scipy`](https://www.scipy.org).  However, everything can run without [`rpy2`](https://rpy2.github.io) - measurements 
+of effective sample size would then be the only lost functionality (we may resolve this in the future).
 
-[`markov_chain_diagnostics.py`](sample_analysis/markov_chain_diagnostics.py) depends on the R packages 
-[`LaplacesDemon`](https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](
-https://cran.r-project.org/web/packages/mcmcse/). To install these R packages: download the binaries [here](
-https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) 
-and then run `R CMD INSTALL <binary location>` in your terminal. You may also need to install various dependencies of 
-these R packages (listed under Imports on the relevant CRAN package page).
+To manage external Python packages, we use [conda](https://docs.conda.io/projects/conda/en/latest/) environments via the [miniconda distribution](https://docs.conda.io/en/latest/miniconda.html). However, we 
+found [`rpy2`](https://rpy2.github.io) to be buggy when installed via conda. Instead, we `pip install rpy2` from within the project's 
+conda environment (after having `conda install`ed [`numpy`](https://numpy.org), [`matplotlib`](https://matplotlib.org) and [`scipy`](https://www.scipy.org)).
+
+[`markov_chain_diagnostics.py`](sample_analysis/markov_chain_diagnostics.py) depends on the R packages [`LaplacesDemon`](https://cran.r-project.org/web/packages/LaplacesDemon/) and [`mcmcse`](https://cran.r-project.org/web/packages/mcmcse/). To install 
+these R packages: download the binaries [here](https://cran.r-project.org/web/packages/LaplacesDemon/) and [here](https://cran.r-project.org/web/packages/mcmcse/) and then run `R CMD INSTALL <binary location>` in 
+your terminal. You may also need to install various dependencies of these R packages (listed under Imports on the 
+relevant CRAN package page). Note again that everything can run without [`rpy2`](https://rpy2.github.io) and these R packages (see 
+the paragraph before last).
 
 The Fortran code was written in Fortran 90. The Python code is likely to support any Python version >= 3.6 (though we 
 need to check this). We tested the Fortran / Python code with GNU Fortran (Homebrew GCC 10.2.0_4) 10.2.0 / CPython.
@@ -398,6 +397,87 @@ directory and enter `make xy-ecmc`, `make xy-uniform-noise-metropolis`, `make xy
 executable and store it in the `executables` directory.
 
 
+## *Emergent electrostatics in planar XY spin models* [Faulkner2024c]
+
+This details how to make its XY-related figures.
+
+### Figures 5 and 8a
+
+Follow the instructions (below) detailing how to make Figures 1 and 2a of [\[Faulkner2024a\]](
+https://doi.org/10.1103/PhysRevB.109.085405).
+
+### Figure 6
+
+Follow the instructions (below) detailing how to make Figure 3 of [\[Faulkner2024a\]](
+https://doi.org/10.1103/PhysRevB.109.085405).
+
+### Figure 7
+
+1. Run each configuration file in [`config_files/cvm_figs`](
+config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_ecmc.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_cvm_figs.py False`.
+
+For some important details about the scratch space required for these simulations, read the instructions (below) 
+detailing how to make Figure 4 of [\[Faulkner2024a\]](
+https://doi.org/10.1103/PhysRevB.109.085405).
+
+### Figures 8b-c
+
+Follow the instructions (below) detailing how to make Figures 2b-c of [\[Faulkner2024a\]](
+https://doi.org/10.1103/PhysRevB.109.085405).
+
+### Figures 9 and 11
+
+Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
+
+### Figures 14, 16 and 17
+
+1. Run each configuration file in [`config_files/top_susc_figs`](config_files/top_susc_figs) via the command 
+`python run.py config_files/top_susc_figs/4x4_elec_all.txt`, etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_topological_susceptibility_figs.py`.
+
+### Figure 15
+
+1. Run each configuration file in [`config_files/global_top_trace_plots`](config_files/global_top_trace_plots) via the 
+command `python run.py config_files/global_top_trace_plots/electrolyte.txt`, etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_global_topological_trace_plots.py`.
+
+### Other figures
+
+For Figures 1 and 2, go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the instructions in 
+the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually integrate 
+xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
+
+All other figures are either TikZ-based or some heuristic curve made using matplotlib in a simple Python script.
+
+
+## *Sampling algorithms in statistical physics* [\[Faulkner2024b\]](https://doi.org/10.1214/23-STS893)
+
+This details how to make its XY figures.
+
+### Figure 12
+
+1. Run each configuration file in [`config_files/sampling_algos_xy_figs`](
+config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
+ etc.  
+
+2. Once all simulations are complete, run the relevant sample-analysis script via the command 
+`python sample_analysis/make_magnetisation_evolution_figs.py False`.
+
+### Figures 2, 9, 10 and 11
+
+Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
+instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
+integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
+
+
 ## *Symmetry breaking at a topological phase transition* [\[Faulkner2024a\]](https://doi.org/10.1103/PhysRevB.109.085405)
 
 This details how to make its figures.
@@ -407,37 +487,33 @@ This details how to make its figures.
 1. Run each configuration file in [`config_files/mag_evolution_figs`](
 config_files/mag_evolution_figs) via the command `python run.py config_files/mag_evolution_figs/16x16_ecmc.txt`,
  etc.  
-
 2. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_magnetisation_evolution_figs.py`.
 
 ### Figures 2b-c
 
-1. Complete Figures 3a-c (as their analysed data is used in this figure).
+1. Complete Figure 4 (as its analysed data is used in this figure).
 2. Run each configuration file in [`config_files/twist_figs`](
 config_files/twist_figs) via the command `python run.py config_files/twist_figs/4x4_low_temp_all.txt`,
  etc.  
-
 3. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_twist_figs.py`.
 
 Simulations for Figures 2b-c require approximately 3.6TB of scratch space.
 
-### Figures 3a-c
+### Figure 3
 
 1. Run each configuration file in [`config_files/cdf_figs`](
 config_files/cdf_figs) via the command `python run.py config_files/cdf_figs/64x64_ecmc.txt`,
  etc.  
-
 2. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_cdf_figs.py`.
 
-### Figures 3d-e
+### Figure 4
 
 1. Run each configuration file in [`config_files/cvm_figs`](
 config_files/cvm_figs) via the command `python run.py config_files/cvm_figs/4x4_ecmc.txt`,
  etc.  
-
 2. Once all simulations are complete, run the relevant sample-analysis script via the command 
 `python sample_analysis/make_cvm_figs.py`.
 
@@ -451,7 +527,7 @@ estimate of the *N* = 128x128 CvM statistic at beta J = 1 / 0.3 (the lowest valu
 
 The total required scratch space is therefore around 20TB.  If you are limited to 20TB or less, we suggest, 
 for example, running all simulations for systems composed of *N* <= 32x32 sites and then running 
-`python sample_analysis/make_cvm_figs.py 4` (where the `4` restricts the script to analysing the four smallest system 
+`python sample_analysis/make_cvm_figs.py True 4` (where the `4` restricts the script to analysing the four smallest system 
 sizes).  Then delete the samples and run the simulations of the *N* > 32x32 systems before running 
 `python sample_analysis/make_cvm_figs.py`.  Analysis including the *N* > 32x32 systems require around 2.5GB of memory 
 per processor.  For the smaller systems, 2GB of memory per processor should be ample.
@@ -470,29 +546,9 @@ scratch space.
 Each ECMC configuration file requires approximately 40GB of scratch space.  
 
 
-### Figure 4
+### Figure 5
 
 Run the relevant script via the command `python sample_analysis/make_spin_config_plots.py`.
-
-
-## *Sampling algorithms in statistical physics* [\[Faulkner2024b\]](https://doi.org/10.1214/23-STS893)
-
-This details how to make its XY figures.
-
-### Figure 12
-
-- Run each configuration file in [`config_files/sampling_algos_xy_figs`](
-config_files/sampling_algos_xy_figs) via the command `python run.py config_files/sampling_algos_xy_figs/16x16_ecmc.txt`,
- etc.  
-
-- Once all simulations are complete, run the relevant sample-analysis script via the command 
-`python sample_analysis/make_magnetisation_evolution_figs.py False`.
-
-### Figures 2, 9, 10 and 11
-
-Go to [super-aLby](https://github.com/michaelfaulkner/super-aLby) and follow the 
-instructions in the [README](https://github.com/michaelfaulkner/super-aLby/blob/main/README.md).  We aim to eventually 
-integrate xy-type-models into [super-aLby](https://github.com/michaelfaulkner/super-aLby).
 
 
 ## Citation
