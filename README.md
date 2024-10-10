@@ -31,6 +31,10 @@ https://doi.org/10.1103/PhysRevB.91.155412).
 
 ## Installation
 
+xy-type-models is designed to be run from a bash terminal.  If not using a Unix-based operating system, we therefore 
+suggest that you install a virtual machine of a Unix-based operating system such as Ubuntu.  Following this, follow the 
+steps below to install and then run the application on your virtual machine.
+
 To install xy-type-models, clone this repository, navigate to the top xy-type-models directory and run `make`. The 
 `make` command creates the eight Fortran executables, and stores them in a new directory called `executables`. The 
 Fortran executables simulate the Markov processes. Their corresponding source code is contained in the [`src`](src) 
